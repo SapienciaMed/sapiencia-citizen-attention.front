@@ -27,7 +27,7 @@ function App() {
         <Router>
           <Suspense fallback={<p>Loading...</p>}>
             <Routes>
-              <Route path={"/direccion-estrategica/"} element={<HomePage />} />;
+              <Route path={"/atencion-ciudadana/"} element={<HomePage />} />;
               {/* <Route path={"/direccion-estrategica/razon-social/*"} element={<BussinesRoutes />} />
             <Route path={"/direccion-estrategica/contratos/*"} element={<ContractRoutes />} /> */}
             </Routes>

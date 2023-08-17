@@ -1,7 +1,7 @@
 {
   "name": "@sapiencia/citizen-attention",
   "scripts": {
-    "start": "webpack serve --host 0.0.0.0 --port 9007",
+    "start": "webpack serve --host 0.0.0.0 --port 9008",
     "start:standalone": "webpack serve --env standalone",
     "build": "concurrently npm:build:*",
     "build:webpack": "webpack --mode=production",
