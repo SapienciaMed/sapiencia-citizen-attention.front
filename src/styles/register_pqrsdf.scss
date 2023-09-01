@@ -1,3 +1,4 @@
+/*card*/
 .container{
     padding-top: 30px;
     padding-right: 20px;
@@ -29,6 +30,29 @@
     letter-spacing: 0em;
 }
 
+/*Accordion*/
+.p-accordion .p-accordion-tab{
+    margin-bottom: 4px;
+}
+
+.p-accordion .p-accordion-tab:not(:first-child) .p-accordion-header .p-accordion-header-link{
+    border-top: 1px solid #dee2e6;
+    
+}
+
+.p-accordion .p-accordion-tab:last-child .p-accordion-header:not(.p-highlight) .p-accordion-header-link{
+    border-radius: 6px;
+}
+
+.p-accordion .p-accordion-tab:first-child .p-accordion-header .p-accordion-header-lin{
+    border-radius: 6px;
+}
+
+.p-accordion .p-accordion-tab .p-accordion-header .p-accordion-header-link{
+    border-radius: 6px;
+}
+
+/*Tabla*/
 span {
     font-family: Rubik;
     color: #000000;
