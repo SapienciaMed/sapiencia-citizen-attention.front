@@ -1,18 +1,24 @@
-import { CalendarComponent } from "./calendarComponent"
-import { DropDownComponent } from "./dropDownComponent"
-import { InputTextComponent } from "./inputTextComponent"
-import { CnputTextareaComponent } from "./inputTextarea.component"
-import { ScrollPanelComponent } from "./scrollPanelComponent"
-import { TriStateCheckboxComponent } from "./triStateCheckboxComponent"
-import { UploadComponent } from "./uploadComponent"
-import { ButtonComponent } from "../Form"
+import { useRef } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { Toast } from 'primereact/toast';
+
+import { CalendarComponent } from "./calendarComponent";
+import { DropDownComponent } from "./dropDownComponent";
+import { InputTextComponent } from "./inputTextComponent";
+import { CnputTextareaComponent } from "./inputTextarea.component";
+import { ScrollPanelComponent } from "./scrollPanelComponent";
+import { TriStateCheckboxComponent } from "./triStateCheckboxComponent";
+import { UploadComponent } from "./uploadComponent";
+import { ButtonSumitComponent } from "./buttonSumit.component";
 
 export const CitizenInformation = () => {
 
 
 
   return (
-    <form className="form-container" >
+    <form 
+      className="form-container" 
+    >
 
       <div className="div-container">
 
@@ -224,7 +230,7 @@ export const CitizenInformation = () => {
       </div>
 
       <div>
-       <ButtonComponent value="Enviar solicitud"/>
+       <ButtonSumitComponent label="Enviar solicitud"/>
       </div>
         
     </form>
