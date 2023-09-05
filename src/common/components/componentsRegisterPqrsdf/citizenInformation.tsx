@@ -37,20 +37,16 @@ export const CitizenInformation = () => {
 
   const {
     control,
-    formState: { errors },
+    formState: { errors, isValid },
     handleSubmit,
     reset,
   } = useForm({ defaultValues });
 
-
   const onSubmit = (data) => {
     data;
-
-    console.log('data -> ',data);
+    console.log('datos-> ', data);
     
-
     reset();
-
   };
 
   const getFormErrorMessage = (name) => {
@@ -558,7 +554,7 @@ export const CitizenInformation = () => {
         <Controller
           name="politicaTratamiento"
           control={control}
-          rules={{ required: 'Value is required.' }}
+          rules={{ required: 'Requerido.' }}
           render={({ field, fieldState }) => (
             <>
               <TriStateCheckboxComponent
@@ -577,6 +573,7 @@ export const CitizenInformation = () => {
       <div>
        <ButtonSumitComponent 
           label="Enviar solicitud"
+          disabled={ !isValid }
         />
       </div>
         
