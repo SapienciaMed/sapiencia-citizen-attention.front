@@ -1,0 +1,38 @@
+@import "./theme.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.p-card {
+    @apply text-black;
+}
+
+.no-month-navigator {
+    .p-calendar{
+        height: 100%;
+        border-radius: 8px;
+        box-shadow: 0px 10px 15px -3px rgba(16, 24, 40, 0.10), 0px 4px 6px -4px rgba(16, 24, 40, 0.10);
+        .p-datepicker{
+            border: none;
+        }
+    }
+
+    .p-datepicker-next,
+    .p-datepicker-prev {
+        display: none;
+        pointer-events: none;
+    }
+
+    .p-datepicker-month.p-link,
+    .p-datepicker-year.p-link {
+        pointer-events: none;
+    }
+
+    .p-datepicker-year.p-link {
+        @apply !text-primary p-0;
+    }
+    
+    .p-datepicker table td {
+        @apply p-0;
+    }
+}
