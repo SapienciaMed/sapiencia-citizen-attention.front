@@ -1,32 +1,30 @@
-import { useState } from 'react';
+import { RefCallBack } from 'react-hook-form';
 import { TriStateCheckbox } from 'primereact/tristatecheckbox';
 
-interface Value {
-  value?: boolean | undefined | null;
-} 
+interface Attributes {
+  value: null | boolean | undefined ;
+  id:string;
+  className:  string | undefined;
+  onChange:(...event: any[]) => void;
+}
 
-export const TriStateCheckboxComponent = () => {
+
+
+export const TriStateCheckboxComponent = ( props: Attributes ) => {
   
-    const [value, setValue] = useState(null);  
-    
-    const handleChange = (e:Value)=> {
-      setValue( e.value = true );
-      
-      if ( value ) {
-        setValue(null)
-        
-      }
-    }
+  const { id, value, onChange, className } = props;
+
 
   return (
 
     <div>
         <TriStateCheckbox 
-          value={value}
-          onChange={handleChange} 
-          style={{ marginRight:'6px'}}
+          id={ id }
+          value={ value }
+          onChange={ onChange }
+          className={ className }
         />
-        <label>Acepto</label>
+        <label style={{ marginLeft:'4px'}}>Acepto</label>
     </div>
 
   )

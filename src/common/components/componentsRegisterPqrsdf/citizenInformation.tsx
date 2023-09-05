@@ -8,6 +8,7 @@ import { TriStateCheckboxComponent } from "./triStateCheckboxComponent";
 import { UploadComponent } from "./uploadComponent";
 import { ButtonSumitComponent } from "./buttonSumit.component";
 import { classNames } from 'primereact/utils';
+import { TriStateCheckbox } from "primereact/tristatecheckbox";
 
 export const CitizenInformation = () => {
 
@@ -20,21 +21,27 @@ export const CitizenInformation = () => {
     asuntoSolicitud:'',
     noDocumento:'',
     primerNombre:'',
+    segundoNombre:'',
     primerApellido:'',
+    segundoApellido:'',
     noContacto1:'',
+    noContacto2:'',
     correoElectronico:'',
     direccion:'',
     pais:'',
     departamento:'',
-    municipio:''  
+    municipio:'',
+    fechaNacimento:'',
+    politicaTratamiento: null
   };
 
   const {
     control,
     formState: { errors },
     handleSubmit,
-    reset
+    reset,
   } = useForm({ defaultValues });
+
 
   const onSubmit = (data) => {
     data;
@@ -43,6 +50,7 @@ export const CitizenInformation = () => {
     
 
     reset();
+
   };
 
   const getFormErrorMessage = (name) => {
@@ -184,9 +192,22 @@ export const CitizenInformation = () => {
 
         <div className='row-1'>
           <label>Segundo nombre</label>
-          <InputTextComponent
-            placeholder=''
-            width="230px"
+          <Controller
+            name="segundoNombre"
+            control={control}
+            render={({ field, fieldState }) => (
+              <>
+                <InputTextComponent
+                  id={field.name}
+                  value={field.value}
+                  className={classNames({ 'p-invalid': fieldState.error })}
+                  onChange={(e) => field.onChange(e.target.value)}
+                  placeholder=''
+                  width="230px"
+               />
+               {getFormErrorMessage(field.name)}
+              </>
+            )}
           />
         </div>
 
@@ -214,9 +235,21 @@ export const CitizenInformation = () => {
 
         <div className='row-1'>
           <label>Segundo apellido</label>
-          <InputTextComponent
-            placeholder=''
-            width="230px"
+          <Controller
+            name="segundoApellido"
+            control={control}
+            render={({ field, fieldState }) => (
+              <>
+                <InputTextComponent
+                  id={field.name}
+                  value={field.value}
+                  className={classNames({ 'p-invalid': fieldState.error })}
+                  onChange={(e) => field.onChange(e.target.value)}
+                  placeholder=''
+                  width="230px"
+                />
+              </>
+            )}
           />
         </div>
 
@@ -225,7 +258,23 @@ export const CitizenInformation = () => {
       <div className="div-container">
         <div className='row-1'>
           <label>Fecha de nacimiento<span className='required'>*</span></label>
-          <CalendarComponent/>
+          <Controller
+            name="fechaNacimento"
+            control={control}
+            rules={{ required: 'Requerido.' }}
+            render={({ field, fieldState }) => (
+              <>
+                <CalendarComponent
+                  inputId={field.name} 
+                  value={field.value} 
+                  onChange={field.onChange} 
+                  dateFormat="dd/mm/yy" 
+                  className={classNames({ 'p-invalid': fieldState.error })}
+                />
+              </>
+            )}
+          />
+          {getFormErrorMessage('fechaNacimento')}
         </div>
 
         <div className='row-1'>
@@ -253,10 +302,23 @@ export const CitizenInformation = () => {
 
         <div className='row-1'>
           <label>No. De contacto 2</label>
-          <InputTextComponent
-            placeholder=''
-            width="280px"
-            keyfilter='int'
+          <Controller
+            name="noContacto2"
+            control={control}
+            render={({ field, fieldState }) => (
+              <>
+                <InputTextComponent
+                  id={field.name}
+                  value={field.value}
+                  className={classNames({ 'p-invalid': fieldState.error })}
+                  onChange={(e) => field.onChange(e.target.value)}
+                  placeholder=''
+                  width="280px"
+                  keyfilter='int'
+                />
+                {getFormErrorMessage(field.name)}
+              </>
+            )}
           />
         </div>
       </div>
@@ -317,11 +379,12 @@ export const CitizenInformation = () => {
             rules={{ required: 'Campo requerido.' }}
             render={({ field, fieldState }) => (
               <>
-                <InputTextComponent
+                <DropDownComponent
                   id={field.name}
                   value={field.value}
                   className={classNames({ 'p-invalid': fieldState.error })}
-                  onChange={(e) => field.onChange(e.target.value)}
+                  onChange={(e) => field.onChange(e.value)}
+                  focusInputRef={field.ref}
                   placeholder=''
                   width="280px"
                 />
@@ -339,11 +402,12 @@ export const CitizenInformation = () => {
             rules={{ required: 'Campo requerido.' }}
             render={({ field, fieldState }) => (
               <>
-                <InputTextComponent
+                <DropDownComponent
                   id={field.name}
                   value={field.value}
                   className={classNames({ 'p-invalid': fieldState.error })}
-                  onChange={(e) => field.onChange(e.target.value)}
+                  onChange={(e) => field.onChange(e.value)}
+                  focusInputRef={field.ref}
                   placeholder=''
                   width="280px"
                 />
@@ -361,11 +425,12 @@ export const CitizenInformation = () => {
             rules={{ required: 'Campo requerido.' }}
             render={({ field, fieldState }) => (
               <>
-                <InputTextComponent
+                <DropDownComponent
                   id={field.name}
                   value={field.value}
                   className={classNames({ 'p-invalid': fieldState.error })}
-                  onChange={(e) => field.onChange(e.target.value)}
+                  onChange={(e) => field.onChange(e.value)}
+                  focusInputRef={field.ref}
                   placeholder=''
                   width="280px"
                 />
@@ -454,20 +519,20 @@ export const CitizenInformation = () => {
       </div>
 
       <div className="div-container">
-        <div className='row-1'>
+        <div className='row-2'>
           <label>Clasificación</label>
           <InputTextComponent
             placeholder='Disabled'
-            width="280px"
+            width=""
             disabled={true} 
           />
         </div>
 
-        <div className='row-1'>
+        <div className='row-2'>
           <label>Dependencia</label>
           <InputTextComponent
             placeholder='Disabled'
-            width="280px"
+            width=""
             disabled={true} 
           />
         </div>
@@ -475,7 +540,7 @@ export const CitizenInformation = () => {
 
       <div className="div_container">
           <label>Descripción<span className='required'>*</span></label>
-          <CnputTextareaComponent/>
+          <CnputTextareaComponent/>  
       </div>
 
       <div className="div-upload">
@@ -490,7 +555,23 @@ export const CitizenInformation = () => {
 
       <div className="div_container" style={{marginBottom:'20px'}}>
         <label>Para conocer la Política de Tratamiento y Protección de datos personales de Sapiencia, dar click <a href="" style={{color:'#533893'}}>aquí</a> </label>
-        <TriStateCheckboxComponent/>
+        <Controller
+          name="politicaTratamiento"
+          control={control}
+          rules={{ required: 'Value is required.' }}
+          render={({ field, fieldState }) => (
+            <>
+              <TriStateCheckboxComponent
+                id={field.name}
+                value={field.value} 
+                onChange={field.onChange} 
+                className={classNames({ 'p-invalid': fieldState.error })} 
+              />
+              {getFormErrorMessage(field.name)}
+                  
+            </>
+          )}
+        />
       </div>
 
       <div>

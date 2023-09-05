@@ -1,9 +1,16 @@
 
 import { useState } from 'react';
 import { InputTextarea } from 'primereact/inputtextarea';
+
+interface Attributes {
+    id?:string;
+    className?:  string | undefined;
+}
         
-export const CnputTextareaComponent = () => {
+export const CnputTextareaComponent = ( props:Attributes) => {
     
+    const { id, className } = props;
+
     const [value, setValue] = useState('');
 
     return (
@@ -15,7 +22,9 @@ export const CnputTextareaComponent = () => {
                 rows={5} 
                 cols={100}
                 placeholder='Escribe aquí'
-                style={{borderRadius:'8px'}} 
+                style={{borderRadius:'8px'}}
+                id={ id }
+                className={ className } 
             />
             <p>Max 5000 caracteres</p>
         </div>
