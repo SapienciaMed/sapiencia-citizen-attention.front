@@ -32,7 +32,8 @@ export const CitizenInformation = () => {
     departamento:'',
     municipio:'',
     fechaNacimento:'',
-    politicaTratamiento: null
+    politicaTratamiento: null,
+    Descripción:''
   };
 
   const {
@@ -536,7 +537,21 @@ export const CitizenInformation = () => {
 
       <div className="div_container">
           <label>Descripción<span className='required'>*</span></label>
-          <CnputTextareaComponent/>  
+          <Controller
+            name="Descripción"
+            control={control}
+            rules={{ required: 'Requerido.' }}
+            render={({ field, fieldState }) => (
+              <>
+                <CnputTextareaComponent
+                  id={field.name}
+                  value={field.value}
+                  className={classNames({ 'p-invalid': fieldState.error })}
+                  onChange={(e) => field.onChange(e.target.value)}
+                />  
+              </>
+            )}
+          />
       </div>
 
       <div className="div-upload">

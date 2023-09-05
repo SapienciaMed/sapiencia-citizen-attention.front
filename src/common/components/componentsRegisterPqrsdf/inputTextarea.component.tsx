@@ -2,23 +2,26 @@
 import { useState } from 'react';
 import { InputTextarea } from 'primereact/inputtextarea';
 
+
 interface Attributes {
+    value: string;
     id?:string;
     className?:  string | undefined;
+    onChange?:(...event: any[]) => void;
 }
+
         
 export const CnputTextareaComponent = ( props:Attributes) => {
     
-    const { id, className } = props;
+    const { id, className, onChange, value } = props;
 
-    const [value, setValue] = useState('');
 
     return (
         <>
         <div className='input-textarea'>
             <InputTextarea 
                 value={value} 
-                onChange={(e) => setValue(e.target.value)} 
+                onChange={onChange } 
                 rows={5} 
                 cols={100}
                 placeholder='Escribe aquí'
