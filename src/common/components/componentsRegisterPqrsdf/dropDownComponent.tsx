@@ -8,8 +8,8 @@ interface Attributes {
   value: string;
   id:string;
   className:  string | undefined;
-  focusInputRef?: RefCallBack;
-  onChange?:(...event: any[]) => void;
+  focusInputRef: RefCallBack;
+  onChange:(...event: any[]) => void;
 }
 
 
