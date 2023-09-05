@@ -1,7 +1,4 @@
-import { useRef } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { Toast } from 'primereact/toast';
-
+import { useForm, Controller } from 'react-hook-form';
 import { CalendarComponent } from "./calendarComponent";
 import { DropDownComponent } from "./dropDownComponent";
 import { InputTextComponent } from "./inputTextComponent";
@@ -10,13 +7,44 @@ import { ScrollPanelComponent } from "./scrollPanelComponent";
 import { TriStateCheckboxComponent } from "./triStateCheckboxComponent";
 import { UploadComponent } from "./uploadComponent";
 import { ButtonSumitComponent } from "./buttonSumit.component";
+import { classNames } from 'primereact/utils';
 
 export const CitizenInformation = () => {
+
+  const defaultValues = {
+    tipoDeSolicitud: '',
+    tipo:'',
+    tipoEntidad:'',
+    medioRespuesta:'',
+    programaSolicitud:'',
+    asuntoSolicitud:''  
+  };
+
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    reset
+  } = useForm({ defaultValues });
+
+  const onSubmit = (data) => {
+    data;
+
+    console.log('data -> ',data);
+    
+
+    reset();
+  };
+
+  const getFormErrorMessage = (name) => {
+    return errors[name] ? <small className="p-error">{errors[name].message}</small> : <small className="p-error">&nbsp;</small>;
+  };
 
 
 
   return (
     <form 
+      onSubmit={handleSubmit(onSubmit)}
       className="form-container" 
     >
 
@@ -24,18 +52,49 @@ export const CitizenInformation = () => {
 
         <div className='row-1'>
           <label>Tipo de solicitud<span className='required'>*</span></label>
-          <DropDownComponent 
-            placeholder='Seleccionar'
-            width='243px'
+          <Controller
+            name="tipoDeSolicitud"
+            control={control}
+            rules={{ required: 'Campo requerido.' }}
+            render={({ field, fieldState }) => (
+              <>
+                <DropDownComponent
+                  id={field.name}
+                  value={field.value}
+                  className={classNames({ 'p-invalid': fieldState.error })}
+                  onChange={(e) => field.onChange(e.value)}
+                  focusInputRef={field.ref}
+                  placeholder='Seleccionar'
+                  width='243px'
+
+                />
+              </>
+            )}
           />
+          {getFormErrorMessage('tipoDeSolicitud')}
         </div>
 
         <div className='row-1'>
           <label>Tipo<span className='required'>*</span></label>
-          <DropDownComponent 
-            placeholder='CC'
-            width='79px'
+          <Controller
+            name="tipo"
+            control={control}
+            rules={{ required: 'Campo requerido.'}}
+            render={({ field, fieldState }) => (
+              <>
+                <DropDownComponent
+                  id={field.name}
+                  value={field.value}
+                  className={classNames({ 'p-invalid': fieldState.error })}
+                  onChange={(e) => field.onChange(e.value)}
+                  focusInputRef={field.ref} 
+                  placeholder='CC'
+                  width='79px'
+              />
+              </>
+            )}
           />
+          {getFormErrorMessage('tipo')}
         </div>
 
         <div className='row-1'>
@@ -49,10 +108,25 @@ export const CitizenInformation = () => {
 
         <div className='row-1'>
           <label>Tipo entidad<span className='required'>*</span></label>
-          <DropDownComponent 
-            placeholder='Seleccionar'
-            width='325px'
+          <Controller
+            name="tipoEntidad"
+            control={control}
+            rules={{ required: 'Campo requerido.' }}
+            render={({ field, fieldState }) => (
+              <>
+                <DropDownComponent
+                  id={field.name}
+                  value={field.value}
+                  className={classNames({ 'p-invalid': fieldState.error })}
+                  onChange={(e) => field.onChange(e.value)}
+                  focusInputRef={field.ref}  
+                  placeholder='Seleccionar'
+                  width='325px'
+              />
+              </>
+            )}
           />
+          {getFormErrorMessage('tipoEntidad')}
         </div>
 
       </div>  
@@ -170,10 +244,25 @@ export const CitizenInformation = () => {
 
         <div className='row-1'>
           <label>Seleccione el medio por el cual quiere recibir la respuesta<span className='required'>*</span></label>
-          <DropDownComponent 
-            placeholder='Seleccionar'
-            width=''
+          <Controller
+            name="medioRespuesta"
+            control={control}
+            rules={{ required: 'Campo requerido.' }}
+            render={({ field, fieldState }) => (
+              <>
+                <DropDownComponent
+                  id={field.name}
+                  value={field.value}
+                  className={classNames({ 'p-invalid': fieldState.error })}
+                  onChange={(e) => field.onChange(e.value)}
+                  focusInputRef={field.ref}   
+                  placeholder='Seleccionar'
+                  width=''
+              />
+              </>
+            )}
           />
+          {getFormErrorMessage('medioRespuesta')}
         </div>
 
       </div>
@@ -182,18 +271,48 @@ export const CitizenInformation = () => {
 
         <div className='row-2'>
           <label>Programa al que aplica la solicitud<span className='required'>*</span></label>
-          <DropDownComponent 
-            placeholder='Seleccionar'
-            width=''
+          <Controller
+            name="programaSolicitud"
+            control={control}
+            rules={{ required: 'Campo requerido.' }}
+            render={({ field, fieldState }) => (
+              <>
+                <DropDownComponent
+                  id={field.name}
+                  value={field.value}
+                  className={classNames({ 'p-invalid': fieldState.error })}
+                  onChange={(e) => field.onChange(e.value)}
+                  focusInputRef={field.ref}  
+                  placeholder='Seleccionar'
+                  width=''
+              />
+              </>
+            )}
           />
+          {getFormErrorMessage('programaSolicitud')}
         </div>
 
         <div className='row-2'>
           <label>Asunto de la solicitud<span className='required'>*</span></label>
-          <DropDownComponent 
-            placeholder='Seleccionar'
-            width=''
+          <Controller
+            name="asuntoSolicitud"
+            control={control}
+            rules={{ required: 'Campo requerido.' }}
+            render={({ field, fieldState }) => (
+              <>
+                <DropDownComponent
+                  id={field.name}
+                  value={field.value}
+                  className={classNames({ 'p-invalid': fieldState.error })}
+                  onChange={(e) => field.onChange(e.value)}
+                  focusInputRef={field.ref}  
+                  placeholder='Seleccionar'
+                  width=''
+              />
+              </>
+            )}
           />
+          {getFormErrorMessage('asuntoSolicitud')}
         </div>
 
       </div>
@@ -230,7 +349,9 @@ export const CitizenInformation = () => {
       </div>
 
       <div>
-       <ButtonSumitComponent label="Enviar solicitud"/>
+       <ButtonSumitComponent 
+          label="Enviar solicitud"
+        />
       </div>
         
     </form>

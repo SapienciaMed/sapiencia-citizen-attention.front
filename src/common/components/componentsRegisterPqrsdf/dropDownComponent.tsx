@@ -1,10 +1,17 @@
 import { useState } from 'react';
 import { Dropdown } from 'primereact/dropdown';
+import { RefCallBack } from 'react-hook-form';
 
 interface Attributes {
   placeholder: string;
   width: string;
+  value: string;
+  id:string;
+  className:  string | undefined;
+  focusInputRef?: RefCallBack;
+  onChange?:(...event: any[]) => void;
 }
+
 
 const styles = {
   height:'41px',
@@ -17,13 +24,14 @@ const styles = {
 
 export const DropDownComponent = ( props:Attributes ) => {
 
-  const { placeholder, width } = props;
-  styles.width = width;
-    
+  const { width, placeholder,id,className,focusInputRef, value, onChange } = props;
+  styles.width = width;  
+
     const [ data, setData] = useState(null);
 
     const seletData = ( datos )=>{
         setData( datos.value )
+        
     }
 
     const cities = [
@@ -31,13 +39,16 @@ export const DropDownComponent = ( props:Attributes ) => {
         { name: 'Rome' },
     ];
   return (
-    <Dropdown 
-    value={data} 
-    onChange={seletData} 
+    <Dropdown  
+    value={value}
+    onChange={onChange}
     options={cities} 
     optionLabel="name" 
-    placeholder={placeholder}
     style={ styles }
+    placeholder={ placeholder }
+    id={ id }
+    className={ className }
+    focusInputRef={focusInputRef}
   />
   )
 }

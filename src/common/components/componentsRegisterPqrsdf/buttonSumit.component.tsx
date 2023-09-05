@@ -11,7 +11,8 @@ export const ButtonSumitComponent = ( props:Butonsumit ) => {
     return (
         <Button 
             label={label}
-            className='button-sumit' 
+            className='button-sumit'
+            type='submit' 
         />
     )
 }
