@@ -1,11 +1,14 @@
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
+import { Column } from "primereact/column";
+import { DataTable } from "primereact/datatable";
 import { Dropdown } from "primereact/dropdown";
 import React, { useState } from "react";
 
 function CalendarPage(): React.JSX.Element {
     const [selectedYear, setSelectedYear] = useState(null);
     const [monthList, setMonthList] = useState([]);
+    const [days, setDays] = useState(null);
     const [dates, setDates] = useState(null);
     // const [loading, setLoading] = useState(false);
 
@@ -61,7 +64,7 @@ function CalendarPage(): React.JSX.Element {
         console.log(calendars);
 
         return (
-            <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 no-month-navigator gap-x-6 gap-y-14">
+            <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 no-month-navigator gap-x-6 gap-y-14 pt-5">
                 {calendars}
             </div>
         );
@@ -72,9 +75,7 @@ function CalendarPage(): React.JSX.Element {
             <div className="p-card rounded-4xl">
                 <div className="p-card-body py-8 px-6">
                     <div className="p-card-title flex justify-between">
-                        <span className="text-3xl">
-                            Resumen año {selectedYear}
-                        </span>
+                        <span className="text-3xl">Resumen año {selectedYear}</span>
                         <div className="my-auto text-base text-main flex items-center gap-x-2 cursor-pointer">
                             <span>Crear año</span>
                             <svg
@@ -113,10 +114,7 @@ function CalendarPage(): React.JSX.Element {
                     <div className="p-card-content">
                         <div className="flex gap-x-6">
                             <div className="flex flex-col gap-y-1.5 max-w-2xs">
-                                <label
-                                    htmlFor="yearDropdown"
-                                    className="text-base"
-                                >
+                                <label htmlFor="yearDropdown" className="text-base">
                                     Selecciona el año:
                                 </label>
                                 <Dropdown
@@ -152,12 +150,16 @@ function CalendarPage(): React.JSX.Element {
                     <div className="p-card-content">
                         <div className="grid grid-cols-3">
                             {renderCalendars()}
-                            <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 no-month-navigator gap-x-6 gap-y-14">
-                                <label className="text-base">
-                                    Días hábiles y no hábiles
-                                </label>
+                            <div className="col-span-1">
+                                <label className="text-base">Días hábiles y no hábiles</label>
                                 <div className="p-card">
-                                    <div className="p-card-body"></div>
+                                    <div className="p-card-body">
+                                        <DataTable size="small" value={days} showGridlines tableStyle={{ minWidth: "22.625rem" }}>
+                                            <Column field="code" header="Fecha"></Column>
+                                            <Column field="name" header="Tipo"></Column>
+                                            <Column field="category" header="Descripcion"></Column>                                            
+                                        </DataTable>
+                                    </div>
                                 </div>
                             </div>
                         </div>

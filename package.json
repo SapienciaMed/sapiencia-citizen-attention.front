@@ -14,7 +14,7 @@
     "prepare": "husky install",
     "coverage": "cross-env BABEL_ENV=test jest --coverage",
     "build:types": "tsc",
-    "tailwind": "npx tailwindcss -i ./src/styles/_utilities.scss -o ./src/styles/dist/utilities.scss --watch"
+    "tailwind": "npx tailwindcss -i ./src/styles/_utilities.scss -o ./src/styles/output/utilities.scss --watch"
   },
   "devDependencies": {
     "@babel/core": "^7.15.0",
