@@ -1,5 +1,8 @@
 import { useForm, Controller } from 'react-hook-form';
-import { useTypeSolicitudes } from '../../hooks/form-pqrsdf.hook';
+import { useGetTypeSolicitud } from '../../hooks/form-pqrsdf.hook';
+import { useGetTypeDocuments } from '../../hooks/form-pqrsdf.hook';
+import { useGetTipoEntidadJuridica } from '../../hooks/form-pqrsdf.hook';
+import { useGetResponseMedium } from '../../hooks/form-pqrsdf.hook';
 
 import { CalendarComponent } from "./calendarComponent";
 import { DropDownComponent } from "./dropDownComponent";
@@ -13,9 +16,14 @@ import { classNames } from 'primereact/utils';
 
 
 
+
+
 export const CitizenInformation = () => {
 
-  const { options } = useTypeSolicitudes()
+  const { solicitudes } = useGetTypeSolicitud();
+  const { docuements } = useGetTypeDocuments();
+  const { entidadJuridica } = useGetTipoEntidadJuridica();
+  const { medium } = useGetResponseMedium()
 
   const cities = [
     { description: 'New York', id: 1 },
@@ -88,7 +96,7 @@ export const CitizenInformation = () => {
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(e.value)}
                   focusInputRef={field.ref}
-                  options={ options }
+                  options={ solicitudes }
                   placeholder='Seleccionar'
                   width='243px'
 
@@ -112,9 +120,10 @@ export const CitizenInformation = () => {
                   value={field.value}
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(e.value)}
-                  focusInputRef={field.ref} 
+                  focusInputRef={field.ref}
+                  options={ docuements } 
                   placeholder='CC'
-                  width='79px'
+                  width='82px'
               />
               </>
             )}
@@ -137,7 +146,6 @@ export const CitizenInformation = () => {
                   onChange={(e) => field.onChange(e.target.value)}
                   placeholder=''
                   width="280px"
-                  keyfilter='int'
                 />
               </>
             )}
@@ -158,7 +166,8 @@ export const CitizenInformation = () => {
                   value={field.value}
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(e.value)}
-                  focusInputRef={field.ref}  
+                  focusInputRef={field.ref}
+                  options={ entidadJuridica }  
                   placeholder='Seleccionar'
                   width='325px'
               />
@@ -464,7 +473,8 @@ export const CitizenInformation = () => {
                   value={field.value}
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(e.value)}
-                  focusInputRef={field.ref}   
+                  focusInputRef={field.ref}
+                  options={ medium }   
                   placeholder='Seleccionar'
                   width=''
               />
