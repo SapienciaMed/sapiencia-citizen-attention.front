@@ -12,7 +12,7 @@ export const typeSolicituds = async () => {
     }));
 
     return opciones
-}
+};
 
 export const typeDocument = async () => {
 
@@ -25,7 +25,7 @@ export const typeDocument = async () => {
     }));
 
     return opciones
-}
+};
 
 export const typeEntidadJuridica = async () => {
 
@@ -38,7 +38,7 @@ export const typeEntidadJuridica = async () => {
     }));
 
     return opciones
-}
+};
 
 export const responseMedium = async () => {
 
@@ -51,4 +51,56 @@ export const responseMedium = async () => {
     }));
 
     return opciones
-}
+};
+
+export const programs = async () => {
+
+    const resp = await fetch(`${url}/get-Programs`);
+    const  {data}  = await resp.json();
+    
+    const opciones = data.map( (data: { PRG_CODIGO: number; PRG_DESCRIPCION: string; }) => ({
+        id: data.PRG_CODIGO,
+        description: data.PRG_DESCRIPCION
+    }));
+
+    return opciones
+};
+
+export const asuntoSolicitud = async () => {
+
+    const resp = await fetch(`${url}/get-solicitudes`);
+    const  {data}  = await resp.json();
+    
+    const opciones = data.map( (data: { ASO_CODIGO: number; ASO_ASUNTO: string; }) => ({
+        id: data.ASO_CODIGO,
+        description: data.ASO_ASUNTO
+    }));
+
+    return opciones
+};
+
+export const paises = async () => {
+
+    const resp = await fetch(`${url}/get-paises`);
+    const  {data}  = await resp.json();
+    
+    const opciones = data.map( (data: { LGE_CODIGO: number; LGE_ELEMENTO_CODIGO: string; }) => ({
+        id: data.LGE_CODIGO,
+        description: data.LGE_ELEMENTO_CODIGO
+    }));
+
+    return opciones
+};
+
+export const departamentos = async () => {
+
+    const resp = await fetch(`${url}/get-departamentos`);
+    const  {data}  = await resp.json();
+    
+    const opciones = data.map( (data: { LGE_ELEMENTO_CODIGO: string; LGE_ELEMENTO_DESCRIPCION: string; }) => ({
+        id: data.LGE_ELEMENTO_CODIGO,
+        description: data.LGE_ELEMENTO_DESCRIPCION
+    }));
+
+    return opciones
+};

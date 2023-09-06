@@ -29,7 +29,7 @@ function App() {
           <Suspense fallback={<p>Loading...</p>}>
             <Routes>
               {/*<Route path={"/atencion-ciudadana/"} element={<HomePage />} />;*/}
-              <Route path={"/atencion-ciudadana/"} element={<Register_pqrsdf />}/>
+              <Route path={"/atencion-ciudadana/register-pqrsdf"} element={<Register_pqrsdf />}/>
               {/* <Route path={"/direccion-estrategica/razon-social/*"} element={<BussinesRoutes />} />
             <Route path={"/direccion-estrategica/contratos/*"} element={<ContractRoutes />} /> */}
             </Routes>

@@ -1,8 +1,13 @@
+import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useGetTypeSolicitud } from '../../hooks/form-pqrsdf.hook';
 import { useGetTypeDocuments } from '../../hooks/form-pqrsdf.hook';
 import { useGetTipoEntidadJuridica } from '../../hooks/form-pqrsdf.hook';
 import { useGetResponseMedium } from '../../hooks/form-pqrsdf.hook';
+import { useGetPrograms } from '../../hooks/form-pqrsdf.hook';
+import { useGetAsuntoSolicitud } from '../../hooks/form-pqrsdf.hook';
+import { useGetPaises } from '../../hooks/form-pqrsdf.hook';
+import { useGetDepartamentos } from '../../hooks/form-pqrsdf.hook'; 
 
 import { CalendarComponent } from "./calendarComponent";
 import { DropDownComponent } from "./dropDownComponent";
@@ -18,17 +23,23 @@ import { classNames } from 'primereact/utils';
 
 
 
+
 export const CitizenInformation = () => {
 
   const { solicitudes } = useGetTypeSolicitud();
   const { docuements } = useGetTypeDocuments();
   const { entidadJuridica } = useGetTipoEntidadJuridica();
-  const { medium } = useGetResponseMedium()
+  const { medium } = useGetResponseMedium();
+  const { program } = useGetPrograms();
+  const { asuntos } = useGetAsuntoSolicitud();
+  const { pais } = useGetPaises();
+  const { departamento } = useGetDepartamentos();
 
-  const cities = [
-    { description: 'New York', id: 1 },
-    { description: 'Rome', id: 2 },
-];
+  const [ valuePais, setValuePais] = useState(null);
+
+  const seletDataPais = ( datos:{id:number, description:string} )=>{
+    setValuePais( datos );    
+  }
 
   const defaultValues = {
     tipoDeSolicitud: '',
@@ -60,7 +71,7 @@ export const CitizenInformation = () => {
     handleSubmit,
     reset,
   } = useForm({ defaultValues });
-
+ 
   const onSubmit = (data) => {
     data;
     console.log('datos-> ', data);
@@ -398,11 +409,12 @@ export const CitizenInformation = () => {
               <>
                 <DropDownComponent
                   id={field.name}
-                  value={field.value}
+                  value={ valuePais }
                   className={classNames({ 'p-invalid': fieldState.error })}
-                  onChange={(e) => field.onChange(e.value)}
+                  onChange={(e) => field.onChange(seletDataPais(e.value))}
                   focusInputRef={field.ref}
-                  placeholder=''
+                  options={ pais }
+                  placeholder='Selecionar'
                   width="280px"
                 />
               </>
@@ -425,7 +437,8 @@ export const CitizenInformation = () => {
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(e.value)}
                   focusInputRef={field.ref}
-                  placeholder=''
+                  options={ departamento }
+                  placeholder='Selecionar'
                   width="280px"
                 />
               </>
@@ -448,7 +461,7 @@ export const CitizenInformation = () => {
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(e.value)}
                   focusInputRef={field.ref}
-                  placeholder=''
+                  placeholder='Selecionar'
                   width="280px"
                 />
               </>
@@ -501,7 +514,8 @@ export const CitizenInformation = () => {
                   value={field.value}
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(e.value)}
-                  focusInputRef={field.ref}  
+                  focusInputRef={field.ref}
+                  options={ program }  
                   placeholder='Seleccionar'
                   width=''
               />
@@ -524,7 +538,8 @@ export const CitizenInformation = () => {
                   value={field.value}
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(e.value)}
-                  focusInputRef={field.ref}  
+                  focusInputRef={field.ref}
+                  options={ asuntos }  
                   placeholder='Seleccionar'
                   width=''
               />
