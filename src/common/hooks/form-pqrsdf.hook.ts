@@ -3,6 +3,10 @@ import { typeSolicituds } from "../apis/api-pqrsdf";
 import { typeDocument } from "../apis/api-pqrsdf";
 import { typeEntidadJuridica } from "../apis/api-pqrsdf"
 import { responseMedium } from "../apis/api-pqrsdf";
+import { programs } from "../apis/api-pqrsdf";
+import { asuntoSolicitud } from "../apis/api-pqrsdf";
+import { paises } from "../apis/api-pqrsdf";
+import { departamentos } from "../apis/api-pqrsdf";
 
 export const useGetTypeSolicitud = ( ) => {
 
@@ -10,12 +14,12 @@ export const useGetTypeSolicitud = ( ) => {
 
     useEffect( ()=> {
         typeSolicituds()
-            .then( typos => { setSolicitudes( typos ) });      
+            .then( options => { setSolicitudes( options ) });      
     }, [] )
   
     return { solicitudes }
 
-}
+};
 
 export const useGetTypeDocuments = ( ) => {
 
@@ -23,12 +27,12 @@ export const useGetTypeDocuments = ( ) => {
 
     useEffect( ()=> {
         typeDocument()
-            .then( typos => { setDocuement( typos ) });      
+            .then( options => { setDocuement( options ) });      
     }, [] )
     
     return { docuements }
 
-}
+};
 
 export const useGetTipoEntidadJuridica = ( ) => {
 
@@ -36,12 +40,12 @@ export const useGetTipoEntidadJuridica = ( ) => {
 
     useEffect( ()=> {
         typeEntidadJuridica()
-            .then( typos => { setEntidadJuridica( typos ) });      
+            .then( options => { setEntidadJuridica( options ) });      
     }, [] )
     
     return { entidadJuridica }
 
-}
+};
 
 export const useGetResponseMedium = ( ) => {
 
@@ -49,9 +53,62 @@ export const useGetResponseMedium = ( ) => {
 
     useEffect( ()=> {
         responseMedium()
-            .then( typos => { setmedium( typos ) });      
+            .then( options => { setmedium( options ) });      
     }, [] )
     
     return { medium }
 
-}
+};
+
+
+export const useGetPrograms = ( ) => {
+
+    const [ program, setProgram ] = useState([]);
+
+    useEffect( ()=> {
+        programs()
+            .then( options => { setProgram( options ) });      
+    }, [] )
+    
+    return { program }
+
+};
+
+export const useGetAsuntoSolicitud = ( ) => {
+
+    const [ asuntos, setAsuntos ] = useState([]);
+
+    useEffect( ()=> {
+        asuntoSolicitud()
+            .then( options => { setAsuntos( options ) });      
+    }, [] )
+    
+    return { asuntos }
+
+};
+
+export const useGetPaises = ( ) => {
+
+    const [ pais, setPais ] = useState([]);
+
+    useEffect( ()=> {
+        paises()
+            .then( options => { setPais( options ) });      
+    }, [] )
+    
+    return { pais }
+
+};
+
+export const useGetDepartamentos = ( ) => {
+
+    const [ departamento, setDepartamento ] = useState([]);
+
+    useEffect( ()=> {
+        departamentos()
+            .then( options => { setDepartamento( options ) });      
+    }, [] )
+    
+    return { departamento }
+
+};

@@ -63,26 +63,26 @@ export const AccordionComponent = () => {
         </AccordionTab>
         <AccordionTab header="Tiempos de respuesta">
             <p className="m-0">
-            <table>
+            <table className='t-table'>
                     <tr>
-                        <th>OBJETO</th>
-                        <th>TÉRMINO</th>
+                        <th className='td-table'>OBJETO</th>
+                        <th className='td-table'>TÉRMINO</th>
                     </tr>
                     <tr>
-                        <td>Información General o Particular</td>
-                        <td>15 días hábiles</td>
+                        <td className='td-table'>Información General o Particular</td>
+                        <td className='td-table'>15 días hábiles</td>
                     </tr>
                     <tr>
-                        <td>Petición de documentos (copia)</td>
-                        <td>10 días hábiles</td>
+                        <td className='td-table'>Petición de documentos (copia)</td>
+                        <td className='td-table'>10 días hábiles</td>
                     </tr>
                     <tr>
-                        <td>Consultas Especializadas</td>
-                        <td>30 días hábiles</td>
+                        <td className='td-table'>Consultas Especializadas</td>
+                        <td className='td-table'>30 días hábiles</td>
                     </tr>
                     <tr>
-                        <td>Quejas</td>
-                        <td>15 días hábiles</td>
+                        <td className='td-table'>Quejas</td>
+                        <td className='td-table'>15 días hábiles</td>
                     </tr>
                 </table>
             </p>

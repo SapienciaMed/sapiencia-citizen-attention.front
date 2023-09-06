@@ -34,13 +34,14 @@ function App() {
                         <Routes>
                             {/*<Route path={"/atencion-ciudadana/"} element={<HomePage />} />;*/}
                             <Route path={"/atencion-ciudadana/"} element={<Register_pqrsdf />} />
-                            <Route path={"/atencion-ciudadana/calendario"} element={<CalendarPage />} />;                                                        
+                            <Route path={"/atencion-ciudadana/calendario"} element={<CalendarPage />} />;
+                            <Route path={"/atencion-ciudadana/register-pqrsdf"} element={<Register_pqrsdf />}/>                                                        
                         </Routes>
                     </Suspense>
                 </Router>
             </ApplicationProvider>
         </AppContextProvider>
     );
-}
 
-export default React.memo(App);
+  }
+export default React.memo(App)

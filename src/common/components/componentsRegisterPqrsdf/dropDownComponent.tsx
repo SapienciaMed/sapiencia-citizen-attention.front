@@ -28,13 +28,6 @@ export const DropDownComponent = ( props:Attributes ) => {
   const { width, placeholder,id,className,focusInputRef, value, onChange, options } = props;
   styles.width = width;  
 
-    const [ data, setData] = useState(null);
-
-    const seletData = ( datos )=>{
-        setData( datos.value )
-        
-    }
-
   return (
     <Dropdown  
     value={value}
