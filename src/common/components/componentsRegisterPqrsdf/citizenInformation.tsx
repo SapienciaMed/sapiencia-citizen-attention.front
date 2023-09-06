@@ -24,6 +24,7 @@ export const CitizenInformation = () => {
   const { docuements } = useGetTypeDocuments();
   const { entidadJuridica } = useGetTipoEntidadJuridica();
   const { medium } = useGetResponseMedium()
+  const prueba = 'prueba camilo'
 
   const cities = [
     { description: 'New York', id: 1 },
