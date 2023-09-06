@@ -10,6 +10,7 @@ interface Attributes {
   className:  string | undefined;
   focusInputRef: RefCallBack;
   onChange:(...event: any[]) => void;
+  options?:object[]
 }
 
 
@@ -24,7 +25,7 @@ const styles = {
 
 export const DropDownComponent = ( props:Attributes ) => {
 
-  const { width, placeholder,id,className,focusInputRef, value, onChange } = props;
+  const { width, placeholder,id,className,focusInputRef, value, onChange, options } = props;
   styles.width = width;  
 
     const [ data, setData] = useState(null);
@@ -34,16 +35,12 @@ export const DropDownComponent = ( props:Attributes ) => {
         
     }
 
-    const cities = [
-        { name: 'New York' },
-        { name: 'Rome' },
-    ];
   return (
     <Dropdown  
     value={value}
     onChange={onChange}
-    options={cities} 
-    optionLabel="name" 
+    options={ options } 
+    optionLabel="description" 
     style={ styles }
     placeholder={ placeholder }
     id={ id }

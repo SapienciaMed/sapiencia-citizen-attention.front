@@ -1,4 +1,6 @@
 import { useForm, Controller } from 'react-hook-form';
+import { useTypeSolicitudes } from '../../hooks/form-pqrsdf.hook';
+
 import { CalendarComponent } from "./calendarComponent";
 import { DropDownComponent } from "./dropDownComponent";
 import { InputTextComponent } from "./inputTextComponent";
@@ -8,9 +10,17 @@ import { TriStateCheckboxComponent } from "./triStateCheckboxComponent";
 import { UploadComponent } from "./uploadComponent";
 import { ButtonSumitComponent } from "./buttonSumit.component";
 import { classNames } from 'primereact/utils';
-import { TriStateCheckbox } from "primereact/tristatecheckbox";
+
+
 
 export const CitizenInformation = () => {
+
+  const { options } = useTypeSolicitudes()
+
+  const cities = [
+    { description: 'New York', id: 1 },
+    { description: 'Rome', id: 2 },
+];
 
   const defaultValues = {
     tipoDeSolicitud: '',
@@ -78,6 +88,7 @@ export const CitizenInformation = () => {
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(e.value)}
                   focusInputRef={field.ref}
+                  options={ options }
                   placeholder='Seleccionar'
                   width='243px'
 
