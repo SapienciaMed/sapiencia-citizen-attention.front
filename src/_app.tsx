@@ -1,14 +1,14 @@
-import React, { Suspense, lazy, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { AppContextProvider } from "./common/contexts/app.context";
-import "./styles/_app.scss";
+import { addLocale, locale } from 'primereact/api';
 import "primereact/resources/primereact.min.css";
-import "./styles/output/utilities.scss";
-import ModalMessageComponent from "./common/components/modal-message.component";
+import React, { Suspense, lazy, useEffect } from "react";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import ApplicationProvider from "./application-provider";
+import ModalMessageComponent from "./common/components/modal-message.component";
+import { AppContextProvider } from "./common/contexts/app.context";
 import useAppCominicator from "./common/hooks/app-communicator.hook";
-import primereact_es from "./common/langs/primereact_es.json"
-import { locale, addLocale, updateLocaleOption, updateLocaleOptions, localeOption, localeOptions } from 'primereact/api';
+import primereact_es from "./common/langs/primereact_es.json";
+import "./styles/_app.scss";
+import "./styles/output/utilities.scss";
         
 
 function App() {
