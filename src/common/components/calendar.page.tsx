@@ -96,11 +96,9 @@ function CalendarPage(): React.JSX.Element {
   };
 
   const onCellEditComplete = (e) => {
-    let { rowData, newValue, field, originalEvent: event } = e;
-    console.log(e);
+    let { rowData, newValue, newRowData, field, originalEvent: event } = e;
     if (field == "dayTypeId") {
-      const selected = dayTypes.filter((type) => type.tdi_codigo === e.value)[0];
-      rowData[field] = selected;
+      rowData[field] = newRowData.dayTypeId;
     } else {
       rowData[field] = newValue;
     }
@@ -117,16 +115,13 @@ function CalendarPage(): React.JSX.Element {
 
   const selectEditor = (options) => {
     return (
-      <Dropdown
-        id={"detail-" + options.index}
-        name={"detail-" + options.index}
-        optionLabel="tdi_descripcion"
-        options={dayTypes}
-        optionValue="tdi_codigo"
-        value={options.value}
-        onChange={(e) => handledayTypeChange(e, options)}
-        placeholder="Selecciona un tipo"
-      />
+      <select onChange={(e) => options.editorCallback(e.target.value)}>
+        {dayTypes.map((dayType) => {
+          return <option selected={dayType.tdi_codigo == options.value} value={dayType.tdi_codigo}>
+            {dayType.tdi_descripcion}
+          </option>;
+        })}
+      </select>
     );
   };
 
@@ -139,7 +134,7 @@ function CalendarPage(): React.JSX.Element {
   };
 
   const dayTypeBodyTemplate = (rowData) => {
-    return rowData.dayTypeId?.tdi_descripcion;
+    return dayTypes.filter((type) => type.tdi_codigo == rowData.dayTypeId)[0]?.tdi_descripcion;
   };
 
   const renderCalendars = () => {
