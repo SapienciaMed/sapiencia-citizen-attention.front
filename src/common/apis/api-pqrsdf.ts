@@ -10,7 +10,7 @@ export const typeSolicituds = async () => {
         id: data.TSO_CODIGO,
         description: data.TSO_DESCRIPTION
     }));
-
+    
     return opciones
 };
 

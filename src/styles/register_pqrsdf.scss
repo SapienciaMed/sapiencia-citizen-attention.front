@@ -3,6 +3,7 @@
     padding-top: 30px;
     padding-right: 20px;
     padding-left: 20px;
+    margin: 0 auto;
 }
 
 .card{
@@ -48,30 +49,16 @@
     border-radius: 6px;
 }
 
+.p-accordion .p-accordion-tab:first-child .p-accordion-header .p-accordion-header-link{
+    border-top-right-radius: 6px;
+    border-top-left-radius: 6px;
+}
+
 .p-accordion .p-accordion-tab .p-accordion-header .p-accordion-header-link{
     border-radius: 6px;
 }
 
 /*Tabla*/
-span {
-    font-family: Rubik;
-    color: #000000;
-    font-size: 17px;
-    font-weight: 500;
-    line-height: 20px;
-    letter-spacing: 0em;
-    text-align: left;
-}
-
-p{
-    font-family: Rubik;
-    font-size: 16px;
-    font-weight: 400;
-    color: #000000;
-    line-height: 19px;
-    letter-spacing: 0em;
-    text-align: left;
-}
 
 .t-table {
     font-family: arial, sans-serif;
@@ -103,6 +90,7 @@ p{
 .row-1{
     display: flex;
     flex-direction: column;
+    flex-grow: 4;
 }
 label{
     margin-bottom: 4px;
@@ -121,6 +109,15 @@ label{
     flex-wrap: wrap;
     justify-content: space-between;
     margin-bottom: 12px;
+}
+
+.container-2{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: flex-start;
+    width: max-content;
 }
 
 .prueba{
@@ -186,7 +183,6 @@ label{
 
 .upload-label{
     cursor: pointer;
-    //styleName: BUTTONS/Button Light;
     font-family: Rubik;
     font-size: 16px;
     font-weight: 500;
@@ -204,12 +200,20 @@ label{
     font-weight: 500;
 }
 
-.button-sumit {
-    border-radius: 30px;
-    color: #CACACA;
+.btn-sumit{
+    //styleName: Font/Base/Regular;
+font-family: Rubik;
+font-size: 14px;
+font-weight: 400;
+line-height: 17px;
+letter-spacing: 0em;
+text-align: center;
+color: #000000;
 }
 
-.p-button .p-button-label{
-    color: white;
+.split{
+    margin-left: 19px;
+    margin-top: 19px;
 }
+
 
