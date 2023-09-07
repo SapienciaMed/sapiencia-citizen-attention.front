@@ -5,7 +5,7 @@ import { ApiResponse } from "../utils/api-response";
 import useCrudService from "./crud-service.hook";
 
 export function useDaysParametrizationService() {
-    const baseURL: string = "http://localhost:4207";
+    const baseURL: string = process.env.urlApiCitizenAttention;
     const listUrl: string = "/api/v1/day-parametrization";
     const { get, post } = useCrudService(baseURL);
 
