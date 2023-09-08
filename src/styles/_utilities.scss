@@ -1,4 +1,5 @@
 @import "./theme.css";
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -19,6 +20,24 @@
             padding-right: 4px;
             table{
                 font-size: 0.875rem;
+                tbody *{
+                    font-family: 'Urbanist', sans-serif !important;
+                    @apply text-sm font-light;                                        
+                }
+                td > span.p-highlight {
+                    @apply bg-primary bg-opacity-70 text-white;
+                }
+                td > span.p-highlight-weekend {
+                    @apply bg-primary text-white;
+                }
+                td span.p-highlight-weekend:hover {
+                    background: #efedf2;
+                    color: #533893;
+                }
+
+                .p-datepicker-other-month{
+                    @apply bg-primary opacity-30 text-sm line-through rounded-full;
+                }
             }
 
             .p-datepicker-header {
