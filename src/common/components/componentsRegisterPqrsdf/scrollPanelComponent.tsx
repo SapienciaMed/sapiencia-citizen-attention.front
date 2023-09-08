@@ -13,7 +13,7 @@ export const ScrollPanelComponent = () => {
                 la Agencia de Educación Postsecundaria de Medellín - Sapiencia, será utilizada para:
             </p>
     
-            <ol  className='list-decimal m-4'>
+            <ol  className='list-decimal m-4 list-ol'>
                 <li>Realizar análisis, valoración y estadísticas que permitan generar políticas y/o normas en materia de educación superior.</li>
                 <li>Cumplimiento de la ley de transparencia y el derecho al acceso a la información pública.</li>
                 <li>La presentación de informes a los organismos de control.</li>
