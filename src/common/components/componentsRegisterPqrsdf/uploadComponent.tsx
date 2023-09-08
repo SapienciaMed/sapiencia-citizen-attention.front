@@ -4,7 +4,7 @@ export const UploadComponent = () => {
   const  handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
         // Aquí puedes realizar acciones con el archivo seleccionado, como cargarlo o mostrar su información.
-        console.log('Archivo seleccionado:', selectedFile);
+       
       };
   
 

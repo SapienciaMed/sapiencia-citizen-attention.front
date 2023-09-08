@@ -30,6 +30,7 @@ export const CitizenInformation = () => {
 
   const OptionDepartamento = useRef(null);
   const OptionMunicipios = useRef(null);
+  const ShowField = useRef(null);
 
   const { solicitudes } = useGetTypeSolicitud();
   const { docuements } = useGetTypeDocuments();
@@ -41,23 +42,38 @@ export const CitizenInformation = () => {
   const { medium } = useGetResponseMedium();
   const { municipio } = useGetMunicipios('5');
   
-  
+  const [ valueDocument, setValueDocument] = useState(null);
   const [ valuePais, setValuePais] = useState(null);
   const [ valueDepartamento, setValueDepartamento] = useState(null);
+
   
+  const seleTipoDocument = ( document:{id:number, description:string} ) => {
+    setValueDocument( document );
+    
+    if( document.description == 'NIT'){
+       ShowField.current = 'none' 
+      }else{
+        ShowField.current = '' 
+      }
+    
+    return document;
+  }
 
-  const seletDataPais = ( datos:{id:number, description:string} )=>{
-    setValuePais( datos );
+  const seletDataPais = ( pais:{id:number, description:string} )=>{
 
-    if( datos.id == 4 ){ OptionDepartamento.current = departamento };
+    setValuePais( pais );
 
+    if( pais.id == 4 ){ OptionDepartamento.current = departamento };
+  
+    return pais;
   };
 
-  const seletDepartamentos = ( datos:{id:number, description:string} )=>{
-    setValueDepartamento( datos );
+  const seletDepartamentos = ( depart:{id:number, description:string} )=>{
+    setValueDepartamento( depart );
     
-    if( datos.id == 5){ OptionMunicipios.current = municipio}
+    if( depart.id == 5){ OptionMunicipios.current = municipio}
 
+    return depart;
   };
   
 
@@ -94,7 +110,6 @@ export const CitizenInformation = () => {
  
   const onSubmit = (data) => {
     data;
-    console.log('datos-> ', data);
     
     reset();
   };
@@ -106,11 +121,11 @@ export const CitizenInformation = () => {
 
 
   return (
+    
     <form 
       onSubmit={handleSubmit(onSubmit)}
       className="form-container" 
     >
-
       <div className="div-container">
 
         <div className='row-1'>
@@ -119,7 +134,7 @@ export const CitizenInformation = () => {
             name="tipoDeSolicitud"
             control={control}
             rules={{ required: 'Requerido.' }}
-            render={({ field, fieldState }) => (
+            render={({ field, fieldState, }) => (
               <>
                 <DropDownComponent
                   id={field.name}
@@ -152,11 +167,11 @@ export const CitizenInformation = () => {
                     id={field.name}
                     value={field.value}
                     className={classNames({ 'p-invalid': fieldState.error })}
-                    onChange={(e) => field.onChange(e.value)}
+                    onChange={(e) => field.onChange( seleTipoDocument(e.value))}
                     focusInputRef={field.ref}
                     options={ docuements } 
                     placeholder='CC'
-                    width='100px'
+                    width='254px'
                 />
                 </>
               )}
@@ -222,7 +237,7 @@ export const CitizenInformation = () => {
           <h2>Información del ciudadano</h2>
         </div>
 
-        <div className='row-1'>
+        <div className='row-1' style={{display:ShowField.current}}>
           <label>Primer nombre<span className='required'>*</span></label>
           <Controller
             name="primerNombre"
@@ -237,6 +252,7 @@ export const CitizenInformation = () => {
                   onChange={(e) => field.onChange(e.target.value)}
                   placeholder=''
                   width="95%"
+                  disabled
                 />
               </>
             )}
@@ -244,7 +260,7 @@ export const CitizenInformation = () => {
           {getFormErrorMessage('primerNombre')}
         </div>
 
-        <div className='row-1'>
+        <div className='row-1' style={{display:ShowField.current}}>
           <label>Segundo nombre</label>
           <Controller
             name="segundoNombre"
@@ -265,7 +281,7 @@ export const CitizenInformation = () => {
           />
         </div>
 
-        <div className='row-1'>
+        <div className='row-1' style={{display:ShowField.current}}>
           <label>Primer apellido<span className='required'>*</span></label>
           <Controller
             name="primerApellido"
@@ -287,7 +303,7 @@ export const CitizenInformation = () => {
           {getFormErrorMessage('primerApellido')}
         </div>
 
-        <div className='row-1'>
+        <div className='row-1' style={{display:ShowField.current}}>
           <label>Segundo apellido</label>
           <Controller
             name="segundoApellido"
@@ -309,7 +325,7 @@ export const CitizenInformation = () => {
 
       </div>
 
-      <div className="container-2">
+      <div className="container-2" style={{display:ShowField.current}}>
         <div className='row-1'>
           <label>Fecha de nacimiento<span className='required'>*</span></label>
           <Controller
@@ -435,7 +451,7 @@ export const CitizenInformation = () => {
               <>
                 <DropDownComponent
                   id={field.name}
-                  value={ valuePais }
+                  value={ field.value }
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(seletDataPais(e.value))}
                   focusInputRef={field.ref}
@@ -461,7 +477,7 @@ export const CitizenInformation = () => {
               <>
                 <DropDownComponent
                   id={field.name}
-                  value={ valueDepartamento }
+                  value={ field.value }
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(seletDepartamentos(e.value))}
                   focusInputRef={field.ref}

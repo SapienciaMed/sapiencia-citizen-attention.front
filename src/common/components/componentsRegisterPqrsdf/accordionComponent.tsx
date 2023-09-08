@@ -4,9 +4,7 @@ import { Accordion, AccordionTab } from 'primereact/accordion'
 export const AccordionComponent = () => {
 
     const { solicitudObjecto } = useGetOjectoSolicitud();
-    console.log( solicitudObjecto );
-    
-
+  
   return (
     <Accordion>
         <AccordionTab header="Derecho de Petición">
