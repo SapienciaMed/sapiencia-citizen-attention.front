@@ -6,14 +6,14 @@ export const ScrollPanelComponent = () => {
   return (
     <div className="card">
         <ScrollPanel style={{ width: '100%', height: '250px', padding:'10px' }} className='scrollp'>
-            <p style={{marginBottom:'15px'}}>
+            <p className="m-4">
                 En observancia de la Ley 1581 de 2012, reglamentada parcialmente por el Decreto 1377 
                 de 2013 y la política de Protección y Tratamiento de datos personales adoptada por 
                 SAPIENCIA, las finalidades de la información, que solicita, se entrega y/o recolecta 
                 la Agencia de Educación Postsecundaria de Medellín - Sapiencia, será utilizada para:
             </p>
     
-            <ol style={{paddingLeft:'18px', marginBottom:'15px'}} className='list-decimal'>
+            <ol  className='list-decimal m-4'>
                 <li>Realizar análisis, valoración y estadísticas que permitan generar políticas y/o normas en materia de educación superior.</li>
                 <li>Cumplimiento de la ley de transparencia y el derecho al acceso a la información pública.</li>
                 <li>La presentación de informes a los organismos de control.</li>
