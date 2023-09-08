@@ -1,6 +1,6 @@
 
-//const url = process.env.urlApiCitizenAttention;
-const url = 'http://127.0.0.1:4207';
+const url = process.env.urlApiCitizenAttention;
+//const url = 'http://127.0.0.1:4207';
 
 export const typeSolicituds = async () => {
 
