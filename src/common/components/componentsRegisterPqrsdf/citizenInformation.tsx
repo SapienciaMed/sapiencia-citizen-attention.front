@@ -48,7 +48,8 @@ export const CitizenInformation = () => {
   const [ valueDocument, setValueDocument] = useState(null);
   const [ valuePais, setValuePais] = useState(null);
   const [ valueDepartamento, setValueDepartamento] = useState(null);
-  
+  const [ statuscheckBox, setstatuscheckBox] = useState(null);
+
 
   const seleTipoDocument = ( document:{id:number, description:string} ) => {
     setValueDocument( document );
@@ -59,7 +60,7 @@ export const CitizenInformation = () => {
     
     
     return document;
-  }
+  };
 
   const seletDataPais = ( pais:{id:number, description:string} )=>{
 
@@ -77,7 +78,18 @@ export const CitizenInformation = () => {
 
     return depart;
   };
+
+  const checkBox = (dato:{status:boolean | null}) => {
+    setstatuscheckBox( dato )
+
+    const estado = dato ? true: null
   
+
+    console.log( 'data-> ', dato);
+    console.log( 'estado-> ', estado);
+    
+    return estado
+  }
 
   const defaultValues = {
     tipoDeSolicitud: '',
@@ -244,7 +256,7 @@ export const CitizenInformation = () => {
       <div className="div-container">
 
         <div style={{width:'100%'}}>
-          <h2>Información del ciudadano</h2>
+          <h2 className='tittle-h2'>Información del ciudadano</h2>
         </div>
         
         {showFieldPersons.current == 'NIT' ?(
@@ -725,7 +737,7 @@ export const CitizenInformation = () => {
               <TriStateCheckboxComponent
                 id={field.name}
                 value={field.value} 
-                onChange={field.onChange} 
+                onChange={(e) => field.onChange(checkBox(e.value))} 
                 className={classNames({ 'p-invalid': fieldState.error })} 
               />
               {getFormErrorMessage(field.name)}
