@@ -196,7 +196,7 @@ function CalendarPage(): React.JSX.Element {
       }, 10)
     }
     addWeekend();
-  }, [monthList]);
+  }, [monthList,calendarPage]);
 
   const handleSearch = async () => {
     // Lógica de búsqueda con el año seleccionado
@@ -395,7 +395,7 @@ function CalendarPage(): React.JSX.Element {
     };
 
     return (
-      <div className="md:min-w-[653] flex flex-wrap overflow-x-auto no-month-navigator gap-x-6 gap-y-14 pt-5">
+      <div className="md:min-w-[653px] flex flex-wrap overflow-x-auto no-month-navigator gap-x-6 gap-y-14 pt-5 md:w-[62%]">
         {calendars[calendarPage]}
         <div className="w-full">
           <Paginator
@@ -444,7 +444,7 @@ function CalendarPage(): React.JSX.Element {
       ></ConfirmDialog>
       {/* Calendar year filter */}
       <div className="p-card rounded-4xl shadow-none border border-[#D9D9D9]">
-        <div className="p-card-body py-8 px-6">
+        <div className="p-card-body !py-8 !px-6">
           <div className="p-card-title flex justify-between">
             <span className="text-3xl">Resumen año {selectedYear?.year}</span>
             <div
@@ -518,9 +518,9 @@ function CalendarPage(): React.JSX.Element {
               <span className="text-3xl">Meses</span>
             </div>
             <div className="p-card-content">
-              <div className="flex flex-wrap">
+              <div className="flex flex-wrap w-full">
                 {renderCalendars()}
-                <div className="col-span-1">
+                <div className="md:min-w-[403px] md:w-[38%]">
                   <label className="text-base">Días hábiles y no hábiles</label>
                   <div className="p-card shadow-none border border-[#D9D9D9]">
                     <div className="p-card-body">
