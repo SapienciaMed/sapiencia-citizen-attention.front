@@ -18,24 +18,22 @@
             border: none;
             padding-left: 4px;
             padding-right: 4px;
-            table{
+
+            table {
                 font-size: 0.875rem;
-                tbody *{
+
+                tbody * {
                     font-family: 'Urbanist', sans-serif !important;
-                    @apply text-sm font-light;                                        
-                }
-                td > span.p-highlight {
-                    @apply bg-primary bg-opacity-70 text-white;
-                }
-                td > span.p-highlight-weekend {
-                    @apply bg-primary text-white;
-                }
-                td span.p-highlight-weekend:hover {
-                    background: #efedf2;
-                    color: #533893;
+                    @apply text-sm font-light;
                 }
 
-                .p-datepicker-other-month{
+                td>span.p-highlight {
+                    background-color: rgba(94, 56, 147, 0.271);
+                    @apply text-white;
+                }
+
+
+                .p-datepicker-other-month {
                     @apply bg-primary opacity-30 text-sm line-through rounded-full;
                 }
             }
@@ -70,6 +68,10 @@
         @apply p-0;
     }
 
+
+}
+
+.day-parametrization, .no-month-navigator {
     .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
         background: #533893;
         border-color: #533893;
@@ -83,5 +85,15 @@
     .p-paginator .p-paginator-pages .p-paginator-page,
     .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
         border-radius: 4px;
+    }
+}
+.day-parametrization {
+    .p-datatable {
+
+        .p-datatable-header {
+            padding: 0.5rem 0;
+            background: transparent;
+            border: unset;
+        }
     }
 }

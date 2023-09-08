@@ -16,13 +16,20 @@ import { IDaysParametrizationDetail } from "../interfaces/daysParametrizationDet
 import { Paginator } from "primereact/paginator";
 import { classNames } from "primereact/utils";
 import { InputText } from "primereact/inputtext";
+import { FilterMatchMode } from "primereact/api";
 
 function CalendarPage(): React.JSX.Element {
   const toast = useRef(null);
   const [selectedYear, setSelectedYear] = useState<IDaysParametrization | undefined>(undefined);
   const [monthList, setMonthList] = useState(false);
+  const [customers, setCustomers] = useState(null);
+  const [filters, setFilters] = useState({
+    detailDate: { value: null, matchMode: FilterMatchMode.EQUALS },
+  });
+  const [detailDateFilterValue, setDetailDateFilterValue] = useState("");
   const [dayTypes, setDayTypes] = useState<IDayType[]>([]);
   const [year, setYear] = useState<number | null>(null);
+  const [yearError, setYearError] = useState<string | null>(null);
   const [years, setYears] = useState<IDaysParametrization[]>([]);
   const [days, setDays] = useState<IDaysParametrizationDetail[]>([]);
   const [visibleConfirm, setVisibleConfirm] = useState(false);
@@ -65,31 +72,55 @@ function CalendarPage(): React.JSX.Element {
         }
       }
     } else {
-      toast.current.show({
-        severity: "warn",
-        summary: "Completa el formulario",
-        detail: "Debes ingresar un año válido.",
-        life: 3000,
-      });
+      setYearError("Debes ingresar un año válido.");
     }
   };
 
+  const onDetailDateFilterChange = (e) => {
+    const value = e.target.value;
+    let _filters = { ...filters };
+
+    _filters["detailDate"].value = value;
+
+    setFilters(_filters);
+    setDetailDateFilterValue(value);
+  };
+
+  const renderHeader = () => {
+    return (
+      <div>
+        <span className="p-input-icon-right">
+          <Calendar inputClassName="!text-sm !py-0.5" value={detailDateFilterValue} onChange={onDetailDateFilterChange} readOnlyInput placeholder="DD / MM / AAA"/>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M10.6667 1.3335V4.00016M5.33333 1.3335V4.00016M2 6.00016H14M12.6667 2.66683H3.33333C2.59667 2.66683 2 3.2635 2 4.00016V12.6668C2 13.4035 2.59667 14.0002 3.33333 14.0002H12.6667C13.4033 14.0002 14 13.4035 14 12.6668V4.00016C14 3.2635 13.4033 2.66683 12.6667 2.66683ZM4.67533 8.48616C4.58333 8.48616 4.50867 8.56083 4.50933 8.65283C4.50933 8.74483 4.584 8.8195 4.676 8.8195C4.768 8.8195 4.84267 8.74483 4.84267 8.65283C4.84267 8.56083 4.768 8.48616 4.67533 8.48616ZM8.00867 8.48616C7.91667 8.48616 7.842 8.56083 7.84267 8.65283C7.84267 8.74483 7.91733 8.8195 8.00933 8.8195C8.10133 8.8195 8.176 8.74483 8.176 8.65283C8.176 8.56083 8.10133 8.48616 8.00867 8.48616ZM11.342 8.48616C11.25 8.48616 11.1753 8.56083 11.176 8.65283C11.176 8.74483 11.2507 8.8195 11.3427 8.8195C11.4347 8.8195 11.5093 8.74483 11.5093 8.65283C11.5093 8.56083 11.4347 8.48616 11.342 8.48616ZM4.67533 11.1528C4.58333 11.1528 4.50867 11.2275 4.50933 11.3195C4.50933 11.4115 4.584 11.4862 4.676 11.4862C4.768 11.4862 4.84267 11.4115 4.84267 11.3195C4.84267 11.2275 4.768 11.1528 4.67533 11.1528ZM8.00867 11.1528C7.91667 11.1528 7.842 11.2275 7.84267 11.3195C7.84267 11.4115 7.91733 11.4862 8.00933 11.4862C8.10133 11.4862 8.176 11.4115 8.176 11.3195C8.176 11.2275 8.10133 11.1528 8.00867 11.1528Z"
+              stroke="#533893"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </span>
+      </div>
+    );
+  };
+
   const addDates = (e: CalendarChangeEvent) => {
-    const newDates: Date[] = e.value as Date[];    
-    
+    const newDates: Date[] = e.value as Date[];
+
     const weekend = e.originalEvent.currentTarget.children[0];
-    setTimeout(() => {          
-      if (weekend?.classList?.contains('weekend')) {
-        if (newDates.filter((date)=> date.toString() == weekend.attributes.getNamedItem("data-date").value).length>0) {
+    setTimeout(() => {
+      if (weekend?.classList?.contains("weekend")) {
+        if (
+          newDates.filter((date) => date.toString() == weekend.attributes.getNamedItem("data-date").value).length > 0
+        ) {
           weekend.parentElement.classList.remove("p-highlight");
-          weekend.parentElement.classList.add("p-highlight-weekend");
-        }else{
+        } else {
           weekend.parentElement.classList.add("p-highlight");
-          weekend.parentElement.classList.remove("p-highlight-weekend");
         }
       }
     }, 10);
-    
+
     setDates([...newDates]);
     let nextDays = [...days];
     newDates.forEach((date) => {
@@ -98,13 +129,13 @@ function CalendarPage(): React.JSX.Element {
           detailDate: date,
           description: "",
           dayTypeId: null,
-        });        
+        });
       }
     });
 
     nextDays = nextDays.filter((day) => {
       return newDates.includes(day.detailDate);
-    })
+    });
 
     setDays(nextDays);
   };
@@ -170,6 +201,8 @@ function CalendarPage(): React.JSX.Element {
   const handleYearChange = (e) => {
     const selected = years.filter((year) => year.id === e.value)[0];
     setSelectedYear(selected);
+    setDays([]);
+    setDates([]);
     setMonthList(false);
     setCalendarPage(0);
   };
@@ -185,18 +218,18 @@ function CalendarPage(): React.JSX.Element {
 
   useEffect(() => {
     async function addWeekend() {
-      setTimeout(()=>{
-        document.querySelectorAll(".weekend").forEach((el) => {                        
-          if (dates.filter((date)=> date.toString() == el.attributes.getNamedItem("data-date").value).length>0) {
+      setTimeout(() => {
+        document.querySelectorAll(".weekend").forEach((el) => {
+          if (dates.filter((date) => date.toString() == el.attributes.getNamedItem("data-date").value).length > 0) {
             el.parentElement.classList.remove("p-highlight");
-          }else{
+          } else {
             el.parentElement.classList.add("p-highlight");
           }
-        })
-      }, 10)
+        });
+      }, 10);
     }
     addWeekend();
-  }, [monthList,calendarPage]);
+  }, [monthList, calendarPage]);
 
   const handleSearch = async () => {
     // Lógica de búsqueda con el año seleccionado
@@ -234,6 +267,7 @@ function CalendarPage(): React.JSX.Element {
           className="appearance-none relative z-10 bg-transparent outline-primary max-w-[115px] p-2 h-10"
           onChange={(e) => options.editorCallback(e.target.value)}
         >
+          <option value={null}>Seleccione un tipo</option>
           {dayTypes.map((dayType, index) => {
             return (
               <option key={index} selected={dayType.tdi_codigo == options.value} value={dayType.tdi_codigo}>
@@ -269,7 +303,7 @@ function CalendarPage(): React.JSX.Element {
         month: "2-digit",
         year: "numeric",
       })
-      .replace("/", ".");
+      .replace(/\//g, ".");
   };
 
   const dayTypeBodyTemplate = (rowData) => {
@@ -310,12 +344,63 @@ function CalendarPage(): React.JSX.Element {
       );
 
       return date.getDay() == 6 || date.getDay() == 0 ? (
-        <div className="weekend" data-date={date}>{dateTemplate.day}</div>
+        <div className="weekend" data-date={date}>
+          {dateTemplate.day}
+        </div>
       ) : (
         dateTemplate.day
       );
     }
   };
+
+  const paginatorTemplate = (prev = 'Anterior',next= 'Siguiente')=> {
+    return {
+      layout: "PrevPageLink PageLinks NextPageLink",
+      PrevPageLink: (options) => {
+        return (
+          <Button
+            type="button"
+            className={classNames(options.className, "border-round")}
+            onClick={options.onClick}
+            disabled={options.disabled}
+          >
+            <span className="p-3 text-black">{prev}</span>
+          </Button>
+        );
+      },
+      NextPageLink: (options) => {
+        return (
+          <Button
+            className={classNames(options.className, "border-round")}
+            onClick={options.onClick}
+            disabled={options.disabled}
+          >
+            <span className="p-3 text-black">{next}</span>
+          </Button>
+        );
+      },
+      PageLinks: (options) => {
+        if (
+          (options.view.startPage === options.page && options.view.startPage !== 0) ||
+          (options.view.endPage === options.page && options.page + 1 !== options.totalPages)
+        ) {
+          const className = classNames(options.className, { "p-disabled": true });
+  
+          return (
+            <span className={className} style={{ userSelect: "none" }}>
+              ...
+            </span>
+          );
+        }
+  
+        return (
+          <Button className={options.className} onClick={options.onClick}>
+            {options.page + 1}
+          </Button>
+        );
+      },
+    };
+  } 
 
   const renderCalendars = () => {
     const calendars = [[], []];
@@ -325,7 +410,7 @@ function CalendarPage(): React.JSX.Element {
       calendars[index <= 6 ? 0 : 1].push(
         <div key={index > 9 ? index : "0" + index}>
           <Calendar
-            className="min-w-[288pxx]"
+            className="md:min-w-[288pxx]"
             dateTemplate={(e) => dateTemplate(e)}
             value={dates}
             onChange={(e) => {
@@ -345,67 +430,20 @@ function CalendarPage(): React.JSX.Element {
           />
         </div>
       );
-    }
-
-    const template1 = {
-      layout: "PrevPageLink PageLinks NextPageLink",
-      PrevPageLink: (options) => {
-        return (
-          <Button
-            type="button"
-            className={classNames(options.className, "border-round")}
-            onClick={options.onClick}
-            disabled={options.disabled}
-          >
-            <span className="p-3 text-black">Anterior</span>
-          </Button>
-        );
-      },
-      NextPageLink: (options) => {
-        return (
-          <Button
-            className={classNames(options.className, "border-round")}
-            onClick={options.onClick}
-            disabled={options.disabled}
-          >
-            <span className="p-3 text-black">Siguiente</span>
-          </Button>
-        );
-      },
-      PageLinks: (options) => {
-        if (
-          (options.view.startPage === options.page && options.view.startPage !== 0) ||
-          (options.view.endPage === options.page && options.page + 1 !== options.totalPages)
-        ) {
-          const className = classNames(options.className, { "p-disabled": true });
-
-          return (
-            <span className={className} style={{ userSelect: "none" }}>
-              ...
-            </span>
-          );
-        }
-
-        return (
-          <Button className={options.className} onClick={options.onClick}>
-            {options.page + 1}
-          </Button>
-        );
-      },
-    };
+    }    
 
     return (
-      <div className="md:min-w-[653px] flex flex-wrap overflow-x-auto no-month-navigator gap-x-6 gap-y-14 pt-5 md:w-[62%]">
+      <div className="flex flex-wrap overflow-x-auto no-month-navigator gap-x-6 gap-y-14 pt-5 md:w-1/2 xl:w-[62%] md:pr-6 w-full">
         {calendars[calendarPage]}
         <div className="w-full">
           <Paginator
-            template={template1}
+            template={paginatorTemplate()}
             first={calendarPage}
             rows={1}
             totalRecords={2}
             onPageChange={(e) => setCalendarPage(e.first)}
           />
-        </div>        
+        </div>
       </div>
     );
   };
@@ -425,11 +463,12 @@ function CalendarPage(): React.JSX.Element {
               <label htmlFor="year" className="text-[22px] block mr-4">
                 Año
               </label>
-              <InputText 
+              <InputText
                 keyfilter="int"
                 inputMode="tel"
-                value={year?.toString()}
-                onChange={(e) => setYear(parseInt(e.target.value))}
+                className={yearError ? "p-invalid" : ""}
+                value={year ? year?.toString() : null}
+                onChange={(e) => setYear(e.target.value ? parseInt(e.target.value) : null)}
                 maxLength={4}
               />
             </div>
@@ -513,23 +552,29 @@ function CalendarPage(): React.JSX.Element {
       {/* Calendar months */}
       {monthList && (
         <div className="p-card rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
-          <div className="p-card-body py-8 px-6">
+          <div className="p-card-body !py-8 !px-6">
             <div className="p-card-title flex justify-between">
               <span className="text-3xl">Meses</span>
             </div>
             <div className="p-card-content">
               <div className="flex flex-wrap w-full">
                 {renderCalendars()}
-                <div className="md:min-w-[403px] md:w-[38%]">
+                <div className="md:w-1/2 xl:w-[38%] w-full">
                   <label className="text-base">Días hábiles y no hábiles</label>
                   <div className="p-card shadow-none border border-[#D9D9D9]">
-                    <div className="p-card-body">
+                    <div className="p-card-body day-parametrization">
                       <DataTable
+                        paginator
+                        paginatorTemplate={paginatorTemplate("<",">")}
+                        rows={15}
+                        filters={filters}
                         size="small"
                         value={days}
                         editMode="cell"
                         showGridlines
-                        tableStyle={{ minWidth: "22.625rem" }}
+                        tableStyle={{ minWidth: "100%" }}
+                        globalFilterFields={["detailDate"]}
+                        header={renderHeader}
                       >
                         <Column
                           className="text-sm font-normal"

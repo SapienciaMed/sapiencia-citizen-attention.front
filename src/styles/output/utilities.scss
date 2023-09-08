@@ -11,7 +11,7 @@
   --text-color-secondary:#6c757d;
   --primary-color:#5e3893;
   --primary-color-text:#ffffff;
-  --font-family:-apple-system, BlinkMacSystemFont, Segoe UI, RubikMedium, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+  --font-family:-apple-system, BlinkMacSystemFont, Segoe UI, Rubik, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
   --surface-0: #ffffff;
   --surface-50: #FAFAFA;
   --surface-100: #F5F5F5;
@@ -54,7 +54,7 @@
 }
 
 .p-component{
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",RubikMedium,Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Rubik,Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
   font-size:1rem;
   font-weight:normal
 }
@@ -87,7 +87,7 @@
 
 .p-link{
   font-size:1rem;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",RubikMedium,Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Rubik,Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
   border-radius:8px
 }
 
@@ -276,7 +276,7 @@
 }
 
 .p-autocomplete .p-autocomplete-multiple-container .p-autocomplete-input-token input{
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",RubikMedium,Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Rubik,Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
   font-size:1rem;
   color:#000;
   padding:0;
@@ -809,7 +809,7 @@
 }
 
 .p-chips .p-chips-multiple-container .p-chips-input-token input{
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",RubikMedium,Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Rubik,Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
   font-size:1rem;
   color:#000;
   padding:0;
@@ -1209,7 +1209,7 @@
 }
 
 .p-inputtext{
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",RubikMedium,Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Rubik,Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
   font-size:1rem;
   color:#000;
   background:#fff;
@@ -7112,7 +7112,7 @@
 
 .p-terminal .p-terminal-input{
   font-size:1rem;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",RubikMedium,Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Rubik,Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"
 }
 
 .p-badge{
@@ -7305,7 +7305,7 @@ html {
   -o-tab-size: 4;
      tab-size: 4;
   /* 3 */
-  font-family: RubikMedium, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: Rubik, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   /* 4 */
   font-feature-settings: normal;
   /* 5 */
@@ -7857,14 +7857,6 @@ video {
   z-index:10
 }
 
-.col-span-1{
-  grid-column:span 1 / span 1
-}
-
-.col-span-2{
-  grid-column:span 2 / span 2
-}
-
 .m-0{
   margin:0px
 }
@@ -7935,10 +7927,6 @@ video {
   display:table
 }
 
-.grid{
-  display:grid
-}
-
 .h-10{
   height:2.5rem
 }
@@ -7957,18 +7945,6 @@ video {
 
 .w-full{
   width:100%
-}
-
-.w-\[55\%\]{
-  width:55%
-}
-
-.w-7\/12{
-  width:58.333333%
-}
-
-.min-w-\[288pxx\]{
-  min-width:288pxx
 }
 
 .max-w-2xs{
@@ -8004,10 +7980,6 @@ video {
   -webkit-appearance:none;
      -moz-appearance:none;
           appearance:none
-}
-
-.grid-cols-3{
-  grid-template-columns:repeat(3, minmax(0, 1fr))
 }
 
 .flex-col{
@@ -8133,21 +8105,6 @@ video {
   padding-right:1rem !important
 }
 
-.px-14{
-  padding-left:3.5rem;
-  padding-right:3.5rem
-}
-
-.px-6{
-  padding-left:1.5rem;
-  padding-right:1.5rem
-}
-
-.py-8{
-  padding-top:2rem;
-  padding-bottom:2rem
-}
-
 .\!px-6{
   padding-left:1.5rem !important;
   padding-right:1.5rem !important
@@ -8156,6 +8113,21 @@ video {
 .\!py-8{
   padding-top:2rem !important;
   padding-bottom:2rem !important
+}
+
+.px-14{
+  padding-left:3.5rem;
+  padding-right:3.5rem
+}
+
+.\!py-0{
+  padding-top:0px !important;
+  padding-bottom:0px !important
+}
+
+.\!py-0\.5{
+  padding-top:0.125rem !important;
+  padding-bottom:0.125rem !important
 }
 
 .pt-0{
@@ -8257,9 +8229,9 @@ video {
       border: none;
       padding-left: 4px;
       padding-right: 4px;
-      table{
+      table {
         font-size: 0.875rem;
-        tbody *{
+        tbody * {
           font-family: 'Urbanist', sans-serif !important;
         }
         tbody *{
@@ -8269,28 +8241,12 @@ video {
         tbody *{
           font-weight:300
         }
-        td > span.p-highlight{
-          --tw-bg-opacity:1;
-          background-color:rgb(83 56 147 / var(--tw-bg-opacity))
+        td>span.p-highlight {
+          background-color: rgba(94, 56, 147, 0.271);
         }
-        td > span.p-highlight{
-          --tw-bg-opacity:0.7
-        }
-        td > span.p-highlight{
+        td>span.p-highlight{
           --tw-text-opacity:1;
           color:rgb(255 255 255 / var(--tw-text-opacity))
-        }
-        td > span.p-highlight-weekend{
-          --tw-bg-opacity:1;
-          background-color:rgb(83 56 147 / var(--tw-bg-opacity))
-        }
-        td > span.p-highlight-weekend{
-          --tw-text-opacity:1;
-          color:rgb(255 255 255 / var(--tw-text-opacity))
-        }
-        td span.p-highlight-weekend:hover {
-          background: #efedf2;
-          color: #533893;
         }
         .p-datepicker-other-month{
           border-radius:9999px
@@ -8338,6 +8294,9 @@ video {
   .p-datepicker table td{
     padding:0px
   }
+}
+
+.day-parametrization, .no-month-navigator {
   .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
     background: #533893;
     border-color: #533893;
@@ -8353,36 +8312,36 @@ video {
   }
 }
 
+.day-parametrization {
+  .p-datatable {
+    .p-datatable-header {
+      padding: 0.5rem 0;
+      background: transparent;
+      border: unset;
+    }
+  }
+}
+
 @media (min-width: 768px){
-  .md\:w-5\/12{
-    width:41.666667%
+  .md\:w-1\/2{
+    width:50%
   }
 
-  .md\:w-\[43\%\]{
-    width:43%
+  .md\:min-w-\[288pxx\]{
+    min-width:288pxx
   }
 
-  .md\:w-\[57\%\]{
-    width:57%
+  .md\:pr-6{
+    padding-right:1.5rem
   }
+}
 
-  .md\:w-\[62\%\]{
-    width:62%
-  }
-
-  .md\:w-\[38\%\]{
+@media (min-width: 1280px){
+  .xl\:w-\[38\%\]{
     width:38%
   }
 
-  .md\:min-w-\[653\]{
-    min-width:653
-  }
-
-  .md\:min-w-\[653px\]{
-    min-width:653px
-  }
-
-  .md\:min-w-\[403px\]{
-    min-width:403px
+  .xl\:w-\[62\%\]{
+    width:62%
   }
 }
