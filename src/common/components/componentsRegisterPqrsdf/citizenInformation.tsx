@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from 'primereact/button';
 import { useForm, Controller } from 'react-hook-form';
 import { useGetTypeSolicitud } from '../../hooks/form-pqrsdf.hook';
@@ -8,7 +8,8 @@ import { useGetResponseMedium } from '../../hooks/form-pqrsdf.hook';
 import { useGetPrograms } from '../../hooks/form-pqrsdf.hook';
 import { useGetAsuntoSolicitud } from '../../hooks/form-pqrsdf.hook';
 import { useGetPaises } from '../../hooks/form-pqrsdf.hook';
-import { useGetDepartamentos } from '../../hooks/form-pqrsdf.hook'; 
+import { useGetDepartamentos } from '../../hooks/form-pqrsdf.hook';
+import { useGetMunicipios } from '../../hooks/form-pqrsdf.hook'; 
 
 import { CalendarComponent } from "./calendarComponent";
 import { DropDownComponent } from "./dropDownComponent";
@@ -17,8 +18,8 @@ import { CnputTextareaComponent } from "./inputTextarea.component";
 import { ScrollPanelComponent } from "./scrollPanelComponent";
 import { TriStateCheckboxComponent } from "./triStateCheckboxComponent";
 import { UploadComponent } from "./uploadComponent";
-import { ButtonSumitComponent } from "./buttonSumit.component";
 import { classNames } from 'primereact/utils';
+
 
 
 
@@ -27,6 +28,9 @@ import { classNames } from 'primereact/utils';
 
 export const CitizenInformation = () => {
 
+  const OptionDepartamento = useRef(null);
+  const OptionMunicipios = useRef(null);
+
   const { solicitudes } = useGetTypeSolicitud();
   const { docuements } = useGetTypeDocuments();
   const { entidadJuridica } = useGetTipoEntidadJuridica();
@@ -34,14 +38,28 @@ export const CitizenInformation = () => {
   const { asuntos } = useGetAsuntoSolicitud();
   const { pais } = useGetPaises();
   const { departamento } = useGetDepartamentos();
-
-  const [ valuePais, setValuePais] = useState(null);
   const { medium } = useGetResponseMedium();
-
+  const { municipio } = useGetMunicipios('5');
+  
+  
+  const [ valuePais, setValuePais] = useState(null);
+  const [ valueDepartamento, setValueDepartamento] = useState(null);
+  
 
   const seletDataPais = ( datos:{id:number, description:string} )=>{
-    setValuePais( datos );    
-  }
+    setValuePais( datos );
+
+    if( datos.id == 4 ){ OptionDepartamento.current = departamento };
+
+  };
+
+  const seletDepartamentos = ( datos:{id:number, description:string} )=>{
+    setValueDepartamento( datos );
+    
+    if( datos.id == 5){ OptionMunicipios.current = municipio}
+
+  };
+  
 
   const defaultValues = {
     tipoDeSolicitud: '',
@@ -443,11 +461,11 @@ export const CitizenInformation = () => {
               <>
                 <DropDownComponent
                   id={field.name}
-                  value={field.value}
+                  value={ valueDepartamento }
                   className={classNames({ 'p-invalid': fieldState.error })}
-                  onChange={(e) => field.onChange(e.value)}
+                  onChange={(e) => field.onChange(seletDepartamentos(e.value))}
                   focusInputRef={field.ref}
-                  options={ departamento }
+                  options={ OptionDepartamento.current}
                   placeholder='Selecionar'
                   width="280px"
                 />
@@ -473,6 +491,7 @@ export const CitizenInformation = () => {
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(e.value)}
                   focusInputRef={field.ref}
+                  options={ OptionMunicipios.current }
                   placeholder='Selecionar'
                   width="280px"
                 />
@@ -501,7 +520,7 @@ export const CitizenInformation = () => {
                   focusInputRef={field.ref}
                   options={ medium }   
                   placeholder='Seleccionar'
-                  width=''
+                  width='50%'
               />
               </>
             )}
