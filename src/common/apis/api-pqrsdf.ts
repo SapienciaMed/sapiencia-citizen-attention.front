@@ -1,6 +1,6 @@
 
-const url = process.env.urlApiCitizenAttention;
-//const url = 'http://127.0.0.1:4207';
+//const url = process.env.urlApiCitizenAttention;
+const url = 'http://127.0.0.1:4207';
 
 export const typeSolicituds = async () => {
 
@@ -129,6 +129,16 @@ export const objectoSolicitud = async () => {
         description: data.OBS_DESCRIPCION,
         dias: data.OBS_TERMINO_DIAS_HABILES
     }));
+
+    return opciones
+};
+
+export const listaParametros = async () => {
+
+    const resp = await fetch(`${url}/get-listaParametros`);
+    const  data  = await resp.json();
+    
+    const opciones = data[0]['LPA_VALOR'];
 
     return opciones
 };

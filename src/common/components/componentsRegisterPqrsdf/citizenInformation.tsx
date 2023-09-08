@@ -10,6 +10,7 @@ import { useGetAsuntoSolicitud } from '../../hooks/form-pqrsdf.hook';
 import { useGetPaises } from '../../hooks/form-pqrsdf.hook';
 import { useGetDepartamentos } from '../../hooks/form-pqrsdf.hook';
 import { useGetMunicipios } from '../../hooks/form-pqrsdf.hook'; 
+import { useGetListaParametros } from '../../hooks/form-pqrsdf.hook'; 
 
 import { CalendarComponent } from "./calendarComponent";
 import { DropDownComponent } from "./dropDownComponent";
@@ -19,6 +20,7 @@ import { ScrollPanelComponent } from "./scrollPanelComponent";
 import { TriStateCheckboxComponent } from "./triStateCheckboxComponent";
 import { UploadComponent } from "./uploadComponent";
 import { classNames } from 'primereact/utils';
+import { strict } from 'yargs';
 
 
 
@@ -28,9 +30,10 @@ import { classNames } from 'primereact/utils';
 
 export const CitizenInformation = () => {
 
-  const OptionDepartamento = useRef(null);
-  const OptionMunicipios = useRef(null);
-  const ShowField = useRef(null);
+  const optionDepartamento = useRef(null);
+  const optionMunicipios = useRef(null);
+  const showField = useRef(null);
+  const showRazonSocial = useRef(null)
 
   const { solicitudes } = useGetTypeSolicitud();
   const { docuements } = useGetTypeDocuments();
@@ -41,19 +44,23 @@ export const CitizenInformation = () => {
   const { departamento } = useGetDepartamentos();
   const { medium } = useGetResponseMedium();
   const { municipio } = useGetMunicipios('5');
+  const { parametros } = useGetListaParametros();
   
   const [ valueDocument, setValueDocument] = useState(null);
   const [ valuePais, setValuePais] = useState(null);
   const [ valueDepartamento, setValueDepartamento] = useState(null);
 
+  console.log( parametros.toString() );
   
+
   const seleTipoDocument = ( document:{id:number, description:string} ) => {
     setValueDocument( document );
     
     if( document.description == 'NIT'){
-       ShowField.current = 'none' 
+       showField.current = 'none'
+        
       }else{
-        ShowField.current = '' 
+        showField.current = '' 
       }
     
     return document;
@@ -63,7 +70,7 @@ export const CitizenInformation = () => {
 
     setValuePais( pais );
 
-    if( pais.id == 4 ){ OptionDepartamento.current = departamento };
+    if( pais.id == 4 ){ optionDepartamento.current = departamento };
   
     return pais;
   };
@@ -71,7 +78,7 @@ export const CitizenInformation = () => {
   const seletDepartamentos = ( depart:{id:number, description:string} )=>{
     setValueDepartamento( depart );
     
-    if( depart.id == 5){ OptionMunicipios.current = municipio}
+    if( depart.id == 5){ optionMunicipios.current = municipio}
 
     return depart;
   };
@@ -98,7 +105,8 @@ export const CitizenInformation = () => {
     municipio:'',
     fechaNacimento:'',
     politicaTratamiento: null,
-    Descripción:''
+    Descripción:'',
+    RazónSocial:''
   };
 
   const {
@@ -237,7 +245,29 @@ export const CitizenInformation = () => {
           <h2>Información del ciudadano</h2>
         </div>
 
-        <div className='row-1' style={{display:ShowField.current}}>
+        <div className='row-1' style={{display:showField.current}}>
+          <label>Razón social<span className='required'>*</span></label>
+          <Controller
+            name="RazónSocial"
+            control={control}
+            rules={{ required: 'Requerido.' }}
+            render={({ field, fieldState }) => (
+              <>
+                <InputTextComponent
+                  id={field.name}
+                  value={field.value}
+                  className={classNames({ 'p-invalid': fieldState.error })}
+                  onChange={(e) => field.onChange(e.target.value)}
+                  placeholder=''
+                  width="95%"
+                />
+              </>
+            )}
+          />
+          {getFormErrorMessage('RazónSocial')}
+        </div>
+
+        <div className='row-1' style={{display:showField.current}}>
           <label>Primer nombre<span className='required'>*</span></label>
           <Controller
             name="primerNombre"
@@ -252,7 +282,6 @@ export const CitizenInformation = () => {
                   onChange={(e) => field.onChange(e.target.value)}
                   placeholder=''
                   width="95%"
-                  disabled
                 />
               </>
             )}
@@ -260,7 +289,7 @@ export const CitizenInformation = () => {
           {getFormErrorMessage('primerNombre')}
         </div>
 
-        <div className='row-1' style={{display:ShowField.current}}>
+        <div className='row-1' style={{display:showField.current}}>
           <label>Segundo nombre</label>
           <Controller
             name="segundoNombre"
@@ -281,7 +310,7 @@ export const CitizenInformation = () => {
           />
         </div>
 
-        <div className='row-1' style={{display:ShowField.current}}>
+        <div className='row-1' style={{display:showField.current}}>
           <label>Primer apellido<span className='required'>*</span></label>
           <Controller
             name="primerApellido"
@@ -303,7 +332,7 @@ export const CitizenInformation = () => {
           {getFormErrorMessage('primerApellido')}
         </div>
 
-        <div className='row-1' style={{display:ShowField.current}}>
+        <div className='row-1' style={{display:showField.current}}>
           <label>Segundo apellido</label>
           <Controller
             name="segundoApellido"
@@ -325,7 +354,7 @@ export const CitizenInformation = () => {
 
       </div>
 
-      <div className="container-2" style={{display:ShowField.current}}>
+      <div className="container-2" style={{display:showField.current}}>
         <div className='row-1'>
           <label>Fecha de nacimiento<span className='required'>*</span></label>
           <Controller
@@ -481,7 +510,7 @@ export const CitizenInformation = () => {
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(seletDepartamentos(e.value))}
                   focusInputRef={field.ref}
-                  options={ OptionDepartamento.current}
+                  options={ optionDepartamento.current}
                   placeholder='Selecionar'
                   width="280px"
                 />
@@ -507,7 +536,7 @@ export const CitizenInformation = () => {
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(e.value)}
                   focusInputRef={field.ref}
-                  options={ OptionMunicipios.current }
+                  options={ optionMunicipios.current }
                   placeholder='Selecionar'
                   width="280px"
                 />
@@ -648,7 +677,7 @@ export const CitizenInformation = () => {
       </div>
 
       <div className="div_container" style={{marginBottom:'20px'}}>
-        <label>Para conocer la Política de Tratamiento y Protección de datos personales de Sapiencia, dar click <a href="" style={{color:'#533893'}}>aquí</a> </label>
+        <label>Para conocer la Política de Tratamiento y Protección de datos personales de Sapiencia, dar click <a href={parametros.toString()} style={{color:'#533893'}} target="_blank">aquí</a> </label>
         <Controller
           name="politicaTratamiento"
           control={control}
