@@ -40,7 +40,7 @@ export const CitizenInformation = () => {
   const { program } = useGetPrograms();
   const { asuntos } = useGetAsuntoSolicitud();
   const { pais } = useGetPaises();
-  const { departamento } = useGetDepartamentos();
+  let { departamento } = useGetDepartamentos();
   const { medium } = useGetResponseMedium();
   const { municipio } = useGetMunicipios('5');
   const { parametros } = useGetListaParametros();
@@ -48,7 +48,8 @@ export const CitizenInformation = () => {
   const [ valueDocument, setValueDocument] = useState(null);
   const [ valuePais, setValuePais] = useState(null);
   const [ valueDepartamento, setValueDepartamento] = useState(null);
-  
+  const [ statuscheckBox, setstatuscheckBox] = useState(null);
+
 
   const seleTipoDocument = ( document:{id:number, description:string} ) => {
     setValueDocument( document );
@@ -59,25 +60,34 @@ export const CitizenInformation = () => {
     
     
     return document;
-  }
+  };
 
   const seletDataPais = ( pais:{id:number, description:string} )=>{
 
     setValuePais( pais );
 
-    if( pais.id == 4 ){ optionDepartamento.current = departamento };
-  
+    optionDepartamento.current = pais.id == 4? departamento: '';
+    optionMunicipios.current = pais.id  == 4 ? '' : '';
+
     return pais;
   };
 
   const seletDepartamentos = ( depart:{id:number, description:string} )=>{
     setValueDepartamento( depart );
     
-    if( depart.id == 5){ optionMunicipios.current = municipio}
+    optionMunicipios.current = depart.id == 5 ? municipio : '';
+    
 
     return depart;
   };
-  
+
+  const checkBox = (dato:{status:boolean | null}) => {
+    setstatuscheckBox( dato )
+
+    const estado = dato ? true: null;
+    
+    return estado;
+  }
 
   const defaultValues = {
     tipoDeSolicitud: '',
@@ -148,7 +158,6 @@ export const CitizenInformation = () => {
                   options={ solicitudes }
                   placeholder='Seleccionar'
                   width='95%'
-
                 />
               </>
             )}
@@ -173,7 +182,7 @@ export const CitizenInformation = () => {
                     onChange={(e) => field.onChange( seleTipoDocument(e.value))}
                     focusInputRef={field.ref}
                     options={ docuements } 
-                    placeholder='CC'
+                    placeholder='Seleccionar'
                     width='254px'
                 />
                 </>
@@ -244,7 +253,7 @@ export const CitizenInformation = () => {
       <div className="div-container">
 
         <div style={{width:'100%'}}>
-          <h2>Información del ciudadano</h2>
+          <h2 className='tittle-h2'>Información del ciudadano</h2>
         </div>
         
         {showFieldPersons.current == 'NIT' ?(
@@ -725,7 +734,7 @@ export const CitizenInformation = () => {
               <TriStateCheckboxComponent
                 id={field.name}
                 value={field.value} 
-                onChange={field.onChange} 
+                onChange={(e) => field.onChange(checkBox(e.value))} 
                 className={classNames({ 'p-invalid': fieldState.error })} 
               />
               {getFormErrorMessage(field.name)}
