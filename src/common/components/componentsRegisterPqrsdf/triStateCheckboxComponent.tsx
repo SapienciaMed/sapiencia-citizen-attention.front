@@ -16,15 +16,15 @@ export const TriStateCheckboxComponent = ( props: Attributes ) => {
 
 
   return (
-
+    
     <div>
+      <label style={{ marginRight:'4px'}}>Acepto</label>
         <TriStateCheckbox 
           id={ id }
           value={ value }
           onChange={ onChange }
           className={ className }
         />
-        <label style={{ marginLeft:'4px'}}>Acepto</label>
     </div>
 
   )
