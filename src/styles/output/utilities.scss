@@ -7871,6 +7871,14 @@ video {
   margin:0px
 }
 
+.m-2{
+  margin:0.5rem
+}
+
+.m-4{
+  margin:1rem
+}
+
 .mx-auto{
   margin-left:auto;
   margin-right:auto
@@ -7988,6 +7996,10 @@ video {
 
 .resize{
   resize:both
+}
+
+.list-decimal{
+  list-style-type:decimal
 }
 
 .appearance-none{
