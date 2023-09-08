@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Button } from 'primereact/button';
 import { useForm, Controller } from 'react-hook-form';
 import { useGetTypeSolicitud } from '../../hooks/form-pqrsdf.hook';
 import { useGetTypeDocuments } from '../../hooks/form-pqrsdf.hook';
@@ -7,7 +8,8 @@ import { useGetResponseMedium } from '../../hooks/form-pqrsdf.hook';
 import { useGetPrograms } from '../../hooks/form-pqrsdf.hook';
 import { useGetAsuntoSolicitud } from '../../hooks/form-pqrsdf.hook';
 import { useGetPaises } from '../../hooks/form-pqrsdf.hook';
-import { useGetDepartamentos } from '../../hooks/form-pqrsdf.hook'; 
+import { useGetDepartamentos } from '../../hooks/form-pqrsdf.hook';
+import { useGetMunicipios } from '../../hooks/form-pqrsdf.hook'; 
 
 import { CalendarComponent } from "./calendarComponent";
 import { DropDownComponent } from "./dropDownComponent";
@@ -16,8 +18,8 @@ import { CnputTextareaComponent } from "./inputTextarea.component";
 import { ScrollPanelComponent } from "./scrollPanelComponent";
 import { TriStateCheckboxComponent } from "./triStateCheckboxComponent";
 import { UploadComponent } from "./uploadComponent";
-import { ButtonSumitComponent } from "./buttonSumit.component";
 import { classNames } from 'primereact/utils';
+
 
 
 
@@ -26,6 +28,10 @@ import { classNames } from 'primereact/utils';
 
 export const CitizenInformation = () => {
 
+  const OptionDepartamento = useRef(null);
+  const OptionMunicipios = useRef(null);
+  const ShowField = useRef(null);
+
   const { solicitudes } = useGetTypeSolicitud();
   const { docuements } = useGetTypeDocuments();
   const { entidadJuridica } = useGetTipoEntidadJuridica();
@@ -33,14 +39,43 @@ export const CitizenInformation = () => {
   const { asuntos } = useGetAsuntoSolicitud();
   const { pais } = useGetPaises();
   const { departamento } = useGetDepartamentos();
-
+  const { medium } = useGetResponseMedium();
+  const { municipio } = useGetMunicipios('5');
+  
+  const [ valueDocument, setValueDocument] = useState(null);
   const [ valuePais, setValuePais] = useState(null);
-  const { medium } = useGetResponseMedium()
+  const [ valueDepartamento, setValueDepartamento] = useState(null);
 
-
-  const seletDataPais = ( datos:{id:number, description:string} )=>{
-    setValuePais( datos );    
+  
+  const seleTipoDocument = ( document:{id:number, description:string} ) => {
+    setValueDocument( document );
+    
+    if( document.description == 'NIT'){
+       ShowField.current = 'none' 
+      }else{
+        ShowField.current = '' 
+      }
+    
+    return document;
   }
+
+  const seletDataPais = ( pais:{id:number, description:string} )=>{
+
+    setValuePais( pais );
+
+    if( pais.id == 4 ){ OptionDepartamento.current = departamento };
+  
+    return pais;
+  };
+
+  const seletDepartamentos = ( depart:{id:number, description:string} )=>{
+    setValueDepartamento( depart );
+    
+    if( depart.id == 5){ OptionMunicipios.current = municipio}
+
+    return depart;
+  };
+  
 
   const defaultValues = {
     tipoDeSolicitud: '',
@@ -75,7 +110,6 @@ export const CitizenInformation = () => {
  
   const onSubmit = (data) => {
     data;
-    console.log('datos-> ', data);
     
     reset();
   };
@@ -87,11 +121,11 @@ export const CitizenInformation = () => {
 
 
   return (
+    
     <form 
       onSubmit={handleSubmit(onSubmit)}
       className="form-container" 
     >
-
       <div className="div-container">
 
         <div className='row-1'>
@@ -100,7 +134,7 @@ export const CitizenInformation = () => {
             name="tipoDeSolicitud"
             control={control}
             rules={{ required: 'Requerido.' }}
-            render={({ field, fieldState }) => (
+            render={({ field, fieldState, }) => (
               <>
                 <DropDownComponent
                   id={field.name}
@@ -110,7 +144,7 @@ export const CitizenInformation = () => {
                   focusInputRef={field.ref}
                   options={ solicitudes }
                   placeholder='Seleccionar'
-                  width='243px'
+                  width='95%'
 
                 />
               </>
@@ -119,51 +153,57 @@ export const CitizenInformation = () => {
           {getFormErrorMessage('tipoDeSolicitud')}
         </div>
 
-        <div className='row-1'>
-          <label>Tipo<span className='required'>*</span></label>
-          <Controller
-            name="tipo"
-            control={control}
-            rules={{ required: 'Requerido.'}}
-            render={({ field, fieldState }) => (
-              <>
-                <DropDownComponent
-                  id={field.name}
-                  value={field.value}
-                  className={classNames({ 'p-invalid': fieldState.error })}
-                  onChange={(e) => field.onChange(e.value)}
-                  focusInputRef={field.ref}
-                  options={ docuements } 
-                  placeholder='CC'
-                  width='82px'
-              />
-              </>
-            )}
-          />
-          {getFormErrorMessage('tipo')}
+        <div className='div-container'>
+
+          <div className='row-1'>
+            <label>Tipo<span className='required'>*</span></label>
+            <Controller
+              name="tipo"
+              control={control}
+              rules={{ required: 'Requerido.'}}
+              render={({ field, fieldState }) => (
+                <>
+                  <DropDownComponent
+                    id={field.name}
+                    value={field.value}
+                    className={classNames({ 'p-invalid': fieldState.error })}
+                    onChange={(e) => field.onChange( seleTipoDocument(e.value))}
+                    focusInputRef={field.ref}
+                    options={ docuements } 
+                    placeholder='CC'
+                    width='254px'
+                />
+                </>
+              )}
+            />
+            {getFormErrorMessage('tipo')}
+          </div>
+          <span className='split'></span>
+          <div className='row-1'>
+            <label>No. documento<span className='required'>*</span></label>
+            <Controller
+              name="noDocumento"
+              control={control}
+              rules={{ required: 'Requerido.' }}
+              render={({ field, fieldState }) => (
+                <>
+                  <InputTextComponent
+                    id={field.name}
+                    value={field.value}
+                    className={classNames({ 'p-invalid': fieldState.error })}
+                    onChange={(e) => field.onChange(e.target.value)}
+                    placeholder=''
+                    width="280px"
+                  />
+                </>
+              )}
+            />
+            {getFormErrorMessage('noDocumento')}
+          </div>
+
         </div>
 
-        <div className='row-1'>
-          <label>No. documento<span className='required'>*</span></label>
-          <Controller
-            name="noDocumento"
-            control={control}
-            rules={{ required: 'Requerido.' }}
-            render={({ field, fieldState }) => (
-              <>
-                <InputTextComponent
-                  id={field.name}
-                  value={field.value}
-                  className={classNames({ 'p-invalid': fieldState.error })}
-                  onChange={(e) => field.onChange(e.target.value)}
-                  placeholder=''
-                  width="280px"
-                />
-              </>
-            )}
-          />
-          {getFormErrorMessage('noDocumento')}
-        </div>
+        <span className='split'></span>
 
         <div className='row-1'>
           <label>Tipo entidad<span className='required'>*</span></label>
@@ -181,7 +221,7 @@ export const CitizenInformation = () => {
                   focusInputRef={field.ref}
                   options={ entidadJuridica }  
                   placeholder='Seleccionar'
-                  width='325px'
+                  width='95%'
               />
               </>
             )}
@@ -197,7 +237,7 @@ export const CitizenInformation = () => {
           <h2>Información del ciudadano</h2>
         </div>
 
-        <div className='row-1'>
+        <div className='row-1' style={{display:ShowField.current}}>
           <label>Primer nombre<span className='required'>*</span></label>
           <Controller
             name="primerNombre"
@@ -211,7 +251,8 @@ export const CitizenInformation = () => {
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(e.target.value)}
                   placeholder=''
-                  width="230px"
+                  width="95%"
+                  disabled
                 />
               </>
             )}
@@ -219,7 +260,7 @@ export const CitizenInformation = () => {
           {getFormErrorMessage('primerNombre')}
         </div>
 
-        <div className='row-1'>
+        <div className='row-1' style={{display:ShowField.current}}>
           <label>Segundo nombre</label>
           <Controller
             name="segundoNombre"
@@ -232,7 +273,7 @@ export const CitizenInformation = () => {
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(e.target.value)}
                   placeholder=''
-                  width="230px"
+                  width="95%"
                />
                {getFormErrorMessage(field.name)}
               </>
@@ -240,7 +281,7 @@ export const CitizenInformation = () => {
           />
         </div>
 
-        <div className='row-1'>
+        <div className='row-1' style={{display:ShowField.current}}>
           <label>Primer apellido<span className='required'>*</span></label>
           <Controller
             name="primerApellido"
@@ -254,7 +295,7 @@ export const CitizenInformation = () => {
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(e.target.value)}
                   placeholder=''
-                  width="230px"
+                  width="95%"
                 />
               </>
             )}
@@ -262,7 +303,7 @@ export const CitizenInformation = () => {
           {getFormErrorMessage('primerApellido')}
         </div>
 
-        <div className='row-1'>
+        <div className='row-1' style={{display:ShowField.current}}>
           <label>Segundo apellido</label>
           <Controller
             name="segundoApellido"
@@ -275,7 +316,7 @@ export const CitizenInformation = () => {
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(e.target.value)}
                   placeholder=''
-                  width="230px"
+                  width="95%"
                 />
               </>
             )}
@@ -284,7 +325,7 @@ export const CitizenInformation = () => {
 
       </div>
 
-      <div className="div-container">
+      <div className="container-2" style={{display:ShowField.current}}>
         <div className='row-1'>
           <label>Fecha de nacimiento<span className='required'>*</span></label>
           <Controller
@@ -320,7 +361,7 @@ export const CitizenInformation = () => {
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(e.target.value)}
                   placeholder=''
-                  width="280px"
+                  width="95%"
                   keyfilter='int'
                 />
               </>
@@ -342,7 +383,7 @@ export const CitizenInformation = () => {
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(e.target.value)}
                   placeholder=''
-                  width="280px"
+                  width="95%"
                   keyfilter='int'
                 />
                 {getFormErrorMessage(field.name)}
@@ -399,7 +440,7 @@ export const CitizenInformation = () => {
         </div>
       </div>
 
-      <div className="div-container">
+      <div className="container-2">
         <div className='row-1'>
           <label>País<span className='required'>*</span></label>
           <Controller
@@ -410,7 +451,7 @@ export const CitizenInformation = () => {
               <>
                 <DropDownComponent
                   id={field.name}
-                  value={ valuePais }
+                  value={ field.value }
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(seletDataPais(e.value))}
                   focusInputRef={field.ref}
@@ -424,6 +465,8 @@ export const CitizenInformation = () => {
           {getFormErrorMessage('pais')}
         </div>
 
+        <span className='split'></span>
+
         <div className='row-1'>
           <label>Departamento<span className='required'>*</span></label>
           <Controller
@@ -434,11 +477,11 @@ export const CitizenInformation = () => {
               <>
                 <DropDownComponent
                   id={field.name}
-                  value={field.value}
+                  value={ field.value }
                   className={classNames({ 'p-invalid': fieldState.error })}
-                  onChange={(e) => field.onChange(e.value)}
+                  onChange={(e) => field.onChange(seletDepartamentos(e.value))}
                   focusInputRef={field.ref}
-                  options={ departamento }
+                  options={ OptionDepartamento.current}
                   placeholder='Selecionar'
                   width="280px"
                 />
@@ -447,6 +490,8 @@ export const CitizenInformation = () => {
           />
           {getFormErrorMessage('departamento')}
         </div>
+
+        <span className='split'></span>
         
         <div className='row-1'>
           <label>Municipio<span className='required'>*</span></label>
@@ -462,6 +507,7 @@ export const CitizenInformation = () => {
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(e.value)}
                   focusInputRef={field.ref}
+                  options={ OptionMunicipios.current }
                   placeholder='Selecionar'
                   width="280px"
                 />
@@ -490,7 +536,7 @@ export const CitizenInformation = () => {
                   focusInputRef={field.ref}
                   options={ medium }   
                   placeholder='Seleccionar'
-                  width=''
+                  width='50%'
               />
               </>
             )}
@@ -623,10 +669,12 @@ export const CitizenInformation = () => {
       </div>
 
       <div>
-       <ButtonSumitComponent 
-          label="Enviar solicitud"
-          disabled={ !isValid }
-        />
+      <Button
+        disabled={!isValid}
+        rounded
+        label="Enviar solicitud"
+        className="!px-10 !text-sm btn-sumit"
+     />
       </div>
         
     </form>

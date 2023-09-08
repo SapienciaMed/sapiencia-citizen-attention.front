@@ -1,5 +1,6 @@
 
 const url = process.env.urlApiCitizenAttention;
+//const url = 'http://127.0.0.1:4207';
 
 export const typeSolicituds = async () => {
 
@@ -10,7 +11,7 @@ export const typeSolicituds = async () => {
         id: data.TSO_CODIGO,
         description: data.TSO_DESCRIPTION
     }));
-
+    
     return opciones
 };
 
@@ -19,9 +20,9 @@ export const typeDocument = async () => {
     const resp = await fetch(`${url}/get-type-docuement`);
     const  {data}  = await resp.json();
     
-    const opciones = data.map( (data: { LGE_CODIGO: number; LGE_ELEMENTO_CODIGO: string; }) => ({
+    const opciones = data.map( (data: { LGE_CODIGO: number; LGE_ELEMENTO_DESCRIPCION: string; }) => ({
         id: data.LGE_CODIGO,
-        description: data.LGE_ELEMENTO_CODIGO
+        description: data.LGE_ELEMENTO_DESCRIPCION
     }));
 
     return opciones
@@ -84,9 +85,9 @@ export const paises = async () => {
     const resp = await fetch(`${url}/get-paises`);
     const  {data}  = await resp.json();
     
-    const opciones = data.map( (data: { LGE_CODIGO: number; LGE_ELEMENTO_CODIGO: string; }) => ({
+    const opciones = data.map( (data: { LGE_CODIGO: number;LGE_ELEMENTO_DESCRIPCION: string; }) => ({
         id: data.LGE_CODIGO,
-        description: data.LGE_ELEMENTO_CODIGO
+        description: data.LGE_ELEMENTO_DESCRIPCION
     }));
 
     return opciones
@@ -100,6 +101,33 @@ export const departamentos = async () => {
     const opciones = data.map( (data: { LGE_ELEMENTO_CODIGO: string; LGE_ELEMENTO_DESCRIPCION: string; }) => ({
         id: data.LGE_ELEMENTO_CODIGO,
         description: data.LGE_ELEMENTO_DESCRIPCION
+    }));
+
+    return opciones
+};
+
+export const municipios = async (id:string) => {
+
+    const resp = await fetch(`${url}/get-municipios/${id}`);
+    const  {data}  = await resp.json();
+    
+    const opciones = data.map( (data: { LGE_CODIGO: string; LGE_ELEMENTO_DESCRIPCION: string; }) => ({
+        id: data.LGE_CODIGO,
+        description: data.LGE_ELEMENTO_DESCRIPCION
+    }));
+
+    return opciones
+};
+
+export const objectoSolicitud = async () => {
+
+    const resp = await fetch(`${url}/get-objecto-solicitud`);
+    const  {data}  = await resp.json();
+    
+    const opciones = data.map( (data: { OBS_CODIGO: string; OBS_DESCRIPCION: string; OBS_TERMINO_DIAS_HABILES:string }) => ({
+        id: data.OBS_CODIGO,
+        description: data.OBS_DESCRIPCION,
+        dias: data.OBS_TERMINO_DIAS_HABILES
     }));
 
     return opciones

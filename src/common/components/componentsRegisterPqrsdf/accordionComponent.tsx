@@ -1,6 +1,10 @@
+import { useGetOjectoSolicitud } from '../../hooks/form-pqrsdf.hook'
 import { Accordion, AccordionTab } from 'primereact/accordion'
 
 export const AccordionComponent = () => {
+
+    const { solicitudObjecto } = useGetOjectoSolicitud();
+  
   return (
     <Accordion>
         <AccordionTab header="Derecho de Petición">
@@ -66,24 +70,18 @@ export const AccordionComponent = () => {
             <table className='t-table'>
                     <tr>
                         <th className='td-table'>OBJETO</th>
-                        <th className='td-table'>TÉRMINO</th>
+                        <th className='td-table'>TÉRMINO DÍAS HÁBILES</th>
                     </tr>
-                    <tr>
-                        <td className='td-table'>Información General o Particular</td>
-                        <td className='td-table'>15 días hábiles</td>
-                    </tr>
-                    <tr>
-                        <td className='td-table'>Petición de documentos (copia)</td>
-                        <td className='td-table'>10 días hábiles</td>
-                    </tr>
-                    <tr>
-                        <td className='td-table'>Consultas Especializadas</td>
-                        <td className='td-table'>30 días hábiles</td>
-                    </tr>
-                    <tr>
-                        <td className='td-table'>Quejas</td>
-                        <td className='td-table'>15 días hábiles</td>
-                    </tr>
+                    {   solicitudObjecto.map((data)=>(
+
+                            <tr key={data.id}>
+                            <td className='td-table'>{data.description}</td>
+                            <td className='td-table'>{ data.dias}</td>
+                            </tr>
+
+                    ))
+                        
+                    }
                 </table>
             </p>
         </AccordionTab>

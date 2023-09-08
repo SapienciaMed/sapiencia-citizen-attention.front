@@ -7,6 +7,8 @@ import { programs } from "../apis/api-pqrsdf";
 import { asuntoSolicitud } from "../apis/api-pqrsdf";
 import { paises } from "../apis/api-pqrsdf";
 import { departamentos } from "../apis/api-pqrsdf";
+import { municipios } from "../apis/api-pqrsdf";
+import { objectoSolicitud } from "../apis/api-pqrsdf";
 
 export const useGetTypeSolicitud = ( ) => {
 
@@ -110,5 +112,31 @@ export const useGetDepartamentos = ( ) => {
     }, [] )
     
     return { departamento }
+
+};
+
+export const useGetMunicipios = ( id:string ) => {
+
+    const [ municipio, setDepartamento ] = useState([]);
+
+    useEffect( ()=> {
+        municipios( id )
+            .then( options => { setDepartamento( options ) });      
+    }, [] )
+    
+    return { municipio }
+
+};
+
+export const useGetOjectoSolicitud = () => {
+
+    const [ solicitudObjecto, setSolicitudObjecto ] = useState([]);
+
+    useEffect( ()=> {
+        objectoSolicitud()
+            .then( options => { setSolicitudObjecto( options ) });      
+    }, [] )
+    
+    return { solicitudObjecto }
 
 };
