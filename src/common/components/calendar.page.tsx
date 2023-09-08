@@ -13,6 +13,8 @@ import { useDaysParametrizationService } from "../hooks/daysParametrizationServi
 import { IDayType } from "../interfaces/dayType.interfaces";
 import { IDaysParametrization } from "../interfaces/daysParametrization.interfaces";
 import { IDaysParametrizationDetail } from "../interfaces/daysParametrizationDetail.interfaces";
+import { Paginator } from "primereact/paginator";
+import { classNames } from "primereact/utils";
 
 function CalendarPage(): React.JSX.Element {
   const toast = useRef(null);
@@ -43,7 +45,9 @@ function CalendarPage(): React.JSX.Element {
           const response = await daysParametrizationService.createDaysParametrization(year);
 
           if (response.operation.code === EResponseCodes.OK) {
-            setYears([...years, response.data]);
+            let newYears = [...years, response.data].sort((a, b) => b.year - a.year);
+
+            setYears(newYears);
             setYear(null);
             toast.current.show({
               severity: "success",
@@ -103,7 +107,7 @@ function CalendarPage(): React.JSX.Element {
         label="Cancelar"
         onClick={() => setVisibleConfirm(false)}
       />
-      <Button label="Aceptar" rounded className="!px-4 !text-base" onClick={accept} disabled={!year} />
+      <Button label="Aceptar" rounded className="!px-4 !text-base" onClick={accept} disabled={year < 2000} />
     </div>
   );
 
@@ -146,14 +150,9 @@ function CalendarPage(): React.JSX.Element {
   const handleYearChange = (e) => {
     const selected = years.filter((year) => year.id === e.value)[0];
     setSelectedYear(selected);
-  };
-
-  const handledayTypeChange = (e: DropdownChangeEvent, options: any) => {
-    console.log(e, options);
-
-    const selected = dayTypes.filter((type) => type.tdi_codigo === e.value)[0];
-    options.editorCallback(e.target.value);
-  };
+    setMonthList(false);
+    setCalendarPage(0);
+  };  
 
   useEffect(() => {
     async function initialSearch() {
@@ -165,7 +164,7 @@ function CalendarPage(): React.JSX.Element {
   }, [selectedYear]);
 
   const handleSearch = async () => {
-    // Lógica de búsqueda con el año seleccionado
+    // Lógica de búsqueda con el año seleccionado    
     if (selectedYear?.id) {
       setMonthList(true);
       console.log(`Realizar búsqueda para el año ${selectedYear.year}`);
@@ -267,7 +266,7 @@ function CalendarPage(): React.JSX.Element {
   const renderCalendars = () => {
     const calendars = [[], []];
     for (let index = 1; index < 13; index++) {
-      let date = new Date(`2023/${index > 9 ? index : "0" + index}/01`);
+      let date = new Date(`${selectedYear.year}/${index > 9 ? index : "0" + index}/01`);
       let lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
       calendars[index <= 6 ? 0 : 1].push(
         <div key={index > 9 ? index : "0" + index}>
@@ -292,14 +291,52 @@ function CalendarPage(): React.JSX.Element {
       );
     }
 
+    const template1 = {
+      layout: 'PrevPageLink PageLinks NextPageLink',
+      PrevPageLink: (options) => {
+          return (
+              <Button type="button" className={classNames(options.className, 'border-round')} onClick={options.onClick} disabled={options.disabled}>
+                  <span className="p-3">Previous</span>                  
+              </Button>
+          );
+      },
+      NextPageLink: (options) => {
+          return (
+              <Button className={classNames(options.className, 'border-round')} onClick={options.onClick} disabled={options.disabled}>
+                  <span className="p-3">Next</span>                  
+              </Button>
+          );
+      },
+      PageLinks: (options) => {
+          if ((options.view.startPage === options.page && options.view.startPage !== 0) || (options.view.endPage === options.page && options.page + 1 !== options.totalPages)) {
+              const className = classNames(options.className, { 'p-disabled': true });
+
+              return (
+                  <span className={className} style={{ userSelect: 'none' }}>
+                      ...
+                  </span>
+              );
+          }
+
+          return (
+              <Button className={options.className} onClick={options.onClick}>
+                  {options.page + 1}                  
+              </Button>
+          );
+      },            
+  };
+
     return (
       <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 no-month-navigator gap-x-6 gap-y-14 pt-5">
         {calendars[calendarPage]}
+        <div className="col-span-full">
+          <Paginator template={template1} first={calendarPage} rows={1} totalRecords={2} onPageChange={(e) => setCalendarPage(e.first)} />
+        </div>
       </div>
     );
   };
   return (
-    <div className="p-6">
+    <div className="p-6 max-w-[2400px] mx-auto">
       <Toast ref={toast} position="bottom-right" />
 
       <ConfirmDialog
@@ -318,7 +355,8 @@ function CalendarPage(): React.JSX.Element {
                 inputId="year"
                 useGrouping={false}
                 value={year}
-                onValueChange={(e) => setYear(e.value)}
+                // onValueChange={(e) => setYear(e.value)}
+                onChange={(e) => setYear(e.value)}
                 maxLength={4}
               />
             </div>
@@ -385,7 +423,7 @@ function CalendarPage(): React.JSX.Element {
                   placeholder="Selecciona un año"
                 />
               </div>
-              <div className="mt-auto mb-0">
+              {/* <div className="mt-auto mb-0">
                 <Button
                   disabled={!selectedYear}
                   rounded
@@ -393,7 +431,7 @@ function CalendarPage(): React.JSX.Element {
                   className="!px-10 !text-sm"
                   onClick={handleSearch}
                 />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
