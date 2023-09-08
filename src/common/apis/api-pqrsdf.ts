@@ -132,3 +132,13 @@ export const objectoSolicitud = async () => {
 
     return opciones
 };
+
+export const listaParametros = async () => {
+
+    const resp = await fetch(`${url}/get-listaParametros`);
+    const  data  = await resp.json();
+    
+    const opciones = data[0]['LPA_VALOR'];
+
+    return opciones
+};

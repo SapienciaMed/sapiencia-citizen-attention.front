@@ -9,6 +9,8 @@ import { paises } from "../apis/api-pqrsdf";
 import { departamentos } from "../apis/api-pqrsdf";
 import { municipios } from "../apis/api-pqrsdf";
 import { objectoSolicitud } from "../apis/api-pqrsdf";
+import { listaParametros } from "../apis/api-pqrsdf";
+import { string } from "yargs";
 
 export const useGetTypeSolicitud = ( ) => {
 
@@ -138,5 +140,18 @@ export const useGetOjectoSolicitud = () => {
     }, [] )
     
     return { solicitudObjecto }
+
+};
+
+export const useGetListaParametros = () => {
+
+    const [ parametros, setParametros ] = useState([]);
+
+    useEffect( ()=> {
+        listaParametros()
+            .then( options => { setParametros( options ) });      
+    }, [] )
+    
+    return { parametros }
 
 };
