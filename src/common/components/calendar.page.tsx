@@ -302,8 +302,7 @@ function CalendarPage(): React.JSX.Element {
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
-      })
-      .replace(/\//g, ".");
+      });
   };
 
   const dayTypeBodyTemplate = (rowData) => {
@@ -578,6 +577,7 @@ function CalendarPage(): React.JSX.Element {
                       >
                         <Column
                           className="text-sm font-normal"
+                          headerClassName="text-base font-medium"
                           key="detailDate"
                           field="detailDate"
                           header="Fecha"
@@ -586,6 +586,7 @@ function CalendarPage(): React.JSX.Element {
                         ></Column>
                         <Column
                           className="!p-0 text-sm font-normal max-w-[115px] w-[115px]"
+                          headerClassName="text-base font-medium"
                           key="dayTypeId"
                           field="dayTypeId"
                           header="Tipo"
@@ -595,6 +596,7 @@ function CalendarPage(): React.JSX.Element {
                         ></Column>
                         <Column
                           className="text-sm font-normal"
+                          headerClassName="text-base font-medium"
                           key="description"
                           field="description"
                           header="Descripción"
