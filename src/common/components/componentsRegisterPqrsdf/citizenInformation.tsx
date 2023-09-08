@@ -40,7 +40,7 @@ export const CitizenInformation = () => {
   const { program } = useGetPrograms();
   const { asuntos } = useGetAsuntoSolicitud();
   const { pais } = useGetPaises();
-  const { departamento } = useGetDepartamentos();
+  let { departamento } = useGetDepartamentos();
   const { medium } = useGetResponseMedium();
   const { municipio } = useGetMunicipios('5');
   const { parametros } = useGetListaParametros();
@@ -66,15 +66,17 @@ export const CitizenInformation = () => {
 
     setValuePais( pais );
 
-    if( pais.id == 4 ){ optionDepartamento.current = departamento };
-  
+    optionDepartamento.current = pais.id == 4? departamento: '';
+    optionMunicipios.current = pais.id  == 4 ? '' : '';
+
     return pais;
   };
 
   const seletDepartamentos = ( depart:{id:number, description:string} )=>{
     setValueDepartamento( depart );
     
-    if( depart.id == 5){ optionMunicipios.current = municipio}
+    optionMunicipios.current = depart.id == 5 ? municipio : '';
+    
 
     return depart;
   };
@@ -82,13 +84,9 @@ export const CitizenInformation = () => {
   const checkBox = (dato:{status:boolean | null}) => {
     setstatuscheckBox( dato )
 
-    const estado = dato ? true: null
-  
-
-    console.log( 'data-> ', dato);
-    console.log( 'estado-> ', estado);
+    const estado = dato ? true: null;
     
-    return estado
+    return estado;
   }
 
   const defaultValues = {
@@ -160,7 +158,6 @@ export const CitizenInformation = () => {
                   options={ solicitudes }
                   placeholder='Seleccionar'
                   width='95%'
-
                 />
               </>
             )}
@@ -185,7 +182,7 @@ export const CitizenInformation = () => {
                     onChange={(e) => field.onChange( seleTipoDocument(e.value))}
                     focusInputRef={field.ref}
                     options={ docuements } 
-                    placeholder='CC'
+                    placeholder='Seleccionar'
                     width='254px'
                 />
                 </>
