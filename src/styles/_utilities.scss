@@ -71,7 +71,8 @@
 
 }
 
-.day-parametrization, .no-month-navigator {
+.day-parametrization,
+.no-month-navigator {
     .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
         background: #533893;
         border-color: #533893;
@@ -87,6 +88,7 @@
         border-radius: 4px;
     }
 }
+
 .day-parametrization {
     .p-datatable {
 
@@ -94,6 +96,12 @@
             padding: 0.5rem 0;
             background: transparent;
             border: unset;
+        }
+        .p-paginator{
+            border: none !important;
+        }
+        tbody * {
+            @apply !font-sans;
         }
     }
 }

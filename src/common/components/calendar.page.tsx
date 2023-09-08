@@ -90,7 +90,14 @@ function CalendarPage(): React.JSX.Element {
     return (
       <div>
         <span className="p-input-icon-right">
-          <Calendar inputClassName="!text-sm !py-0.5" value={detailDateFilterValue} onChange={onDetailDateFilterChange} readOnlyInput placeholder="DD / MM / AAA"/>
+          <Calendar
+            showButtonBar
+            inputClassName="!text-sm !py-0.5"
+            value={detailDateFilterValue}
+            onChange={onDetailDateFilterChange}
+            readOnlyInput
+            placeholder="DD / MM / AAA"
+          />
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M10.6667 1.3335V4.00016M5.33333 1.3335V4.00016M2 6.00016H14M12.6667 2.66683H3.33333C2.59667 2.66683 2 3.2635 2 4.00016V12.6668C2 13.4035 2.59667 14.0002 3.33333 14.0002H12.6667C13.4033 14.0002 14 13.4035 14 12.6668V4.00016C14 3.2635 13.4033 2.66683 12.6667 2.66683ZM4.67533 8.48616C4.58333 8.48616 4.50867 8.56083 4.50933 8.65283C4.50933 8.74483 4.584 8.8195 4.676 8.8195C4.768 8.8195 4.84267 8.74483 4.84267 8.65283C4.84267 8.56083 4.768 8.48616 4.67533 8.48616ZM8.00867 8.48616C7.91667 8.48616 7.842 8.56083 7.84267 8.65283C7.84267 8.74483 7.91733 8.8195 8.00933 8.8195C8.10133 8.8195 8.176 8.74483 8.176 8.65283C8.176 8.56083 8.10133 8.48616 8.00867 8.48616ZM11.342 8.48616C11.25 8.48616 11.1753 8.56083 11.176 8.65283C11.176 8.74483 11.2507 8.8195 11.3427 8.8195C11.4347 8.8195 11.5093 8.74483 11.5093 8.65283C11.5093 8.56083 11.4347 8.48616 11.342 8.48616ZM4.67533 11.1528C4.58333 11.1528 4.50867 11.2275 4.50933 11.3195C4.50933 11.4115 4.584 11.4862 4.676 11.4862C4.768 11.4862 4.84267 11.4115 4.84267 11.3195C4.84267 11.2275 4.768 11.1528 4.67533 11.1528ZM8.00867 11.1528C7.91667 11.1528 7.842 11.2275 7.84267 11.3195C7.84267 11.4115 7.91733 11.4862 8.00933 11.4862C8.10133 11.4862 8.176 11.4115 8.176 11.3195C8.176 11.2275 8.10133 11.1528 8.00867 11.1528Z"
@@ -154,7 +161,7 @@ function CalendarPage(): React.JSX.Element {
         text
         rounded
         severity="secondary"
-        className="!px-4 !text-base"
+        className="!px-4 !text-base !text-black"
         label="Cancelar"
         onClick={() => setVisibleConfirm(false)}
       />
@@ -200,11 +207,15 @@ function CalendarPage(): React.JSX.Element {
 
   const handleYearChange = (e) => {
     const selected = years.filter((year) => year.id === e.value)[0];
+    let _filters = { ...filters };
+    _filters["detailDate"].value = null;
+    setDetailDateFilterValue("");
     setSelectedYear(selected);
-    setDays([]);
-    setDates([]);
+    setFilters(_filters);
     setMonthList(false);
     setCalendarPage(0);
+    setDates([]);
+    setDays([]);
   };
 
   useEffect(() => {
@@ -257,14 +268,20 @@ function CalendarPage(): React.JSX.Element {
   };
 
   const textEditor = (options) => {
-    return <InputTextarea value={options.value} onChange={(e) => options.editorCallback(e.target.value)} />;
+    return (
+      <InputTextarea
+        value={options.value}
+        onChange={(e) => options.editorCallback(e.target.value)}
+        className="max-w-[148px] h-[36px] -mb-1.5 appearance-none relative z-10 bg-transparent outline-primary border-0 !p-2"
+      />
+    );
   };
 
   const selectEditor = (options) => {
     return (
       <div className="relative">
         <select
-          className="appearance-none relative z-10 bg-transparent outline-primary max-w-[115px] p-2 h-10"
+          className="appearance-none relative -mb-0.5 z-10 bg-transparent outline-primary max-w-[115px] p-2 h-[36.5px]"
           onChange={(e) => options.editorCallback(e.target.value)}
         >
           <option value={null}>Seleccione un tipo</option>
@@ -297,18 +314,17 @@ function CalendarPage(): React.JSX.Element {
   };
 
   const dateBodyTemplate = (rowData) => {
-    return rowData.detailDate
-      .toLocaleDateString("en-US", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      });
+    return rowData.detailDate.toLocaleDateString("es-CO", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
   };
 
   const dayTypeBodyTemplate = (rowData) => {
     return (
       <div className="relative">
-        <span className="relative z-10 p-2 h-10 max-w-[115px]">
+        <span className="relative z-10 p-2 h-10 max-w-[115px] w-[115px]">
           {dayTypes.filter((type) => type.tdi_codigo == rowData.dayTypeId)[0]?.tdi_descripcion_corta}
         </span>
         <svg
@@ -352,7 +368,7 @@ function CalendarPage(): React.JSX.Element {
     }
   };
 
-  const paginatorTemplate = (prev = 'Anterior',next= 'Siguiente')=> {
+  const paginatorTemplate = (prev = "Anterior", next = "Siguiente") => {
     return {
       layout: "PrevPageLink PageLinks NextPageLink",
       PrevPageLink: (options) => {
@@ -384,14 +400,14 @@ function CalendarPage(): React.JSX.Element {
           (options.view.endPage === options.page && options.page + 1 !== options.totalPages)
         ) {
           const className = classNames(options.className, { "p-disabled": true });
-  
+
           return (
             <span className={className} style={{ userSelect: "none" }}>
               ...
             </span>
           );
         }
-  
+
         return (
           <Button className={options.className} onClick={options.onClick}>
             {options.page + 1}
@@ -399,7 +415,7 @@ function CalendarPage(): React.JSX.Element {
         );
       },
     };
-  } 
+  };
 
   const renderCalendars = () => {
     const calendars = [[], []];
@@ -429,10 +445,10 @@ function CalendarPage(): React.JSX.Element {
           />
         </div>
       );
-    }    
+    }
 
     return (
-      <div className="flex flex-wrap overflow-x-auto no-month-navigator gap-x-6 gap-y-14 pt-5 md:w-1/2 xl:w-[62%] md:pr-6 w-full">
+      <div className="flex flex-wrap justify-between overflow-x-auto no-month-navigator gap-x-6 gap-y-14 pt-5 md:w-1/2 xl:w-[62%] md:pr-6 w-full">
         {calendars[calendarPage]}
         <div className="w-full">
           <Paginator
@@ -453,7 +469,7 @@ function CalendarPage(): React.JSX.Element {
       <ConfirmDialog
         className="rounded-2xl"
         headerClassName="rounded-t-2xl"
-        contentClassName="w-[640px] max-w-full p-8 items-center justify-center"
+        contentClassName="md:w-[640px] max-w-full p-8 items-center justify-center"
         message={
           <div className="flex flex-wrap w-full items-center justify-center">
             <div className="mx-auto text-primary text-3xl w-full text-center">Crear año</div>
@@ -562,67 +578,80 @@ function CalendarPage(): React.JSX.Element {
                   <label className="text-base">Días hábiles y no hábiles</label>
                   <div className="p-card shadow-none border border-[#D9D9D9]">
                     <div className="p-card-body day-parametrization">
-                      <DataTable
-                        paginator
-                        paginatorTemplate={paginatorTemplate("<",">")}
-                        rows={15}
-                        filters={filters}
-                        size="small"
-                        value={days}
-                        editMode="cell"
-                        showGridlines
-                        tableStyle={{ minWidth: "100%" }}
-                        globalFilterFields={["detailDate"]}
-                        header={renderHeader}
-                      >
-                        <Column
-                          className="text-sm font-normal"
-                          headerClassName="text-base font-medium"
-                          key="detailDate"
-                          field="detailDate"
-                          header="Fecha"
-                          dataType="date"
-                          body={dateBodyTemplate}
-                        ></Column>
-                        <Column
-                          className="!p-0 text-sm font-normal max-w-[115px] w-[115px]"
-                          headerClassName="text-base font-medium"
-                          key="dayTypeId"
-                          field="dayTypeId"
-                          header="Tipo"
-                          body={dayTypeBodyTemplate}
-                          editor={(options) => cellEditor(options)}
-                          onCellEditComplete={onCellEditComplete}
-                        ></Column>
-                        <Column
-                          className="text-sm font-normal"
-                          headerClassName="text-base font-medium"
-                          key="description"
-                          field="description"
-                          header="Descripción"
-                          // body={descrptionTemplate}
-                          editor={(options) => cellEditor(options)}
-                          onCellEditComplete={onCellEditComplete}
-                        ></Column>
-                      </DataTable>
+                      <div className="overflow-auto max-w-[calc(100vw-10.1rem)]">
+                        <DataTable
+                          paginator
+                          paginatorTemplate={paginatorTemplate("<", ">")}
+                          rows={15}
+                          filters={filters}
+                          size="small"
+                          value={days}
+                          editMode="cell"
+                          showGridlines
+                          tableStyle={{ minWidth: "22.625rem" }}
+                          globalFilterFields={["detailDate"]}
+                          header={renderHeader}
+                        >
+                          <Column
+                            className="text-sm font-normal"
+                            headerClassName="text-base font-medium"
+                            key="detailDate"
+                            field="detailDate"
+                            header="Fecha"
+                            dataType="date"
+                            body={dateBodyTemplate}
+                          ></Column>
+                          <Column
+                            className="!p-0 text-sm font-normal sm:max-w-[115px] sm:w-[115px] sm:min-w-[115px]"
+                            headerClassName="text-base font-medium"
+                            key="dayTypeId"
+                            field="dayTypeId"
+                            header={
+                              <span>
+                                Tipo <span className="text-red-600">*</span>
+                              </span>
+                            }
+                            body={dayTypeBodyTemplate}
+                            editor={(options) => cellEditor(options)}
+                            onCellEditComplete={onCellEditComplete}
+                          ></Column>
+                          <Column
+                            className="!p-0 text-sm font-normal sm:max-w-[148px] sm:w-[148px] sm:min-w-[148px]"
+                            headerClassName="text-base font-medium"
+                            key="description"
+                            field="description"
+                            header="Descripción"
+                            body={(rowData) => (
+                              <div className="relative">
+                                <span className="relative z-10 p-2 h-10 max-w-[148px] w-[148px]">
+                                  {rowData.description}
+                                </span>
+                              </div>
+                            )}
+                            // body={descrptionTemplate}
+                            editor={(options) => cellEditor(options)}
+                            onCellEditComplete={onCellEditComplete}
+                          ></Column>
+                        </DataTable>
+                      </div>
                     </div>
                   </div>
                   <div className="mt-16 pt-1 px-14">
-                    <div className="flex gap-6">
+                    <div className="flex items-center gap-6">
                       <div className="relative h-10 w-10 border border-[#D9D9D9]"></div>
                       <span className="text-sm">Día hábil</span>
                     </div>
-                    <div className="flex gap-6 mt-8 pt-0.5">
+                    <div className="flex items-center gap-6 mt-8 pt-0.5">
                       <div className="relative h-10 w-10 border border-[#D9D9D9] bg-primary opacity-25 rounded-full"></div>
                       <span className="text-sm">Día no hábil</span>
                     </div>
                     <div className="mt-10 text-sm">
                       <p>Opciones columna “Tipo”</p>
                       <p className="font-medium mt-3.5">
-                        No laboral PR : <span className="font-normal">No laboral por resolución</span>
+                        No laboral PR : <span className="font-normal !font-sans">No laboral por resolución</span>
                       </p>
                       <p className="font- mt-2">
-                        No laboral PF : <span className="font-normal">No laboral por festivo</span>
+                        No laboral PF : <span className="font-normal !font-sans">No laboral por festivo</span>
                       </p>
                     </div>
                   </div>
