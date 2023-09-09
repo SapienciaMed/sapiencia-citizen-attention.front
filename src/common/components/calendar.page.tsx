@@ -1,28 +1,27 @@
+import { FilterMatchMode } from "primereact/api";
 import { Button } from "primereact/button";
 import { Calendar, CalendarChangeEvent, CalendarDateTemplateEvent } from "primereact/calendar";
 import { Column } from "primereact/column";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { DataTable } from "primereact/datatable";
-import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
+import { Dropdown } from "primereact/dropdown";
+import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
+import { Paginator } from "primereact/paginator";
 import { Toast } from "primereact/toast";
-import { InputNumber } from "primereact/inputnumber";
+import { classNames } from "primereact/utils";
 import React, { useEffect, useRef, useState } from "react";
 import { EResponseCodes } from "../constants/api.enum";
 import { useDaysParametrizationService } from "../hooks/daysParametrizationService.hook";
 import { IDayType } from "../interfaces/dayType.interfaces";
 import { IDaysParametrization } from "../interfaces/daysParametrization.interfaces";
 import { IDaysParametrizationDetail } from "../interfaces/daysParametrizationDetail.interfaces";
-import { Paginator } from "primereact/paginator";
-import { classNames } from "primereact/utils";
-import { InputText } from "primereact/inputtext";
-import { FilterMatchMode } from "primereact/api";
 
 function CalendarPage(): React.JSX.Element {
   const toast = useRef(null);
+  const messages = useRef(null);
   const [selectedYear, setSelectedYear] = useState<IDaysParametrization | undefined>(undefined);
   const [monthList, setMonthList] = useState(false);
-  const [customers, setCustomers] = useState(null);
   const [filters, setFilters] = useState({
     detailDate: { value: null, matchMode: FilterMatchMode.EQUALS },
   });
@@ -41,12 +40,28 @@ function CalendarPage(): React.JSX.Element {
   const accept = async () => {
     if (year?.toString()?.length == 4 && year > 2000) {
       if (years.filter((currentYear) => currentYear.year == year).length) {
-        toast.current.show({
+        setVisibleConfirm(false);
+        confirmDialog({
+          id: "messages",
+          message: (
+            <div className="flex flex-wrap w-full items-center justify-center">
+              <div className="mx-auto text-primary text-3xl w-full text-center">Crear año</div>
+
+              <div className="flex items-center justify-center w-full mt-6 pt-0.5">
+                El año ya existe en el calendario, por favor verifique
+              </div>
+            </div>
+          ),
+          closeIcon: closeIcon,
+          accept: () => setVisibleConfirm(true),
+          rejectClassName: 'hidden'
+        });
+        /* toast.current.show({
           severity: "error",
           summary: "Lo sentimos!",
           detail: "El año ya existe en el calendario, por favor verifique.",
           life: 3000,
-        });
+        }); */
       } else {
         // setLoading(true);
         try {
@@ -163,7 +178,10 @@ function CalendarPage(): React.JSX.Element {
         severity="secondary"
         className="!px-4 !py-2 !text-base !text-black"
         label="Cancelar"
-        onClick={() => {setVisibleConfirm(false);setYear(null);}}
+        onClick={() => {
+          setVisibleConfirm(false);
+          setYear(null);
+        }}
       />
       <Button label="Agregar" rounded className="!px-4 !py-2 !text-base" onClick={accept} disabled={year < 2000} />
     </div>
@@ -207,12 +225,19 @@ function CalendarPage(): React.JSX.Element {
 
   const handleYearChange = (e) => {
     const selected = years.filter((year) => year.id === e.value)[0];
+    setSelectedYear(selected);
+    resetForm();
+  };
+
+  const resetForm = () => {
     let _filters = { ...filters };
     _filters["detailDate"].value = null;
     setDetailDateFilterValue("");
-    setSelectedYear(selected);
     setFilters(_filters);
     setMonthList(false);
+    setTimeout(() => {
+      setMonthList(true);
+    }, 1);
     setCalendarPage(0);
     setDates([]);
     setDays([]);
@@ -255,11 +280,15 @@ function CalendarPage(): React.JSX.Element {
 
   const onCellEditComplete = (e) => {
     let { rowData, newValue, newRowData, field, originalEvent: event } = e;
+    let _days = [...days];
     if (field == "dayTypeId") {
-      rowData[field] = newRowData.dayTypeId;
+      rowData[field] = newValue;
+      _days.find((day) => day.detailDate === rowData.detailDate).dayTypeId = newValue;
     } else {
       rowData[field] = newValue;
+      _days.find((day) => day.detailDate === rowData.detailDate).description = newValue;
     }
+    setDays(_days);
   };
 
   const cellEditor = (options) => {
@@ -464,6 +493,7 @@ function CalendarPage(): React.JSX.Element {
         {calendars[calendarPage]}
         <div className="w-full">
           <Paginator
+            className="!pb-0"
             template={paginatorTemplate()}
             first={calendarPage}
             rows={1}
@@ -477,7 +507,7 @@ function CalendarPage(): React.JSX.Element {
   return (
     <div className="p-6 max-w-[1200px] mx-auto">
       <Toast ref={toast} position="bottom-right" />
-
+      <ConfirmDialog id="messages"></ConfirmDialog>
       <ConfirmDialog
         className="rounded-2xl"
         headerClassName="rounded-t-2xl"
@@ -504,7 +534,10 @@ function CalendarPage(): React.JSX.Element {
           </div>
         }
         visible={visibleConfirm}
-        onHide={() => setVisibleConfirm(false)}
+        onHide={() => {
+          setVisibleConfirm(false);
+          setYear(null);
+        }}
         footer={confirmDialogFooter}
         closeIcon={closeIcon}
         resizable={false}
@@ -585,10 +618,10 @@ function CalendarPage(): React.JSX.Element {
             <div className="p-card-title flex justify-between">
               <span className="text-3xl">Meses</span>
             </div>
-            <div className="p-card-content">
+            <div className="p-card-content !pb-0">
               <div className="flex flex-wrap w-full">
                 {renderCalendars()}
-                <div className="md:w-1/2 xl:w-[38%] w-full">
+                <div className="md:w-1/2 xl:w-[38%] w-full relative">
                   <label className="text-base">Días hábiles y no hábiles</label>
                   <div className="p-card shadow-none border border-[#D9D9D9]">
                     <div className="p-card-body day-parametrization">
@@ -667,6 +700,27 @@ function CalendarPage(): React.JSX.Element {
                       <p className="font- mt-2">
                         No laboral PF : <span className="font-normal !font-sans">No laboral por festivo</span>
                       </p>
+                    </div>
+                  </div>
+                  <div className="fixed bottom-0 translate-x-24 ml-3 -translate-y-12">
+                    <div className="p-2 rounded-3xl bg-white flex gap-x-7">
+                      <Button
+                        text
+                        rounded
+                        severity="secondary"
+                        className="!px-8 !py-2 !text-base !text-black !border !border-primary"
+                        label="Cancelar"
+                        onClick={() => {
+                          resetForm();
+                        }}
+                      />
+                      <Button
+                        label="Agregar"
+                        rounded
+                        className="!px-8 !py-2 !text-base"
+                        onClick={accept}
+                        disabled={days.filter((day) => day.dayTypeId == null).length > 0 || days.length <= 0}
+                      />
                     </div>
                   </div>
                 </div>
