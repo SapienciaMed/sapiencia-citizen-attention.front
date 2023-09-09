@@ -229,3 +229,13 @@ color: #000000;
 .list-ol{
     padding-left: 18px;
 }
+
+ .mi-input::placeholder { 
+    color: #000000;
+    opacity: 1.4 !important;
+ }
+
+.mi-input { 
+    background: linear-gradient(0deg, #E2E2E2, #E2E2E2),
+    linear-gradient(0deg, #E9E9E9, #E9E9E9);
+}
