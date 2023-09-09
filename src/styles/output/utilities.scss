@@ -7987,6 +7987,14 @@ video {
   width:100%
 }
 
+.w-40{
+  width:10rem
+}
+
+.\!w-40{
+  width:10rem !important
+}
+
 .max-w-2xs{
   max-width:15rem
 }
@@ -8114,6 +8122,10 @@ video {
 
 .rounded-full{
   border-radius:9999px
+}
+
+.\!rounded{
+  border-radius:0.25rem !important
 }
 
 .rounded-t-2xl{

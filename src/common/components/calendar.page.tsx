@@ -92,7 +92,7 @@ function CalendarPage(): React.JSX.Element {
         <span className="p-input-icon-right">
           <Calendar
             showButtonBar
-            inputClassName="!text-sm !py-0.5"
+            inputClassName="!text-sm !py-0.5 !font-sans !rounded !w-40"
             value={detailDateFilterValue}
             onChange={onDetailDateFilterChange}
             readOnlyInput
