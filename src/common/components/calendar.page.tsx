@@ -156,14 +156,14 @@ function CalendarPage(): React.JSX.Element {
     </svg>
   );
   const confirmDialogFooter = () => (
-    <div className="flex items-center justify-center gap-2">
+    <div className="flex items-center justify-center gap-2 pb-2">
       <Button
         text
         rounded
         severity="secondary"
         className="!px-4 !py-2 !text-base !text-black"
         label="Cancelar"
-        onClick={() => setVisibleConfirm(false)}
+        onClick={() => {setVisibleConfirm(false);setYear(null);}}
       />
       <Button label="Agregar" rounded className="!px-4 !py-2 !text-base" onClick={accept} disabled={year < 2000} />
     </div>
