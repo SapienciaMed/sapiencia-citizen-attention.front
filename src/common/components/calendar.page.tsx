@@ -161,11 +161,11 @@ function CalendarPage(): React.JSX.Element {
         text
         rounded
         severity="secondary"
-        className="!px-4 !text-base !text-black"
+        className="!px-4 !py-2 !text-base !text-black"
         label="Cancelar"
         onClick={() => setVisibleConfirm(false)}
       />
-      <Button label="Agregar" rounded className="!px-4 !text-base" onClick={accept} disabled={year < 2000} />
+      <Button label="Agregar" rounded className="!px-4 !py-2 !text-base" onClick={accept} disabled={year < 2000} />
     </div>
   );
 
@@ -417,6 +417,18 @@ function CalendarPage(): React.JSX.Element {
     };
   };
 
+  const validateYear = (value) => {
+    if (value?.toString().length == 0) {
+      setYearError("El campo es obligatorio.");
+    } else {
+      if (value?.toString().length < 4) {
+        setYearError("Debe tener 4 caracteres.");
+      } else {
+        setYearError(null);
+      }
+    }
+  };
+
   const renderCalendars = () => {
     const calendars = [[], []];
     for (let index = 1; index < 13; index++) {
@@ -474,19 +486,21 @@ function CalendarPage(): React.JSX.Element {
           <div className="flex flex-wrap w-full items-center justify-center">
             <div className="mx-auto text-primary text-3xl w-full text-center">Crear año</div>
 
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center w-full mt-6 pt-0.5">
               <label htmlFor="year" className="text-[22px] block mr-4">
                 Año
               </label>
               <InputText
                 keyfilter="int"
                 inputMode="tel"
-                className={yearError ? "p-invalid" : ""}
+                onBlur={(e) => validateYear(e.target.value)}
+                className={yearError ? "p-invalid w-[76px] py-2" : "w-[76px] py-2"}
                 value={year ? year?.toString() : null}
                 onChange={(e) => setYear(e.target.value ? parseInt(e.target.value) : null)}
                 maxLength={4}
               />
             </div>
+            {yearError && <small className="text-red-600 mt-1">{yearError}</small>}
           </div>
         }
         visible={visibleConfirm}

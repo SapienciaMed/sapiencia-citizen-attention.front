@@ -7935,6 +7935,10 @@ video {
   margin-bottom:-5px
 }
 
+.mt-1{
+  margin-top:0.25rem
+}
+
 .block{
   display:block
 }
@@ -7993,6 +7997,10 @@ video {
 
 .\!w-40{
   width:10rem !important
+}
+
+.w-\[76px\]{
+  width:76px
 }
 
 .max-w-2xs{
@@ -8212,6 +8220,21 @@ video {
 .px-14{
   padding-left:3.5rem;
   padding-right:3.5rem
+}
+
+.py-2{
+  padding-top:0.5rem;
+  padding-bottom:0.5rem
+}
+
+.\!py-2{
+  padding-top:0.5rem !important;
+  padding-bottom:0.5rem !important
+}
+
+.\!py-2\.5{
+  padding-top:0.625rem !important;
+  padding-bottom:0.625rem !important
 }
 
 .pt-0{
