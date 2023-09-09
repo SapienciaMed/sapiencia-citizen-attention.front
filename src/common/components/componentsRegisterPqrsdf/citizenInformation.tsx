@@ -36,14 +36,16 @@ export const CitizenInformation = () => {
   const optionPrograma = ApiDataProgramas.read();
   const optionAsuntoSolicitud = ApiDataAsuntoSolicitud.read();
   const linkPoliticaCondiciones = ApiDataListaParametros.read();
-  const { LPA_VALOR } = linkPoliticaCondiciones[0]
+  const { LPA_VALOR } = linkPoliticaCondiciones[0];
+  
  
   
   
   const optionDepartamento = useRef(null);
   const optionMunicipios = useRef(null);
   const showFieldPersons = useRef('');
-  const showRazonSocial = useRef('none')
+  const showDependecia = useRef('')
+  const showClasificacion = useRef('')
 
   const { pais } = useGetPaises();
   let { departamento } = useGetDepartamentos();
@@ -54,6 +56,7 @@ export const CitizenInformation = () => {
   const [ valuePais, setValuePais] = useState(null);
   const [ valueDepartamento, setValueDepartamento] = useState(null);
   const [ statuscheckBox, setstatuscheckBox] = useState(null);
+  const [ program, setprogram] = useState(null);
 
 
   const seleTipoDocument = ( document:{LGE_CODIGO:number, LGE_ELEMENTO_DESCRIPCION:string} ) => {
@@ -82,6 +85,17 @@ export const CitizenInformation = () => {
 
     return depart;
   };
+
+  const selePrograma = ( programa :{CLP_CODIGO:number,CLP_DESCRIPCION:string; DEP_CODIGO:number,DEP_DESCRIPCION:string ; PRG_CODIGO:number,PRG_DESCRIPCION:string  })=>{
+    setprogram( programa );
+    
+    showDependecia.current = programa.DEP_DESCRIPCION
+    showClasificacion.current = programa.CLP_DESCRIPCION
+    
+   
+    
+    return {programa}
+  }
 
   const checkBox = (dato:{status:boolean | null}) => {
     setstatuscheckBox( dato )
@@ -649,7 +663,7 @@ export const CitizenInformation = () => {
                   id={field.name}
                   value={field.value}
                   className={classNames({ 'p-invalid': fieldState.error })}
-                  onChange={(e) => field.onChange(e.value)}
+                  onChange={(e) => field.onChange( selePrograma(e.value))}
                   focusInputRef={field.ref}
                   optionLabel='PRG_DESCRIPCION'
                   options={ optionPrograma.data }  
@@ -696,18 +710,20 @@ export const CitizenInformation = () => {
         <div className='row-2'>
           <label>Clasificación</label>
           <InputTextComponent
-            placeholder='Disabled'
+            placeholder={showClasificacion.current}
             width=""
             disabled={true} 
+            className=' bg-opacity-35 bg-gray-100 placeholder-opacity-3 placeholder-black'
           />
         </div>
 
         <div className='row-2'>
           <label>Dependencia</label>
           <InputTextComponent
-            placeholder='Disabled'
+            placeholder={showDependecia.current }
             width=""
-            disabled={true} 
+            disabled={true}
+            className=' bg-opacity-35 bg-gray-100 placeholder-opacity-3 placeholder-black' 
           />
         </div>
       </div>
