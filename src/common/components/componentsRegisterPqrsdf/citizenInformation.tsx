@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, Suspense } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Button } from 'primereact/button';
-
 import { fetchData } from '../../apis/fetchData';
 
 import { CalendarComponent } from "./calendarComponent";
@@ -60,6 +59,7 @@ export const CitizenInformation = () => {
 
   const seleTipoDocument = ( document:{LGE_CODIGO:number, LGE_ELEMENTO_DESCRIPCION:string} ) => {
     setValueDocument( document );
+    console.log(document);
     
     showFieldPersons.current = document.LGE_ELEMENTO_DESCRIPCION
 
