@@ -29,7 +29,7 @@ export const CnputTextareaComponent = ( props:Attributes) => {
                 id={ id }
                 className={ className } 
             />
-            <p>Max 5000 caracteres</p>
+            <p>Max 500 caracteres</p>
         </div>
 
 

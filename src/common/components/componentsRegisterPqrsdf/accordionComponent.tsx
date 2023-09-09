@@ -1,14 +1,17 @@
-import { useGetOjectoSolicitud } from '../../hooks/form-pqrsdf.hook'
+import { fetchData } from '../../apis/fetchData';
 import { Accordion, AccordionTab } from 'primereact/accordion'
+
+const ApiDataObjectoSocial = fetchData("/get-objecto-solicitud");
 
 export const AccordionComponent = () => {
 
-    const { solicitudObjecto } = useGetOjectoSolicitud();
+    const optionOjectoSocial = ApiDataObjectoSocial.read();
+    const { data } = optionOjectoSocial
   
   return (
     <Accordion>
         <AccordionTab header="Derecho de Petición">
-            <p className="m-0">
+            <p className="m-0 ">
                 Es el derecho que constitucionalmente tiene toda persona para presentar 
                 peticiones respetuosas por motivos de interés general o particular y comprende 
                 entre otras situaciones, el reconocimiento de un derecho, que se resuelva una 
@@ -21,14 +24,14 @@ export const AccordionComponent = () => {
         </AccordionTab>
         <AccordionTab header="Clases de Petición">
             <p className="m-0">
-                <ul>
-                    <li>
+                <ul className='list-disc list-inside m-2 '>
+                    <li className="m-4 ">
                         Petición de Información: Aquella que hace referencia a las actuaciones 
                         de la entidad, a la resolución de una inquietud o la entrega de 
                         información que no tengan carácter reservado.
                     </li>
 
-                    <li>
+                    <li className="m-4">
                         Petición de Documentos: Aquella que hace referencia a la expedición 
                         de copias o certificaciones que no tengan carácter reservado. 
                         En ningún caso el precio de las copias podrá exceder el valor de la
@@ -36,12 +39,12 @@ export const AccordionComponent = () => {
                         cuenta del interesado en obtenerlas.
                     </li>
 
-                    <li>
+                    <li className="m-4">
                         Consultas: Se refiere a las preguntas formuladas en relación con las
                         materias que le corresponden a la Agencia de Educación Postsecundaria
                         de Medellín-SAPIENCIA- para que rinda o emita algún concepto.
                     </li>
-                    <p>
+                    <p className='ml-4'>
                         No se debe confundir la petición de información con la consulta. 
                         Esta última está referida a un concepto técnico, que implica el 
                         análisis y fijación de una posición especializada, relacionado con 
@@ -72,11 +75,11 @@ export const AccordionComponent = () => {
                         <th className='td-table'>OBJETO</th>
                         <th className='td-table'>TÉRMINO DÍAS HÁBILES</th>
                     </tr>
-                    {   solicitudObjecto.map((data)=>(
+                    {   data.map((data: { OBS_CODIGO: string; OBS_DESCRIPCION: string; OBS_TERMINO_DIAS_HABILES:string })=>(
 
-                            <tr key={data.id}>
-                            <td className='td-table'>{data.description}</td>
-                            <td className='td-table'>{ data.dias}</td>
+                            <tr key={data.OBS_CODIGO}>
+                            <td className='td-table'>{data.OBS_DESCRIPCION}</td>
+                            <td className='td-table'>{ data.OBS_TERMINO_DIAS_HABILES}</td>
                             </tr>
 
                     ))
