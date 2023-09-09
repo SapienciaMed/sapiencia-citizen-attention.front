@@ -31,8 +31,9 @@ function getSuspender(promise) {
     return { read };
   }
   
-  export const fetchData = (url) => {
-    const promise = fetch(`${urlBase}${url}`)
+  export const fetchData = (url:string, id?:string) => {
+    const parametro = id ? id:''
+    const promise = fetch(`${urlBase}${url}${parametro}`)
       .then((response) => response.json());
   
     return getSuspender(promise);

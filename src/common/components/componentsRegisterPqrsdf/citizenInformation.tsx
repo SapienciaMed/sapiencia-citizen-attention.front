@@ -4,10 +4,6 @@ import { Button } from 'primereact/button';
 
 import { fetchData } from '../../apis/fetchData';
 
-import { useGetPaises } from '../../hooks/form-pqrsdf.hook';
-import { useGetDepartamentos } from '../../hooks/form-pqrsdf.hook';
-import { useGetMunicipios } from '../../hooks/form-pqrsdf.hook'; 
-
 import { CalendarComponent } from "./calendarComponent";
 import { DropDownComponent } from "./dropDownComponent";
 import { InputTextComponent } from "./inputTextComponent";
@@ -24,6 +20,9 @@ const ApiDataResponseMedium = fetchData("/get-response-medium");
 const ApiDataProgramas = fetchData("/get-Programs");
 const ApiDataAsuntoSolicitud = fetchData("/get-solicitudes");
 const ApiDataListaParametros = fetchData("/get-listaParametros");
+const ApiDataPais = fetchData("/get-paises");
+const ApiDataDepartamentos = fetchData("/get-departamentos");
+const ApiDataMunicipios = fetchData("/get-municipios/",'5');
 
 
 export const CitizenInformation = () => {
@@ -36,6 +35,9 @@ export const CitizenInformation = () => {
   const optionPrograma = ApiDataProgramas.read();
   const optionAsuntoSolicitud = ApiDataAsuntoSolicitud.read();
   const linkPoliticaCondiciones = ApiDataListaParametros.read();
+  const paises = ApiDataPais.read();
+  
+
   const { LPA_VALOR } = linkPoliticaCondiciones[0];
   
  
@@ -46,11 +48,8 @@ export const CitizenInformation = () => {
   const showFieldPersons = useRef('');
   const showDependecia = useRef('')
   const showClasificacion = useRef('')
-
-  const { pais } = useGetPaises();
-  let { departamento } = useGetDepartamentos();
-
-  const { municipio } = useGetMunicipios('5');
+  const showDeptoMupio = useRef(null)
+  const showMupio = useRef(null)
 
   const [ valueDocument, setValueDocument] = useState(null);
   const [ valuePais, setValuePais] = useState(null);
@@ -67,22 +66,34 @@ export const CitizenInformation = () => {
     return document;
   };
 
-  const seletDataPais = ( pais:{id:number, description:string} )=>{
+  const seletDataPais = ( pais:{LGE_CODIGO:number, LGE_ELEMENTO_DESCRIPCION:string} )=>{
     
     setValuePais( pais );
 
-    optionDepartamento.current = pais.id == 4? departamento: '';
-    optionMunicipios.current = pais.id  == 4 ? '' : '';
+    showDeptoMupio.current = pais.LGE_CODIGO;
 
+    if(pais.LGE_CODIGO == 4){
+
+      const departamentos = ApiDataDepartamentos.read();
+      optionDepartamento.current = departamentos.data;
+      
+    }
+      
     return pais;
   };
 
-  const seletDepartamentos = ( depart:{id:number, description:string} )=>{
+  const seletDepartamentos = ( depart:{LGE_CODIGO:number, LGE_ELEMENTO_DESCRIPCION:string} )=>{
     setValueDepartamento( depart );
     
-    optionMunicipios.current = depart.id == 5 ? municipio : '';
-    
+    showMupio.current = depart.LGE_CODIGO;
 
+    if( depart.LGE_CODIGO == 204 ){
+
+      const municipios = ApiDataMunicipios.read();
+      optionMunicipios.current =  municipios.data;
+      
+    }
+    
     return depart;
   };
 
@@ -97,6 +108,7 @@ export const CitizenInformation = () => {
     return {programa}
   }
 
+  
   const checkBox = (dato:{status:boolean | null}) => {
     setstatuscheckBox( dato )
 
@@ -556,7 +568,8 @@ export const CitizenInformation = () => {
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(seletDataPais(e.value))}
                   focusInputRef={field.ref}
-                  options={ pais }
+                  optionLabel='LGE_ELEMENTO_DESCRIPCION'
+                  options={ paises.data }
                   placeholder='Selecionar'
                   width="280px"
                 />
@@ -567,56 +580,70 @@ export const CitizenInformation = () => {
         </div>
 
         <span className='split'></span>
-
-        <div className='row-1'>
-          <label>Departamento<span className='required'>*</span></label>
-          <Controller
-            name="departamento"
-            control={control}
-            rules={{ required: 'Campo requerido.' }}
-            render={({ field, fieldState }) => (
-              <>
-                <DropDownComponent
-                  id={field.name}
-                  value={ field.value }
-                  className={classNames({ 'p-invalid': fieldState.error })}
-                  onChange={(e) => field.onChange(seletDepartamentos(e.value))}
-                  focusInputRef={field.ref}
-                  options={ optionDepartamento.current}
-                  placeholder='Selecionar'
-                  width="280px"
-                />
-              </>
-            )}
-          />
-          {getFormErrorMessage('departamento')}
+        { showDeptoMupio.current == 4?(
+        <>
+          <div className='row-1'>
+            <label>Departamento<span className='required'>*</span></label>
+            <Controller
+              name="departamento"
+              control={control}
+              rules={{ required: 'Campo requerido.' }}
+              render={({ field, fieldState }) => (
+                <>
+                  <DropDownComponent
+                    id={field.name}
+                    value={ field.value }
+                    className={classNames({ 'p-invalid': fieldState.error })}
+                    onChange={(e) => field.onChange(seletDepartamentos(e.value))}
+                    focusInputRef={field.ref}
+                    optionLabel='LGE_ELEMENTO_DESCRIPCION'
+                    options={ optionDepartamento.current}
+                    placeholder='Selecionar'
+                    width="280px"
+                  />
+                </>
+              )}
+            />
+            {getFormErrorMessage('departamento')}
         </div>
+        </>):(<></>)
+        }
+
 
         <span className='split'></span>
         
-        <div className='row-1'>
-          <label>Municipio<span className='required'>*</span></label>
-          <Controller
-            name="municipio"
-            control={control}
-            rules={{ required: 'Campo requerido.' }}
-            render={({ field, fieldState }) => (
-              <>
-                <DropDownComponent
-                  id={field.name}
-                  value={field.value}
-                  className={classNames({ 'p-invalid': fieldState.error })}
-                  onChange={(e) => field.onChange(e.value)}
-                  focusInputRef={field.ref}
-                  options={ optionMunicipios.current }
-                  placeholder='Selecionar'
-                  width="280px"
-                />
-              </>
-            )}
-          />
-          {getFormErrorMessage('municipio')}
+        { showDeptoMupio.current == 4?(
+        <>
+          { showMupio.current == 204?(
+          <>
+            <div className='row-1'>
+              <label>Municipio<span className='required'>*</span></label>
+              <Controller
+                name="municipio"
+                control={control}
+                rules={{ required: 'Campo requerido.' }}
+                render={({ field, fieldState }) => (
+                  <>
+                    <DropDownComponent
+                      id={field.name}
+                      value={field.value}
+                      className={classNames({ 'p-invalid': fieldState.error })}
+                      onChange={(e) => field.onChange(e.value)}
+                      focusInputRef={field.ref}
+                      optionLabel='LGE_ELEMENTO_DESCRIPCION'
+                      options={ optionMunicipios.current }
+                      placeholder='Selecionar'
+                      width="280px"
+                    />
+                  </>
+                )}
+              />
+              {getFormErrorMessage('municipio')}
         </div>
+          </>):(<></>)
+          }
+        </>):(<></>)}
+
       </div>
 
       <div className="div-container">
