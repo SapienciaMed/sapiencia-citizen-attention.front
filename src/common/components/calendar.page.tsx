@@ -272,7 +272,7 @@ function CalendarPage(): React.JSX.Element {
       <InputTextarea
         value={options.value}
         onChange={(e) => options.editorCallback(e.target.value)}
-        className="max-w-[148px] h-[36px] -mb-1.5 appearance-none relative z-10 bg-transparent outline-primary border-0 !p-2"
+        className="max-w-[148px] h-[35px] -mb-[5px] appearance-none relative z-10 bg-transparent outline-primary border-0 !p-2"
       />
     );
   };
@@ -281,7 +281,7 @@ function CalendarPage(): React.JSX.Element {
     return (
       <div className="relative">
         <select
-          className="appearance-none relative -mb-0.5 z-10 bg-transparent outline-primary max-w-[115px] p-2 h-[36.5px]"
+          className="appearance-none relative -mb-0.5 z-10 bg-transparent outline-primary max-w-[115px] p-2 h-[35px]"
           onChange={(e) => options.editorCallback(e.target.value)}
         >
           <option value={null}>Seleccione un tipo</option>
@@ -463,7 +463,7 @@ function CalendarPage(): React.JSX.Element {
     );
   };
   return (
-    <div className="p-6 max-w-[2400px] mx-auto">
+    <div className="p-6 max-w-[1200px] mx-auto">
       <Toast ref={toast} position="bottom-right" />
 
       <ConfirmDialog
@@ -593,7 +593,7 @@ function CalendarPage(): React.JSX.Element {
                           header={renderHeader}
                         >
                           <Column
-                            className="text-sm font-normal"
+                            bodyClassName="text-sm font-normal"
                             headerClassName="text-base font-medium"
                             key="detailDate"
                             field="detailDate"
@@ -602,7 +602,7 @@ function CalendarPage(): React.JSX.Element {
                             body={dateBodyTemplate}
                           ></Column>
                           <Column
-                            className="!p-0 text-sm font-normal sm:max-w-[115px] sm:w-[115px] sm:min-w-[115px]"
+                            bodyClassName="!p-0 text-sm font-normal sm:max-w-[115px] sm:w-[115px] sm:min-w-[115px]"
                             headerClassName="text-base font-medium"
                             key="dayTypeId"
                             field="dayTypeId"
@@ -616,7 +616,7 @@ function CalendarPage(): React.JSX.Element {
                             onCellEditComplete={onCellEditComplete}
                           ></Column>
                           <Column
-                            className="!p-0 text-sm font-normal sm:max-w-[148px] sm:w-[148px] sm:min-w-[148px]"
+                            bodyClassName="!p-0 text-sm font-normal sm:max-w-[148px] sm:w-[148px] sm:min-w-[148px]"
                             headerClassName="text-base font-medium"
                             key="description"
                             field="description"
