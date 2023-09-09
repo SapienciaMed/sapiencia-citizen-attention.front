@@ -53,8 +53,13 @@ function CalendarPage(): React.JSX.Element {
             </div>
           ),
           closeIcon: closeIcon,
+          acceptLabel: "Aceptar",
           accept: () => setVisibleConfirm(true),
-          rejectClassName: 'hidden'
+          footer: (
+            <div className="flex items-center justify-center gap-2 pb-2">
+<Button label="Aceptar" rounded className="!px-4 !py-2 !text-base" onClick={()=>setVisibleConfirm(true)} />
+    </div>
+          )
         });
         /* toast.current.show({
           severity: "error",
