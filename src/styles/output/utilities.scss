@@ -7865,6 +7865,10 @@ video {
   margin:1rem
 }
 
+.m-2{
+  margin:0.5rem
+}
+
 .mx-auto{
   margin-left:auto;
   margin-right:auto
@@ -7913,6 +7917,10 @@ video {
 
 .mt-auto{
   margin-top:auto
+}
+
+.ml-4{
+  margin-left:1rem
 }
 
 .block{
@@ -7980,8 +7988,16 @@ video {
   resize:both
 }
 
+.list-inside{
+  list-style-position:inside
+}
+
 .list-decimal{
   list-style-type:decimal
+}
+
+.list-disc{
+  list-style-type:disc
 }
 
 .appearance-none{
@@ -8193,6 +8209,10 @@ video {
 
 .font-normal{
   font-weight:400
+}
+
+.font-light{
+  font-weight:300
 }
 
 .text-black{

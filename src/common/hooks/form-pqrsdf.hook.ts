@@ -1,95 +1,10 @@
 import { useEffect, useState } from "react";
-import { typeSolicituds } from "../apis/api-pqrsdf";
-import { typeDocument } from "../apis/api-pqrsdf";
-import { typeEntidadJuridica } from "../apis/api-pqrsdf"
-import { responseMedium } from "../apis/api-pqrsdf";
-import { programs } from "../apis/api-pqrsdf";
-import { asuntoSolicitud } from "../apis/api-pqrsdf";
+
 import { paises } from "../apis/api-pqrsdf";
 import { departamentos } from "../apis/api-pqrsdf";
 import { municipios } from "../apis/api-pqrsdf";
-import { objectoSolicitud } from "../apis/api-pqrsdf";
-import { listaParametros } from "../apis/api-pqrsdf";
-import { string } from "yargs";
-
-export const useGetTypeSolicitud = ( ) => {
-
-    const [ solicitudes, setSolicitudes ] = useState([]);
-
-    useEffect( ()=> {
-        typeSolicituds()
-            .then( options => { setSolicitudes( options ) });      
-    }, [] )
-  
-    return { solicitudes }
-
-};
-
-export const useGetTypeDocuments = ( ) => {
-
-    const [ docuements, setDocuement ] = useState([]);
-
-    useEffect( ()=> {
-        typeDocument()
-            .then( options => { setDocuement( options ) });      
-    }, [] )
-    
-    return { docuements }
-
-};
-
-export const useGetTipoEntidadJuridica = ( ) => {
-
-    const [ entidadJuridica, setEntidadJuridica ] = useState([]);
-
-    useEffect( ()=> {
-        typeEntidadJuridica()
-            .then( options => { setEntidadJuridica( options ) });      
-    }, [] )
-    
-    return { entidadJuridica }
-
-};
-
-export const useGetResponseMedium = ( ) => {
-
-    const [ medium, setmedium ] = useState([]);
-
-    useEffect( ()=> {
-        responseMedium()
-            .then( options => { setmedium( options ) });      
-    }, [] )
-    
-    return { medium }
-
-};
 
 
-export const useGetPrograms = ( ) => {
-
-    const [ program, setProgram ] = useState([]);
-
-    useEffect( ()=> {
-        programs()
-            .then( options => { setProgram( options ) });      
-    }, [] )
-    
-    return { program }
-
-};
-
-export const useGetAsuntoSolicitud = ( ) => {
-
-    const [ asuntos, setAsuntos ] = useState([]);
-
-    useEffect( ()=> {
-        asuntoSolicitud()
-            .then( options => { setAsuntos( options ) });      
-    }, [] )
-    
-    return { asuntos }
-
-};
 
 export const useGetPaises = ( ) => {
 
@@ -127,31 +42,5 @@ export const useGetMunicipios = ( id:string ) => {
     }, [] )
     
     return { municipio }
-
-};
-
-export const useGetOjectoSolicitud = () => {
-
-    const [ solicitudObjecto, setSolicitudObjecto ] = useState([]);
-
-    useEffect( ()=> {
-        objectoSolicitud()
-            .then( options => { setSolicitudObjecto( options ) });      
-    }, [] )
-    
-    return { solicitudObjecto }
-
-};
-
-export const useGetListaParametros = () => {
-
-    const [ parametros, setParametros ] = useState([]);
-
-    useEffect( ()=> {
-        listaParametros()
-            .then( options => { setParametros( options ) });      
-    }, [] )
-    
-    return { parametros }
 
 };

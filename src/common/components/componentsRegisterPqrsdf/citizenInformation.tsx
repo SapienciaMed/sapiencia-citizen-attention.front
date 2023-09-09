@@ -1,16 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
-import { Button } from 'primereact/button';
+import { useEffect, useRef, useState, Suspense } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { useGetTypeSolicitud } from '../../hooks/form-pqrsdf.hook';
-import { useGetTypeDocuments } from '../../hooks/form-pqrsdf.hook';
-import { useGetTipoEntidadJuridica } from '../../hooks/form-pqrsdf.hook';
-import { useGetResponseMedium } from '../../hooks/form-pqrsdf.hook';
-import { useGetPrograms } from '../../hooks/form-pqrsdf.hook';
-import { useGetAsuntoSolicitud } from '../../hooks/form-pqrsdf.hook';
+import { Button } from 'primereact/button';
+
+import { fetchData } from '../../apis/fetchData';
+
 import { useGetPaises } from '../../hooks/form-pqrsdf.hook';
 import { useGetDepartamentos } from '../../hooks/form-pqrsdf.hook';
 import { useGetMunicipios } from '../../hooks/form-pqrsdf.hook'; 
-import { useGetListaParametros } from '../../hooks/form-pqrsdf.hook'; 
 
 import { CalendarComponent } from "./calendarComponent";
 import { DropDownComponent } from "./dropDownComponent";
@@ -21,49 +17,55 @@ import { TriStateCheckboxComponent } from "./triStateCheckboxComponent";
 import { UploadComponent } from "./uploadComponent";
 import { classNames } from 'primereact/utils';
 
-
-
-
-
+const ApiDatatypoSolicitudes = fetchData("/get-type-solicituds");
+const ApiDatatypoDocument = fetchData("/get-type-docuement");
+const ApiDatalegalEntity = fetchData("/get-legal-entity");
+const ApiDataResponseMedium = fetchData("/get-response-medium");
+const ApiDataProgramas = fetchData("/get-Programs");
+const ApiDataAsuntoSolicitud = fetchData("/get-solicitudes");
+const ApiDataListaParametros = fetchData("/get-listaParametros");
 
 
 export const CitizenInformation = () => {
-
+  
+  
+  const optionSolicitudes = ApiDatatypoSolicitudes.read();
+  const optionTypeDocument = ApiDatatypoDocument.read();
+  const optionLegalEntity = ApiDatalegalEntity.read();
+  const optionResponseMedium = ApiDataResponseMedium.read();
+  const optionPrograma = ApiDataProgramas.read();
+  const optionAsuntoSolicitud = ApiDataAsuntoSolicitud.read();
+  const linkPoliticaCondiciones = ApiDataListaParametros.read();
+  const { LPA_VALOR } = linkPoliticaCondiciones[0]
+ 
+  
+  
   const optionDepartamento = useRef(null);
   const optionMunicipios = useRef(null);
   const showFieldPersons = useRef('');
   const showRazonSocial = useRef('none')
 
-  const { solicitudes } = useGetTypeSolicitud();
-  const { docuements } = useGetTypeDocuments();
-  const { entidadJuridica } = useGetTipoEntidadJuridica();
-  const { program } = useGetPrograms();
-  const { asuntos } = useGetAsuntoSolicitud();
   const { pais } = useGetPaises();
   let { departamento } = useGetDepartamentos();
-  const { medium } = useGetResponseMedium();
+
   const { municipio } = useGetMunicipios('5');
-  const { parametros } = useGetListaParametros();
-  
+
   const [ valueDocument, setValueDocument] = useState(null);
   const [ valuePais, setValuePais] = useState(null);
   const [ valueDepartamento, setValueDepartamento] = useState(null);
   const [ statuscheckBox, setstatuscheckBox] = useState(null);
 
 
-  const seleTipoDocument = ( document:{id:number, description:string} ) => {
+  const seleTipoDocument = ( document:{LGE_CODIGO:number, LGE_ELEMENTO_DESCRIPCION:string} ) => {
     setValueDocument( document );
     
-    showFieldPersons.current = document.description
+    showFieldPersons.current = document.LGE_ELEMENTO_DESCRIPCION
 
-    console.log( showFieldPersons.current  );
-    
-    
     return document;
   };
 
   const seletDataPais = ( pais:{id:number, description:string} )=>{
-
+    
     setValuePais( pais );
 
     optionDepartamento.current = pais.id == 4? departamento: '';
@@ -149,16 +151,19 @@ export const CitizenInformation = () => {
             rules={{ required: 'Requerido.' }}
             render={({ field, fieldState, }) => (
               <>
+              <Suspense fallback={ <div>Cargando...</div>}>
                 <DropDownComponent
-                  id={field.name}
-                  value={field.value}
-                  className={classNames({ 'p-invalid': fieldState.error })}
-                  onChange={(e) => field.onChange(e.value)}
-                  focusInputRef={field.ref}
-                  options={ solicitudes }
-                  placeholder='Seleccionar'
-                  width='95%'
-                />
+                    id={field.value}
+                    value={field.value}
+                    optionLabel= {'TSO_DESCRIPTION'}
+                    className={classNames({ 'p-invalid': fieldState.error })}
+                    onChange={(e) => field.onChange(e.value)}
+                    focusInputRef={field.ref}
+                    options={ optionSolicitudes.data  }
+                    placeholder='Seleccionar'
+                    width='95%'
+                  />
+              </Suspense>
               </>
             )}
           />
@@ -175,16 +180,19 @@ export const CitizenInformation = () => {
               rules={{ required: 'Requerido.'}}
               render={({ field, fieldState }) => (
                 <>
+                <Suspense fallback={ <div>Cargando...</div>}>
                   <DropDownComponent
-                    id={field.name}
-                    value={field.value}
-                    className={classNames({ 'p-invalid': fieldState.error })}
-                    onChange={(e) => field.onChange( seleTipoDocument(e.value))}
-                    focusInputRef={field.ref}
-                    options={ docuements } 
-                    placeholder='Seleccionar'
-                    width='254px'
-                />
+                      id={field.name}
+                      value={field.value}
+                      className={classNames({ 'p-invalid': fieldState.error })}
+                      onChange={(e) => field.onChange( seleTipoDocument(e.value))}
+                      focusInputRef={field.ref}
+                      optionLabel={'LGE_ELEMENTO_DESCRIPCION'}
+                      options={ optionTypeDocument.data }
+                      placeholder='Seleccionar'
+                      width='254px'
+                    />
+                </Suspense>
                 </>
               )}
             />
@@ -227,16 +235,19 @@ export const CitizenInformation = () => {
               rules={{ required: 'Requerido.' }}
               render={({ field, fieldState }) => (
                 <>
+                <Suspense fallback={ <div>Cargando...</div>}>
                   <DropDownComponent
                     id={field.name}
                     value={field.value}
                     className={classNames({ 'p-invalid': fieldState.error })}
                     onChange={(e) => field.onChange(e.value)}
                     focusInputRef={field.ref}
-                    options={ entidadJuridica }  
+                    optionLabel={'TEJ_NOMBRE'}
+                    options={ optionLegalEntity.data }  
                     placeholder='Seleccionar'
                     width='95%'
-                />
+                  />
+                </Suspense>
                 </>
               )}
             />
@@ -470,7 +481,7 @@ export const CitizenInformation = () => {
               <Controller
                 name="correoElectronico"
                 control={control}
-                rules={{ required: 'Requerido.' }}
+                rules={{}}
                 render={({ field, fieldState }) => (
                   <>
                     <InputTextComponent
@@ -610,7 +621,8 @@ export const CitizenInformation = () => {
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(e.value)}
                   focusInputRef={field.ref}
-                  options={ medium }   
+                  optionLabel='MRE_DESCRIPCION'
+                  options={ optionResponseMedium.data }   
                   placeholder='Seleccionar'
                   width='50%'
               />
@@ -632,16 +644,19 @@ export const CitizenInformation = () => {
             rules={{ required: 'Requerido.' }}
             render={({ field, fieldState }) => (
               <>
+              <Suspense fallback={ <div>Cargando...</div>}>
                 <DropDownComponent
                   id={field.name}
                   value={field.value}
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(e.value)}
                   focusInputRef={field.ref}
-                  options={ program }  
+                  optionLabel='PRG_DESCRIPCION'
+                  options={ optionPrograma.data }  
                   placeholder='Seleccionar'
                   width=''
-              />
+                />
+              </Suspense>
               </>
             )}
           />
@@ -656,16 +671,19 @@ export const CitizenInformation = () => {
             rules={{ required: 'Requerido.' }}
             render={({ field, fieldState }) => (
               <>
+              <Suspense fallback={ <div>Cargando...</div>}>
                 <DropDownComponent
                   id={field.name}
                   value={field.value}
                   className={classNames({ 'p-invalid': fieldState.error })}
                   onChange={(e) => field.onChange(e.value)}
                   focusInputRef={field.ref}
-                  options={ asuntos }  
+                  optionLabel='ASO_ASUNTO'
+                  options={ optionAsuntoSolicitud.data }  
                   placeholder='Seleccionar'
                   width=''
-              />
+                />
+              </Suspense>
               </>
             )}
           />
@@ -724,7 +742,7 @@ export const CitizenInformation = () => {
       </div>
 
       <div className="div_container" style={{marginBottom:'20px'}}>
-        <label>Para conocer la Política de Tratamiento y Protección de datos personales de Sapiencia, dar click <a href={parametros.toString()} style={{color:'#533893'}} target="_blank">aquí</a> </label>
+        <label>Para conocer la Política de Tratamiento y Protección de datos personales de Sapiencia, dar click <a href={LPA_VALOR} style={{color:'#533893'}} target="_blank">aquí</a> </label>
         <Controller
           name="politicaTratamiento"
           control={control}
