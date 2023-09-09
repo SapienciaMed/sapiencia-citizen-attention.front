@@ -7879,6 +7879,22 @@ video {
   margin-bottom:auto
 }
 
+.-mb-0{
+  margin-bottom:-0px
+}
+
+.-mb-0\.5{
+  margin-bottom:-0.125rem
+}
+
+.-mb-1{
+  margin-bottom:-0.25rem
+}
+
+.-mb-1\.5{
+  margin-bottom:-0.375rem
+}
+
 .mb-0{
   margin-bottom:0px
 }
@@ -7919,8 +7935,13 @@ video {
   margin-top:auto
 }
 
+<<<<<<< HEAD
 .ml-4{
   margin-left:1rem
+=======
+.-mb-\[5px\]{
+  margin-bottom:-5px
+>>>>>>> e0b84870089b21209847fa869bbbca9c2a100e26
 }
 
 .block{
@@ -7943,6 +7964,22 @@ video {
   height:2.5rem
 }
 
+.h-\[36\.5px\]{
+  height:36.5px
+}
+
+.h-\[36px\]{
+  height:36px
+}
+
+.h-\[35\.5px\]{
+  height:35.5px
+}
+
+.h-\[35px\]{
+  height:35px
+}
+
 .w-10{
   width:2.5rem
 }
@@ -7951,12 +7988,20 @@ video {
   width:115px
 }
 
-.w-\[640px\]{
-  width:640px
+.w-\[148px\]{
+  width:148px
 }
 
 .w-full{
   width:100%
+}
+
+.w-40{
+  width:10rem
+}
+
+.\!w-40{
+  width:10rem !important
 }
 
 .max-w-2xs{
@@ -7967,12 +8012,28 @@ video {
   max-width:115px
 }
 
+.max-w-\[148px\]{
+  max-width:148px
+}
+
 .max-w-\[2400px\]{
   max-width:2400px
 }
 
+.max-w-\[calc\(100vw-10\.1rem\)\]{
+  max-width:calc(100vw - 10.1rem)
+}
+
 .max-w-full{
   max-width:100%
+}
+
+.max-w-\[1440px\]{
+  max-width:1440px
+}
+
+.max-w-\[1200px\]{
+  max-width:1200px
 }
 
 .-translate-y-1\/2{
@@ -8056,6 +8117,10 @@ video {
   row-gap:3.5rem
 }
 
+.overflow-auto{
+  overflow:auto
+}
+
 .overflow-x-auto{
   overflow-x:auto
 }
@@ -8076,6 +8141,10 @@ video {
   border-radius:9999px
 }
 
+.\!rounded{
+  border-radius:0.25rem !important
+}
+
 .rounded-t-2xl{
   border-top-left-radius:1rem;
   border-top-right-radius:1rem
@@ -8083,6 +8152,10 @@ video {
 
 .border{
   border-width:1px
+}
+
+.border-0{
+  border-width:0px
 }
 
 .border-\[\#D9D9D9\]{
@@ -8128,6 +8201,10 @@ video {
 
 .\!p-0{
   padding:0px !important
+}
+
+.\!p-2{
+  padding:0.5rem !important
 }
 
 .p-2{
@@ -8201,6 +8278,10 @@ video {
   text-align:center
 }
 
+.\!font-sans{
+  font-family:Rubik, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important
+}
+
 .\!text-base{
   font-size:1rem !important;
   line-height:1.5rem !important
@@ -8238,8 +8319,14 @@ video {
   font-weight:400
 }
 
+<<<<<<< HEAD
 .font-light{
   font-weight:300
+=======
+.\!text-black{
+  --tw-text-opacity:1 !important;
+  color:rgb(0 0 0 / var(--tw-text-opacity)) !important
+>>>>>>> e0b84870089b21209847fa869bbbca9c2a100e26
 }
 
 .text-black{
@@ -8252,6 +8339,7 @@ video {
   color:rgb(83 56 147 / var(--tw-text-opacity))
 }
 
+<<<<<<< HEAD
 .placeholder-gray-600::-moz-placeholder{
   --tw-placeholder-opacity:1;
   color:rgb(75 85 99 / var(--tw-placeholder-opacity))
@@ -8306,6 +8394,11 @@ video {
 
 .placeholder-opacity-5::placeholder{
   --tw-placeholder-opacity:0.05
+=======
+.text-red-600{
+  --tw-text-opacity:1;
+  color:rgb(220 38 38 / var(--tw-text-opacity))
+>>>>>>> e0b84870089b21209847fa869bbbca9c2a100e26
 }
 
 .opacity-25{
@@ -8407,7 +8500,8 @@ video {
   }
 }
 
-.day-parametrization, .no-month-navigator {
+.day-parametrization,
+.no-month-navigator {
   .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
     background: #533893;
     border-color: #533893;
@@ -8430,12 +8524,48 @@ video {
       background: transparent;
       border: unset;
     }
+    .p-paginator{
+      border: none !important;
+    }
+    tbody *{
+      font-family:Rubik, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important
+    }
+  }
+}
+
+@media (min-width: 640px){
+  .sm\:w-\[115px\]{
+    width:115px
+  }
+
+  .sm\:w-\[148px\]{
+    width:148px
+  }
+
+  .sm\:min-w-\[115px\]{
+    min-width:115px
+  }
+
+  .sm\:min-w-\[148px\]{
+    min-width:148px
+  }
+
+  .sm\:max-w-\[115px\]{
+    max-width:115px
+  }
+
+  .sm\:max-w-\[148px\]{
+    max-width:148px
   }
 }
 
 @media (min-width: 768px){
   .md\:w-1\/2{
     width:50%
+  }
+
+  .md\:w-\[640px\]{
+    width:640px
   }
 
   .md\:min-w-\[288pxx\]{
