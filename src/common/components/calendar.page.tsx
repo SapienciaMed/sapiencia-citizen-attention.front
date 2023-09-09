@@ -45,7 +45,7 @@ function CalendarPage(): React.JSX.Element {
           id: "messages",
           message: (
             <div className="flex flex-wrap w-full items-center justify-center">
-              <div className="mx-auto text-primary text-3xl w-full text-center">Crear año</div>
+              <div className="mx-auto text-primary text-3xl w-full text-center">Año existente</div>
 
               <div className="flex items-center justify-center w-full mt-6 pt-0.5">
                 El año ya existe en el calendario, por favor verifique
