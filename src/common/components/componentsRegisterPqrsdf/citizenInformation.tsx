@@ -183,7 +183,7 @@ export const CitizenInformation = () => {
                     id={field.value}
                     value={field.value}
                     optionLabel= {'TSO_DESCRIPTION'}
-                    className={classNames({ 'p-invalid': fieldState.error })}
+                    className={classNames({ 'p-invalid': fieldState.error } ,'!h-10')}
                     onChange={(e) => field.onChange(e.value)}
                     focusInputRef={field.ref}
                     options={ optionSolicitudes.data  }
@@ -211,7 +211,7 @@ export const CitizenInformation = () => {
                   <DropDownComponent
                       id={field.name}
                       value={field.value}
-                      className={classNames({ 'p-invalid': fieldState.error })}
+                      className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                       onChange={(e) => field.onChange( seleTipoDocument(e.value))}
                       focusInputRef={field.ref}
                       optionLabel={'LGE_ELEMENTO_DESCRIPCION'}
@@ -237,7 +237,7 @@ export const CitizenInformation = () => {
                   <InputTextComponent
                     id={field.name}
                     value={field.value}
-                    className={classNames({ 'p-invalid': fieldState.error })}
+                    className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                     onChange={(e) => field.onChange(e.target.value)}
                     placeholder=''
                     width="280px"
@@ -266,7 +266,7 @@ export const CitizenInformation = () => {
                   <DropDownComponent
                     id={field.name}
                     value={field.value}
-                    className={classNames({ 'p-invalid': fieldState.error })}
+                    className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                     onChange={(e) => field.onChange(e.value)}
                     focusInputRef={field.ref}
                     optionLabel={'TEJ_NOMBRE'}
@@ -306,7 +306,7 @@ export const CitizenInformation = () => {
                     <InputTextComponent
                       id={field.name}
                       value={field.value}
-                      className={classNames({ 'p-invalid': fieldState.error })}
+                      className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                       onChange={(e) => field.onChange(e.target.value)}
                       placeholder=''
                       width="50%"
@@ -337,7 +337,7 @@ export const CitizenInformation = () => {
                       <InputTextComponent
                         id={field.name}
                         value={field.value}
-                        className={classNames({ 'p-invalid': fieldState.error })}
+                        className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                         onChange={(e) => field.onChange(e.target.value)}
                         placeholder=''
                         width="95%"
@@ -358,7 +358,7 @@ export const CitizenInformation = () => {
                       <InputTextComponent
                         id={field.name}
                         value={field.value}
-                        className={classNames({ 'p-invalid': fieldState.error })}
+                        className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                         onChange={(e) => field.onChange(e.target.value)}
                         placeholder=''
                         width="95%"
@@ -380,7 +380,7 @@ export const CitizenInformation = () => {
                       <InputTextComponent
                         id={field.name}
                         value={field.value}
-                        className={classNames({ 'p-invalid': fieldState.error })}
+                        className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                         onChange={(e) => field.onChange(e.target.value)}
                         placeholder=''
                         width="95%"
@@ -401,7 +401,7 @@ export const CitizenInformation = () => {
                       <InputTextComponent
                         id={field.name}
                         value={field.value}
-                        className={classNames({ 'p-invalid': fieldState.error })}
+                        className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                         onChange={(e) => field.onChange(e.target.value)}
                         placeholder=''
                         width="95%"
@@ -438,7 +438,7 @@ export const CitizenInformation = () => {
                           value={field.value} 
                           onChange={field.onChange} 
                           dateFormat="dd/mm/yy" 
-                          className={classNames({ 'p-invalid': fieldState.error })}
+                          className={classNames({ 'p-invalid ': fieldState.error },'!h-10')}
                         />
                       </>
                     )}
@@ -457,7 +457,7 @@ export const CitizenInformation = () => {
                         <InputTextComponent
                           id={field.name}
                           value={field.value}
-                          className={classNames({ 'p-invalid': fieldState.error })}
+                          className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                           onChange={(e) => field.onChange(e.target.value)}
                           placeholder=''
                           width="95%"
@@ -479,7 +479,7 @@ export const CitizenInformation = () => {
                           <InputTextComponent
                             id={field.name}
                             value={field.value}
-                            className={classNames({ 'p-invalid': fieldState.error })}
+                            className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                             onChange={(e) => field.onChange(e.target.value)}
                             placeholder=''
                             width="95%"
@@ -514,7 +514,7 @@ export const CitizenInformation = () => {
                     <InputTextComponent
                       id={field.name}
                       value={field.value}
-                      className={classNames({ 'p-invalid': fieldState.error })}
+                      className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                       onChange={(e) => field.onChange(e.target.value)}
                       placeholder=''
                       keyfilter='email'
@@ -537,7 +537,7 @@ export const CitizenInformation = () => {
                     <InputTextComponent
                       id={field.name}
                       value={field.value}
-                      className={classNames({ 'p-invalid': fieldState.error })}
+                      className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                       onChange={(e) => field.onChange(e.target.value)}
                       placeholder=''
                       width="100%"
@@ -566,7 +566,7 @@ export const CitizenInformation = () => {
                 <DropDownComponent
                   id={field.name}
                   value={ field.value }
-                  className={classNames({ 'p-invalid': fieldState.error })}
+                  className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                   onChange={(e) => field.onChange(seletDataPais(e.value))}
                   focusInputRef={field.ref}
                   optionLabel='LGE_ELEMENTO_DESCRIPCION'
@@ -594,7 +594,7 @@ export const CitizenInformation = () => {
                   <DropDownComponent
                     id={field.name}
                     value={ field.value }
-                    className={classNames({ 'p-invalid': fieldState.error })}
+                    className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                     onChange={(e) => field.onChange(seletDepartamentos(e.value))}
                     focusInputRef={field.ref}
                     optionLabel='LGE_ELEMENTO_DESCRIPCION'
@@ -628,7 +628,7 @@ export const CitizenInformation = () => {
                     <DropDownComponent
                       id={field.name}
                       value={field.value}
-                      className={classNames({ 'p-invalid': fieldState.error })}
+                      className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                       onChange={(e) => field.onChange(e.value)}
                       focusInputRef={field.ref}
                       optionLabel='LGE_ELEMENTO_DESCRIPCION'
@@ -660,7 +660,7 @@ export const CitizenInformation = () => {
                 <DropDownComponent
                   id={field.name}
                   value={field.value}
-                  className={classNames({ 'p-invalid': fieldState.error })}
+                  className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                   onChange={(e) => field.onChange(e.value)}
                   focusInputRef={field.ref}
                   optionLabel='MRE_DESCRIPCION'
@@ -690,7 +690,7 @@ export const CitizenInformation = () => {
                 <DropDownComponent
                   id={field.name}
                   value={field.value}
-                  className={classNames({ 'p-invalid': fieldState.error })}
+                  className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                   onChange={(e) => field.onChange( selePrograma(e.value))}
                   focusInputRef={field.ref}
                   optionLabel='PRG_DESCRIPCION'
@@ -717,7 +717,7 @@ export const CitizenInformation = () => {
                 <DropDownComponent
                   id={field.name}
                   value={field.value}
-                  className={classNames({ 'p-invalid': fieldState.error })}
+                  className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                   onChange={(e) => field.onChange(e.value)}
                   focusInputRef={field.ref}
                   optionLabel='ASO_ASUNTO'
@@ -741,7 +741,7 @@ export const CitizenInformation = () => {
             placeholder={showClasificacion.current}
             width=""
             disabled={true} 
-            className=' bg-opacity-35 bg-gray-100 placeholder-opacity-3 placeholder-black'
+            className='mi-input !h-10'
           />
         </div>
 
@@ -751,7 +751,7 @@ export const CitizenInformation = () => {
             placeholder={showDependecia.current }
             width=""
             disabled={true}
-            className=' bg-opacity-35 bg-gray-100 placeholder-opacity-3 placeholder-black' 
+            className='mi-input !h-10' 
           />
         </div>
       </div>
