@@ -104,8 +104,9 @@ export const CitizenInformation = () => {
     showClasificacion.current = programa.CLP_DESCRIPCION
     
    
+    console.log( programa );
     
-    return {programa}
+    return programa
   }
 
   
