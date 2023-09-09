@@ -8,6 +8,17 @@
     @apply text-black;
 }
 
+.p-button:not(.p-link):disabled,.p-button.disabled:not(.p-link){
+    background-color: #E2E2E2;
+    border-color: #E2E2E2;
+    color: #000000;
+    opacity: 1;
+}
+
+.p-component-overlay{
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
 .no-month-navigator {
     .p-calendar {
         height: 100%;
