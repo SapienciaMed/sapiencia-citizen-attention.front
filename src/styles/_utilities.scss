@@ -8,7 +8,7 @@
     @apply text-black;
 }
 
-.p-button:disabled,.p-button.disabled{
+.p-button:not(.p-link):disabled,.p-button.disabled:not(.p-link){
     background-color: #E2E2E2;
     border-color: #E2E2E2;
     color: #000000;

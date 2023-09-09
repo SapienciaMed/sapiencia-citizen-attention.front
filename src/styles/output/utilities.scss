@@ -8200,6 +8200,10 @@ video {
   padding-bottom:0.5rem
 }
 
+.pb-2{
+  padding-bottom:0.5rem
+}
+
 .pt-0{
   padding-top:0px
 }
@@ -8214,10 +8218,6 @@ video {
 
 .pt-5{
   padding-top:1.25rem
-}
-
-.pb-2{
-  padding-bottom:0.5rem
 }
 
 .text-center{
@@ -8308,7 +8308,7 @@ video {
   color:rgb(0 0 0 / var(--tw-text-opacity))
 }
 
-.p-button:disabled,.p-button.disabled{
+.p-button:not(.p-link):disabled,.p-button.disabled:not(.p-link){
   background-color: #E2E2E2;
   border-color: #E2E2E2;
   color: #000000;
