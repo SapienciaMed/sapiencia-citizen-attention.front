@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Calendar } from 'primereact/calendar';
 
 interface Attributes {
@@ -14,16 +13,14 @@ export const CalendarComponent = ( props:Attributes ) => {
     const { value, inputId, className, onChange, dateFormat } = props
 
     return (
-       
         <Calendar 
             inputId={ inputId }
             value={ value }
             className={ className } 
             onChange={ onChange }
             dateFormat={ dateFormat } 
-            showIcon
             style={{width:'100%'}}
-        /> 
-    
+            showIcon
+        />
     )
 }

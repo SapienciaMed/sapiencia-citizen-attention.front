@@ -257,7 +257,7 @@ export const CitizenInformation = () => {
                   control={control}
                   rules={{ 
                     required: 'Campo obligatorio.',
-                    maxLength: {value:15, message:'Longitud 15 caracteres'},
+                    maxLength: {value:15, message:'Solo se permiten 15 caracteres'},
                   }}
                   render={({ field, fieldState }) => (
                     <>
@@ -332,7 +332,7 @@ export const CitizenInformation = () => {
                 control={control}
                 rules={{ 
                   required: 'Campo obligatorio.',
-                  maxLength: { value:200, message:'longitud  200 caracteres'} 
+                  maxLength: { value:200, message:'Solo se permiten 200 caracteres'} 
                 }}
                 render={({ field, fieldState }) => (
                   <>
@@ -366,7 +366,7 @@ export const CitizenInformation = () => {
                   control={control}
                   rules={{ 
                     required: 'Campo obligatorio.',
-                    maxLength: { value:50, message:'longitud  50 caracteres'}  
+                    maxLength: { value:50, message:'Solo se permiten 50 caracteres'}  
                   }}
                   render={({ field, fieldState }) => (
                     <>
@@ -394,7 +394,7 @@ export const CitizenInformation = () => {
                   name="segundoNombre"
                   control={control}
                   rules={{
-                    maxLength: { value:50, message:'longitud  50 caracteres'} 
+                    maxLength: { value:50, message:'Solo se permiten 50 caracteres'} 
                   }}
                   render={({ field, fieldState }) => (
                     <>
@@ -421,7 +421,7 @@ export const CitizenInformation = () => {
                   control={control}
                   rules={{ 
                     required: 'Campo obligatorio.',
-                    maxLength: { value:50, message:'longitud  50 caracteres'}  
+                    maxLength: { value:50, message:'Solo se permiten 50 caracteres'}  
                   }}
                   render={({ field, fieldState }) => (
                     <>
@@ -447,7 +447,7 @@ export const CitizenInformation = () => {
                   name="segundoApellido"
                   control={control}
                   rules={{
-                    maxLength: { value:50, message:'longitud  50 caracteres'} 
+                    maxLength: { value:50, message:'Solo se permiten  50 caracteres'} 
                   }}
                   render={({ field, fieldState }) => (
                     <>
@@ -492,8 +492,10 @@ export const CitizenInformation = () => {
                           value={field.value} 
                           onChange={field.onChange} 
                           dateFormat="dd/mm/yy" 
-                          className={classNames({ 'p-invalid ': fieldState.error },'!h-10')}
+                          className={classNames({ 'p-invalid ': fieldState.error },'!h-10 pi pi-spin pi-cog')}
+                      
                         />
+                        <span className="p-input-icon-right"></span>
                       </>
                     )}
                   />
@@ -509,7 +511,7 @@ export const CitizenInformation = () => {
                     control={control}
                     rules={{ 
                       required: 'Campo obligatorio.',
-                      maxLength: { value:10, message:'longitud  10 caracteres'}  
+                      maxLength: { value:10, message:'Solo se permiten 10 caracteres'}  
                     }}
                     render={({ field, fieldState }) => (
                       <>
@@ -536,7 +538,7 @@ export const CitizenInformation = () => {
                     name="noContacto2"
                     control={control}
                     rules={{
-                      maxLength: { value:10, message:'longitud 10 caracteres'} 
+                      maxLength: { value:10, message:'Solo se permiten 10 caracteres'} 
                     }}
                     render={({ field, fieldState }) => (
                       <>
@@ -574,7 +576,7 @@ export const CitizenInformation = () => {
                 control={control}
                 rules={{
                   required: "Este campo es obligatorio",
-                  maxLength: { value:100, message:'longitud  100 caracteres'}, 
+                  maxLength: { value:100, message:'Solo se permiten 100 caracteres'}, 
                   pattern: {
                     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, 
                     message: "Correo electrónico no válido",
@@ -606,7 +608,7 @@ export const CitizenInformation = () => {
                 control={control}
                 rules={{ 
                   required: 'Campo obligatorio.',
-                  maxLength: { value:300, message:'longitud  300 caracteres'}  
+                  maxLength: { value:300, message:'Solo se permiten 300 caracteres'}  
                 }}
                 render={({ field, fieldState }) => (
                   <>
@@ -842,7 +844,7 @@ export const CitizenInformation = () => {
             control={control}
             rules={{ 
               required: 'Campo obligatorio.',
-              maxLength: { value:5000, message:'longitud  5000 caracteres'}  
+              maxLength: { value:5000, message:'Solo se permiten 5000 caracteres'}  
             }}
             render={({ field, fieldState }) => (
               <>
