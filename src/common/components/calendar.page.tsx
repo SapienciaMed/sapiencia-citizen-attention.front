@@ -45,7 +45,10 @@ function CalendarPage(): React.JSX.Element {
       newYear.daysParametrizationDetails = [...days];
       newYear.daysParametrizationDetails = newYear.daysParametrizationDetails.map((detail) => {
         let d = detail.detailDate;
-        detail.detailDate = [d.getFullYear(), d.getMonth() + 1, d.getDate()].join("-") + " 00:00:00";
+        let day = d.getDate() > 9 ? d.getDate() : "0" + d.getDate();
+        let month = d.getMonth() + 1;
+        month = month > 9 ? month : "0" + month;
+        detail.detailDate = [d.getFullYear(),month ,day].join("-") + " 00:00:00";
         return detail;
       });
       const response = await daysParametrizationService.updateDayParametrization(newYear);
