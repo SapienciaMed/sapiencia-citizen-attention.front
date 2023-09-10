@@ -787,7 +787,7 @@ function CalendarPage(): React.JSX.Element {
                       </p>
                     </div>
                   </div>
-                  <div className="fixed  translate-x-1/3 ml-3" style={{top: buttonTop}}>
+                  <div className="fixed  translate-x-1/3 ml-3" style={{top: "calc(100vh - 110px)"}}>
                     <div className="p-2 rounded-3xl bg-white flex gap-x-7">
                       <Button
                         text
