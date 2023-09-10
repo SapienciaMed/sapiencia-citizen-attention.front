@@ -23,7 +23,7 @@ function CalendarPage(): React.JSX.Element {
   const messages = useRef(null);
   const [selectedYear, setSelectedYear] = useState<IDaysParametrization | undefined>(undefined);
   const [monthList, setMonthList] = useState(false);
-  const [buttonTop, setButtonTop] = useState(0);
+  const [buttonWidth, setButtonWidth] = useState(0);
   const [filters, setFilters] = useState({
     detailDate: { value: null, matchMode: FilterMatchMode.EQUALS },
   });
@@ -272,7 +272,7 @@ function CalendarPage(): React.JSX.Element {
   );
 
   const handleResize = () => {
-    setButtonTop(parentForm.current?.offsetHeight ? parentForm?.current.offsetHeight - 165 : 0);
+    setButtonWidth(parentForm.current?.offsetWidth ? parentForm?.current.offsetWidth + 4 : 0);
   };
 
   useEffect(() => {
@@ -658,7 +658,7 @@ function CalendarPage(): React.JSX.Element {
       ></ConfirmDialog>
       {/* Calendar year filter */}
       <div className="p-card rounded-4xl shadow-none border border-[#D9D9D9]">
-        <div className="p-card-body !py-8 !px-6">
+        <div className="p-card-body !py-8 !px-6" ref={parentForm}>
           <div className="p-card-title flex justify-between">
             <span className="text-3xl">Resumen año {selectedYear?.year}</span>
             <div
@@ -726,7 +726,7 @@ function CalendarPage(): React.JSX.Element {
 
       {/* Calendar months */}
       {monthList && (
-        <div>
+        <div className="relative pb-36">
           <div className="p-card rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
             <div className="p-card-body !py-8 !px-6">
               <div className="p-card-title flex justify-between">
@@ -735,7 +735,7 @@ function CalendarPage(): React.JSX.Element {
               <div className="p-card-content !pb-0">
                 <div className="flex flex-wrap w-full">
                   {renderCalendars()}
-                  <div className="md:w-1/2 xl:w-[38%] w-full relative" ref={parentForm}>
+                  <div className="md:w-1/2 xl:w-[38%] w-full relative">
                     <label className="text-base">Días hábiles y no hábiles</label>
                     <div className="p-card shadow-none border border-[#D9D9D9]">
                       <div className="p-card-body day-parametrization">
@@ -824,10 +824,10 @@ function CalendarPage(): React.JSX.Element {
             </div>
           </div>
           <div
-            className="fixed p-card rounded-4xl shadow-none border border-[#D9D9D9] w-full translate-x-1/3 ml-3"
-            style={{ top: "calc(100vh - 110px)" }}
+            className="fixed p-card rounded-4xl shadow-none border border-[#D9D9D9] w-full"
+            style={{ top: "calc(100vh - 138px)" , width: buttonWidth}}
           >
-            <div className="p-card-body !py-8 !px-6 flex gap-x-7 items-end">
+            <div className="p-card-body !py-8 !px-6 flex gap-x-7 justify-end">
               <Button
                 text
                 rounded
