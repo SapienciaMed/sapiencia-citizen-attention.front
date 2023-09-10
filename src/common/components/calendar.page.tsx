@@ -48,7 +48,10 @@ function CalendarPage(): React.JSX.Element {
         let day = d.getDate() > 9 ? d.getDate() : "0" + d.getDate();
         let month = d.getMonth() + 1;
         month = month > 9 ? month : "0" + month;
-        detail.detailDate = [d.getFullYear(),month ,day].join("-") + " 00:00:00";
+        detail.detailDate = [d.getFullYear(), month, day].join("-") + " 00:00:00";
+        delete detail.createdAt;
+        delete detail.updatedAt;
+        delete detail.dayType;
         return detail;
       });
       const response = await daysParametrizationService.updateDayParametrization(newYear);
@@ -281,6 +284,19 @@ function CalendarPage(): React.JSX.Element {
           setYears(response.data);
           const selected = response.data.filter((year) => year.year === new Date().getFullYear())[0];
           setSelectedYear(selected);
+          if (selected.daysParametrizationDetails.length > 0) {
+            setDates(
+              selected.daysParametrizationDetails.map((detail) => {
+                return new Date(detail.detailDate);
+              })
+            );
+            setDays(
+              selected.daysParametrizationDetails.map((detail) => {
+                detail.detailDate = new Date(detail.detailDate);
+                return detail;
+              })
+            );
+          }
           // handleSearch()
         }
       } catch (error) {
@@ -436,7 +452,7 @@ function CalendarPage(): React.JSX.Element {
   };
 
   const dateBodyTemplate = (rowData) => {
-    return rowData.detailDate.toLocaleDateString("es-CO", {
+    return rowData?.detailDate?.toLocaleDateString("es-CO", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -553,34 +569,35 @@ function CalendarPage(): React.JSX.Element {
 
   const renderCalendars = () => {
     const calendars = [[], []];
-    for (let index = 1; index < 13; index++) {
-      let date = new Date(`${selectedYear.year}/${index > 9 ? index : "0" + index}/01`);
-      let lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-      calendars[index <= 6 ? 0 : 1].push(
-        <div key={index > 9 ? index : "0" + index}>
-          <Calendar
-            className="md:min-w-[288pxx]"
-            dateTemplate={(e) => dateTemplate(e)}
-            value={dates}
-            onChange={(e) => {
-              addDates(e);
-            }}
-            inline
-            // showWeek
-            selectionMode="multiple"
-            nextIcon={false}
-            prevIcon={false}
-            minDate={date}
-            maxDate={lastDay}
-            viewDate={date}
-            monthNavigator={false}
-            showOtherMonths={true}
-            selectOtherMonths={false}
-          />
-        </div>
-      );
+    if (selectedYear?.id) {
+      for (let index = 1; index < 13; index++) {
+        let date = new Date(`${selectedYear.year}/${index > 9 ? index : "0" + index}/01`);
+        let lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+        calendars[index <= 6 ? 0 : 1].push(
+          <div key={index > 9 ? index : "0" + index}>
+            <Calendar
+              className="md:min-w-[288pxx]"
+              dateTemplate={(e) => dateTemplate(e)}
+              value={dates}
+              onChange={(e) => {
+                addDates(e);
+              }}
+              inline
+              // showWeek
+              selectionMode="multiple"
+              nextIcon={false}
+              prevIcon={false}
+              minDate={date}
+              maxDate={lastDay}
+              viewDate={date}
+              monthNavigator={false}
+              showOtherMonths={true}
+              selectOtherMonths={false}
+            />
+          </div>
+        );
+      }
     }
-
     return (
       <div className="flex flex-wrap justify-between overflow-x-auto no-month-navigator gap-x-6 gap-y-14 pt-5 md:w-1/2 xl:w-[62%] md:pr-6 w-full">
         {calendars[calendarPage]}
@@ -706,118 +723,122 @@ function CalendarPage(): React.JSX.Element {
 
       {/* Calendar months */}
       {monthList && (
-        <div className="p-card rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
-          <div className="p-card-body !py-8 !px-6">
-            <div className="p-card-title flex justify-between">
-              <span className="text-3xl">Meses</span>
-            </div>
-            <div className="p-card-content !pb-0">
-              <div className="flex flex-wrap w-full">
-                {renderCalendars()}
-                <div className="md:w-1/2 xl:w-[38%] w-full relative" ref={parentForm}>
-                  <label className="text-base">Días hábiles y no hábiles</label>
-                  <div className="p-card shadow-none border border-[#D9D9D9]">
-                    <div className="p-card-body day-parametrization">
-                      <div className="overflow-auto max-w-[calc(100vw-10.1rem)]">
-                        <DataTable
-                          paginator
-                          paginatorTemplate={paginatorTemplate("<", ">")}
-                          rows={15}
-                          filters={filters}
-                          size="small"
-                          value={days}
-                          editMode="cell"
-                          showGridlines
-                          tableStyle={{ minWidth: "22.625rem" }}
-                          globalFilterFields={["detailDate"]}
-                          header={renderHeader}
-                        >
-                          <Column
-                            bodyClassName="text-sm font-normal"
-                            headerClassName="text-base font-medium"
-                            key="detailDate"
-                            field="detailDate"
-                            header="Fecha"
-                            dataType="date"
-                            body={dateBodyTemplate}
-                          ></Column>
-                          <Column
-                            bodyClassName="!p-0 text-sm font-normal sm:max-w-[115px] sm:w-[115px] sm:min-w-[115px]"
-                            headerClassName="text-base font-medium"
-                            key="dayTypeId"
-                            field="dayTypeId"
-                            header={
-                              <span>
-                                Tipo <span className="text-red-600">*</span>
-                              </span>
-                            }
-                            body={dayTypeBodyTemplate}
-                            editor={(options) => cellEditor(options)}
-                            onCellEditComplete={onCellEditComplete}
-                          ></Column>
-                          <Column
-                            bodyClassName="!p-0 text-sm font-normal sm:max-w-[148px] sm:w-[148px] sm:min-w-[148px]"
-                            headerClassName="text-base font-medium"
-                            key="description"
-                            field="description"
-                            header="Descripción"
-                            body={(rowData) => (
-                              <div className="relative">
-                                <span className="relative z-10 p-2 h-10 max-w-[148px] w-[148px]">
-                                  {rowData.description}
-                                </span>
-                              </div>
-                            )}
-                            // body={descrptionTemplate}
-                            editor={(options) => cellEditor(options)}
-                            onCellEditComplete={onCellEditComplete}
-                          ></Column>
-                        </DataTable>
+        <div>
+          <div className="p-card rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
+            <div className="p-card-body !py-8 !px-6">
+              <div className="p-card-title flex justify-between">
+                <span className="text-3xl">Meses</span>
+              </div>
+              <div className="p-card-content !pb-0">
+                <div className="flex flex-wrap w-full">
+                  {renderCalendars()}
+                  <div className="md:w-1/2 xl:w-[38%] w-full relative" ref={parentForm}>
+                    <label className="text-base">Días hábiles y no hábiles</label>
+                    <div className="p-card shadow-none border border-[#D9D9D9]">
+                      <div className="p-card-body day-parametrization">
+                        {selectedYear?.id && (
+                          <div className="overflow-auto max-w-[calc(100vw-10.1rem)]">
+                            <DataTable
+                              paginator
+                              paginatorTemplate={paginatorTemplate("<", ">")}
+                              rows={15}
+                              filters={filters}
+                              size="small"
+                              value={days}
+                              editMode="cell"
+                              showGridlines
+                              tableStyle={{ minWidth: "22.625rem" }}
+                              globalFilterFields={["detailDate"]}
+                              header={renderHeader}
+                            >
+                              <Column
+                                bodyClassName="text-sm font-normal"
+                                headerClassName="text-base font-medium"
+                                key="detailDate"
+                                field="detailDate"
+                                header="Fecha"
+                                dataType="date"
+                                body={dateBodyTemplate}
+                              ></Column>
+                              <Column
+                                bodyClassName="!p-0 text-sm font-normal sm:max-w-[115px] sm:w-[115px] sm:min-w-[115px]"
+                                headerClassName="text-base font-medium"
+                                key="dayTypeId"
+                                field="dayTypeId"
+                                header={
+                                  <span>
+                                    Tipo <span className="text-red-600">*</span>
+                                  </span>
+                                }
+                                body={dayTypeBodyTemplate}
+                                editor={(options) => cellEditor(options)}
+                                onCellEditComplete={onCellEditComplete}
+                              ></Column>
+                              <Column
+                                bodyClassName="!p-0 text-sm font-normal sm:max-w-[148px] sm:w-[148px] sm:min-w-[148px]"
+                                headerClassName="text-base font-medium"
+                                key="description"
+                                field="description"
+                                header="Descripción"
+                                body={(rowData) => (
+                                  <div className="relative">
+                                    <span className="relative z-10 p-2 h-10 max-w-[148px] w-[148px]">
+                                      {rowData.description}
+                                    </span>
+                                  </div>
+                                )}
+                                // body={descrptionTemplate}
+                                editor={(options) => cellEditor(options)}
+                                onCellEditComplete={onCellEditComplete}
+                              ></Column>
+                            </DataTable>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  </div>
-                  <div className="mt-16 pt-1 px-14">
-                    <div className="flex items-center gap-6">
-                      <div className="relative h-10 w-10 border border-[#D9D9D9]"></div>
-                      <span className="text-sm">Día hábil</span>
-                    </div>
-                    <div className="flex items-center gap-6 mt-8 pt-0.5">
-                      <div className="relative h-10 w-10 border border-[#D9D9D9] bg-primary opacity-25 rounded-full"></div>
-                      <span className="text-sm">Día no hábil</span>
-                    </div>
-                    <div className="mt-10 text-sm">
-                      <p>Opciones columna “Tipo”</p>
-                      <p className="font-medium mt-3.5">
-                        No laboral PR : <span className="font-normal !font-sans">No laboral por resolución</span>
-                      </p>
-                      <p className="font- mt-2">
-                        No laboral PF : <span className="font-normal !font-sans">No laboral por festivo</span>
-                      </p>
-                    </div>
-                  </div>
-                  <div className="fixed  translate-x-1/3 ml-3" style={{ top: "calc(100vh - 110px)" }}>
-                    <div className="p-2 rounded-3xl bg-white flex gap-x-7">
-                      <Button
-                        text
-                        rounded
-                        severity="secondary"
-                        className="!px-8 !py-2 !text-base !text-black !border !border-primary"
-                        label="Cancelar"
-                        onClick={() => {
-                          resetForm();
-                        }}
-                      />
-                      <Button
-                        label="Guardar"
-                        rounded
-                        className="!px-8 !py-2 !text-base"
-                        onClick={save}
-                        disabled={days.filter((day) => day.dayTypeId == null).length > 0 || days.length <= 0}
-                      />
+                    <div className="mt-16 pt-1 px-14">
+                      <div className="flex items-center gap-6">
+                        <div className="relative h-10 w-10 border border-[#D9D9D9]"></div>
+                        <span className="text-sm">Día hábil</span>
+                      </div>
+                      <div className="flex items-center gap-6 mt-8 pt-0.5">
+                        <div className="relative h-10 w-10 border border-[#D9D9D9] bg-primary opacity-25 rounded-full"></div>
+                        <span className="text-sm">Día no hábil</span>
+                      </div>
+                      <div className="mt-10 text-sm">
+                        <p>Opciones columna “Tipo”</p>
+                        <p className="font-medium mt-3.5">
+                          No laboral PR : <span className="font-normal !font-sans">No laboral por resolución</span>
+                        </p>
+                        <p className="font- mt-2">
+                          No laboral PF : <span className="font-normal !font-sans">No laboral por festivo</span>
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+          <div className="fixed  translate-x-1/3 ml-3" style={{ top: "calc(100vh - 110px)" }}>
+            <div className="p-2 rounded-3xl bg-white flex gap-x-7">
+              <Button
+                text
+                rounded
+                severity="secondary"
+                className="!px-8 !py-2 !text-base !text-black !border !border-primary"
+                label="Cancelar"
+                onClick={() => {
+                  resetForm();
+                }}
+              />
+              <Button
+                label="Guardar"
+                rounded
+                className="!px-8 !py-2 !text-base"
+                onClick={save}
+                disabled={days.filter((day) => day.dayTypeId == null).length > 0 || days.length <= 0}
+              />
             </div>
           </div>
         </div>
