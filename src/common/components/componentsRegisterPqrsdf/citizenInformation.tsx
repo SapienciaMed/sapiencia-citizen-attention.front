@@ -186,10 +186,10 @@ export const CitizenInformation = () => {
       onSubmit={handleSubmit(onSubmit)}
       className="form-container" 
     >
-      <div className="div-container">
+      <div className="div-container" style={{marginBottom:'0'}}>
 
-        <div className='row-1'>
-          <label>Tipo de solicitud<span className='required'>*</span></label>
+        <div className='row-1 width-25'>
+          <label className='font-label'>Tipo de solicitud<span className='required'>*</span></label>
           <Controller
             name="tipoDeSolicitud"
             control={control}
@@ -206,7 +206,7 @@ export const CitizenInformation = () => {
                     focusInputRef={field.ref}
                     options={ [{TSO_DESCRIPTION:'Seleccionar'},...optionSolicitudes.data]}
                     placeholder='Seleccionar'
-                    width='95%'
+                    width='100%'
                   />
               </Suspense>
               </>
@@ -214,11 +214,13 @@ export const CitizenInformation = () => {
           />
           {getFormErrorMessage('tipoDeSolicitud')}
         </div>
+        
+        <span className='split'></span>
 
-        <div className='div-container'>
+        <div className='div-container width-50'>
 
-          <div className='row-1'>
-            <label>Tipo<span className='required'>*</span></label>
+          <div className='row-1 width-50'>
+            <label className='font-label'>Tipo<span className='required'>*</span></label>
             <Controller
               name="tipo"
               control={control}
@@ -235,7 +237,7 @@ export const CitizenInformation = () => {
                       focusInputRef={field.ref}
                       options={ [{LGE_ELEMENTO_DESCRIPCION: 'Seleccionar'},...optionTypeDocument.data] }
                       placeholder='Seleccionar'
-                      width='254px'
+                      width='100%'
                     />
                 </Suspense>
                 </>
@@ -243,12 +245,13 @@ export const CitizenInformation = () => {
             />
             {getFormErrorMessage('tipo')}
           </div>
-          <span className='split'></span>
+
+          <span style={{width:'2%'}}></span>
 
           {showFieldPersons.current != 'Anónimo'?(
             <>
-              <div className='row-1'>
-                <label>No. documento<span className='required'>*</span></label>
+              <div className='row-1 width-50'>
+                <label className='font-label'>No. documento<span className='required'>*</span></label>
                 <Controller
                   name="noDocumento"
                   control={control}
@@ -265,7 +268,7 @@ export const CitizenInformation = () => {
                         className={classNames({ 'p-invalid': fieldState.error }, '!h-10', {color})}
                         onChange={(e) => field.onChange(e.target.value)}
                         placeholder=''
-                        width="280px"
+                        width="100%"
                       />
                       {getFormErrorMessage('noDocumento')}
                       { /*noDocumento.length > 15?(<p className=''>Longitud 15 caracteres</p>):(<></>)*/}
@@ -281,8 +284,8 @@ export const CitizenInformation = () => {
 
         { showFieldPersons.current == 'NIT' ?(
 
-          <div className='row-1'>
-            <label>Tipo entidad<span className='required'>*</span></label>
+          <div className='row-1 width-25'>
+            <label className='font-label'>Tipo entidad<span className='required'>*</span></label>
             <Controller
               name="tipoEntidad"
               control={control}
@@ -299,7 +302,7 @@ export const CitizenInformation = () => {
                     optionLabel={'TEJ_NOMBRE'}
                     options={ [{TEJ_NOMBRE:'Seleccionar'},...optionLegalEntity.data] }  
                     placeholder='Seleccionar'
-                    width='95%'
+                    width='100%'
                   />
                 </Suspense>
                 </>
@@ -317,13 +320,13 @@ export const CitizenInformation = () => {
 
       <div className="div-container">
 
-        <div style={{width:'100%'}}>
+        <div style={{width:'100%', marginBottom:'18px'}} >
           <h2 className='tittle-h2'>Información del ciudadano</h2>
         </div>
         
         {showFieldPersons.current == 'NIT' ?(
-            <div className='row-1'>
-              <label>Razón social<span className='required'>*</span></label>
+            <div className='row-1 width-50'>
+              <label className='font-label'>Razón social<span className='required'>*</span></label>
               <Controller
                 name="RazónSocial"
                 control={control}
@@ -339,7 +342,7 @@ export const CitizenInformation = () => {
                       className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                       onChange={(e) => field.onChange(e.target.value)}
                       placeholder=''
-                      width="50%"
+                      width="100%"
                     />
                   </>
                 )}
@@ -349,15 +352,15 @@ export const CitizenInformation = () => {
         
         ):(<></>)
         }
-
+        
         {showFieldPersons.current != 'NIT' ?(
           
           <>
             {showFieldPersons.current != 'Anónimo' ?(
             <>
 
-              <div className='row-1'>
-                <label>Primer nombre<span className='required'>*</span></label>
+              <div className='row-1 width-25'>
+                <label className='font-label'>Primer nombre<span className='required'>*</span></label>
                 <Controller
                   name="primerNombre"
                   control={control}
@@ -373,7 +376,7 @@ export const CitizenInformation = () => {
                         className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                         onChange={(e) => field.onChange(e.target.value)}
                         placeholder=''
-                        width="95%"
+                        width="100%"
                       />
                     </>
                   )}
@@ -381,8 +384,12 @@ export const CitizenInformation = () => {
                 {getFormErrorMessage('primerNombre')}
               </div>
 
-              <div className='row-1' >
-                <label>Segundo nombre</label>
+              <span className='split'></span>
+
+              <div className="div-container"></div>
+
+              <div className='row-1 width-25' >
+                <label className='font-label'>Segundo nombre</label>
                 <Controller
                   name="segundoNombre"
                   control={control}
@@ -397,7 +404,7 @@ export const CitizenInformation = () => {
                         className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                         onChange={(e) => field.onChange(e.target.value)}
                         placeholder=''
-                        width="95%"
+                        width="100%"
                     />
                     {getFormErrorMessage(field.name)}
                     </>
@@ -405,8 +412,10 @@ export const CitizenInformation = () => {
                 />
               </div>
 
-              <div className='row-1'>
-                <label>Primer apellido<span className='required'>*</span></label>
+              <span className='split'></span>
+
+              <div className='row-1 width-25'>
+                <label className='font-label'>Primer apellido<span className='required'>*</span></label>
                 <Controller
                   name="primerApellido"
                   control={control}
@@ -422,7 +431,7 @@ export const CitizenInformation = () => {
                         className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                         onChange={(e) => field.onChange(e.target.value)}
                         placeholder=''
-                        width="95%"
+                        width="100%"
                       />
                     </>
                   )}
@@ -430,8 +439,10 @@ export const CitizenInformation = () => {
                 {getFormErrorMessage('primerApellido')}
               </div>
 
-              <div className='row-1' >
-                <label>Segundo apellido</label>
+              <span className='split'></span>
+
+              <div className='row-1 width-25' >
+                <label className='font-label'>Segundo apellido</label>
                 <Controller
                   name="segundoApellido"
                   control={control}
@@ -446,7 +457,7 @@ export const CitizenInformation = () => {
                         className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                         onChange={(e) => field.onChange(e.target.value)}
                         placeholder=''
-                        width="95%"
+                        width="100%"
                       />
                     </>
                   )}
@@ -462,14 +473,14 @@ export const CitizenInformation = () => {
         }
       </div>
 
-      <div className="container-2">
+      <div className="div-container">
 
         {showFieldPersons.current != 'NIT'?(
           <>
             {showFieldPersons.current != 'Anónimo'?(
               <>
-                <div className='row-1'>
-                  <label>Fecha de nacimiento<span className='required'>*</span></label>
+                <div className='row-1 width-25'>
+                  <label className='font-label'>Fecha de nacimiento<span className='required'>*</span></label>
                   <Controller
                     name="fechaNacimento"
                     control={control}
@@ -489,8 +500,10 @@ export const CitizenInformation = () => {
                   {getFormErrorMessage('fechaNacimento')}
                 </div>
 
-                <div className='row-1'>
-                  <label>No. De contacto 1<span className='required'>*</span></label>
+                <span className='split'></span>
+                
+                <div className='row-1 width-25'>
+                  <label className='font-label'>No. De contacto 1<span className='required'>*</span></label>
                   <Controller
                     name="noContacto1"
                     control={control}
@@ -506,7 +519,7 @@ export const CitizenInformation = () => {
                           className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                           onChange={(e) => field.onChange(e.target.value)}
                           placeholder=''
-                          width="95%"
+                          width="100%"
                           keyfilter='int'
                         />
                       </>
@@ -515,30 +528,32 @@ export const CitizenInformation = () => {
                   {getFormErrorMessage('noContacto1')}
                 </div>
 
-                  <div className='row-1'>
-                    <label>No. De contacto 2</label>
-                    <Controller
-                      name="noContacto2"
-                      control={control}
-                      rules={{
-                        maxLength: { value:10, message:'longitud 10 caracteres'} 
-                      }}
-                      render={({ field, fieldState }) => (
-                        <>
-                          <InputTextComponent
-                            id={field.name}
-                            value={field.value}
-                            className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
-                            onChange={(e) => field.onChange(e.target.value)}
-                            placeholder=''
-                            width="95%"
-                            keyfilter='int'
-                          />
-                          {getFormErrorMessage(field.name)}
-                        </>
-                      )}
-                    />
-                  </div>
+                <span className='split'></span>
+
+                <div className='row-1 width-25'>
+                  <label className='font-label'>No. De contacto 2</label>
+                  <Controller
+                    name="noContacto2"
+                    control={control}
+                    rules={{
+                      maxLength: { value:10, message:'longitud 10 caracteres'} 
+                    }}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <InputTextComponent
+                          id={field.name}
+                          value={field.value}
+                          className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
+                          onChange={(e) => field.onChange(e.target.value)}
+                          placeholder=''
+                          width="100%"
+                          keyfilter='int'
+                        />
+                        {getFormErrorMessage(field.name)}
+                      </>
+                    )}
+                  />
+                </div>
 
               </>
             ):(<></>)
@@ -552,8 +567,8 @@ export const CitizenInformation = () => {
 
         { showFieldPersons.current != 'Anónimo'?(
           <>
-            <div className='row-2'>
-              <label>Correo electrónico<span className='required'>*</span></label>
+            <div className='row-1 width-50'>
+              <label className='font-label'>Correo electrónico<span className='required'>*</span></label>
               <Controller
                 name="correoElectronico"
                 control={control}
@@ -582,8 +597,10 @@ export const CitizenInformation = () => {
               {getFormErrorMessage('correoElectronico')}
             </div>
 
-            <div className='row-2'>
-              <label>Dirección<span className='required'>*</span></label>
+            <span className='split'></span>
+
+            <div className='row-1 width-50'>
+              <label className='font-label'>Dirección<span className='required'>*</span></label>
               <Controller
                 name="direccion"
                 control={control}
@@ -613,9 +630,9 @@ export const CitizenInformation = () => {
 
       </div>
 
-      <div className="container-2">
-        <div className='row-1'>
-          <label>País<span className='required'>*</span></label>
+      <div className="div-container">
+        <div className='row-1 width-25'>
+          <label className='font-label'>País<span className='required'>*</span></label>
           <Controller
             name="pais"
             control={control}
@@ -631,7 +648,7 @@ export const CitizenInformation = () => {
                   optionLabel='LGE_ELEMENTO_DESCRIPCION'
                   options={ [{LGE_ELEMENTO_DESCRIPCION:'Seleccionar'},...paises.data] }
                   placeholder='Selecionar'
-                  width="280px"
+                  width="100%"
                 />
               </>
             )}
@@ -640,10 +657,11 @@ export const CitizenInformation = () => {
         </div>
 
         <span className='split'></span>
+
         { showDeptoMupio.current == 4?(
         <>
-          <div className='row-1'>
-            <label>Departamento<span className='required'>*</span></label>
+          <div className='row-1 width-25'>
+            <label className='font-label'>Departamento<span className='required'>*</span></label>
             <Controller
               name="departamento"
               control={control}
@@ -659,7 +677,7 @@ export const CitizenInformation = () => {
                     optionLabel='LGE_ELEMENTO_DESCRIPCION'
                     options={ [{LGE_ELEMENTO_DESCRIPCION:'Seleccionar'},...optionDepartamento.current]}
                     placeholder='Selecionar'
-                    width="280px"
+                    width="100%"
                   />
                 </>
               )}
@@ -669,15 +687,14 @@ export const CitizenInformation = () => {
         </>):(<></>)
         }
 
-
         <span className='split'></span>
         
         { showDeptoMupio.current == 4?(
         <>
           { showMupio.current == 204?(
           <>
-            <div className='row-1'>
-              <label>Municipio<span className='required'>*</span></label>
+            <div className='row-1 width-25'>
+              <label className='font-label'>Municipio<span className='required'>*</span></label>
               <Controller
                 name="municipio"
                 control={control}
@@ -693,7 +710,7 @@ export const CitizenInformation = () => {
                       optionLabel='LGE_ELEMENTO_DESCRIPCION'
                       options={ [{LGE_ELEMENTO_DESCRIPCION:'Seleccionar'},...optionMunicipios.current] }
                       placeholder='Selecionar'
-                      width="280px"
+                      width="100%"
                     />
                   </>
                 )}
@@ -708,8 +725,8 @@ export const CitizenInformation = () => {
 
       <div className="div-container">
 
-        <div className='row-1'>
-          <label>Seleccione el medio por el cual quiere recibir la respuesta<span className='required'>*</span></label>
+        <div className='row-1 width-50'>
+          <label className='font-label'>Seleccione el medio por el cual quiere recibir la respuesta<span className='required'>*</span></label>
           <Controller
             name="medioRespuesta"
             control={control}
@@ -725,7 +742,7 @@ export const CitizenInformation = () => {
                   optionLabel='MRE_DESCRIPCION'
                   options={ [{MRE_DESCRIPCION:'Seleccionar'},...optionResponseMedium.data] }   
                   placeholder='Seleccionar'
-                  width='50%'
+                  width='100%'
               />
               </>
             )}
@@ -737,8 +754,8 @@ export const CitizenInformation = () => {
 
       <div className="div-container">
 
-        <div className='row-2'>
-          <label>Programa al que aplica la solicitud<span className='required'>*</span></label>
+        <div className='row-1 width-50'>
+          <label className='font-label'>Programa al que aplica la solicitud<span className='required'>*</span></label>
           <Controller
             name="programaSolicitud"
             control={control}
@@ -755,7 +772,7 @@ export const CitizenInformation = () => {
                   optionLabel='PRG_DESCRIPCION'
                   options={ [{PRG_DESCRIPCION:'Selecionar'},...optionPrograma.data] }  
                   placeholder='Seleccionar'
-                  width=''
+                  width='100%'
                 />
               </Suspense>
               </>
@@ -764,8 +781,10 @@ export const CitizenInformation = () => {
           {getFormErrorMessage('programaSolicitud')}
         </div>
 
-        <div className='row-2'>
-          <label>Asunto de la solicitud<span className='required'>*</span></label>
+        <span className='split'></span>
+
+        <div className='row-1 width-50'>
+          <label className='font-label'>Asunto de la solicitud<span className='required'>*</span></label>
           <Controller
             name="asuntoSolicitud"
             control={control}
@@ -782,7 +801,7 @@ export const CitizenInformation = () => {
                   optionLabel='ASO_ASUNTO'
                   options={ [{ASO_ASUNTO:'Selecciopnar'},...optionAsuntoSolicitud.data] }  
                   placeholder='Seleccionar'
-                  width=''
+                  width='100%'
                 />
               </Suspense>
               </>
@@ -790,12 +809,11 @@ export const CitizenInformation = () => {
           />
           {getFormErrorMessage('asuntoSolicitud')}
         </div>
-
       </div>
 
       <div className="div-container">
-        <div className='row-2'>
-          <label>Clasificación</label>
+        <div className='row-1 width-50'>
+          <label className='font-label'>Clasificación</label>
           <InputTextComponent
             placeholder={showClasificacion.current}
             width=""
@@ -804,8 +822,10 @@ export const CitizenInformation = () => {
           />
         </div>
 
-        <div className='row-2'>
-          <label>Dependencia</label>
+        <span className='split'></span>
+
+        <div className='row-1 width-50'>
+          <label className='font-label'>Dependencia</label>
           <InputTextComponent
             placeholder={showDependecia.current }
             width=""
@@ -815,8 +835,8 @@ export const CitizenInformation = () => {
         </div>
       </div>
 
-      <div className="div_container">
-          <label>Descripción<span className='required'>*</span></label>
+      <div className="div_container width-100">
+          <label className='font-label'>Descripción<span className='required'>*</span></label>
           <Controller
             name="Descripción"
             control={control}
@@ -837,22 +857,22 @@ export const CitizenInformation = () => {
           />
           <div className='alert-textarea'>
             {getFormErrorMessage('Descripción')}
-            <span>Max 5000 caracteres</span>
+            <span className='font-label'>Max 5000 caracteres</span>
           </div>
       </div>
 
       <div className="div-upload">
-        <label>Archivos o documentos que soportan la solicitud</label>
+        <label className='font-label'>Archivos o documentos que soportan la solicitud</label>
         <UploadComponent/>
       </div>
 
       <div className="div_container" style={{marginBottom:'20px'}} >
-        <label>Aviso de privacidad</label>
+        <label className='font-label'>Aviso de privacidad</label>
         <ScrollPanelComponent/>
       </div>
 
-      <div className="div_container" style={{marginBottom:'20px'}}>
-        <label>Para conocer la Política de Tratamiento y Protección de datos personales de Sapiencia, dar click <a href={LPA_VALOR} style={{color:'#533893'}} target="_blank">aquí</a> </label>
+      <div className="div_container width-100" style={{marginBottom:'20px'}}>
+        <label className='font-label'>Para conocer la Política de Tratamiento y Protección de datos personales de Sapiencia, dar click <a href={LPA_VALOR} style={{color:'#533893'}} target="_blank">aquí</a> </label>
         <Controller
           name="politicaTratamiento"
           control={control}

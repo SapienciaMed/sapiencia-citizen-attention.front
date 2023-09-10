@@ -22,7 +22,7 @@ export const CalendarComponent = ( props:Attributes ) => {
             onChange={ onChange }
             dateFormat={ dateFormat } 
             showIcon
-            style={{width:'95%'}}
+            style={{width:'100%'}}
         /> 
     
     )
