@@ -83,6 +83,7 @@ function CalendarPage(): React.JSX.Element {
           ),
         });
         setSelectedYear(null);
+        resetForm(false);
       }
     } catch (error) {
       console.error("Error al modificar el calendario:", error);
@@ -335,15 +336,17 @@ function CalendarPage(): React.JSX.Element {
     resetForm();
   };
 
-  const resetForm = () => {
+  const resetForm = (showOtherMonths = true) => {
     let _filters = { ...filters };
     _filters["detailDate"].value = null;
     setDetailDateFilterValue("");
     setFilters(_filters);
     setMonthList(false);
-    setTimeout(() => {
-      setMonthList(true);
-    }, 1);
+    if (showOtherMonths) {
+      setTimeout(() => {
+        setMonthList(true);
+      }, 1);
+    }
     setCalendarPage(0);
     setDates([]);
     setDays([]);
@@ -820,8 +823,11 @@ function CalendarPage(): React.JSX.Element {
               </div>
             </div>
           </div>
-          <div className="fixed  translate-x-1/3 ml-3" style={{ top: "calc(100vh - 110px)" }}>
-            <div className="p-2 rounded-3xl bg-white flex gap-x-7">
+          <div
+            className="fixed p-card rounded-4xl shadow-none border border-[#D9D9D9] w-full translate-x-1/3 ml-3"
+            style={{ top: "calc(100vh - 110px)" }}
+          >
+            <div className="p-card-body !py-8 !px-6 flex gap-x-7 items-end">
               <Button
                 text
                 rounded
