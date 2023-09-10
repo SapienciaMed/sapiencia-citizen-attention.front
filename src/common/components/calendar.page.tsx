@@ -43,6 +43,10 @@ function CalendarPage(): React.JSX.Element {
     try {
       let newYear = { ...selectedYear };
       newYear.daysParametrizationDetails = [...days];
+      newYear.daysParametrizationDetails = newYear.daysParametrizationDetails.map((detail) =>{
+        detail.detailDate = detail.detailDate.toDateString();
+        return detail;
+      });
       const response = await daysParametrizationService.updateDayParametrization(newYear);
 
       if (response.operation.code === EResponseCodes.OK) {

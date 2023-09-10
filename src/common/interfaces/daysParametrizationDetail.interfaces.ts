@@ -7,7 +7,7 @@ export interface IDaysParametrizationDetail {
   dayTypeId?: number;
   dayType?: IDayType;
   description?: string | null;
-  detailDate: Date;
+  detailDate: any;
   createdAt?: DateTime;
   updatedAt?: DateTime;
 }
