@@ -43,8 +43,9 @@ function CalendarPage(): React.JSX.Element {
     try {
       let newYear = { ...selectedYear };
       newYear.daysParametrizationDetails = [...days];
-      newYear.daysParametrizationDetails = newYear.daysParametrizationDetails.map((detail) =>{
-        detail.detailDate = detail.detailDate.toDateString();
+      newYear.daysParametrizationDetails = newYear.daysParametrizationDetails.map((detail) => {
+        let d = detail.detailDate;
+        detail.detailDate = [d.getFullYear(), d.getMonth() + 1, d.getDate()].join("-") + " 00:00:00";
         return detail;
       });
       const response = await daysParametrizationService.updateDayParametrization(newYear);
@@ -262,9 +263,9 @@ function CalendarPage(): React.JSX.Element {
       <Button label="Agregar" rounded className="!px-4 !py-2 !text-base" onClick={accept} disabled={year < 2000} />
     </div>
   );
-  
+
   const handleResize = () => {
-    setButtonTop(parentForm.current?.offsetHeight ? parentForm?.current.offsetHeight-165 : 0 );
+    setButtonTop(parentForm.current?.offsetHeight ? parentForm?.current.offsetHeight - 165 : 0);
   };
 
   useEffect(() => {
@@ -300,13 +301,13 @@ function CalendarPage(): React.JSX.Element {
       }
     };
     fetchDayTypes();
-    fetchYears();    
+    fetchYears();
     handleResize();
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
-    }
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   const handleYearChange = (e) => {
@@ -351,7 +352,7 @@ function CalendarPage(): React.JSX.Element {
       }, 10);
     }
     addWeekend();
-    setTimeout(() => {      
+    setTimeout(() => {
       handleResize();
     }, 100);
   }, [monthList, calendarPage]);
@@ -791,7 +792,7 @@ function CalendarPage(): React.JSX.Element {
                       </p>
                     </div>
                   </div>
-                  <div className="fixed  translate-x-1/3 ml-3" style={{top: "calc(100vh - 110px)"}}>
+                  <div className="fixed  translate-x-1/3 ml-3" style={{ top: "calc(100vh - 110px)" }}>
                     <div className="p-2 rounded-3xl bg-white flex gap-x-7">
                       <Button
                         text
