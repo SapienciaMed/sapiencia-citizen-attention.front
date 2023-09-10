@@ -59,7 +59,7 @@ export const CitizenInformation = () => {
   const seleTipoDocument = ( document:{LGE_CODIGO:number, LGE_ELEMENTO_DESCRIPCION:string} ) => {
     setValueDocument( document );
     
-    showFieldPersons.current = document.LGE_ELEMENTO_DESCRIPCION
+    showFieldPersons.current = document==null?'':document.LGE_ELEMENTO_DESCRIPCION
     console.log( document );
     
     return document;
@@ -69,9 +69,9 @@ export const CitizenInformation = () => {
     
     setValuePais( pais );
 
-    showDeptoMupio.current = pais.LGE_CODIGO;
+    showDeptoMupio.current = pais == null?'':pais.LGE_CODIGO;
 
-    if(pais.LGE_CODIGO == 4){
+    if(showDeptoMupio.current == 4){
 
       const departamentos = ApiDataDepartamentos.read();
       optionDepartamento.current = departamentos.data;
@@ -84,9 +84,9 @@ export const CitizenInformation = () => {
   const seletDepartamentos = ( depart:{LGE_CODIGO:number, LGE_ELEMENTO_DESCRIPCION:string} )=>{
     setValueDepartamento( depart );
     
-    showMupio.current = depart.LGE_CODIGO;
+    showMupio.current = depart == null?'':depart.LGE_CODIGO;
 
-    if( depart.LGE_CODIGO == 204 ){
+    if( showMupio.current == 204 ){
 
       const municipios = ApiDataMunicipios.read();
       optionMunicipios.current =  municipios.data;
@@ -99,12 +99,9 @@ export const CitizenInformation = () => {
   const selePrograma = ( programa :{CLP_CODIGO:number,CLP_DESCRIPCION:string; DEP_CODIGO:number,DEP_DESCRIPCION:string ; PRG_CODIGO:number,PRG_DESCRIPCION:string  })=>{
     setprogram( programa );
     
-    console.log( programa );
+    showDependecia.current = programa == null?'': programa.DEP_DESCRIPCION;
+    showClasificacion.current = programa == null?'': programa.CLP_DESCRIPCION;
     
-    showDependecia.current = programa.DEP_DESCRIPCION
-    showClasificacion.current = programa.CLP_DESCRIPCION
-    
-   
     console.log( programa );
     
     return programa
@@ -154,6 +151,7 @@ export const CitizenInformation = () => {
  
   const onSubmit = (data) => {
     data;
+    console.log( data );
     
     reset();
   };
@@ -176,6 +174,12 @@ export const CitizenInformation = () => {
  
  /*VALIDACIONES*/
  let color = noDocumento.length==15?'border-red-500':'';
+
+ if( noDocumento.length==15 ){
+  color = 'border-red-500';
+  console.log('pruebas');
+  getFormErrorMessage('noDocumento')
+  }
  
   return (
     <form 
@@ -224,7 +228,7 @@ export const CitizenInformation = () => {
                 <Suspense fallback={ <div>Cargando...</div>}>
                   <DropDownComponent
                       id={field.name}
-                      value={field.value}
+                      value={valueDocument}
                       optionLabel={'LGE_ELEMENTO_DESCRIPCION'}
                       className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                       onChange={(e) => field.onChange( seleTipoDocument(e.value))}
@@ -241,7 +245,7 @@ export const CitizenInformation = () => {
           </div>
           <span className='split'></span>
 
-          {showFieldPersons.current == 'Anónimo'?(
+          {showFieldPersons.current != 'Anónimo'?(
             <>
               <div className='row-1'>
                 <label>No. documento<span className='required'>*</span></label>
@@ -620,7 +624,7 @@ export const CitizenInformation = () => {
               <>
                 <DropDownComponent
                   id={field.name}
-                  value={ field.value }
+                  value={ valuePais }
                   className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                   onChange={(e) => field.onChange(seletDataPais(e.value))}
                   focusInputRef={field.ref}
@@ -648,7 +652,7 @@ export const CitizenInformation = () => {
                 <>
                   <DropDownComponent
                     id={field.name}
-                    value={ field.value }
+                    value={ valueDepartamento }
                     className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                     onChange={(e) => field.onChange(seletDepartamentos(e.value))}
                     focusInputRef={field.ref}
@@ -870,7 +874,7 @@ export const CitizenInformation = () => {
 
       <div>
       <Button
-        disabled={isValid}
+        
         rounded
         label="Enviar solicitud"
         className="!px-10 !text-sm btn-sumit"
