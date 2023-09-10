@@ -36,8 +36,6 @@ export const CitizenInformation = () => {
   const optionAsuntoSolicitud = ApiDataAsuntoSolicitud.read();
   const linkPoliticaCondiciones = ApiDataListaParametros.read();
   const paises = ApiDataPais.read();
-  
-
   const { LPA_VALOR } = linkPoliticaCondiciones[0];
   
  
@@ -100,6 +98,8 @@ export const CitizenInformation = () => {
   const selePrograma = ( programa :{CLP_CODIGO:number,CLP_DESCRIPCION:string; DEP_CODIGO:number,DEP_DESCRIPCION:string ; PRG_CODIGO:number,PRG_DESCRIPCION:string  })=>{
     setprogram( programa );
     
+    console.log( programa );
+    
     showDependecia.current = programa.DEP_DESCRIPCION
     showClasificacion.current = programa.CLP_DESCRIPCION
     
@@ -160,10 +160,13 @@ export const CitizenInformation = () => {
     return errors[name] ? <small className="p-error">{errors[name].message}</small> : <small className="p-error">&nbsp;</small>;
   };
 
+  const funsionPrueba = async()=>{
+    console.log('-> pruebas');
+    
+  }
 
 
   return (
-    
     <form 
       onSubmit={handleSubmit(onSubmit)}
       className="form-container" 
@@ -175,7 +178,7 @@ export const CitizenInformation = () => {
           <Controller
             name="tipoDeSolicitud"
             control={control}
-            rules={{ required: 'Requerido.' }}
+            rules={{ required: 'Campo obligatorio.'}}
             render={({ field, fieldState, }) => (
               <>
               <Suspense fallback={ <div>Cargando...</div>}>
@@ -186,7 +189,7 @@ export const CitizenInformation = () => {
                     className={classNames({ 'p-invalid': fieldState.error } ,'!h-10')}
                     onChange={(e) => field.onChange(e.value)}
                     focusInputRef={field.ref}
-                    options={ optionSolicitudes.data  }
+                    options={ [{TSO_DESCRIPTION:'Seleccionar'},...optionSolicitudes.data]  }
                     placeholder='Seleccionar'
                     width='95%'
                   />
@@ -204,7 +207,7 @@ export const CitizenInformation = () => {
             <Controller
               name="tipo"
               control={control}
-              rules={{ required: 'Requerido.'}}
+              rules={{ required: 'Campo obligatorio.'}}
               render={({ field, fieldState }) => (
                 <>
                 <Suspense fallback={ <div>Cargando...</div>}>
@@ -215,7 +218,7 @@ export const CitizenInformation = () => {
                       onChange={(e) => field.onChange( seleTipoDocument(e.value))}
                       focusInputRef={field.ref}
                       optionLabel={'LGE_ELEMENTO_DESCRIPCION'}
-                      options={ optionTypeDocument.data }
+                      options={ [{LGE_ELEMENTO_DESCRIPCION: 'Seleccionar'},...optionTypeDocument.data] }
                       placeholder='Seleccionar'
                       width='254px'
                     />
@@ -231,7 +234,10 @@ export const CitizenInformation = () => {
             <Controller
               name="noDocumento"
               control={control}
-              rules={{ required: 'Requerido.' }}
+              rules={{ 
+                required: 'Campo obligatorio.',
+                maxLength: {value:15, message:' Longitud 15 caracteres'},
+               }}
               render={({ field, fieldState }) => (
                 <>
                   <InputTextComponent
@@ -270,7 +276,7 @@ export const CitizenInformation = () => {
                     onChange={(e) => field.onChange(e.value)}
                     focusInputRef={field.ref}
                     optionLabel={'TEJ_NOMBRE'}
-                    options={ optionLegalEntity.data }  
+                    options={ [{TEJ_NOMBRE:'Seleccionar'},...optionLegalEntity.data] }  
                     placeholder='Seleccionar'
                     width='95%'
                   />
@@ -508,7 +514,13 @@ export const CitizenInformation = () => {
               <Controller
                 name="correoElectronico"
                 control={control}
-                rules={{}}
+                rules={{
+                  required: "Este campo es obligatorio",
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: "Correo electrónico no válido",
+                  },
+                }}
                 render={({ field, fieldState }) => (
                   <>
                     <InputTextComponent
@@ -570,7 +582,7 @@ export const CitizenInformation = () => {
                   onChange={(e) => field.onChange(seletDataPais(e.value))}
                   focusInputRef={field.ref}
                   optionLabel='LGE_ELEMENTO_DESCRIPCION'
-                  options={ paises.data }
+                  options={ [{LGE_ELEMENTO_DESCRIPCION:'Seleccionar'},...paises.data] }
                   placeholder='Selecionar'
                   width="280px"
                 />
@@ -598,7 +610,7 @@ export const CitizenInformation = () => {
                     onChange={(e) => field.onChange(seletDepartamentos(e.value))}
                     focusInputRef={field.ref}
                     optionLabel='LGE_ELEMENTO_DESCRIPCION'
-                    options={ optionDepartamento.current}
+                    options={ [{LGE_ELEMENTO_DESCRIPCION:'Seleccionar'},...optionDepartamento.current]}
                     placeholder='Selecionar'
                     width="280px"
                   />
@@ -632,7 +644,7 @@ export const CitizenInformation = () => {
                       onChange={(e) => field.onChange(e.value)}
                       focusInputRef={field.ref}
                       optionLabel='LGE_ELEMENTO_DESCRIPCION'
-                      options={ optionMunicipios.current }
+                      options={ [{LGE_ELEMENTO_DESCRIPCION:'Seleccionar'},...optionMunicipios.current] }
                       placeholder='Selecionar'
                       width="280px"
                     />
@@ -664,7 +676,7 @@ export const CitizenInformation = () => {
                   onChange={(e) => field.onChange(e.value)}
                   focusInputRef={field.ref}
                   optionLabel='MRE_DESCRIPCION'
-                  options={ optionResponseMedium.data }   
+                  options={ [{MRE_DESCRIPCION:'Seleccionar'},...optionResponseMedium.data] }   
                   placeholder='Seleccionar'
                   width='50%'
               />
@@ -694,7 +706,7 @@ export const CitizenInformation = () => {
                   onChange={(e) => field.onChange( selePrograma(e.value))}
                   focusInputRef={field.ref}
                   optionLabel='PRG_DESCRIPCION'
-                  options={ optionPrograma.data }  
+                  options={ [{PRG_DESCRIPCION:'Selecionar'},...optionPrograma.data] }  
                   placeholder='Seleccionar'
                   width=''
                 />
@@ -721,7 +733,7 @@ export const CitizenInformation = () => {
                   onChange={(e) => field.onChange(e.value)}
                   focusInputRef={field.ref}
                   optionLabel='ASO_ASUNTO'
-                  options={ optionAsuntoSolicitud.data }  
+                  options={ [{ASO_ASUNTO:'Selecciopnar'},...optionAsuntoSolicitud.data] }  
                   placeholder='Seleccionar'
                   width=''
                 />
@@ -808,7 +820,7 @@ export const CitizenInformation = () => {
 
       <div>
       <Button
-        disabled={!isValid}
+        disabled={isValid}
         rounded
         label="Enviar solicitud"
         className="!px-10 !text-sm btn-sumit"
