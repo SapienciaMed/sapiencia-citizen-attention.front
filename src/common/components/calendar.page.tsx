@@ -94,8 +94,8 @@ function CalendarPage(): React.JSX.Element {
         
         setYears(newYears);
         setSelectedYear(response.data);
-        setInitialData(response.data);
-        resetForm();
+        // resetForm();
+        setInitialData(response.data, false);
       }
     } catch (error) {
       console.error("Error al modificar el calendario:", error);
@@ -331,7 +331,7 @@ function CalendarPage(): React.JSX.Element {
     };
   }, []);
 
-  const setInitialData = (selected: IDaysParametrization) =>{
+  const setInitialData = (selected: IDaysParametrization, asDate = true) =>{
     if (selected.daysParametrizationDetails.length > 0) {
       setDates(
         selected.daysParametrizationDetails.map((detail: IDaysParametrizationDetail) => {
@@ -340,7 +340,7 @@ function CalendarPage(): React.JSX.Element {
       );
       setDays(
         selected.daysParametrizationDetails.map((detail: IDaysParametrizationDetail) => {
-          detail.detailDate = new Date(detail.detailDate);
+          detail.detailDate = asDate ? new Date(detail.detailDate) : detail.detailDate;
           return detail;
         })
       );
@@ -471,8 +471,9 @@ function CalendarPage(): React.JSX.Element {
     );
   };
 
-  const dateBodyTemplate = (rowData) => {
-    return rowData?.detailDate?.toLocaleDateString("es-CO", {
+  const dateBodyTemplate = (rowData) => {    
+    let date = typeof rowData?.detailDate == 'string' ? new Date(rowData?.detailDate) : rowData?.detailDate;
+    return  date?.toLocaleDateString("es-CO", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -853,6 +854,7 @@ function CalendarPage(): React.JSX.Element {
                 label="Cancelar"
                 onClick={() => {
                   resetForm();
+                  setInitialData(selectedYear);
                 }}
               />
               <Button
