@@ -48,10 +48,10 @@ function CalendarPage(): React.JSX.Element {
         let day = d.getDate() > 9 ? d.getDate() : "0" + d.getDate();
         let month = d.getMonth() + 1;
         month = month > 9 ? month : "0" + month;
-        detail.detailDate = [d.getFullYear(), month, day].join("-") + " 00:00:00";
-        delete detail.createdAt;
-        delete detail.updatedAt;
-        delete detail.dayType;
+        detail.detailDate = [d.getFullYear(), month, day].join("-") + " 00:00:00";        
+        delete detail.dayType
+        delete detail.createdAt
+        delete detail.updatedAt
         return detail;
       });
       const response = await daysParametrizationService.updateDayParametrization(newYear);
@@ -82,8 +82,20 @@ function CalendarPage(): React.JSX.Element {
             </div>
           ),
         });
-        setSelectedYear(null);
-        resetForm(false);
+        let newYears = [...years];
+
+        newYears = newYears.map((year)=>{
+          if (year.year==response.data.year) {
+            year = response.data
+          }
+          return year;
+        })
+        console.log(newYears);
+        
+        setYears(newYears);
+        setSelectedYear(response.data);
+        setInitialData(response.data);
+        resetForm();
       }
     } catch (error) {
       console.error("Error al modificar el calendario:", error);
@@ -225,12 +237,13 @@ function CalendarPage(): React.JSX.Element {
           weekend.parentElement.classList.add("p-highlight");
         }
       }
-    }, 10);
+    }, 10);    
 
-    setDates([...newDates]);
     let nextDays = [...days];
+    setDates([...newDates]);
+    
     newDates.forEach((date) => {
-      if (nextDays.filter((day) => day.detailDate == date).length == 0) {
+      if (nextDays.filter((day) => new Date(day.detailDate).toDateString() == date.toDateString()).length == 0) {
         nextDays.push({
           detailDate: date,
           description: "",
@@ -238,9 +251,9 @@ function CalendarPage(): React.JSX.Element {
         });
       }
     });
-
+    
     nextDays = nextDays.filter((day) => {
-      return newDates.includes(day.detailDate);
+      return newDates.filter((date) => new Date(day.detailDate).toDateString() == date.toDateString()).length;
     });
 
     setDays(nextDays);
@@ -285,19 +298,7 @@ function CalendarPage(): React.JSX.Element {
           setYears(response.data);
           const selected = response.data.filter((year) => year.year === new Date().getFullYear())[0];
           setSelectedYear(selected);
-          if (selected.daysParametrizationDetails.length > 0) {
-            setDates(
-              selected.daysParametrizationDetails.map((detail) => {
-                return new Date(detail.detailDate);
-              })
-            );
-            setDays(
-              selected.daysParametrizationDetails.map((detail) => {
-                detail.detailDate = new Date(detail.detailDate);
-                return detail;
-              })
-            );
-          }
+          setInitialData(selected)
           // handleSearch()
         }
       } catch (error) {
@@ -329,6 +330,22 @@ function CalendarPage(): React.JSX.Element {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  const setInitialData = (selected: IDaysParametrization) =>{
+    if (selected.daysParametrizationDetails.length > 0) {
+      setDates(
+        selected.daysParametrizationDetails.map((detail: IDaysParametrizationDetail) => {
+          return new Date(detail.detailDate);
+        })
+      );
+      setDays(
+        selected.daysParametrizationDetails.map((detail: IDaysParametrizationDetail) => {
+          detail.detailDate = new Date(detail.detailDate);
+          return detail;
+        })
+      );
+    }
+  }
 
   const handleYearChange = (e) => {
     const selected = years.filter((year) => year.id === e.value)[0];
