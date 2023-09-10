@@ -239,3 +239,16 @@ color: #000000;
     background: linear-gradient(0deg, #E2E2E2, #E2E2E2),
     linear-gradient(0deg, #E9E9E9, #E9E9E9);
 }
+
+.alert-textarea{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.p-calendar-w-btn-right .p-datepicker-trigger:hover{
+    background: #ffffff;
+    color: #fff;
+    border-color: #d1ceda;
+    
+}

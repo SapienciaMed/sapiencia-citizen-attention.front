@@ -41,6 +41,7 @@ export const DropDownComponent = ( props:Attributes ) => {
     id={ id }
     className={ className }
     focusInputRef={focusInputRef}
+    showClear
   />
   )
 }
