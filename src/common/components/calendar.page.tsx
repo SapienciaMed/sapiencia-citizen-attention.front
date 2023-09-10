@@ -19,9 +19,11 @@ import { IDaysParametrizationDetail } from "../interfaces/daysParametrizationDet
 
 function CalendarPage(): React.JSX.Element {
   const toast = useRef(null);
+  const parentForm = useRef(null);
   const messages = useRef(null);
   const [selectedYear, setSelectedYear] = useState<IDaysParametrization | undefined>(undefined);
   const [monthList, setMonthList] = useState(false);
+  const [buttonTop, setButtonTop] = useState(0);
   const [filters, setFilters] = useState({
     detailDate: { value: null, matchMode: FilterMatchMode.EQUALS },
   });
@@ -36,6 +38,48 @@ function CalendarPage(): React.JSX.Element {
   const [calendarPage, setCalendarPage] = useState(0);
   const daysParametrizationService = useDaysParametrizationService();
   // const [loading, setLoading] = useState(false);
+
+  const save = async () => {
+    try {
+      let newYear = { ...selectedYear };
+      newYear.daysParametrizationDetails = [...days];
+      const response = await daysParametrizationService.updateDayParametrization(newYear);
+
+      if (response.operation.code === EResponseCodes.OK) {
+        setVisibleConfirm(false);
+        confirmDialog({
+          id: "messages",
+          message: (
+            <div className="flex flex-wrap w-full items-center justify-center">
+              <div className="mx-auto text-primary text-3xl w-full text-center">Proceso exitoso</div>
+              <div className="flex items-center justify-center w-full mt-6 pt-0.5">Calendario modificado con éxito</div>
+            </div>
+          ),
+          closeIcon: closeIcon,
+          acceptLabel: "Aceptar",
+          accept: () => setVisibleConfirm(false),
+          footer: (options) => (
+            <div className="flex items-center justify-center gap-2 pb-2">
+              <Button
+                label="Aceptar"
+                rounded
+                className="!px-4 !py-2 !text-base"
+                onClick={(e) => {
+                  options.accept();
+                }}
+              />
+            </div>
+          ),
+        });
+        setSelectedYear(null);
+      }
+    } catch (error) {
+      console.error("Error al modificar el calendario:", error);
+    } finally {
+      setVisibleConfirm(false);
+      // setLoading(false);
+    }
+  };
 
   const accept = async () => {
     if (year?.toString()?.length == 4 && year > 2000) {
@@ -55,23 +99,19 @@ function CalendarPage(): React.JSX.Element {
           closeIcon: closeIcon,
           acceptLabel: "Aceptar",
           accept: () => setVisibleConfirm(true),
-          footer: (
+          footer: (options) => (
             <div className="flex items-center justify-center gap-2 pb-2">
               <Button
                 label="Aceptar"
                 rounded
                 className="!px-4 !py-2 !text-base"
-                onClick={() => setVisibleConfirm(true)}
+                onClick={(e) => {
+                  options.accept();
+                }}
               />
             </div>
           ),
         });
-        /* toast.current.show({
-          severity: "error",
-          summary: "Lo sentimos!",
-          detail: "El año ya existe en el calendario, por favor verifique.",
-          life: 3000,
-        }); */
       } else {
         // setLoading(true);
         try {
@@ -82,11 +122,33 @@ function CalendarPage(): React.JSX.Element {
 
             setYears(newYears);
             setYear(null);
-            toast.current.show({
-              severity: "success",
-              summary: "Proceso exitoso!",
-              detail: "Año creado con éxito.",
-              life: 3000,
+            setVisibleConfirm(false);
+            confirmDialog({
+              id: "messages",
+              message: (
+                <div className="flex flex-wrap w-full items-center justify-center">
+                  <div className="mx-auto text-primary text-3xl w-full text-center">Año creado exitosamente</div>
+
+                  <div className="flex items-center justify-center w-full mt-6 pt-0.5">
+                    El año se ha creado de manera exitosa
+                  </div>
+                </div>
+              ),
+              closeIcon: closeIcon,
+              acceptLabel: "Aceptar",
+              accept: () => setVisibleConfirm(false),
+              footer: (options) => (
+                <div className="flex items-center justify-center gap-2 pb-2">
+                  <Button
+                    label="Aceptar"
+                    rounded
+                    className="!px-4 !py-2 !text-base"
+                    onClick={(e) => {
+                      options.accept();
+                    }}
+                  />
+                </div>
+              ),
             });
           }
         } catch (error) {
@@ -196,6 +258,10 @@ function CalendarPage(): React.JSX.Element {
       <Button label="Agregar" rounded className="!px-4 !py-2 !text-base" onClick={accept} disabled={year < 2000} />
     </div>
   );
+  
+  const handleResize = () => {
+    setButtonTop(parentForm.current?.offsetHeight ? parentForm?.current.offsetHeight-165 : 0 );
+  };
 
   useEffect(() => {
     const fetchYears = async () => {
@@ -230,7 +296,13 @@ function CalendarPage(): React.JSX.Element {
       }
     };
     fetchDayTypes();
-    fetchYears();
+    fetchYears();    
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    }
   }, []);
 
   const handleYearChange = (e) => {
@@ -275,6 +347,9 @@ function CalendarPage(): React.JSX.Element {
       }, 10);
     }
     addWeekend();
+    setTimeout(() => {      
+      handleResize();
+    }, 100);
   }, [monthList, calendarPage]);
 
   const handleSearch = async () => {
@@ -323,7 +398,7 @@ function CalendarPage(): React.JSX.Element {
           className="appearance-none relative -mb-0.5 z-10 bg-transparent outline-primary max-w-[115px] p-2 h-[35px]"
           onChange={(e) => options.editorCallback(e.target.value)}
         >
-          <option value={null}>Seleccione un tipo</option>
+          <option value={null}>Seleccione</option>
           {dayTypes.map((dayType, index) => {
             return (
               <option key={index} selected={dayType.tdi_codigo == options.value} value={dayType.tdi_codigo}>
@@ -604,7 +679,7 @@ function CalendarPage(): React.JSX.Element {
                   optionValue="id"
                   value={selectedYear?.id}
                   onChange={handleYearChange}
-                  placeholder="Selecciona un año"
+                  placeholder="Seleccionar"
                 />
               </div>
               {/* <div className="mt-auto mb-0">
@@ -631,7 +706,7 @@ function CalendarPage(): React.JSX.Element {
             <div className="p-card-content !pb-0">
               <div className="flex flex-wrap w-full">
                 {renderCalendars()}
-                <div className="md:w-1/2 xl:w-[38%] w-full relative">
+                <div className="md:w-1/2 xl:w-[38%] w-full relative" ref={parentForm}>
                   <label className="text-base">Días hábiles y no hábiles</label>
                   <div className="p-card shadow-none border border-[#D9D9D9]">
                     <div className="p-card-body day-parametrization">
@@ -712,7 +787,7 @@ function CalendarPage(): React.JSX.Element {
                       </p>
                     </div>
                   </div>
-                  <div className="fixed bottom-0 translate-x-24 ml-3 -translate-y-12">
+                  <div className="fixed  translate-x-1/3 ml-3" style={{top: buttonTop}}>
                     <div className="p-2 rounded-3xl bg-white flex gap-x-7">
                       <Button
                         text
@@ -725,10 +800,10 @@ function CalendarPage(): React.JSX.Element {
                         }}
                       />
                       <Button
-                        label="Agregar"
+                        label="Guardar"
                         rounded
                         className="!px-8 !py-2 !text-base"
-                        onClick={accept}
+                        onClick={save}
                         disabled={days.filter((day) => day.dayTypeId == null).length > 0 || days.length <= 0}
                       />
                     </div>

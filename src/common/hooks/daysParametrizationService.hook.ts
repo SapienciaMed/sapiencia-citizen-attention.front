@@ -45,9 +45,19 @@ export function useDaysParametrizationService() {
         }
     }
 
+    async function updateDayParametrization(daysParametrization: IDaysParametrization): Promise<ApiResponse<IDaysParametrization>> {
+        try {
+            const endpoint: string = `/update/`;
+            return await post(`${listUrl}${endpoint}`, { daysParametrization });
+        } catch (error) {
+            return new ApiResponse({} as IDaysParametrization, EResponseCodes.FAIL, "Error no controlado");
+        }
+    }
+
     return {
         getDayTypes,
         getDaysParametrizations,
+        updateDayParametrization,
         createDaysParametrization,
         getDaysParametrizationById,
     };
