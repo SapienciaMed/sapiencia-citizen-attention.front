@@ -23,7 +23,10 @@ function CalendarPage(): React.JSX.Element {
   const messages = useRef(null);
   const [selectedYear, setSelectedYear] = useState<IDaysParametrization | undefined>(undefined);
   const [monthList, setMonthList] = useState(false);
-  const [buttonWidth, setButtonWidth] = useState(0);
+  const [buttonWidth, setButtonWidth] = useState({
+    width: 0,
+    left: 0,
+  });
   const [filters, setFilters] = useState({
     detailDate: { value: null, matchMode: FilterMatchMode.EQUALS },
   });
@@ -48,10 +51,10 @@ function CalendarPage(): React.JSX.Element {
         let day = d.getDate() > 9 ? d.getDate() : "0" + d.getDate();
         let month = d.getMonth() + 1;
         month = month > 9 ? month : "0" + month;
-        detail.detailDate = [d.getFullYear(), month, day].join("-") + " 00:00:00";        
-        delete detail.dayType
-        delete detail.createdAt
-        delete detail.updatedAt
+        detail.detailDate = [d.getFullYear(), month, day].join("-") + " 00:00:00";
+        delete detail.dayType;
+        delete detail.createdAt;
+        delete detail.updatedAt;
         return detail;
       });
       const response = await daysParametrizationService.updateDayParametrization(newYear);
@@ -84,14 +87,14 @@ function CalendarPage(): React.JSX.Element {
         });
         let newYears = [...years];
 
-        newYears = newYears.map((year)=>{
-          if (year.year==response.data.year) {
-            year = response.data
+        newYears = newYears.map((year) => {
+          if (year.year == response.data.year) {
+            year = response.data;
           }
           return year;
-        })
+        });
         console.log(newYears);
-        
+
         setYears(newYears);
         setSelectedYear(response.data);
         // resetForm();
@@ -237,11 +240,11 @@ function CalendarPage(): React.JSX.Element {
           weekend.parentElement.classList.add("p-highlight");
         }
       }
-    }, 10);    
+    }, 10);
 
     let nextDays = [...days];
     setDates([...newDates]);
-    
+
     newDates.forEach((date) => {
       if (nextDays.filter((day) => new Date(day.detailDate).toDateString() == date.toDateString()).length == 0) {
         nextDays.push({
@@ -251,7 +254,7 @@ function CalendarPage(): React.JSX.Element {
         });
       }
     });
-    
+
     nextDays = nextDays.filter((day) => {
       return newDates.filter((date) => new Date(day.detailDate).toDateString() == date.toDateString()).length;
     });
@@ -285,7 +288,16 @@ function CalendarPage(): React.JSX.Element {
   );
 
   const handleResize = () => {
-    setButtonWidth(parentForm.current?.offsetWidth ? parentForm?.current.offsetWidth + 4 : 0);
+    if (parentForm.current?.offsetWidth) {
+      let style = getComputedStyle(parentForm.current);
+      let domReact = parentForm.current.getBoundingClientRect()
+      console.log(domReact);
+      
+      setButtonWidth({
+        width: parentForm?.current.offsetWidth + parseInt(style.marginLeft) + parseInt(style.marginRight),
+        left: domReact.x-parseInt(style.marginLeft)
+      });
+    }
   };
 
   useEffect(() => {
@@ -298,7 +310,7 @@ function CalendarPage(): React.JSX.Element {
           setYears(response.data);
           const selected = response.data.filter((year) => year.year === new Date().getFullYear())[0];
           setSelectedYear(selected);
-          setInitialData(selected)
+          setInitialData(selected);
           // handleSearch()
         }
       } catch (error) {
@@ -331,12 +343,14 @@ function CalendarPage(): React.JSX.Element {
     };
   }, []);
 
-  const setInitialData = (selected: IDaysParametrization, asDate = true) =>{
+  const setInitialData = (selected: IDaysParametrization, asDate = true) => {
     if (selected.daysParametrizationDetails.length > 0) {
-      console.log(selected.daysParametrizationDetails.map((detail: IDaysParametrizationDetail) => {
-        return asDate ? new Date(detail.detailDate) : detail.detailDate;
-      }));
-      
+      console.log(
+        selected.daysParametrizationDetails.map((detail: IDaysParametrizationDetail) => {
+          return asDate ? new Date(detail.detailDate) : detail.detailDate;
+        })
+      );
+
       setDates(
         selected.daysParametrizationDetails.map((detail: IDaysParametrizationDetail) => {
           return asDate ? new Date(detail.detailDate) : detail.detailDate;
@@ -349,7 +363,7 @@ function CalendarPage(): React.JSX.Element {
         })
       );
     }
-  }
+  };
 
   const handleYearChange = (e) => {
     const selected = years.filter((year) => year.id === e.value)[0];
@@ -475,9 +489,9 @@ function CalendarPage(): React.JSX.Element {
     );
   };
 
-  const dateBodyTemplate = (rowData) => {    
-    let date = typeof rowData?.detailDate == 'string' ? new Date(rowData?.detailDate) : rowData?.detailDate;
-    return  date?.toLocaleDateString("es-CO", {
+  const dateBodyTemplate = (rowData) => {
+    let date = typeof rowData?.detailDate == "string" ? new Date(rowData?.detailDate) : rowData?.detailDate;
+    return date?.toLocaleDateString("es-CO", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -640,7 +654,7 @@ function CalendarPage(): React.JSX.Element {
     );
   };
   return (
-    <div className="p-6 max-w-[1200px] mx-auto">
+    <div className="p-6 max-w-[1200px] mx-auto" ref={parentForm}>
       <Toast ref={toast} position="bottom-right" />
       <ConfirmDialog id="messages"></ConfirmDialog>
       <ConfirmDialog
@@ -680,7 +694,7 @@ function CalendarPage(): React.JSX.Element {
       ></ConfirmDialog>
       {/* Calendar year filter */}
       <div className="p-card rounded-4xl shadow-none border border-[#D9D9D9]">
-        <div className="p-card-body !py-8 !px-6" ref={parentForm}>
+        <div className="p-card-body !py-8 !px-6">
           <div className="p-card-title flex justify-between">
             <span className="text-3xl">Resumen año {selectedYear?.year}</span>
             <div
@@ -846,10 +860,10 @@ function CalendarPage(): React.JSX.Element {
             </div>
           </div>
           <div
-            className="fixed p-card rounded-4xl shadow-none border border-[#D9D9D9] w-full"
-            style={{ top: "calc(100vh - 138px)" , width: buttonWidth}}
+            className="fixed p-card rounded-none shadow-none border-t border-[#D9D9D9] w-full"
+            style={{ top: "calc(100vh - 91px)", width: buttonWidth.width, left: buttonWidth.left  }}
           >
-            <div className="p-card-body !py-8 !px-6 flex gap-x-7 justify-end">
+            <div className="p-card-body !py-6 !px-8 flex gap-x-7 justify-end max-w-[1200px] mx-auto">
               <Button
                 text
                 rounded
@@ -858,7 +872,7 @@ function CalendarPage(): React.JSX.Element {
                 label="Cancelar"
                 onClick={() => {
                   resetForm();
-                  setInitialData(selectedYear)
+                  setInitialData(selectedYear);
                 }}
               />
               <Button
