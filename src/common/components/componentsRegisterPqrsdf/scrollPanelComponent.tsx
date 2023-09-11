@@ -5,7 +5,7 @@ import { ScrollPanel } from 'primereact/scrollpanel';
 export const ScrollPanelComponent = () => {
   return (
     <div className="card">
-        <ScrollPanel style={{ width: '100%', height: '250px', padding:'10px' }} className='scrollp'>
+        <ScrollPanel style={{ width: '100%', height: '250px' }} className='scrollp custombar1 bg-scroll">'>
             <p className="m-4 !font-sans">
                 En observancia de la Ley 1581 de 2012, reglamentada parcialmente por el Decreto 1377 
                 de 2013 y la política de Protección y Tratamiento de datos personales adoptada por 

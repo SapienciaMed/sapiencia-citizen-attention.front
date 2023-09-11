@@ -7,7 +7,7 @@
 }
 
 .card {
-    border-radius: 8px;
+    border-radius: 20px;
     border: 1px solid #CACACA;
     box-shadow: none;
     color: #000000;
@@ -29,6 +29,11 @@
     font-weight: bold;
     line-height: 35px;
     letter-spacing: 0em;
+}
+
+.card-body{
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 /*Accordion*/
@@ -92,7 +97,18 @@
 .row-1 {
     display: flex;
     flex-direction: column;
-    flex-grow: 4;
+    //flex-grow: 4;
+}
+
+.width-25{
+    width: 24%;
+}
+.width-50{
+    width: 49%;
+}
+
+.width-100{
+    width: 99%;
 }
 
 label {
@@ -110,7 +126,7 @@ label {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: space-between;
+    //justify-content: space-between;
     margin-bottom: 12px;
 }
 
@@ -119,8 +135,7 @@ label {
     flex-direction: row;
     flex-wrap: wrap;
     align-items: flex-end;
-    justify-content: flex-start;
-    width: max-content;
+    justify-content: pace-between;
 }
 
 .prueba{
@@ -215,8 +230,7 @@ color: #000000;
 }
 
 .split{
-    margin-left: 19px;
-    margin-top: 19px;
+    margin-left: 1.1%;
 }
 
 .tittle-h2{
@@ -251,4 +265,13 @@ color: #000000;
     color: #fff;
     border-color: #d1ceda;
     
+}
+
+.p-scrollpanel .p-scrollpanel-bar{
+    background: #ACABAB;
+    border: 0 none;
+}
+
+.font-label{
+    opacity: 0.8;
 }

@@ -8,7 +8,7 @@ const Register_pqrsdf = ()=> {
   return (
     
     <div className='container'>
-        <Card className='card'>
+        <Card className='card card-body'>
 
             <Card 
                 title='Registrar PQRSDF'
