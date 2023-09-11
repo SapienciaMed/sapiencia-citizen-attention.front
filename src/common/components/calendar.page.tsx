@@ -16,6 +16,7 @@ import { useDaysParametrizationService } from "../hooks/daysParametrizationServi
 import { IDayType } from "../interfaces/dayType.interfaces";
 import { IDaysParametrization } from "../interfaces/daysParametrization.interfaces";
 import { IDaysParametrizationDetail } from "../interfaces/daysParametrizationDetail.interfaces";
+import toLocaleDate from "../utils/helpers";
 
 function CalendarPage(): React.JSX.Element {
   const toast = useRef(null);
@@ -344,22 +345,22 @@ function CalendarPage(): React.JSX.Element {
     };
   }, []);
 
-  const setInitialData = (selected: IDaysParametrization, asDate = true) => {
+  const setInitialData = (selected: IDaysParametrization) => {
     if (selected.daysParametrizationDetails.length > 0) {
       console.log(
         selected.daysParametrizationDetails.map((detail: IDaysParametrizationDetail) => {
-          return asDate ? new Date(detail.detailDate) : detail.detailDate;
+          return toLocaleDate(detail.detailDate);
         })
       );
 
       setDates(
         selected.daysParametrizationDetails.map((detail: IDaysParametrizationDetail) => {
-          return asDate ? new Date(detail.detailDate) : detail.detailDate;
+          return toLocaleDate(detail.detailDate);
         })
       );
       setDays(
         selected.daysParametrizationDetails.map((detail: IDaysParametrizationDetail) => {
-          detail.detailDate = asDate ? new Date(detail.detailDate) : detail.detailDate;
+          detail.detailDate = toLocaleDate(detail.detailDate);
           return detail;
         })
       );
