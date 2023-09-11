@@ -96,8 +96,7 @@ function CalendarPage(): React.JSX.Element {
         console.log(newYears);
 
         setYears(newYears);
-        setSelectedYear(response.data);
-        // resetForm();
+        setSelectedYear(response.data);        
         setInitialData(response.data);
       }
     } catch (error) {
@@ -148,6 +147,8 @@ function CalendarPage(): React.JSX.Element {
             let newYears = [...years, response.data].sort((a, b) => b.year - a.year);
 
             setYears(newYears);
+            setSelectedYear(response.data)
+            setInitialData(response.data);
             setYear(null);
             setVisibleConfirm(false);
             confirmDialog({
@@ -367,8 +368,9 @@ function CalendarPage(): React.JSX.Element {
 
   const handleYearChange = (e) => {
     const selected = years.filter((year) => year.id === e.value)[0];
-    setSelectedYear(selected);
     resetForm();
+    setSelectedYear(selected);
+    setInitialData(selected);
   };
 
   const resetForm = (showOtherMonths = true) => {
