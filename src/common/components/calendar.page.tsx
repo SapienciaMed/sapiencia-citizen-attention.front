@@ -501,7 +501,7 @@ function CalendarPage(): React.JSX.Element {
   const dayTypeBodyTemplate = (rowData) => {
     return (
       <div className="relative">
-        <span className="relative z-10 p-2 h-10 max-w-[115px] w-[115px]">
+        <span className="relative p-2 h-10 max-w-[115px] w-[115px]">
           {dayTypes.filter((type) => type.tdi_codigo == rowData.dayTypeId)[0]?.tdi_descripcion_corta}
         </span>
         <svg
@@ -763,7 +763,7 @@ function CalendarPage(): React.JSX.Element {
       {/* Calendar months */}
       {monthList && (
         <div className="relative pb-36">
-          <div className="p-card rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
+          <div className="relative z-10 p-card rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
             <div className="p-card-body !py-8 !px-6">
               <div className="p-card-title flex justify-between">
                 <span className="text-3xl">Meses</span>
@@ -860,10 +860,10 @@ function CalendarPage(): React.JSX.Element {
             </div>
           </div>
           <div
-            className="fixed p-card rounded-none shadow-none border-t border-[#D9D9D9] w-full"
+            className="fixed z-30 p-card rounded-none shadow-none border-t border-[#D9D9D9] w-full"
             style={{ top: "calc(100vh - 91px)", width: buttonWidth.width, left: buttonWidth.left  }}
           >
-            <div className="p-card-body !py-6 !px-8 flex gap-x-7 justify-end max-w-[1200px] mx-auto">
+            <div className="p-card-body !py-6 !px-10 flex gap-x-7 justify-end max-w-[1200px] mx-auto">
               <Button
                 text
                 rounded
