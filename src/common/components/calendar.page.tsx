@@ -94,7 +94,6 @@ function CalendarPage(): React.JSX.Element {
           }
           return year;
         });
-        console.log(newYears);
 
         setYears(newYears);
         setSelectedYear(response.data);        
@@ -148,9 +147,10 @@ function CalendarPage(): React.JSX.Element {
             let newYears = [...years, response.data].sort((a, b) => b.year - a.year);
 
             setYears(newYears);
+            setYear(null);
+            resetForm();
             setSelectedYear(response.data)
             setInitialData(response.data);
-            setYear(null);
             setVisibleConfirm(false);
             confirmDialog({
               id: "messages",
@@ -181,7 +181,7 @@ function CalendarPage(): React.JSX.Element {
             });
           }
         } catch (error) {
-          console.error("Error al obtener la lista de años:", error);
+          console.error("Error al crear el año:", error);
         } finally {
           setVisibleConfirm(false);
           // setLoading(false);
@@ -293,8 +293,7 @@ function CalendarPage(): React.JSX.Element {
     if (parentForm.current?.offsetWidth) {
       let style = getComputedStyle(parentForm.current);
       let domReact = parentForm.current.getBoundingClientRect()
-      console.log(domReact);
-      
+
       setButtonWidth({
         width: parentForm?.current.offsetWidth + parseInt(style.marginLeft) + parseInt(style.marginRight),
         left: domReact.x-parseInt(style.marginLeft)
@@ -346,20 +345,20 @@ function CalendarPage(): React.JSX.Element {
   }, []);
 
   const setInitialData = (selected: IDaysParametrization) => {
-    if (selected.daysParametrizationDetails.length > 0) {
+    if (selected?.daysParametrizationDetails?.length > 0) {
       console.log(
-        selected.daysParametrizationDetails.map((detail: IDaysParametrizationDetail) => {
+        selected?.daysParametrizationDetails?.map((detail: IDaysParametrizationDetail) => {
           return toLocaleDate(detail.detailDate);
         })
       );
 
       setDates(
-        selected.daysParametrizationDetails.map((detail: IDaysParametrizationDetail) => {
+        selected?.daysParametrizationDetails?.map((detail: IDaysParametrizationDetail) => {
           return toLocaleDate(detail.detailDate);
         })
       );
       setDays(
-        selected.daysParametrizationDetails.map((detail: IDaysParametrizationDetail) => {
+        selected?.daysParametrizationDetails?.map((detail: IDaysParametrizationDetail) => {
           detail.detailDate = toLocaleDate(detail.detailDate);
           return detail;
         })
