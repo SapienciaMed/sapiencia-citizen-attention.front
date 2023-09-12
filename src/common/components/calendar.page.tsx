@@ -16,14 +16,16 @@ import { useDaysParametrizationService } from "../hooks/daysParametrizationServi
 import { IDayType } from "../interfaces/dayType.interfaces";
 import { IDaysParametrization } from "../interfaces/daysParametrization.interfaces";
 import { IDaysParametrizationDetail } from "../interfaces/daysParametrizationDetail.interfaces";
-import { allMonths, toLocaleDate } from "../utils/helpers";
+import { allMonths, capitalize, toLocaleDate } from "../utils/helpers";
 
 function CalendarPage(): React.JSX.Element {
   const toast = useRef(null);
   const parentForm = useRef(null);
   const messages = useRef(null);
   const [selectedYear, setSelectedYear] = useState<IDaysParametrization | undefined>(undefined);
+  const [selectedMonth, setSelectedMonth] = useState(null);
   const [monthList, setMonthList] = useState(false);
+  const [visibleMonths, setVisibleMonths] = useState(false);
   const [buttonWidth, setButtonWidth] = useState({
     width: 0,
     left: 0,
@@ -41,9 +43,10 @@ function CalendarPage(): React.JSX.Element {
   const [dates, setDates] = useState<Date[]>([]);
   const [calendarPage, setCalendarPage] = useState(0);
   const daysParametrizationService = useDaysParametrizationService();
-  // const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const save = async () => {
+    setLoading(true);
     try {
       let newYear = { ...selectedYear };
       newYear.daysParametrizationDetails = [...days];
@@ -79,6 +82,7 @@ function CalendarPage(): React.JSX.Element {
                 label="Aceptar"
                 rounded
                 className="!px-4 !py-2 !text-base"
+                disabled={loading}
                 onClick={(e) => {
                   options.accept();
                 }}
@@ -103,7 +107,7 @@ function CalendarPage(): React.JSX.Element {
       console.error("Error al modificar el calendario:", error);
     } finally {
       setVisibleConfirm(false);
-      // setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -131,6 +135,7 @@ function CalendarPage(): React.JSX.Element {
                 label="Aceptar"
                 rounded
                 className="!px-4 !py-2 !text-base"
+                disabled={loading}
                 onClick={(e) => {
                   options.accept();
                 }}
@@ -139,7 +144,7 @@ function CalendarPage(): React.JSX.Element {
           ),
         });
       } else {
-        // setLoading(true);
+        setLoading(true);
         try {
           const response = await daysParametrizationService.createDaysParametrization(year);
 
@@ -172,6 +177,7 @@ function CalendarPage(): React.JSX.Element {
                     label="Aceptar"
                     rounded
                     className="!px-4 !py-2 !text-base"
+                    disabled={loading}
                     onClick={(e) => {
                       options.accept();
                     }}
@@ -184,7 +190,7 @@ function CalendarPage(): React.JSX.Element {
           console.error("Error al crear el año:", error);
         } finally {
           setVisibleConfirm(false);
-          // setLoading(false);
+          setLoading(false);
         }
       }
     } else {
@@ -280,12 +286,19 @@ function CalendarPage(): React.JSX.Element {
         severity="secondary"
         className="!px-4 !py-2 !text-base !text-black"
         label="Cancelar"
+        disabled={loading}
         onClick={() => {
           setVisibleConfirm(false);
           setYear(null);
         }}
       />
-      <Button label="Agregar" rounded className="!px-4 !py-2 !text-base" onClick={accept} disabled={year < 2000} />
+      <Button
+        label="Agregar"
+        rounded
+        className="!px-4 !py-2 !text-base"
+        onClick={accept}
+        disabled={year < 2000 || loading}
+      />
     </div>
   );
 
@@ -303,7 +316,7 @@ function CalendarPage(): React.JSX.Element {
 
   useEffect(() => {
     const fetchYears = async () => {
-      // setLoading(true);
+      setLoading(true);
       try {
         const response = await daysParametrizationService.getDaysParametrizations();
 
@@ -317,11 +330,11 @@ function CalendarPage(): React.JSX.Element {
       } catch (error) {
         console.error("Error al obtener la lista de años:", error);
       } finally {
-        // setLoading(false);
+        setLoading(false);
       }
     };
     const fetchDayTypes = async () => {
-      // setLoading(true);
+      setLoading(true);
       try {
         const response = await daysParametrizationService.getDayTypes();
 
@@ -331,7 +344,7 @@ function CalendarPage(): React.JSX.Element {
       } catch (error) {
         console.error("Error al obtener la lista de tipos de días:", error);
       } finally {
-        // setLoading(false);
+        setLoading(false);
       }
     };
     fetchDayTypes();
@@ -414,9 +427,11 @@ function CalendarPage(): React.JSX.Element {
     // Lógica de búsqueda con el año seleccionado
     if (selectedYear?.id) {
       setMonthList(true);
+      setVisibleMonths(true);
       console.log(`Realizar búsqueda para el año ${selectedYear.year}`);
     } else {
       setMonthList(false);
+      setVisibleMonths(false);
       alert("Selecciona un año antes de buscar.");
     }
   };
@@ -550,7 +565,7 @@ function CalendarPage(): React.JSX.Element {
             type="button"
             className={classNames(options.className, "border-round")}
             onClick={options.onClick}
-            disabled={options.disabled}
+            disabled={options.disabled || loading}
           >
             <span className="p-3 text-black">{prev}</span>
           </Button>
@@ -561,7 +576,7 @@ function CalendarPage(): React.JSX.Element {
           <Button
             className={classNames(options.className, "border-round")}
             onClick={options.onClick}
-            disabled={options.disabled}
+            disabled={options.disabled || loading}
           >
             <span className="p-3 text-black">{next}</span>
           </Button>
@@ -582,7 +597,7 @@ function CalendarPage(): React.JSX.Element {
         }
 
         return (
-          <Button className={options.className} onClick={options.onClick}>
+          <Button disabled={loading} className={options.className} onClick={options.onClick}>
             {options.page + 1}
           </Button>
         );
@@ -609,7 +624,10 @@ function CalendarPage(): React.JSX.Element {
         let date = new Date(`${selectedYear.year}/${index > 9 ? index : "0" + index}/01`);
         let lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
         calendars[index <= 6 ? 0 : 1].push(
-          <div key={index > 9 ? index : "0" + index}>
+          <div
+            className={(selectedMonth == index ? "block" : "hidden md:block") + " transition-all"}
+            key={index > 9 ? index : "0" + index}
+          >
             <Calendar
               className="md:min-w-[288pxx]"
               dateTemplate={(e) => dateTemplate(e)}
@@ -634,9 +652,9 @@ function CalendarPage(): React.JSX.Element {
       }
     }
     return (
-      <div className="hidden md:flex md:flex-wrap md:justify-between overflow-x-auto no-month-navigator gap-x-6 gap-y-14 pt-5 md:w-1/2 xl:w-[62%] md:pr-6 w-full">
+      <div className="justify-center flex flex-wrap md:justify-between overflow-x-auto no-month-navigator gap-x-6 gap-y-14 md:pt-5 md:w-1/2 xl:w-[62%] md:pr-6 w-full pb-8 md:pb-0">
         {calendars[calendarPage]}
-        <div className="w-full">
+        <div className="w-full hidden md:block">
           <Paginator
             className="!pb-0"
             template={paginatorTemplate()}
@@ -650,7 +668,7 @@ function CalendarPage(): React.JSX.Element {
     );
   };
   return (
-    <div className="p-6 max-w-[1200px] mx-auto" ref={parentForm}>
+    <div className="p-4 md:p-6 max-w-[1200px] mx-auto" ref={parentForm}>
       <Toast ref={toast} position="bottom-right" />
       <ConfirmDialog id="messages"></ConfirmDialog>
       <ConfirmDialog
@@ -759,16 +777,19 @@ function CalendarPage(): React.JSX.Element {
 
       {/* Calendar months */}
       {monthList && (
-        <div className="relative pb-28 z-0">
+        <div className="relative pb-16 md:pb-28 z-0">
           <div className="relative p-card rounded-2xl md:rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
             <div className="p-card-body !py-3 !px-3 md:!py-8 md:!px-6">
               <div className="p-card-title justify-between hidden md:flex">
                 <span className="text-3xl">Meses</span>
               </div>
               <div className="p-card-content !pb-0 !pt-0 md:!pt-5">
+                {/* <div className="md:hidden block w-full"> */}
                 <div className="w-full flex px-1">
                   <div className="flex items-center gap-6 w-[43%]">
-                    <div className="relative h-10 w-10 border border-[#D9D9D9]"></div>
+                    <div className="relative">
+                      <div className="h-10 w-10 border border-[#D9D9D9]"></div>
+                    </div>
                     <span className="text-sm">Día hábil</span>
                   </div>
                   <div className="text-sm w-[57%]">
@@ -779,35 +800,54 @@ function CalendarPage(): React.JSX.Element {
                     </div>
                   </div>
                 </div>
-                <div className="w-full flex px-1 -mt-2.5">
+                <div className="w-full flex px-1 items-center mt-1">
                   <div className="flex items-center gap-6 w-[43%]">
-                    <div className="relative h-10 w-10 border border-[#D9D9D9] bg-primary opacity-25 rounded-full"></div>
+                    <div className="relative">
+                      <div className="h-10 w-10 border border-[#D9D9D9] bg-primary opacity-25 rounded-full"></div>
+                    </div>
                     <span className="text-sm">Día no hábil</span>
                   </div>
                   <div className="text-sm w-[57%]">
-                    <div className="font-medium mt-5 flex">
+                    <div className="font-medium flex max-h-[20px]">
                       <span className="min-w-[103px]">No laboral PF :</span>
                       <span className="font-normal !font-sans">No laboral por festivo</span>
                     </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-3 md:hidden gap-x-3 gap-y-2 mt-3">
-                  {allMonths.map((month,index) => (
+                {/* </div> */}
+                <div className="grid grid-cols-3 md:hidden gap-x-3 gap-y-2 mt-6">
+                  {allMonths().map((month, index) => (
                     <Button
                       key={index}
-                      text                      
+                      text
                       severity="secondary"
-                      className="w-full !py-2 !text-base !text-black !border !border-[#D9D9D9]"
-                      label={month}
+                      className={
+                        (selectedMonth == index + 1
+                          ? "!text-primary !border !border-primary"
+                          : "!text-black !border !border-[#D9D9D9]") +
+                        " w-full !py-2.5 !text-sm !rounded-[10px] !text-black !border !border-[#D9D9D9]"
+                      }
+                      label={capitalize(month)}
+                      disabled={loading}
                       onClick={() => {
-                        resetForm();
-                        setInitialData(selectedYear);
+                        // resetForm();
+                        if (index + 1 != selectedMonth) {                          
+                          setSelectedMonth(index + 1);
+                          const page = index + 1 > 6 ? 1 : 0;
+                          if (page!=calendarPage) {                          
+                            setCalendarPage(page);
+                          }
+                          setVisibleMonths(false);
+                          setTimeout(() => {
+                            setVisibleMonths(true);
+                          }, 1);
+                        }
                       }}
                     />
                   ))}
                 </div>
-                <div className="flex flex-wrap w-full relative">
-                  {renderCalendars()}
+                <div className="flex flex-wrap w-full relative pt-3 md:pt-0">
+                  {visibleMonths && renderCalendars()}
                   <div className="md:w-1/2 xl:w-[38%] w-full relative">
                     <div className="text-base w-full text-center md:text-left">Días hábiles y no hábiles</div>
                     <div className="p-card shadow-none !border-0 md:!border border-[#D9D9D9]">
@@ -897,16 +937,17 @@ function CalendarPage(): React.JSX.Element {
             </div>
           </div>
           <div
-            className="fixed z-30 p-card rounded-none shadow-none border-t border-[#D9D9D9] w-full"
-            style={{ top: "calc(100vh - 91px)", width: buttonWidth.width, left: buttonWidth.left }}
+            className="fixed z-30 p-card rounded-none shadow-none border-t border-[#D9D9D9] w-full top-[calc(100vh-65px)] md:top-[calc(100vh-91px)]"
+            style={{ width: buttonWidth.width, left: buttonWidth.left }}
           >
-            <div className="p-card-body !py-6 !px-10 flex gap-x-7 justify-end max-w-[1200px] mx-auto">
+            <div className="p-card-body !py-3 md:!py-6 md:!px-10 flex gap-x-7 justify-center md:justify-end max-w-[1200px] mx-auto">
               <Button
                 text
                 rounded
                 severity="secondary"
                 className="!px-8 !py-2 !text-base !text-black !border !border-primary"
                 label="Cancelar"
+                disabled={loading}
                 onClick={() => {
                   resetForm();
                   setInitialData(selectedYear);
@@ -917,7 +958,7 @@ function CalendarPage(): React.JSX.Element {
                 rounded
                 className="!px-8 !py-2 !text-base"
                 onClick={save}
-                disabled={days.filter((day) => day.dayTypeId == null).length > 0 || days.length <= 0}
+                disabled={days.filter((day) => day.dayTypeId == null).length > 0 || days.length <= 0 || loading}
               />
             </div>
           </div>

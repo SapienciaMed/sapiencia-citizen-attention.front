@@ -7853,6 +7853,14 @@ video {
   top:50%
 }
 
+.top-\[calc\(100vh-110px\)\]{
+  top:calc(100vh - 110px)
+}
+
+.top-\[calc\(100vh-65px\)\]{
+  top:calc(100vh - 65px)
+}
+
 .z-0{
   z-index:0
 }
@@ -7995,12 +8003,20 @@ video {
   height:35px
 }
 
+.max-h-\[20px\]{
+  max-height:20px
+}
+
 .\!w-40{
   width:10rem !important
 }
 
 .w-10{
   width:2.5rem
+}
+
+.w-\[114px\]{
+  width:114px
 }
 
 .w-\[115px\]{
@@ -8027,16 +8043,16 @@ video {
   width:100%
 }
 
-.w-\[114px\]{
-  width:114px
-}
-
 .min-w-\[103px\]{
   min-width:103px
 }
 
 .min-w-\[114px\]{
   min-width:114px
+}
+
+.max-w-\[114px\]{
+  max-width:114px
 }
 
 .max-w-\[115px\]{
@@ -8051,24 +8067,12 @@ video {
   max-width:148px
 }
 
-.max-w-\[calc\(100vw-10\.1rem\)\]{
-  max-width:calc(100vw - 10.1rem)
-}
-
-.max-w-full{
-  max-width:100%
-}
-
-.max-w-\[calc\(100vw-4rem\)\]{
-  max-width:calc(100vw - 4rem)
-}
-
 .max-w-\[calc\(100vw-4\.6rem\)\]{
   max-width:calc(100vw - 4.6rem)
 }
 
-.max-w-\[114px\]{
-  max-width:114px
+.max-w-full{
+  max-width:100%
 }
 
 .-translate-y-1\/2{
@@ -8114,6 +8118,10 @@ video {
   flex-wrap:wrap
 }
 
+.items-start{
+  align-items:flex-start
+}
+
 .items-center{
   align-items:center
 }
@@ -8143,6 +8151,11 @@ video {
        column-gap:0.5rem
 }
 
+.gap-x-3{
+  -moz-column-gap:0.75rem;
+       column-gap:0.75rem
+}
+
 .gap-x-6{
   -moz-column-gap:1.5rem;
        column-gap:1.5rem
@@ -8163,11 +8176,6 @@ video {
 
 .gap-y-14{
   row-gap:3.5rem
-}
-
-.gap-x-3{
-  -moz-column-gap:0.75rem;
-       column-gap:0.75rem
 }
 
 .gap-y-2{
@@ -8202,6 +8210,10 @@ video {
   border-radius:0px
 }
 
+.\!rounded-\[10px\]{
+  border-radius:10px !important
+}
+
 .rounded-t-2xl{
   border-top-left-radius:1rem;
   border-top-right-radius:1rem
@@ -8209,6 +8221,10 @@ video {
 
 .\!border{
   border-width:1px !important
+}
+
+.\!border-0{
+  border-width:0px !important
 }
 
 .border{
@@ -8219,12 +8235,13 @@ video {
   border-width:0px
 }
 
-.\!border-0{
-  border-width:0px !important
-}
-
 .border-t{
   border-top-width:1px
+}
+
+.\!border-\[\#D9D9D9\]{
+  --tw-border-opacity:1 !important;
+  border-color:rgb(217 217 217 / var(--tw-border-opacity)) !important
 }
 
 .\!border-primary{
@@ -8240,11 +8257,6 @@ video {
 .border-red-500{
   --tw-border-opacity:1;
   border-color:rgb(239 68 68 / var(--tw-border-opacity))
-}
-
-.\!border-\[\#D9D9D9\]{
-  --tw-border-opacity:1 !important;
-  border-color:rgb(217 217 217 / var(--tw-border-opacity)) !important
 }
 
 .bg-primary{
@@ -8284,8 +8296,8 @@ video {
   padding:2rem
 }
 
-.p-0{
-  padding:0px
+.p-4{
+  padding:1rem
 }
 
 .\!px-10{
@@ -8353,6 +8365,16 @@ video {
   padding-bottom:0.5rem
 }
 
+.\!py-2\.5{
+  padding-top:0.625rem !important;
+  padding-bottom:0.625rem !important
+}
+
+.\!py-4{
+  padding-top:1rem !important;
+  padding-bottom:1rem !important
+}
+
 .\!pb-0{
   padding-bottom:0px !important
 }
@@ -8387,6 +8409,22 @@ video {
 
 .pt-5{
   padding-top:1.25rem
+}
+
+.pb-8{
+  padding-bottom:2rem
+}
+
+.pt-3{
+  padding-top:0.75rem
+}
+
+.pb-20{
+  padding-bottom:5rem
+}
+
+.pb-16{
+  padding-bottom:4rem
 }
 
 .text-center{
@@ -8434,6 +8472,10 @@ video {
   font-weight:400
 }
 
+.capitalize{
+  text-transform:capitalize
+}
+
 .\!text-black{
   --tw-text-opacity:1 !important;
   color:rgb(0 0 0 / var(--tw-text-opacity)) !important
@@ -8454,6 +8496,11 @@ video {
   color:rgb(220 38 38 / var(--tw-text-opacity))
 }
 
+.\!text-primary{
+  --tw-text-opacity:1 !important;
+  color:rgb(83 56 147 / var(--tw-text-opacity)) !important
+}
+
 .opacity-25{
   opacity:0.25
 }
@@ -8470,6 +8517,12 @@ video {
 
 .filter{
   filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)
+}
+
+.transition-all{
+  transition-property:all;
+  transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration:150ms
 }
 
 .p-card{
@@ -8598,32 +8651,28 @@ video {
 }
 
 @media (min-width: 640px){
-  .sm\:w-\[115px\]{
-    width:115px
-  }
-
   .sm\:w-\[148px\]{
     width:148px
-  }
-
-  .sm\:min-w-\[115px\]{
-    min-width:115px
   }
 
   .sm\:min-w-\[148px\]{
     min-width:148px
   }
 
-  .sm\:max-w-\[115px\]{
-    max-width:115px
-  }
-
   .sm\:max-w-\[148px\]{
     max-width:148px
+  }
+
+  .sm\:items-center{
+    align-items:center
   }
 }
 
 @media (min-width: 768px){
+  .md\:top-\[calc\(100vh-91px\)\]{
+    top:calc(100vh - 91px)
+  }
+
   .md\:block{
     display:block
   }
@@ -8640,44 +8689,40 @@ video {
     width:50%
   }
 
-  .md\:w-\[640px\]{
-    width:640px
-  }
-
-  .md\:w-\[114px\]{
-    width:114px
-  }
-
   .md\:w-\[115px\]{
     width:115px
   }
 
-  .md\:min-w-\[288pxx\]{
-    min-width:288pxx
-  }
-
-  .md\:min-w-\[114px\]{
-    min-width:114px
+  .md\:w-\[640px\]{
+    width:640px
   }
 
   .md\:min-w-\[115px\]{
     min-width:115px
   }
 
-  .md\:max-w-2xs{
-    max-width:15rem
+  .md\:min-w-\[288pxx\]{
+    min-width:288pxx
   }
 
-  .md\:max-w-\[calc\(100vw-10\.1rem\)\]{
-    max-width:calc(100vw - 10.1rem)
+  .md\:max-w-2xs{
+    max-width:15rem
   }
 
   .md\:max-w-\[115px\]{
     max-width:115px
   }
 
+  .md\:max-w-\[calc\(100vw-10\.1rem\)\]{
+    max-width:calc(100vw - 10.1rem)
+  }
+
   .md\:flex-wrap{
     flex-wrap:wrap
+  }
+
+  .md\:justify-end{
+    justify-content:flex-end
   }
 
   .md\:justify-between{
@@ -8688,16 +8733,12 @@ video {
     border-radius:1.875rem
   }
 
-  .md\:border{
-    border-width:1px
-  }
-
   .md\:\!border{
     border-width:1px !important
   }
 
-  .md\:p-5{
-    padding:1.25rem
+  .md\:p-6{
+    padding:1.5rem
   }
 
   .md\:\!px-6{
@@ -8710,12 +8751,38 @@ video {
     padding-bottom:2rem !important
   }
 
+  .md\:\!py-6{
+    padding-top:1.5rem !important;
+    padding-bottom:1.5rem !important
+  }
+
+  .md\:\!px-10{
+    padding-left:2.5rem !important;
+    padding-right:2.5rem !important
+  }
+
   .md\:\!pt-5{
     padding-top:1.25rem !important
   }
 
   .md\:pr-6{
     padding-right:1.5rem
+  }
+
+  .md\:pt-5{
+    padding-top:1.25rem
+  }
+
+  .md\:pb-0{
+    padding-bottom:0px
+  }
+
+  .md\:pt-0{
+    padding-top:0px
+  }
+
+  .md\:pb-28{
+    padding-bottom:7rem
   }
 
   .md\:text-left{

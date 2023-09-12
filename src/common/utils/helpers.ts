@@ -13,8 +13,26 @@ const toLocaleDate = (date: string, isMoment = false) => {
   return localeDate;
 };
 
-const allMonths = Array.from({ length: 12 }, (item, i) => {
-  return new Date(0, i).toLocaleString("es-CO", { month: "long" });
-});
+/**
+ * get all months in an array per language
+ * 
+ * @param lang lang for months
+ * @returns string[] array of months
+ */
+const allMonths = (lang: string = "es-CO"): string[] => {
+  return Array.from({ length: 12 }, (item, i) => {
+    return new Date(0, i).toLocaleString(lang, { month: "long" });
+  });
+};
 
-export { toLocaleDate, allMonths };
+/**
+ * Capitalize text
+ *
+ * @param str text to capitalize format
+ * @returns string
+ */
+const capitalize = (str: string): string => {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+
+export { toLocaleDate, allMonths, capitalize };
