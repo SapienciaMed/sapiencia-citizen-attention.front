@@ -37,7 +37,40 @@ export const CitizenInformation = () => {
   const paises = ApiDataPais.read();
   const { LPA_VALOR } = linkPoliticaCondiciones[0];
   
- 
+  const defaultValues = {
+    tipoDeSolicitud: '',
+    tipo:'',
+    tipoEntidad:'',
+    medioRespuesta:'',
+    programaSolicitud:'',
+    asuntoSolicitud:'',
+    noDocumento:'',
+    primerNombre:'',
+    segundoNombre:'',
+    primerApellido:'',
+    segundoApellido:'',
+    noContacto1:'',
+    noContacto2:'',
+    correoElectronico:'',
+    direccion:'',
+    pais:'',
+    departamento:'',
+    municipio:'',
+    fechaNacimento:'',
+    politicaTratamiento: null,
+    Descripción:'',
+    RazónSocial:''
+  };
+
+  const {
+    control,
+    formState: { errors, isValid },
+    handleSubmit,
+    getFieldState,
+    reset,
+    resetField,
+    watch
+  } = useForm({ defaultValues, mode:'all' });
   
   
   const optionDepartamento = useRef(null);
@@ -67,8 +100,45 @@ export const CitizenInformation = () => {
 
   const seleTipoDocument = ( document:{LGE_CODIGO:number, LGE_ELEMENTO_DESCRIPCION:string} ) => {
     setValueDocument( document );
-    
+
     showFieldPersons.current = document==null?'':document.LGE_ELEMENTO_DESCRIPCION
+
+    console.log(showFieldPersons.current);
+    
+    switch (showFieldPersons.current) {
+      case 'Cedula de Ciudadania':
+        resetField('RazónSocial');
+        setValueTypeEntidad(null);
+        break;
+      case 'Cedula de Extranjeria':
+        resetField('RazónSocial');
+        setValueTypeEntidad(null);
+        break;
+      case 'Tarjeta de Identidad':
+        resetField('RazónSocial');
+        setValueTypeEntidad(null);
+        break;
+      case 'NIT':
+        resetField('primerNombre');
+        resetField('segundoNombre');
+        resetField('primerApellido');
+        resetField('segundoApellido');
+        resetField('fechaNacimento');
+        break;
+      case 'Anónimo':
+        resetField('tipoEntidad');
+        resetField('noDocumento');
+        resetField('primerNombre');
+        resetField('segundoNombre');
+        resetField('primerApellido');
+        resetField('segundoApellido');
+        resetField('fechaNacimento');
+        setValueTypeEntidad(null);
+        break;
+    
+      default:
+        break;
+    }
     
     return document;
   };
@@ -152,40 +222,6 @@ export const CitizenInformation = () => {
     return estado;
   }
 
-  const defaultValues = {
-    tipoDeSolicitud: '',
-    tipo:'',
-    tipoEntidad:'',
-    medioRespuesta:'',
-    programaSolicitud:'',
-    asuntoSolicitud:'',
-    noDocumento:'',
-    primerNombre:'',
-    segundoNombre:'',
-    primerApellido:'',
-    segundoApellido:'',
-    noContacto1:'',
-    noContacto2:'',
-    correoElectronico:'',
-    direccion:'',
-    pais:'',
-    departamento:'',
-    municipio:'',
-    fechaNacimento:'',
-    politicaTratamiento: null,
-    Descripción:'',
-    RazónSocial:''
-  };
-
-  const {
-    control,
-    formState: { errors, isValid },
-    handleSubmit,
-    getFieldState,
-    reset,
-    watch
-  } = useForm({ defaultValues, mode:'all' });
- 
   const onSubmit = (data) => {
     
     console.log( data );
