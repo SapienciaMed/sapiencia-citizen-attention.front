@@ -147,7 +147,7 @@ export const CitizenInformation = () => {
     getFieldState,
     reset,
     watch
-  } = useForm({ defaultValues });
+  } = useForm({ defaultValues, mode:'all' });
  
   const onSubmit = (data) => {
     data;
@@ -204,7 +204,7 @@ export const CitizenInformation = () => {
                     className={classNames({ 'p-invalid': fieldState.error } ,'!h-10')}
                     onChange={(e) => field.onChange(e.value)}
                     focusInputRef={field.ref}
-                    options={ [{TSO_DESCRIPTION:'Seleccionar'},...optionSolicitudes.data]}
+                    options={ optionSolicitudes.data }
                     placeholder='Seleccionar'
                     width='100%'
                   />
@@ -235,7 +235,7 @@ export const CitizenInformation = () => {
                       className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                       onChange={(e) => field.onChange( seleTipoDocument(e.value))}
                       focusInputRef={field.ref}
-                      options={ [{LGE_ELEMENTO_DESCRIPCION: 'Seleccionar'},...optionTypeDocument.data] }
+                      options={ optionTypeDocument.data }
                       placeholder='Seleccionar'
                       width='100%'
                     />
@@ -300,7 +300,7 @@ export const CitizenInformation = () => {
                     onChange={(e) => field.onChange(e.value)}
                     focusInputRef={field.ref}
                     optionLabel={'TEJ_NOMBRE'}
-                    options={ [{TEJ_NOMBRE:'Seleccionar'},...optionLegalEntity.data] }  
+                    options={ optionLegalEntity.data }  
                     placeholder='Seleccionar'
                     width='100%'
                   />
@@ -677,7 +677,7 @@ export const CitizenInformation = () => {
                     onChange={(e) => field.onChange(seletDepartamentos(e.value))}
                     focusInputRef={field.ref}
                     optionLabel='LGE_ELEMENTO_DESCRIPCION'
-                    options={ [{LGE_ELEMENTO_DESCRIPCION:'Seleccionar'},...optionDepartamento.current]}
+                    options={ optionDepartamento.current }
                     placeholder='Selecionar'
                     width="100%"
                   />
@@ -710,7 +710,7 @@ export const CitizenInformation = () => {
                       onChange={(e) => field.onChange(e.value)}
                       focusInputRef={field.ref}
                       optionLabel='LGE_ELEMENTO_DESCRIPCION'
-                      options={ [{LGE_ELEMENTO_DESCRIPCION:'Seleccionar'},...optionMunicipios.current] }
+                      options={ optionMunicipios.current }
                       placeholder='Selecionar'
                       width="100%"
                     />
@@ -742,7 +742,7 @@ export const CitizenInformation = () => {
                   onChange={(e) => field.onChange(e.value)}
                   focusInputRef={field.ref}
                   optionLabel='MRE_DESCRIPCION'
-                  options={ [{MRE_DESCRIPCION:'Seleccionar'},...optionResponseMedium.data] }   
+                  options={ optionResponseMedium.data }   
                   placeholder='Seleccionar'
                   width='100%'
               />
@@ -772,7 +772,7 @@ export const CitizenInformation = () => {
                   onChange={(e) => field.onChange( selePrograma(e.value))}
                   focusInputRef={field.ref}
                   optionLabel='PRG_DESCRIPCION'
-                  options={ [{PRG_DESCRIPCION:'Selecionar'},...optionPrograma.data] }  
+                  options={ optionPrograma.data }  
                   placeholder='Seleccionar'
                   width='100%'
                 />
@@ -801,7 +801,7 @@ export const CitizenInformation = () => {
                   onChange={(e) => field.onChange(e.value)}
                   focusInputRef={field.ref}
                   optionLabel='ASO_ASUNTO'
-                  options={ [{ASO_ASUNTO:'Selecciopnar'},...optionAsuntoSolicitud.data] }  
+                  options={ optionAsuntoSolicitud.data }  
                   placeholder='Seleccionar'
                   width='100%'
                 />
@@ -896,7 +896,7 @@ export const CitizenInformation = () => {
 
       <div>
       <Button
-        
+        disabled={ !isValid }
         rounded
         label="Enviar solicitud"
         className="!px-10 !text-sm btn-sumit"
