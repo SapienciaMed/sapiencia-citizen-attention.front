@@ -57,10 +57,8 @@ export const CitizenInformation = () => {
 
   const seleTipoDocument = ( document:{LGE_CODIGO:number, LGE_ELEMENTO_DESCRIPCION:string} ) => {
     setValueDocument( document );
-    console.log(document);
     
     showFieldPersons.current = document==null?'':document.LGE_ELEMENTO_DESCRIPCION
-    console.log( document );
     
     return document;
   };
@@ -142,7 +140,7 @@ export const CitizenInformation = () => {
 
   const {
     control,
-    formState: { errors, isValid, isSubmitted },
+    formState: { errors, isValid },
     handleSubmit,
     getFieldState,
     reset,
@@ -156,30 +154,9 @@ export const CitizenInformation = () => {
     reset();
   };
 
- 
-  console.log( getFieldState('noDocumento')  );
-  console.log( isSubmitted )
-  
-  // return updated field error state
-
   const getFormErrorMessage = (name) => {
     return errors[name] ? <small className="p-error">{errors[name].message}</small> : <small className="p-error">&nbsp;</small>;
   };
-
-  const noDocumento =  watch("noDocumento")
- console.log( noDocumento );
-
-
-
- 
- /*VALIDACIONES*/
- let color = noDocumento.length==15?'border-red-500':'';
-
- if( noDocumento.length==15 ){
-  color = 'border-red-500';
-  console.log('pruebas');
-  getFormErrorMessage('noDocumento')
-  }
  
   return (
     <form 
@@ -265,7 +242,7 @@ export const CitizenInformation = () => {
                       <InputTextComponent
                         id={field.name}
                         value={field.value}
-                        className={classNames({ 'p-invalid': fieldState.error }, '!h-10', {color})}
+                        className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                         onChange={(e) => field.onChange(e.target.value)}
                         placeholder=''
                         width="100%"
@@ -885,7 +862,7 @@ export const CitizenInformation = () => {
                 id={field.name}
                 value={field.value} 
                 onChange={(e) => field.onChange(checkBox(e.value))} 
-                className={classNames({ 'p-invalid': fieldState.error })} 
+                className={classNames({ 'p-invalid': fieldState.error }, )} 
               />
               {getFormErrorMessage(field.name)}
                   
