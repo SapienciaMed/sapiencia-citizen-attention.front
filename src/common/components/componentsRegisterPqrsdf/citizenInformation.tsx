@@ -48,12 +48,22 @@ export const CitizenInformation = () => {
   const showDeptoMupio = useRef(null)
   const showMupio = useRef(null)
 
+  const [ valueTypeSolicitud, setValueTypeSolicitud] = useState(null);
   const [ valueDocument, setValueDocument] = useState(null);
+  const [ valueTypeEntidad, setValueTypeEntidad] = useState(null);
   const [ valuePais, setValuePais] = useState(null);
   const [ valueDepartamento, setValueDepartamento] = useState(null);
+  const [ valueMunicipio, setValueMunicipio] = useState(null);
+  const [ valueMedioRespuesta, setValueMedioRespuesta] = useState(null);
+  const [ valueAsunto, setValueAsunto] = useState(null);
   const [ statuscheckBox, setstatuscheckBox] = useState(null);
   const [ program, setprogram] = useState(null);
 
+  const seleTipoSsolicitud = ( solicitud:{TSO_CODIGO:number, TSO_DESCRIPTION:string} ) => {
+    setValueTypeSolicitud( solicitud );
+    
+    return solicitud;
+  };
 
   const seleTipoDocument = ( document:{LGE_CODIGO:number, LGE_ELEMENTO_DESCRIPCION:string} ) => {
     setValueDocument( document );
@@ -61,6 +71,13 @@ export const CitizenInformation = () => {
     showFieldPersons.current = document==null?'':document.LGE_ELEMENTO_DESCRIPCION
     
     return document;
+  };
+
+  const seleTipeEntidad = ( entidad:{TEJ_CODIGO:number, TEJ_NOMBRE:string} ) => {
+    
+    setValueTypeEntidad( entidad );
+    
+    return entidad;
   };
 
   const seletDataPais = ( pais:{LGE_CODIGO:number, LGE_ELEMENTO_DESCRIPCION:string} )=>{
@@ -94,6 +111,13 @@ export const CitizenInformation = () => {
     return depart;
   };
 
+  const seletMunicipios = ( municipio:{LGE_CODIGO:number, LGE_ELEMENTO_DESCRIPCION:string} ) => {
+    
+    setValueMunicipio( municipio );
+    
+    return municipio;
+  };
+
   const selePrograma = ( programa :{CLP_CODIGO:number,CLP_DESCRIPCION:string; DEP_CODIGO:number,DEP_DESCRIPCION:string ; PRG_CODIGO:number,PRG_DESCRIPCION:string  })=>{
     setprogram( programa );
     
@@ -104,6 +128,21 @@ export const CitizenInformation = () => {
     
     return programa
   }
+
+  const seletMedioRespuesta = ( respuesta:{MRE_CODIGO:number, MRE_DESCRIPCION:string} ) => {
+    
+    setValueMedioRespuesta( respuesta );
+    
+    return respuesta;
+  };
+
+  const seletSolicitud = ( respuesta:{ASO_CODIGO:number, ASO_ASUNTO:string} ) => {
+    
+    setValueAsunto( respuesta );
+    
+    return respuesta;
+  };
+
   
   const checkBox = (dato:{status:boolean | null}) => {
     setstatuscheckBox( dato )
@@ -148,9 +187,21 @@ export const CitizenInformation = () => {
   } = useForm({ defaultValues, mode:'all' });
  
   const onSubmit = (data) => {
-    data;
-    console.log( data );
     
+    console.log( data );
+    setValueTypeSolicitud(null);
+    setValueDocument(null);
+    setValueTypeEntidad(null);
+    setValuePais(null);
+    setValueDepartamento(null);
+    setValueMunicipio(null);
+    setValueMedioRespuesta(null);
+    setValueAsunto(null);
+    setstatuscheckBox(null);
+    setprogram(null);
+    showDependecia.current = '';
+    showClasificacion.current = '';
+
     reset();
   };
 
@@ -176,10 +227,10 @@ export const CitizenInformation = () => {
               <Suspense fallback={ <div>Cargando...</div>}>
                 <DropDownComponent
                     id={field.value}
-                    value={field.value}
+                    value={valueTypeSolicitud}
                     optionLabel= {'TSO_DESCRIPTION'}
                     className={classNames({ 'p-invalid': fieldState.error } ,'!h-10')}
-                    onChange={(e) => field.onChange(e.value)}
+                    onChange={(e) => field.onChange( seleTipoSsolicitud(e.value) )}
                     focusInputRef={field.ref}
                     options={ optionSolicitudes.data }
                     placeholder='Seleccionar'
@@ -272,9 +323,9 @@ export const CitizenInformation = () => {
                 <Suspense fallback={ <div>Cargando...</div>}>
                   <DropDownComponent
                     id={field.name}
-                    value={field.value}
+                    value={ valueTypeEntidad }
                     className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
-                    onChange={(e) => field.onChange(e.value)}
+                    onChange={(e) => field.onChange(seleTipeEntidad(e.value))}
                     focusInputRef={field.ref}
                     optionLabel={'TEJ_NOMBRE'}
                     options={ optionLegalEntity.data }  
@@ -625,7 +676,7 @@ export const CitizenInformation = () => {
                   onChange={(e) => field.onChange(seletDataPais(e.value))}
                   focusInputRef={field.ref}
                   optionLabel='LGE_ELEMENTO_DESCRIPCION'
-                  options={ [{LGE_ELEMENTO_DESCRIPCION:'Seleccionar'},...paises.data] }
+                  options={ paises.data }
                   placeholder='Selecionar'
                   width="100%"
                 />
@@ -682,9 +733,9 @@ export const CitizenInformation = () => {
                   <>
                     <DropDownComponent
                       id={field.name}
-                      value={field.value}
+                      value={valueMunicipio}
                       className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
-                      onChange={(e) => field.onChange(e.value)}
+                      onChange={(e) => field.onChange(seletMunicipios(e.value))}
                       focusInputRef={field.ref}
                       optionLabel='LGE_ELEMENTO_DESCRIPCION'
                       options={ optionMunicipios.current }
@@ -714,9 +765,9 @@ export const CitizenInformation = () => {
               <>
                 <DropDownComponent
                   id={field.name}
-                  value={field.value}
+                  value={valueMedioRespuesta}
                   className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
-                  onChange={(e) => field.onChange(e.value)}
+                  onChange={(e) => field.onChange(seletMedioRespuesta(e.value))}
                   focusInputRef={field.ref}
                   optionLabel='MRE_DESCRIPCION'
                   options={ optionResponseMedium.data }   
@@ -744,7 +795,7 @@ export const CitizenInformation = () => {
               <Suspense fallback={ <div>Cargando...</div>}>
                 <DropDownComponent
                   id={field.name}
-                  value={field.value}
+                  value={program}
                   className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                   onChange={(e) => field.onChange( selePrograma(e.value))}
                   focusInputRef={field.ref}
@@ -773,9 +824,9 @@ export const CitizenInformation = () => {
               <Suspense fallback={ <div>Cargando...</div>}>
                 <DropDownComponent
                   id={field.name}
-                  value={field.value}
+                  value={valueAsunto}
                   className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
-                  onChange={(e) => field.onChange(e.value)}
+                  onChange={(e) => field.onChange(seletSolicitud(e.value))}
                   focusInputRef={field.ref}
                   optionLabel='ASO_ASUNTO'
                   options={ optionAsuntoSolicitud.data }  
