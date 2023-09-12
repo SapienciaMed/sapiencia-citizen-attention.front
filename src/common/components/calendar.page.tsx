@@ -210,7 +210,7 @@ function CalendarPage(): React.JSX.Element {
 
   const renderHeader = () => {
     return (
-      <div>
+      <div className="flex justify-between">
         <span className="p-input-icon-right">
           <Calendar
             showButtonBar
@@ -230,6 +230,19 @@ function CalendarPage(): React.JSX.Element {
             />
           </svg>
         </span>
+        <Button
+          text
+          severity="secondary"
+          className="!text-primary !border-primary !py-1 !text-xs !rounded-[10px] !border"
+          label="Limpiar"
+          disabled={loading}
+          onClick={() => {
+            let _filters = { ...filters };
+            _filters["detailDate"].value = null;
+            setDetailDateFilterValue("");
+            setFilters(_filters);
+          }}
+        />
       </div>
     );
   };
@@ -785,32 +798,34 @@ function CalendarPage(): React.JSX.Element {
               </div>
               <div className="p-card-content !pb-0 !pt-0 md:!pt-5">
                 {/* <div className="md:hidden block w-full"> */}
-                <div className="w-full flex px-1">
-                  <div className="flex items-center gap-6 w-[43%]">
-                    <div className="relative">
-                      <div className="h-10 w-10 border border-[#D9D9D9]"></div>
+                <div className="block md:hidden w-full">
+                  <div className="w-full flex px-1">
+                    <div className="flex items-center gap-6 w-[43%]">
+                      <div className="relative">
+                        <div className="h-10 w-10 border border-[#D9D9D9]"></div>
+                      </div>
+                      <span className="text-sm">Día hábil</span>
                     </div>
-                    <span className="text-sm">Día hábil</span>
-                  </div>
-                  <div className="text-sm w-[57%]">
-                    <p>Opciones columna “Tipo”</p>
-                    <div className="font-medium mt-1 flex">
-                      <span className="min-w-[103px]">No laboral PR :</span>{" "}
-                      <span className="font-normal !font-sans">No laboral por resolución</span>
+                    <div className="text-sm w-[57%]">
+                      <p>Opciones columna “Tipo”</p>
+                      <div className="font-medium mt-1 flex">
+                        <span className="min-w-[103px]">No laboral PR :</span>{" "}
+                        <span className="font-normal !font-sans">No laboral por resolución</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="w-full flex px-1 items-center mt-1">
-                  <div className="flex items-center gap-6 w-[43%]">
-                    <div className="relative">
-                      <div className="h-10 w-10 border border-[#D9D9D9] bg-primary opacity-25 rounded-full"></div>
+                  <div className="w-full flex px-1 items-center mt-1">
+                    <div className="flex items-center gap-6 w-[43%]">
+                      <div className="relative">
+                        <div className="h-10 w-10 border border-[#D9D9D9] bg-primary opacity-25 rounded-full"></div>
+                      </div>
+                      <span className="text-sm">Día no hábil</span>
                     </div>
-                    <span className="text-sm">Día no hábil</span>
-                  </div>
-                  <div className="text-sm w-[57%]">
-                    <div className="font-medium flex max-h-[20px]">
-                      <span className="min-w-[103px]">No laboral PF :</span>
-                      <span className="font-normal !font-sans">No laboral por festivo</span>
+                    <div className="text-sm w-[57%]">
+                      <div className="font-medium flex max-h-[20px]">
+                        <span className="min-w-[103px]">No laboral PF :</span>
+                        <span className="font-normal !font-sans">No laboral por festivo</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -831,10 +846,10 @@ function CalendarPage(): React.JSX.Element {
                       disabled={loading}
                       onClick={() => {
                         // resetForm();
-                        if (index + 1 != selectedMonth) {                          
+                        if (index + 1 != selectedMonth) {
                           setSelectedMonth(index + 1);
                           const page = index + 1 > 6 ? 1 : 0;
-                          if (page!=calendarPage) {                          
+                          if (page != calendarPage) {
                             setCalendarPage(page);
                           }
                           setVisibleMonths(false);
@@ -851,7 +866,7 @@ function CalendarPage(): React.JSX.Element {
                   <div className="md:w-1/2 xl:w-[38%] w-full relative">
                     <div className="text-base w-full text-center md:text-left">Días hábiles y no hábiles</div>
                     <div className="p-card shadow-none !border-0 md:!border border-[#D9D9D9]">
-                      <div className="p-card-body day-parametrization !p-0 !md:p-5">
+                      <div className="p-card-body day-parametrization !p-0 md:!p-5">
                         {selectedYear?.id && (
                           <div className="overflow-auto max-w-[calc(100vw-4.6rem)] md:max-w-[calc(100vw-10.1rem)]">
                             <DataTable

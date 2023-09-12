@@ -8375,6 +8375,11 @@ video {
   padding-bottom:1rem !important
 }
 
+.\!py-1{
+  padding-top:0.25rem !important;
+  padding-bottom:0.25rem !important
+}
+
 .\!pb-0{
   padding-bottom:0px !important
 }
@@ -8462,6 +8467,11 @@ video {
 .text-sm{
   font-size:0.875rem;
   line-height:1.25rem
+}
+
+.\!text-xs{
+  font-size:0.75rem !important;
+  line-height:1rem !important
 }
 
 .font-medium{
@@ -8739,6 +8749,10 @@ video {
 
   .md\:p-6{
     padding:1.5rem
+  }
+
+  .md\:\!p-5{
+    padding:1.25rem !important
   }
 
   .md\:\!px-6{

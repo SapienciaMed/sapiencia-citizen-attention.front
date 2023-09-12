@@ -1,11 +1,13 @@
 import moment from "moment-timezone";
 
-const toLocaleDate = (date: string, isMoment = false) => {
-  date = date.length > 10 ? date.substring(0, 10) : date;
-  let currentDate = date.split("-").map((part) => parseInt(part));
-  console.log(currentDate);
+const toLocaleDate = (date, isMoment = false) => {
+  let parseDate = date;
+  if (typeof date == "string") {
+    date = date.length > 10 ? date.substring(0, 10) : date;
+    let currentDate = date.split("-").map((part) => parseInt(part));
+    parseDate = new Date(currentDate[0], currentDate[1] - 1, currentDate[2]);
+  }
 
-  let parseDate = new Date(currentDate[0], currentDate[1] - 1, currentDate[2]);
   let localeDate = isMoment
     ? moment(parseDate).tz(Intl.DateTimeFormat().resolvedOptions().timeZone).toDate()
     : parseDate;
@@ -15,7 +17,7 @@ const toLocaleDate = (date: string, isMoment = false) => {
 
 /**
  * get all months in an array per language
- * 
+ *
  * @param lang lang for months
  * @returns string[] array of months
  */
