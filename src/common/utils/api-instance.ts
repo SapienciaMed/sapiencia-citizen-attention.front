@@ -5,6 +5,11 @@ export default function instanceApi(baseURL: string): AxiosInstance {
 
   const api = axios.create({
     baseURL: baseURL,
+    headers: {
+      common: {
+        'Timezone' : Intl.DateTimeFormat().resolvedOptions().timeZone
+      }
+    }
   });
 
   api.interceptors.request.use(

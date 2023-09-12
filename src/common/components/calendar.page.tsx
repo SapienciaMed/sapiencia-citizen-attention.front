@@ -16,6 +16,7 @@ import { useDaysParametrizationService } from "../hooks/daysParametrizationServi
 import { IDayType } from "../interfaces/dayType.interfaces";
 import { IDaysParametrization } from "../interfaces/daysParametrization.interfaces";
 import { IDaysParametrizationDetail } from "../interfaces/daysParametrizationDetail.interfaces";
+import { allMonths, toLocaleDate } from "../utils/helpers";
 
 function CalendarPage(): React.JSX.Element {
   const toast = useRef(null);
@@ -23,7 +24,10 @@ function CalendarPage(): React.JSX.Element {
   const messages = useRef(null);
   const [selectedYear, setSelectedYear] = useState<IDaysParametrization | undefined>(undefined);
   const [monthList, setMonthList] = useState(false);
-  const [buttonWidth, setButtonWidth] = useState(0);
+  const [buttonWidth, setButtonWidth] = useState({
+    width: 0,
+    left: 0,
+  });
   const [filters, setFilters] = useState({
     detailDate: { value: null, matchMode: FilterMatchMode.EQUALS },
   });
@@ -48,10 +52,10 @@ function CalendarPage(): React.JSX.Element {
         let day = d.getDate() > 9 ? d.getDate() : "0" + d.getDate();
         let month = d.getMonth() + 1;
         month = month > 9 ? month : "0" + month;
-        detail.detailDate = [d.getFullYear(), month, day].join("-") + " 00:00:00";        
-        delete detail.dayType
-        delete detail.createdAt
-        delete detail.updatedAt
+        detail.detailDate = [d.getFullYear(), month, day].join("-") + " 00:00:00";
+        delete detail.dayType;
+        delete detail.createdAt;
+        delete detail.updatedAt;
         return detail;
       });
       const response = await daysParametrizationService.updateDayParametrization(newYear);
@@ -84,18 +88,16 @@ function CalendarPage(): React.JSX.Element {
         });
         let newYears = [...years];
 
-        newYears = newYears.map((year)=>{
-          if (year.year==response.data.year) {
-            year = response.data
+        newYears = newYears.map((year) => {
+          if (year.year == response.data.year) {
+            year = response.data;
           }
           return year;
-        })
-        console.log(newYears);
-        
+        });
+
         setYears(newYears);
         setSelectedYear(response.data);
-        // resetForm();
-        setInitialData(response.data, false);
+        setInitialData(response.data);
       }
     } catch (error) {
       console.error("Error al modificar el calendario:", error);
@@ -146,6 +148,9 @@ function CalendarPage(): React.JSX.Element {
 
             setYears(newYears);
             setYear(null);
+            resetForm();
+            setSelectedYear(response.data);
+            setInitialData(response.data);
             setVisibleConfirm(false);
             confirmDialog({
               id: "messages",
@@ -176,7 +181,7 @@ function CalendarPage(): React.JSX.Element {
             });
           }
         } catch (error) {
-          console.error("Error al obtener la lista de años:", error);
+          console.error("Error al crear el año:", error);
         } finally {
           setVisibleConfirm(false);
           // setLoading(false);
@@ -237,11 +242,11 @@ function CalendarPage(): React.JSX.Element {
           weekend.parentElement.classList.add("p-highlight");
         }
       }
-    }, 10);    
+    }, 10);
 
     let nextDays = [...days];
     setDates([...newDates]);
-    
+
     newDates.forEach((date) => {
       if (nextDays.filter((day) => new Date(day.detailDate).toDateString() == date.toDateString()).length == 0) {
         nextDays.push({
@@ -251,7 +256,7 @@ function CalendarPage(): React.JSX.Element {
         });
       }
     });
-    
+
     nextDays = nextDays.filter((day) => {
       return newDates.filter((date) => new Date(day.detailDate).toDateString() == date.toDateString()).length;
     });
@@ -285,7 +290,15 @@ function CalendarPage(): React.JSX.Element {
   );
 
   const handleResize = () => {
-    setButtonWidth(parentForm.current?.offsetWidth ? parentForm?.current.offsetWidth + 4 : 0);
+    if (parentForm.current?.offsetWidth) {
+      let style = getComputedStyle(parentForm.current);
+      let domReact = parentForm.current.getBoundingClientRect();
+
+      setButtonWidth({
+        width: parentForm?.current.offsetWidth + parseInt(style.marginLeft) + parseInt(style.marginRight),
+        left: domReact.x - parseInt(style.marginLeft),
+      });
+    }
   };
 
   useEffect(() => {
@@ -298,7 +311,7 @@ function CalendarPage(): React.JSX.Element {
           setYears(response.data);
           const selected = response.data.filter((year) => year.year === new Date().getFullYear())[0];
           setSelectedYear(selected);
-          setInitialData(selected)
+          setInitialData(selected);
           // handleSearch()
         }
       } catch (error) {
@@ -331,26 +344,27 @@ function CalendarPage(): React.JSX.Element {
     };
   }, []);
 
-  const setInitialData = (selected: IDaysParametrization, asDate = true) =>{
-    if (selected.daysParametrizationDetails.length > 0) {
+  const setInitialData = (selected: IDaysParametrization) => {
+    if (selected?.daysParametrizationDetails?.length > 0) {
       setDates(
-        selected.daysParametrizationDetails.map((detail: IDaysParametrizationDetail) => {
-          return new Date(detail.detailDate);
+        selected?.daysParametrizationDetails?.map((detail: IDaysParametrizationDetail) => {
+          return toLocaleDate(detail.detailDate);
         })
       );
       setDays(
-        selected.daysParametrizationDetails.map((detail: IDaysParametrizationDetail) => {
-          detail.detailDate = asDate ? new Date(detail.detailDate) : detail.detailDate;
+        selected?.daysParametrizationDetails?.map((detail: IDaysParametrizationDetail) => {
+          detail.detailDate = toLocaleDate(detail.detailDate);
           return detail;
         })
       );
     }
-  }
+  };
 
   const handleYearChange = (e) => {
     const selected = years.filter((year) => year.id === e.value)[0];
-    setSelectedYear(selected);
     resetForm();
+    setSelectedYear(selected);
+    setInitialData(selected);
   };
 
   const resetForm = (showOtherMonths = true) => {
@@ -471,9 +485,9 @@ function CalendarPage(): React.JSX.Element {
     );
   };
 
-  const dateBodyTemplate = (rowData) => {    
-    let date = typeof rowData?.detailDate == 'string' ? new Date(rowData?.detailDate) : rowData?.detailDate;
-    return  date?.toLocaleDateString("es-CO", {
+  const dateBodyTemplate = (rowData) => {
+    let date = typeof rowData?.detailDate == "string" ? new Date(rowData?.detailDate) : rowData?.detailDate;
+    return date?.toLocaleDateString("es-CO", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -483,7 +497,7 @@ function CalendarPage(): React.JSX.Element {
   const dayTypeBodyTemplate = (rowData) => {
     return (
       <div className="relative">
-        <span className="relative z-10 p-2 h-10 max-w-[115px] w-[115px]">
+        <span className="relative p-2 h-10 max-w-[115px] w-[115px]">
           {dayTypes.filter((type) => type.tdi_codigo == rowData.dayTypeId)[0]?.tdi_descripcion_corta}
         </span>
         <svg
@@ -620,7 +634,7 @@ function CalendarPage(): React.JSX.Element {
       }
     }
     return (
-      <div className="flex flex-wrap justify-between overflow-x-auto no-month-navigator gap-x-6 gap-y-14 pt-5 md:w-1/2 xl:w-[62%] md:pr-6 w-full">
+      <div className="hidden md:flex md:flex-wrap md:justify-between overflow-x-auto no-month-navigator gap-x-6 gap-y-14 pt-5 md:w-1/2 xl:w-[62%] md:pr-6 w-full">
         {calendars[calendarPage]}
         <div className="w-full">
           <Paginator
@@ -636,7 +650,7 @@ function CalendarPage(): React.JSX.Element {
     );
   };
   return (
-    <div className="p-6 max-w-[1200px] mx-auto">
+    <div className="p-6 max-w-[1200px] mx-auto" ref={parentForm}>
       <Toast ref={toast} position="bottom-right" />
       <ConfirmDialog id="messages"></ConfirmDialog>
       <ConfirmDialog
@@ -675,10 +689,11 @@ function CalendarPage(): React.JSX.Element {
         draggable={false}
       ></ConfirmDialog>
       {/* Calendar year filter */}
-      <div className="p-card rounded-4xl shadow-none border border-[#D9D9D9]">
-        <div className="p-card-body !py-8 !px-6" ref={parentForm}>
-          <div className="p-card-title flex justify-between">
-            <span className="text-3xl">Resumen año {selectedYear?.year}</span>
+      <span className="text-3xl block md:hidden pb-5">Resumen año {selectedYear?.year}</span>
+      <div className="p-card rounded-2xl md:rounded-4xl shadow-none border border-[#D9D9D9]">
+        <div className="p-card-body !py-6 md:!py-8 !px-6">
+          <div className="p-card-title flex justify-end md:justify-between">
+            <span className="text-3xl md:block hidden">Resumen año {selectedYear?.year}</span>
             <div
               className="my-auto text-base text-main flex items-center gap-x-2 cursor-pointer"
               onClick={() => setVisibleConfirm(true)}
@@ -712,10 +727,10 @@ function CalendarPage(): React.JSX.Element {
             </div>
           </div>
           <div className="p-card-content">
-            <div className="flex gap-x-6">
-              <div className="flex flex-col gap-y-1.5 max-w-2xs">
-                <label htmlFor="yearDropdown" className="text-base">
-                  Selecciona el año:
+            <div className="flex gap-x-6 w-full">
+              <div className="flex flex-col gap-y-1.5 md:max-w-2xs w-full">
+                <label htmlFor="yearDropdown" className="text-base !font-sans">
+                  Año
                 </label>
                 <Dropdown
                   id="yearDropdown"
@@ -744,21 +759,61 @@ function CalendarPage(): React.JSX.Element {
 
       {/* Calendar months */}
       {monthList && (
-        <div className="relative pb-36">
-          <div className="p-card rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
-            <div className="p-card-body !py-8 !px-6">
-              <div className="p-card-title flex justify-between">
+        <div className="relative pb-28 z-0">
+          <div className="relative p-card rounded-2xl md:rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
+            <div className="p-card-body !py-3 !px-3 md:!py-8 md:!px-6">
+              <div className="p-card-title justify-between hidden md:flex">
                 <span className="text-3xl">Meses</span>
               </div>
-              <div className="p-card-content !pb-0">
-                <div className="flex flex-wrap w-full">
+              <div className="p-card-content !pb-0 !pt-0 md:!pt-5">
+                <div className="w-full flex px-1">
+                  <div className="flex items-center gap-6 w-[43%]">
+                    <div className="relative h-10 w-10 border border-[#D9D9D9]"></div>
+                    <span className="text-sm">Día hábil</span>
+                  </div>
+                  <div className="text-sm w-[57%]">
+                    <p>Opciones columna “Tipo”</p>
+                    <div className="font-medium mt-1 flex">
+                      <span className="min-w-[103px]">No laboral PR :</span>{" "}
+                      <span className="font-normal !font-sans">No laboral por resolución</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="w-full flex px-1 -mt-2.5">
+                  <div className="flex items-center gap-6 w-[43%]">
+                    <div className="relative h-10 w-10 border border-[#D9D9D9] bg-primary opacity-25 rounded-full"></div>
+                    <span className="text-sm">Día no hábil</span>
+                  </div>
+                  <div className="text-sm w-[57%]">
+                    <div className="font-medium mt-5 flex">
+                      <span className="min-w-[103px]">No laboral PF :</span>
+                      <span className="font-normal !font-sans">No laboral por festivo</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 md:hidden gap-x-3 gap-y-2 mt-3">
+                  {allMonths.map((month,index) => (
+                    <Button
+                      key={index}
+                      text                      
+                      severity="secondary"
+                      className="w-full !py-2 !text-base !text-black !border !border-[#D9D9D9]"
+                      label={month}
+                      onClick={() => {
+                        resetForm();
+                        setInitialData(selectedYear);
+                      }}
+                    />
+                  ))}
+                </div>
+                <div className="flex flex-wrap w-full relative">
                   {renderCalendars()}
                   <div className="md:w-1/2 xl:w-[38%] w-full relative">
-                    <label className="text-base">Días hábiles y no hábiles</label>
-                    <div className="p-card shadow-none border border-[#D9D9D9]">
-                      <div className="p-card-body day-parametrization">
+                    <div className="text-base w-full text-center md:text-left">Días hábiles y no hábiles</div>
+                    <div className="p-card shadow-none !border-0 md:!border border-[#D9D9D9]">
+                      <div className="p-card-body day-parametrization !p-0 !md:p-5">
                         {selectedYear?.id && (
-                          <div className="overflow-auto max-w-[calc(100vw-10.1rem)]">
+                          <div className="overflow-auto max-w-[calc(100vw-4.6rem)] md:max-w-[calc(100vw-10.1rem)]">
                             <DataTable
                               paginator
                               paginatorTemplate={paginatorTemplate("<", ">")}
@@ -782,7 +837,7 @@ function CalendarPage(): React.JSX.Element {
                                 body={dateBodyTemplate}
                               ></Column>
                               <Column
-                                bodyClassName="!p-0 text-sm font-normal sm:max-w-[115px] sm:w-[115px] sm:min-w-[115px]"
+                                bodyClassName="!p-0 text-sm font-normal max-w-[114px] w-[114px] min-w-[114px] md:max-w-[115px] md:w-[115px] md:min-w-[115px]"
                                 headerClassName="text-base font-medium"
                                 key="dayTypeId"
                                 field="dayTypeId"
@@ -817,7 +872,7 @@ function CalendarPage(): React.JSX.Element {
                         )}
                       </div>
                     </div>
-                    <div className="mt-16 pt-1 px-14">
+                    <div className="mt-16 pt-1 px-14 hidden md:block">
                       <div className="flex items-center gap-6">
                         <div className="relative h-10 w-10 border border-[#D9D9D9]"></div>
                         <span className="text-sm">Día hábil</span>
@@ -842,10 +897,10 @@ function CalendarPage(): React.JSX.Element {
             </div>
           </div>
           <div
-            className="fixed p-card rounded-4xl shadow-none border border-[#D9D9D9] w-full"
-            style={{ top: "calc(100vh - 138px)" , width: buttonWidth}}
+            className="fixed z-30 p-card rounded-none shadow-none border-t border-[#D9D9D9] w-full"
+            style={{ top: "calc(100vh - 91px)", width: buttonWidth.width, left: buttonWidth.left }}
           >
-            <div className="p-card-body !py-8 !px-6 flex gap-x-7 justify-end">
+            <div className="p-card-body !py-6 !px-10 flex gap-x-7 justify-end max-w-[1200px] mx-auto">
               <Button
                 text
                 rounded
