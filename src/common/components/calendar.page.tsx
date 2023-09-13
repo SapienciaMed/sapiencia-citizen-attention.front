@@ -808,7 +808,7 @@ function CalendarPage(): React.JSX.Element {
                     </div>
                     <div className="text-sm w-[57%]">
                       <p>Opciones columna “Tipo”</p>
-                      <div className="font-medium mt-1 flex">
+                      <div className="font-medium mt-1 flex max-[370px]:flex-wrap">
                         <span className="min-w-[103px]">No laboral PR :</span>{" "}
                         <span className="font-normal !font-sans">No laboral por resolución</span>
                       </div>
@@ -822,7 +822,7 @@ function CalendarPage(): React.JSX.Element {
                       <span className="text-sm">Día no hábil</span>
                     </div>
                     <div className="text-sm w-[57%]">
-                      <div className="font-medium flex max-h-[20px]">
+                      <div className="font-medium flex min-[370px]:max-h-[20px] max-[370px]:flex-wrap">
                         <span className="min-w-[103px]">No laboral PF :</span>
                         <span className="font-normal !font-sans">No laboral por festivo</span>
                       </div>
