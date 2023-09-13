@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, Suspense } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Button } from 'primereact/button';
+import { Dialog } from 'primereact/dialog';
 import { fetchData } from '../../apis/fetchData';
 
 import { CalendarComponent } from "./calendarComponent";
@@ -11,7 +12,6 @@ import { ScrollPanelComponent } from "./scrollPanelComponent";
 import { TriStateCheckboxComponent } from "./triStateCheckboxComponent";
 import { UploadComponent } from "./uploadComponent";
 import { classNames } from 'primereact/utils';
-import { forStatement } from '@babel/types';
 
 const ApiDatatypoSolicitudes = fetchData("/get-type-solicituds");
 const ApiDatatypoDocument = fetchData("/get-type-docuement");
@@ -59,7 +59,8 @@ export const CitizenInformation = () => {
     fechaNacimento:'',
     politicaTratamiento: null,
     Descripción:'',
-    RazónSocial:''
+    RazónSocial:'',
+    archivo:''
   };
 
   const {
@@ -71,7 +72,6 @@ export const CitizenInformation = () => {
     resetField,
     watch
   } = useForm({ defaultValues, mode:'all' });
-  
   
   const optionDepartamento = useRef(null);
   const optionMunicipios = useRef(null);
@@ -91,6 +91,7 @@ export const CitizenInformation = () => {
   const [ valueAsunto, setValueAsunto] = useState(null);
   const [ statuscheckBox, setstatuscheckBox] = useState(null);
   const [ program, setprogram] = useState(null);
+  const [visible, setVisible] = useState<boolean>(false);
 
   const seleTipoSsolicitud = ( solicitud:{TSO_CODIGO:number, TSO_DESCRIPTION:string} ) => {
     setValueTypeSolicitud( solicitud );
@@ -102,8 +103,6 @@ export const CitizenInformation = () => {
     setValueDocument( document );
 
     showFieldPersons.current = document==null?'':document.LGE_ELEMENTO_DESCRIPCION
-
-    console.log(showFieldPersons.current);
     
     switch (showFieldPersons.current) {
       case 'Cedula de Ciudadania':
@@ -212,6 +211,11 @@ export const CitizenInformation = () => {
     
     return respuesta;
   };
+
+  const getFile = (file) => {
+    console.log('archivo en el padre -> ', file);
+    
+  }
 
   
   const checkBox = (dato:{status:boolean | null}) => {
@@ -929,7 +933,28 @@ export const CitizenInformation = () => {
 
       <div className="div-upload">
         <label className='font-label'>Archivos o documentos que soportan la solicitud</label>
-        <UploadComponent/>
+        <label className="upload-label" style={{ display:'flex', alignItems:'center'}} htmlFor="modal">Adjuntar archivos <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.00008 5.83331V11.1666" stroke="#533893" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M10.6666 8.50002H5.33325" stroke="#533893" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M8 14.5V14.5C4.686 14.5 2 11.814 2 8.5V8.5C2 5.186 4.686 2.5 8 2.5V2.5C11.314 2.5 14 5.186 14 8.5V8.5C14 11.814 11.314 14.5 8 14.5Z" stroke="#533893" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></label>
+        <Button label="Show" style={{display:'none'}} name='modal' id='modal' onClick={() => setVisible(true)} />
+        <Dialog 
+          header="Si tienes más de un documento, se deben unir en un solo archivo para ser cargados" 
+          className='text-center' 
+          visible={visible} 
+          style={{ width: '50vw' }} 
+          onHide={() => setVisible(false)}
+          >
+          <Controller
+            name='archivo'
+            control={control}
+            render={({ field, fieldState })=>(
+              <>
+                <UploadComponent
+                  id={field.name}
+                  dataArchivo={(e)=> field.onChange(getFile(e))}
+                />
+              </>
+            )}
+          />
+        </Dialog>
       </div>
 
       <div className="div_container" style={{marginBottom:'20px'}} >

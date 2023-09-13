@@ -33,8 +33,8 @@ export const CalendarComponent = ( props:Attributes ) => {
             onChange={ onChange }
             dateFormat={ dateFormat } 
             style={{width:'100%'}}
-            showIcon
             maxDate={maxDate}
+            placeholder='dd/mm/yy'
         />
     )
 }
