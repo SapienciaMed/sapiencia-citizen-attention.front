@@ -21,7 +21,7 @@ import { allMonths, capitalize, toLocaleDate } from "../utils/helpers";
 function CalendarPage(): React.JSX.Element {
   const toast = useRef(null);
   const parentForm = useRef(null);
-  const messages = useRef(null);
+  const daysTable = useRef(null);
   const [selectedYear, setSelectedYear] = useState<IDaysParametrization | undefined>(undefined);
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [monthList, setMonthList] = useState(false);
@@ -218,6 +218,9 @@ function CalendarPage(): React.JSX.Element {
             value={detailDateFilterValue}
             onChange={onDetailDateFilterChange}
             readOnlyInput
+            minDate={new Date(`${selectedYear.year}/01/01`)}
+            maxDate={new Date(`${selectedYear.year}/12/31`)}
+            viewDate={new Date(`${selectedYear.year}/01/01`)}
             placeholder="DD / MM / AAA"
           />
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -452,9 +455,11 @@ function CalendarPage(): React.JSX.Element {
   const onCellEditComplete = (e) => {
     let { rowData, newValue, newRowData, field, originalEvent: event } = e;
     let _days = [...days];
+    console.log(newValue);
+    
     if (field == "dayTypeId") {
-      rowData[field] = newValue;
-      _days.find((day) => day.detailDate === rowData.detailDate).dayTypeId = newValue;
+      rowData[field] = !newValue ? null : newValue;
+      _days.find((day) => day.detailDate === rowData.detailDate).dayTypeId = !newValue ? null : newValue;
     } else {
       rowData[field] = newValue;
       _days.find((day) => day.detailDate === rowData.detailDate).description = newValue;
@@ -484,7 +489,7 @@ function CalendarPage(): React.JSX.Element {
           className="appearance-none relative -mb-0.5 z-10 bg-transparent outline-primary max-w-[115px] p-2 h-[35px]"
           onChange={(e) => options.editorCallback(e.target.value)}
         >
-          <option value={null}>Seleccione</option>
+          <option value="">Seleccione</option>
           {dayTypes.map((dayType, index) => {
             return (
               <option key={index} selected={dayType.tdi_codigo == options.value} value={dayType.tdi_codigo}>
@@ -870,6 +875,7 @@ function CalendarPage(): React.JSX.Element {
                         {selectedYear?.id && (
                           <div className="overflow-auto max-w-[calc(100vw-4.6rem)] md:max-w-[calc(100vw-10.1rem)]">
                             <DataTable
+                              ref={daysTable}
                               paginator
                               paginatorTemplate={paginatorTemplate("<", ">")}
                               rows={15}
@@ -881,6 +887,7 @@ function CalendarPage(): React.JSX.Element {
                               tableStyle={{ minWidth: "22.625rem" }}
                               globalFilterFields={["detailDate"]}
                               header={renderHeader}
+                              emptyMessage="No existe descripción de la fecha, por favor verifique el día en el calendario"
                             >
                               <Column
                                 bodyClassName="text-sm font-normal"
