@@ -454,9 +454,7 @@ function CalendarPage(): React.JSX.Element {
 
   const onCellEditComplete = (e) => {
     let { rowData, newValue, newRowData, field, originalEvent: event } = e;
-    let _days = [...days];
-    console.log(newValue);
-    
+    let _days = [...days];    
     if (field == "dayTypeId") {
       rowData[field] = !newValue ? null : newValue;
       _days.find((day) => day.detailDate === rowData.detailDate).dayTypeId = !newValue ? null : newValue;
