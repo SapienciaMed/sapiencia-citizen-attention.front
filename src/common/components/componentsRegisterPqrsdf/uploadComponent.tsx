@@ -1,10 +1,9 @@
 import { useRef, useState } from 'react';
-import { Toast } from 'primereact/toast';
 import { FileUpload, ItemTemplateOptions } from 'primereact/fileupload';
 import { ProgressBar } from 'primereact/progressbar';
 import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
-import { Tag } from 'primereact/tag';
+import { Dialog } from 'primereact/dialog';
 
 interface Atributos {
     id:string;
@@ -15,7 +14,7 @@ export const UploadComponent = (props:Atributos)=> {
 
     const { id, dataArchivo } = props;
 
-    const [dataToSend, setDataToSend] = useState(null);
+    const [visible, setVisible] = useState(false);
 
     const toast = useRef(null);
     const [totalSize, setTotalSize] = useState(0);
@@ -73,9 +72,40 @@ export const UploadComponent = (props:Atributos)=> {
     const itemTemplate = (file, props:ItemTemplateOptions) => {
         console.log('itemTemplay-> ',file);
         dataArchivo(file)
+
+        const footerContent = (
+            <div className='text-center'>
+                <Button label="Cerrar" className='text-center font-light' icon="pi pi-check" onClick={() =>exitDialog()} rounded />
+            </div>
+        );
+
+       const exitDialog = () => {
+        setVisible(false);
+        onTemplateRemove(file, props.onRemove);
+       }
+    
         
         return (
-            <div className="flex align-items-center flex-wrap">
+            <div className="flex align-items-center flex-wrap" >
+
+                <div className="card flex justify-content-center">
+                    <Dialog 
+                        header="¡Archivo adjuntado!"
+                        className='p-dialog-titlebar-icon' 
+                        visible={visible} 
+                        onHide={() => setVisible(false)} footer={footerContent}
+                        pt={{ 
+                            root:{className:'text-center'},
+                            header:{style:{color:'#5e3893'}},
+                            closeButton:{ style:{color:'#5e3893', display:'none'}}  
+                        }}
+                    >
+                        <p className="m-0">Archivo adjuntado exitosamente</p>
+                    </Dialog>
+                </div>
+
+                { setVisible(true) }
+
                 <div className="flex align-items-center" style={{ width: '40%' }}>
                     <img alt={file.name} role="presentation" src={file.objectURL} width={100} />
                     <span className="flex flex-column text-left ml-3">
@@ -105,7 +135,6 @@ export const UploadComponent = (props:Atributos)=> {
 
     return (
         <div>
-            <Toast ref={toast}></Toast>
 
             <Tooltip target=".custom-choose-btn" content="Choose" position="bottom" />
             <Tooltip target=".custom-upload-btn" content="Upload" position="bottom" />

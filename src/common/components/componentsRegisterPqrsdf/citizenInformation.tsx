@@ -12,6 +12,7 @@ import { ScrollPanelComponent } from "./scrollPanelComponent";
 import { TriStateCheckboxComponent } from "./triStateCheckboxComponent";
 import { UploadComponent } from "./uploadComponent";
 import { classNames } from 'primereact/utils';
+import { ItemTemplateOptions } from 'primereact/fileupload';
 
 const ApiDatatypoSolicitudes = fetchData("/get-type-solicituds");
 const ApiDatatypoDocument = fetchData("/get-type-docuement");
@@ -92,6 +93,7 @@ export const CitizenInformation = () => {
   const [ statuscheckBox, setstatuscheckBox] = useState(null);
   const [ program, setprogram] = useState(null);
   const [visible, setVisible] = useState<boolean>(false);
+  const [file, setfile] = useState<ItemTemplateOptions>(null);
 
   const seleTipoSsolicitud = ( solicitud:{TSO_CODIGO:number, TSO_DESCRIPTION:string} ) => {
     setValueTypeSolicitud( solicitud );
@@ -213,8 +215,11 @@ export const CitizenInformation = () => {
   };
 
   const getFile = (file) => {
-    console.log('archivo en el padre -> ', file);
+    setfile(file)
+    console.log(file.name);
     
+    console.log('archivo en el padre -> ', file);
+    return file;
   }
 
   
@@ -934,6 +939,7 @@ export const CitizenInformation = () => {
       <div className="div-upload">
         <label className='font-label'>Archivos o documentos que soportan la solicitud</label>
         <label className="upload-label" style={{ display:'flex', alignItems:'center'}} htmlFor="modal">Adjuntar archivos <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.00008 5.83331V11.1666" stroke="#533893" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M10.6666 8.50002H5.33325" stroke="#533893" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M8 14.5V14.5C4.686 14.5 2 11.814 2 8.5V8.5C2 5.186 4.686 2.5 8 2.5V2.5C11.314 2.5 14 5.186 14 8.5V8.5C14 11.814 11.314 14.5 8 14.5Z" stroke="#533893" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></label>
+        <label>documento.pdf</label>
         <Button label="Show" style={{display:'none'}} name='modal' id='modal' onClick={() => setVisible(true)} />
         <Dialog 
           header="Si tienes más de un documento, se deben unir en un solo archivo para ser cargados" 
