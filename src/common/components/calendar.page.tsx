@@ -541,7 +541,7 @@ function CalendarPage(): React.JSX.Element {
         >
           <path
             d="M5.33569 7.16785L8.00069 9.83282L10.6657 7.16785"
-            stroke="#533893"
+            stroke={rowData.dayTypeId ? "#533893" : "#dc2626"}
             stroke-width="2"
             stroke-linecap="round"
             stroke-linejoin="round"
