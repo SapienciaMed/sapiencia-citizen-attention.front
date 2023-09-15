@@ -7,7 +7,7 @@ import { Dialog } from 'primereact/dialog';
 
 interface Atributos {
     id:string;
-    dataArchivo: (data: string) => void;
+    dataArchivo: (data:object) => void;
 }
 
 export const UploadComponent = (props:Atributos)=> {
@@ -69,9 +69,16 @@ export const UploadComponent = (props:Atributos)=> {
         );
     };
 
-    const itemTemplate = (file, props:ItemTemplateOptions) => {
-        console.log('itemTemplay-> ',file);
-        dataArchivo(file)
+    const itemTemplate = (inFile: object, props:ItemTemplateOptions) => {
+        const file = inFile as File;
+        const extencion = file.name.split('.');
+
+        if(extencion[extencion.length -1] !== 'pdf' ){
+            onTemplateRemove(file, props.onRemove)
+            return
+        }
+        
+        dataArchivo(inFile);
 
         const footerContent = (
             <div className='text-center'>
@@ -107,12 +114,10 @@ export const UploadComponent = (props:Atributos)=> {
                 { setVisible(true) }
 
                 <div className="flex align-items-center" style={{ width: '40%' }}>
-                    <img alt={file.name} role="presentation" src={file.objectURL} width={100} />
                     <span className="flex flex-column text-left ml-3">
                         {file.name}
                     </span>
                 </div>
-                <Button type="button" icon="pi pi-times" className="p-button-outlined p-button-rounded p-button-danger ml-auto" onClick={() => onTemplateRemove(file, props.onRemove)} />
             </div>
         );
     };
@@ -140,7 +145,7 @@ export const UploadComponent = (props:Atributos)=> {
             <Tooltip target=".custom-upload-btn" content="Upload" position="bottom" />
             <Tooltip target=".custom-cancel-btn" content="Clear" position="bottom" />
 
-            <FileUpload id={id} ref={fileUploadRef} name="demo[]" url="/api/upload" multiple accept="pdf" maxFileSize={1000000}
+            <FileUpload id={id} ref={fileUploadRef} name="demo[]" multiple={false} accept=".pdf" maxFileSize={1000000}
                 onUpload={onTemplateUpload} onSelect={onTemplateSelect} onError={onTemplateClear} onClear={onTemplateClear}
                 headerTemplate={headerTemplate} itemTemplate={itemTemplate} emptyTemplate={emptyTemplate}
                 chooseOptions={chooseOptions} uploadOptions={uploadOptions} cancelOptions={cancelOptions} />
