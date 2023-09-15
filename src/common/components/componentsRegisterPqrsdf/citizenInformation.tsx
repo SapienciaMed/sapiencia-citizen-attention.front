@@ -287,7 +287,7 @@ export const CitizenInformation = () => {
         
         <span className='split'></span>
 
-        <div className='div-container width-50'>
+        <div className='div-container width-50 div-movil-100'>
 
           <div className='row-1 width-50'>
             <label className='font-label'>Tipo<span className='required'>*</span></label>
