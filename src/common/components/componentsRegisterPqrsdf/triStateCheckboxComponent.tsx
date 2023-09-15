@@ -18,7 +18,7 @@ export const TriStateCheckboxComponent = ( props: Attributes ) => {
   return (
     
     <div>
-      <label style={{ marginRight:'4px'}}>Acepto</label>
+      <label style={{ marginRight:'4px'}} className='font-label'>Acepto</label>
         <TriStateCheckbox 
           id={ id }
           value={ value }
