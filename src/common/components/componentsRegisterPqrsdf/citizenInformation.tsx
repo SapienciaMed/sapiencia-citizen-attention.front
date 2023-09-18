@@ -941,10 +941,12 @@ export const CitizenInformation = () => {
         <Button label="Show" style={{display:'none'}} name='modal' id='modal' onClick={() => setVisible(true)} />
         <Dialog 
           header="Si tienes más de un documento, se deben unir en un solo archivo para ser cargados" 
-          className='text-center' 
+          className='text-center div-modal movil' 
           visible={visible} 
-          style={{ width: '50vw' }} 
           onHide={() => setVisible(false)}
+          pt={{
+            root:{style:{width:'35em'}}
+          }}
           >
           <Controller
             name='archivo'
