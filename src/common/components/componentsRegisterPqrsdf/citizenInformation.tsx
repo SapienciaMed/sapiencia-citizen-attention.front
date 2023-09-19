@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, Suspense } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Button } from 'primereact/button';
+import { Dialog } from 'primereact/dialog';
 import { fetchData } from '../../apis/fetchData';
 
 import { CalendarComponent } from "./calendarComponent";
@@ -11,7 +12,7 @@ import { ScrollPanelComponent } from "./scrollPanelComponent";
 import { TriStateCheckboxComponent } from "./triStateCheckboxComponent";
 import { UploadComponent } from "./uploadComponent";
 import { classNames } from 'primereact/utils';
-import { forStatement } from '@babel/types';
+import { ItemTemplateOptions } from 'primereact/fileupload';
 
 const ApiDatatypoSolicitudes = fetchData("/get-type-solicituds");
 const ApiDatatypoDocument = fetchData("/get-type-docuement");
@@ -37,8 +38,41 @@ export const CitizenInformation = () => {
   const paises = ApiDataPais.read();
   const { LPA_VALOR } = linkPoliticaCondiciones[0];
   
- 
-  
+  const defaultValues = {
+    tipoDeSolicitud: '',
+    tipo:'',
+    tipoEntidad:'',
+    medioRespuesta:'',
+    programaSolicitud:'',
+    asuntoSolicitud:'',
+    noDocumento:'',
+    primerNombre:'',
+    segundoNombre:'',
+    primerApellido:'',
+    segundoApellido:'',
+    noContacto1:'',
+    noContacto2:'',
+    correoElectronico:'',
+    direccion:'',
+    pais:'',
+    departamento:'',
+    municipio:'',
+    fechaNacimento:'',
+    politicaTratamiento: null,
+    Descripción:'',
+    RazónSocial:'',
+    archivo:''
+  };
+
+  const {
+    control,
+    formState: { errors, isValid },
+    handleSubmit,
+    getFieldState,
+    reset,
+    resetField,
+    watch
+  } = useForm({ defaultValues, mode:'all' });
   
   const optionDepartamento = useRef(null);
   const optionMunicipios = useRef(null);
@@ -48,21 +82,73 @@ export const CitizenInformation = () => {
   const showDeptoMupio = useRef(null)
   const showMupio = useRef(null)
 
+  const [ valueTypeSolicitud, setValueTypeSolicitud] = useState(null);
   const [ valueDocument, setValueDocument] = useState(null);
+  const [ valueTypeEntidad, setValueTypeEntidad] = useState(null);
   const [ valuePais, setValuePais] = useState(null);
   const [ valueDepartamento, setValueDepartamento] = useState(null);
+  const [ valueMunicipio, setValueMunicipio] = useState(null);
+  const [ valueMedioRespuesta, setValueMedioRespuesta] = useState(null);
+  const [ valueAsunto, setValueAsunto] = useState(null);
   const [ statuscheckBox, setstatuscheckBox] = useState(null);
   const [ program, setprogram] = useState(null);
+  const [visible, setVisible] = useState<boolean>(false);
+  const [file, setfile] = useState<File>(null);
 
+  const seleTipoSsolicitud = ( solicitud:{TSO_CODIGO:number, TSO_DESCRIPTION:string} ) => {
+    setValueTypeSolicitud( solicitud );
+    
+    return solicitud;
+  };
 
   const seleTipoDocument = ( document:{LGE_CODIGO:number, LGE_ELEMENTO_DESCRIPCION:string} ) => {
     setValueDocument( document );
-    console.log(document);
-    
+
     showFieldPersons.current = document==null?'':document.LGE_ELEMENTO_DESCRIPCION
-    console.log( document );
+    
+    switch (showFieldPersons.current) {
+      case 'Cedula de Ciudadania':
+        resetField('RazónSocial');
+        setValueTypeEntidad(null);
+        break;
+      case 'Cedula de Extranjeria':
+        resetField('RazónSocial');
+        setValueTypeEntidad(null);
+        break;
+      case 'Tarjeta de Identidad':
+        resetField('RazónSocial');
+        setValueTypeEntidad(null);
+        break;
+      case 'NIT':
+        resetField('primerNombre');
+        resetField('segundoNombre');
+        resetField('primerApellido');
+        resetField('segundoApellido');
+        resetField('fechaNacimento');
+        break;
+      case 'Anónimo':
+        resetField('tipoEntidad');
+        resetField('noDocumento');
+        resetField('primerNombre');
+        resetField('segundoNombre');
+        resetField('primerApellido');
+        resetField('segundoApellido');
+        resetField('fechaNacimento');
+        setValueTypeEntidad(null);
+        break;
+    
+      default:
+        break;
+    }
     
     return document;
+  };
+
+  const seleTipeEntidad = ( entidad:{TEJ_CODIGO:number, TEJ_NOMBRE:string} ) => {
+    
+    setValueTypeEntidad( entidad );
+    
+    return entidad;
   };
 
   const seletDataPais = ( pais:{LGE_CODIGO:number, LGE_ELEMENTO_DESCRIPCION:string} )=>{
@@ -96,16 +182,42 @@ export const CitizenInformation = () => {
     return depart;
   };
 
+  const seletMunicipios = ( municipio:{LGE_CODIGO:number, LGE_ELEMENTO_DESCRIPCION:string} ) => {
+    
+    setValueMunicipio( municipio );
+    
+    return municipio;
+  };
+
   const selePrograma = ( programa :{CLP_CODIGO:number,CLP_DESCRIPCION:string; DEP_CODIGO:number,DEP_DESCRIPCION:string ; PRG_CODIGO:number,PRG_DESCRIPCION:string  })=>{
     setprogram( programa );
     
     showDependecia.current = programa == null?'': programa.DEP_DESCRIPCION;
     showClasificacion.current = programa == null?'': programa.CLP_DESCRIPCION;
-    
-    console.log( programa );
-    
+  
     return programa
   }
+
+  const seletMedioRespuesta = ( respuesta:{MRE_CODIGO:number, MRE_DESCRIPCION:string} ) => {
+    
+    setValueMedioRespuesta( respuesta );
+    
+    return respuesta;
+  };
+
+  const seletSolicitud = ( respuesta:{ASO_CODIGO:number, ASO_ASUNTO:string} ) => {
+    
+    setValueAsunto( respuesta );
+    
+    return respuesta;
+  };
+
+  const getFile = (file:File) => {
+    setfile(file)
+
+    return file;
+  }
+
   
   const checkBox = (dato:{status:boolean | null}) => {
     setstatuscheckBox( dato )
@@ -115,71 +227,29 @@ export const CitizenInformation = () => {
     return estado;
   }
 
-  const defaultValues = {
-    tipoDeSolicitud: '',
-    tipo:'',
-    tipoEntidad:'',
-    medioRespuesta:'',
-    programaSolicitud:'',
-    asuntoSolicitud:'',
-    noDocumento:'',
-    primerNombre:'',
-    segundoNombre:'',
-    primerApellido:'',
-    segundoApellido:'',
-    noContacto1:'',
-    noContacto2:'',
-    correoElectronico:'',
-    direccion:'',
-    pais:'',
-    departamento:'',
-    municipio:'',
-    fechaNacimento:'',
-    politicaTratamiento: null,
-    Descripción:'',
-    RazónSocial:''
-  };
-
-  const {
-    control,
-    formState: { errors, isValid, isSubmitted },
-    handleSubmit,
-    getFieldState,
-    reset,
-    watch
-  } = useForm({ defaultValues, mode:'all' });
- 
   const onSubmit = (data) => {
-    data;
-    console.log( data );
     
+    console.log( data );
+    setValueTypeSolicitud(null);
+    setValueDocument(null);
+    setValueTypeEntidad(null);
+    setValuePais(null);
+    setValueDepartamento(null);
+    setValueMunicipio(null);
+    setValueMedioRespuesta(null);
+    setValueAsunto(null);
+    setstatuscheckBox(null);
+    setprogram(null);
+    setfile(null);
+    showDependecia.current = '';
+    showClasificacion.current = '';
+
     reset();
   };
-
- 
-  console.log( getFieldState('noDocumento')  );
-  console.log( isSubmitted )
-  
-  // return updated field error state
 
   const getFormErrorMessage = (name) => {
     return errors[name] ? <small className="p-error">{errors[name].message}</small> : <small className="p-error">&nbsp;</small>;
   };
-
-  const noDocumento =  watch("noDocumento")
- console.log( noDocumento );
-
-
-
- 
- /*VALIDACIONES*/
- let color = noDocumento.length==15?'border-red-500':'';
-
- if( noDocumento.length==15 ){
-  color = 'border-red-500';
-  console.log('pruebas');
-  getFormErrorMessage('noDocumento')
-  }
  
   return (
     <form 
@@ -199,10 +269,10 @@ export const CitizenInformation = () => {
               <Suspense fallback={ <div>Cargando...</div>}>
                 <DropDownComponent
                     id={field.value}
-                    value={field.value}
+                    value={valueTypeSolicitud}
                     optionLabel= {'TSO_DESCRIPTION'}
                     className={classNames({ 'p-invalid': fieldState.error } ,'!h-10')}
-                    onChange={(e) => field.onChange(e.value)}
+                    onChange={(e) => field.onChange( seleTipoSsolicitud(e.value) )}
                     focusInputRef={field.ref}
                     options={ optionSolicitudes.data }
                     placeholder='Seleccionar'
@@ -217,7 +287,7 @@ export const CitizenInformation = () => {
         
         <span className='split'></span>
 
-        <div className='div-container width-50'>
+        <div className='div-container width-50 div-movil-100'>
 
           <div className='row-1 width-50'>
             <label className='font-label'>Tipo<span className='required'>*</span></label>
@@ -265,7 +335,7 @@ export const CitizenInformation = () => {
                       <InputTextComponent
                         id={field.name}
                         value={field.value}
-                        className={classNames({ 'p-invalid': fieldState.error }, '!h-10', {color})}
+                        className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                         onChange={(e) => field.onChange(e.target.value)}
                         placeholder=''
                         width="100%"
@@ -295,9 +365,9 @@ export const CitizenInformation = () => {
                 <Suspense fallback={ <div>Cargando...</div>}>
                   <DropDownComponent
                     id={field.name}
-                    value={field.value}
+                    value={ valueTypeEntidad }
                     className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
-                    onChange={(e) => field.onChange(e.value)}
+                    onChange={(e) => field.onChange(seleTipeEntidad(e.value))}
                     focusInputRef={field.ref}
                     optionLabel={'TEJ_NOMBRE'}
                     options={ optionLegalEntity.data }  
@@ -648,7 +718,7 @@ export const CitizenInformation = () => {
                   onChange={(e) => field.onChange(seletDataPais(e.value))}
                   focusInputRef={field.ref}
                   optionLabel='LGE_ELEMENTO_DESCRIPCION'
-                  options={ [{LGE_ELEMENTO_DESCRIPCION:'Seleccionar'},...paises.data] }
+                  options={ paises.data }
                   placeholder='Selecionar'
                   width="100%"
                 />
@@ -705,9 +775,9 @@ export const CitizenInformation = () => {
                   <>
                     <DropDownComponent
                       id={field.name}
-                      value={field.value}
+                      value={valueMunicipio}
                       className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
-                      onChange={(e) => field.onChange(e.value)}
+                      onChange={(e) => field.onChange(seletMunicipios(e.value))}
                       focusInputRef={field.ref}
                       optionLabel='LGE_ELEMENTO_DESCRIPCION'
                       options={ optionMunicipios.current }
@@ -737,9 +807,9 @@ export const CitizenInformation = () => {
               <>
                 <DropDownComponent
                   id={field.name}
-                  value={field.value}
+                  value={valueMedioRespuesta}
                   className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
-                  onChange={(e) => field.onChange(e.value)}
+                  onChange={(e) => field.onChange(seletMedioRespuesta(e.value))}
                   focusInputRef={field.ref}
                   optionLabel='MRE_DESCRIPCION'
                   options={ optionResponseMedium.data }   
@@ -767,7 +837,7 @@ export const CitizenInformation = () => {
               <Suspense fallback={ <div>Cargando...</div>}>
                 <DropDownComponent
                   id={field.name}
-                  value={field.value}
+                  value={program}
                   className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
                   onChange={(e) => field.onChange( selePrograma(e.value))}
                   focusInputRef={field.ref}
@@ -796,9 +866,9 @@ export const CitizenInformation = () => {
               <Suspense fallback={ <div>Cargando...</div>}>
                 <DropDownComponent
                   id={field.name}
-                  value={field.value}
+                  value={valueAsunto}
                   className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
-                  onChange={(e) => field.onChange(e.value)}
+                  onChange={(e) => field.onChange(seletSolicitud(e.value))}
                   focusInputRef={field.ref}
                   optionLabel='ASO_ASUNTO'
                   options={ optionAsuntoSolicitud.data }  
@@ -865,7 +935,32 @@ export const CitizenInformation = () => {
 
       <div className="div-upload">
         <label className='font-label'>Archivos o documentos que soportan la solicitud</label>
-        <UploadComponent/>
+        <label className="upload-label" style={{ display:'flex', alignItems:'center'}} htmlFor="modal">Adjuntar archivos <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.00008 5.83331V11.1666" stroke="#533893" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M10.6666 8.50002H5.33325" stroke="#533893" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M8 14.5V14.5C4.686 14.5 2 11.814 2 8.5V8.5C2 5.186 4.686 2.5 8 2.5V2.5C11.314 2.5 14 5.186 14 8.5V8.5C14 11.814 11.314 14.5 8 14.5Z" stroke="#533893" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></label>
+        {file != undefined ?(<label className='text-red-500'>{file.name}</label>):(<></>)}
+        
+        <Button label="Show" style={{display:'none'}} name='modal' id='modal' onClick={() => setVisible(true)} />
+        <Dialog 
+          header="Si tienes más de un documento, se deben unir en un solo archivo para ser cargados" 
+          className='text-center div-modal movil' 
+          visible={visible} 
+          onHide={() => setVisible(false)}
+          pt={{
+            root:{style:{width:'35em'}}
+          }}
+          >
+          <Controller
+            name='archivo'
+            control={control}
+            render={({ field, fieldState })=>(
+              <>
+                <UploadComponent
+                  id={field.name}
+                  dataArchivo={(e:File)=> field.onChange(getFile(e))}
+                />
+              </>
+            )}
+          />
+        </Dialog>
       </div>
 
       <div className="div_container" style={{marginBottom:'20px'}} >
@@ -885,7 +980,7 @@ export const CitizenInformation = () => {
                 id={field.name}
                 value={field.value} 
                 onChange={(e) => field.onChange(checkBox(e.value))} 
-                className={classNames({ 'p-invalid': fieldState.error })} 
+                className={classNames({ 'p-invalid': fieldState.error }, )} 
               />
               {getFormErrorMessage(field.name)}
                   
