@@ -8,7 +8,6 @@ import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Paginator } from "primereact/paginator";
-import { Toast } from "primereact/toast";
 import { classNames } from "primereact/utils";
 import React, { useEffect, useRef, useState } from "react";
 import { EResponseCodes } from "../constants/api.enum";
@@ -19,7 +18,6 @@ import { IDaysParametrizationDetail } from "../interfaces/daysParametrizationDet
 import { allMonths, capitalize, toLocaleDate } from "../utils/helpers";
 
 function CalendarPage(): React.JSX.Element {
-  const toast = useRef(null);
   const parentForm = useRef(null);
   const daysTable = useRef(null);
   const [selectedYear, setSelectedYear] = useState<IDaysParametrization | undefined>(undefined);
@@ -685,7 +683,6 @@ function CalendarPage(): React.JSX.Element {
   };
   return (
     <div className="p-4 md:p-6 max-w-[1200px] mx-auto" ref={parentForm}>
-      <Toast ref={toast} position="bottom-right" />
       <ConfirmDialog id="messages"></ConfirmDialog>
       <ConfirmDialog
         className="rounded-2xl"
