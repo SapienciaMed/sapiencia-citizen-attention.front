@@ -177,7 +177,7 @@ function QueryPqrsdfPage(): React.JSX.Element {
                 <span></span>
               </div>
               <div className="p-card-content !pb-0 !pt-0 md:!pt-10">
-                <div className="overflow-auto max-w-[calc(100vw-4.6rem)] md:max-w-[calc(100vw-25.1rem)] ">
+                <div className="overflow-auto max-w-[calc(100vw-4.6rem)] md:max-w-[calc(100vw-25.1rem)] hidden md:block">
                   <DataTable
                     value={data}
                     emptyMessage="No se encontraron resultados"

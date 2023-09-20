@@ -3,7 +3,7 @@ import { ILegalEntityType } from "./legalEntityType.interfaces";
 import { IGenericData } from "./genericData.interfaces";
 
 export interface IPerson {
-  id: number;
+  id?: number;
   documentTypeId: number;
   documentType?: IGenericData;
   entityTypeId: number;
