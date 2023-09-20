@@ -8,6 +8,12 @@
     @apply text-black;
 }
 
+.p-button {
+    color: #fff;
+    background-color: #5e3893;
+    border: 1px solid #5e3893;
+}
+
 .p-button:not(.p-link):disabled,.p-button.disabled:not(.p-link){
     background-color: #E2E2E2;
     border-color: #E2E2E2;
