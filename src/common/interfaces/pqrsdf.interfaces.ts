@@ -18,6 +18,8 @@ export interface IPqrsdf {
   description: string;
   requestType?: IRequestType;
   person?: IPerson;
+  answer?: string;
+  answerDate?: DateTime;
   responseMedium?: IResponseMedium;
   requestSubject?: IRequestSubject;
   file?: IFile;

@@ -8,10 +8,13 @@ import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
 import { IPqrsdf } from "../interfaces/pqrsdf.interfaces";
 import { usePqrsdfService } from "../hooks/PqrsdfService.hook";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
 function QueryPqrsdfPage(): React.JSX.Element {
   const parentForm = useRef(null);
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<IPqrsdf[]>();
+  const [data, setData] = useState<IPqrsdf[]>([]);
+  const [showTable, setShowTable] = useState(false);
 
   const pqrsdfService = usePqrsdfService();
 
@@ -40,6 +43,7 @@ function QueryPqrsdfPage(): React.JSX.Element {
       console.error("Error al obtener la PQRSDF:", error);
     } finally {
       setLoading(false);
+      setShowTable(true);
     }
   };
 
@@ -53,6 +57,31 @@ function QueryPqrsdfPage(): React.JSX.Element {
     ) : (
       <small className="p-error">&nbsp;</small>
     );
+  };
+
+  const dateBodyTemplate = (rowData, field) => {
+    if (!rowData?.[field.field]) {
+      return rowData?.[field.field];
+    } else {
+      let date = typeof rowData?.[field.field] == "string" ? new Date(rowData?.[field.field]) : rowData?.[field.field];
+      return date?.toLocaleDateString("es-CO", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+    }
+  };
+
+  const fileBodyTemplate = (rowData) => {
+    return (
+      <a href={rowData?.file?.name} className="hover:text-primary">
+        {rowData?.file?.name.split("/").pop()}
+      </a>
+    );
+  };
+
+  const dateStatusTemplate = (rowData: IPqrsdf) => {
+    return rowData.answer && rowData.answerDate ? "Cerrada" : "Abierta";
   };
 
   return (
@@ -132,13 +161,103 @@ function QueryPqrsdfPage(): React.JSX.Element {
                   className="!px-4 !py-2 !text-base"
                   type="submit"
                   // onClick={save}
-                  disabled={!isValid}
+                  disabled={!isValid || loading}
                 />
               </div>
             </form>
           </div>
         </div>
       </div>
+      {showTable && (
+        <div className="relative pb-16 md:pb-28 z-0">
+          <div className="relative p-card rounded-2xl md:rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
+            <div className="p-card-body !pt-3 !px-3 md:!pt-8 md:!pb-3 md:!px-6">
+              <div className="p-card-title justify-between hidden md:flex">
+                <span className="text-3xl">Resultados de búsqueda</span>
+                <span></span>
+              </div>
+              <div className="p-card-content !pb-0 !pt-0 md:!pt-10">
+                <div className="overflow-auto max-w-[calc(100vw-4.6rem)] md:max-w-[calc(100vw-25.1rem)] ">
+                  <DataTable
+                    value={data}
+                    emptyMessage="No se encontraron resultados"
+                    tableStyle={{ minWidth: "22.625rem", marginBottom:"6.063rem" }}
+                  >
+                    <Column
+                      bodyClassName="text-base !font-sans text-center"
+                      headerClassName="text-base font-medium !text-black text-center"
+                      key="filingNumber"
+                      field="filingNumber"
+                      header="No. PQRSDF"
+                    ></Column>
+                    <Column
+                      bodyClassName="text-base !font-sans text-center"
+                      headerClassName="text-base font-medium !text-black text-center"
+                      key="createdAt"
+                      field="createdAt"
+                      header="Fecha radicado"
+                      dataType="date"
+                      body={dateBodyTemplate}
+                    ></Column>
+                    <Column
+                      bodyClassName="text-base !font-sans text-center"
+                      headerClassName="text-base font-medium !text-black text-center"
+                      key="dependency"
+                      field="dependency"
+                      header="Programa"
+                    ></Column>
+                    <Column
+                      bodyClassName="text-base !font-sans text-center"
+                      headerClassName="text-base font-medium !text-black text-center"
+                      key="clasification"
+                      field="clasification"
+                      header="Clasificación"
+                    ></Column>
+                    <Column
+                      bodyClassName="text-base !font-sans text-center"
+                      headerClassName="text-base font-medium !text-black text-center"
+                      key="requestSubject"
+                      field="requestSubject.aso_asunto"
+                      header="Asunto"
+                    ></Column>
+                    <Column
+                      bodyClassName="text-base !font-sans text-center"
+                      headerClassName="text-base font-medium !text-black text-center"
+                      key="status"
+                      header="Estado"
+                      body={dateStatusTemplate}
+                    ></Column>
+                    <Column
+                      bodyClassName="text-base !font-sans text-center"
+                      headerClassName="text-base font-medium !text-black text-center"
+                      key="answerDate"
+                      field="answerDate"
+                      header="Fecha respuesta"
+                      dataType="date"
+                      body={dateBodyTemplate}
+                    ></Column>
+                    <Column
+                      bodyClassName="text-base !font-sans text-center"
+                      headerClassName="text-base font-medium !text-black text-center"
+                      key="answer"
+                      field="answer"
+                      header="Respuesta"
+                    ></Column>
+                    <Column
+                      bodyClassName="text-base !font-sans text-center"
+                      headerClassName="text-base font-medium !text-black text-center"
+                      key="file"
+                      field="file.name"
+                      header="Ver adjunto"
+                      body={fileBodyTemplate}
+                    ></Column>
+                  </DataTable>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
