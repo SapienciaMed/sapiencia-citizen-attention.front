@@ -80,7 +80,7 @@ function QueryPqrsdfPage(): React.JSX.Element {
     );
   };
 
-  const dateStatusTemplate = (rowData: IPqrsdf) => {
+  const statusTemplate = (rowData: IPqrsdf) => {
     return rowData.answer && rowData.answerDate ? "Cerrada" : "Abierta";
   };
 
@@ -172,8 +172,8 @@ function QueryPqrsdfPage(): React.JSX.Element {
         <div className="relative pb-16 md:pb-28 z-0">
           <div className="relative p-card rounded-2xl md:rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
             <div className="p-card-body !pt-3 !px-3 md:!pt-8 md:!pb-3 md:!px-6">
-              <div className="p-card-title justify-between hidden md:flex">
-                <span className="text-3xl">Resultados de búsqueda</span>
+              <div className="p-card-title justify-between flex">
+                <span className="text-xl md:text-3xl">Resultados de búsqueda</span>
                 <span></span>
               </div>
               <div className="p-card-content !pb-0 !pt-0 md:!pt-10">
@@ -181,7 +181,7 @@ function QueryPqrsdfPage(): React.JSX.Element {
                   <DataTable
                     value={data}
                     emptyMessage="No se encontraron resultados"
-                    tableStyle={{ minWidth: "22.625rem", marginBottom:"6.063rem" }}
+                    tableStyle={{ minWidth: "22.625rem", marginBottom: "6.063rem" }}
                   >
                     <Column
                       bodyClassName="text-base !font-sans text-center"
@@ -225,7 +225,7 @@ function QueryPqrsdfPage(): React.JSX.Element {
                       headerClassName="text-base font-medium !text-black text-center"
                       key="status"
                       header="Estado"
-                      body={dateStatusTemplate}
+                      body={statusTemplate}
                     ></Column>
                     <Column
                       bodyClassName="text-base !font-sans text-center"
@@ -252,6 +252,26 @@ function QueryPqrsdfPage(): React.JSX.Element {
                       body={fileBodyTemplate}
                     ></Column>
                   </DataTable>
+                </div>
+                <div className="p-5 p-card md:hidden block relative rounded-2xl md:rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
+                  <div className="flex flex-wrap pb-5">
+                    <div className="w-1/2 text-sm">No. PQRSDF</div>
+                    <div className="w-1/2 text-sm !font-sans text-right">{data[0].filingNumber}</div>
+                    <div className="w-1/2 text-sm mt-4">Fecha radicado</div>
+                    <div className="w-1/2 text-sm mt-4 !font-sans text-right">{dateBodyTemplate(data[0], { field: "createdAt" })}</div>
+                    <div className="w-1/2 text-sm mt-4">Programa</div>
+                    <div className="w-1/2 text-sm mt-4 !font-sans text-right">{data[0].dependency}</div>
+                    <div className="w-1/2 text-sm mt-4">Clasificación</div>
+                    <div className="w-1/2 text-sm mt-4 !font-sans text-right">{data[0].clasification}</div>
+                    <div className="w-1/2 text-sm mt-4">Asunto</div>
+                    <div className="w-1/2 text-sm mt-4 !font-sans text-right">{data[0].requestSubject.aso_asunto}</div>
+                    <div className="w-1/2 text-sm mt-4">Estado</div>
+                    <div className="w-1/2 text-sm mt-4 !font-sans text-right">{statusTemplate(data[0])}</div>
+                    <div className="w-1/2 text-sm mt-4">Fecha respuesta</div>
+                    <div className="w-1/2 text-sm mt-4 !font-sans text-right">{dateBodyTemplate(data[0], { field: "answerDate" })}</div>
+                    <div className="w-1/2 text-sm mt-4">Respuesta</div>
+                    <div className="w-1/2 text-sm mt-4 !font-sans text-right">{data[0].answer}</div>
+                  </div>
                 </div>
               </div>
             </div>
