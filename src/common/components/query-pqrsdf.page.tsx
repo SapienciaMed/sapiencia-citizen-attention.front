@@ -105,7 +105,7 @@ function QueryPqrsdfPage(): React.JSX.Element {
                 render={({ field, fieldState }) => (
                   <div className="flex flex-col gap-y-1.5 md:max-w-2xs w-full">
                     <label htmlFor={field.name} className="text-base">
-                      Identificationo de identidad <span className="text-red-600">*</span>
+                      Documento de identidad <span className="text-red-600">*</span>
                     </label>
                     <InputText
                       keyfilter="int"
