@@ -1,15 +1,14 @@
+import { Button } from "primereact/button";
+import { Column } from "primereact/column";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import { DataTable } from "primereact/datatable";
+import { InputText } from "primereact/inputtext";
+import { classNames } from "primereact/utils";
 import React, { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { EResponseCodes } from "../constants/api.enum";
-import { Dropdown } from "primereact/dropdown";
-import { InputText } from "primereact/inputtext";
-import { Button } from "primereact/button";
-import { classNames } from "primereact/utils";
-import { IPqrsdf } from "../interfaces/pqrsdf.interfaces";
 import { usePqrsdfService } from "../hooks/PqrsdfService.hook";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
+import { IPqrsdf } from "../interfaces/pqrsdf.interfaces";
 function QueryPqrsdfPage(): React.JSX.Element {
   const parentForm = useRef(null);
   const [loading, setLoading] = useState(false);
