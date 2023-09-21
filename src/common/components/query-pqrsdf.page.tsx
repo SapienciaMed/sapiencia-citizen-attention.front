@@ -46,7 +46,6 @@ function QueryPqrsdfPage(): React.JSX.Element {
 
       if (response.operation.code === EResponseCodes.OK) {
         setData([response.data]);
-        resetForm(false);
         setShowTable(true);
       } else {
         confirmDialog({
@@ -81,12 +80,10 @@ function QueryPqrsdfPage(): React.JSX.Element {
     }
   };
 
-  const resetForm = (clearResults: boolean = true) => {
+  const resetForm = () => {
     reset({ identification: "", filingNumber: "" }, { keepValues: false, keepErrors: false });
-    if (clearResults) {
-      setData([]);
-      setShowTable(false);
-    }
+    setData([]);
+    setShowTable(false);
   };
 
   const getFormErrorMessage = (name) => {
