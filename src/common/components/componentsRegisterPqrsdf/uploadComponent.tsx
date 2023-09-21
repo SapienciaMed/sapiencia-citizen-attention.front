@@ -1,10 +1,11 @@
-import { useRef, useState } from "react";
+import { Button } from "primereact/button";
+import { Dialog } from "primereact/dialog";
 import { FileUpload, ItemTemplateOptions } from "primereact/fileupload";
 import { ProgressBar } from "primereact/progressbar";
-import { Button } from "primereact/button";
 import { Tooltip } from "primereact/tooltip";
-import { Dialog } from "primereact/dialog";
-import { PrimeIcons } from "primereact/api";
+import { useRef, useState } from "react";
+import { trashIcon } from "../icons/trash";
+import { clip } from "../icons/clip";
 
 interface Atributos {
   id: string;
@@ -138,12 +139,7 @@ export const UploadComponent = (props: Atributos) => {
 
   const chooseOptions = {
     icon: (
-      <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="M5.56769 16.8758C4.14661 16.8814 2.77647 16.347 1.73435 15.3808C1.22685 14.9116 0.821888 14.3424 0.54493 13.7091C0.267972 13.0758 0.125 12.3921 0.125 11.7008C0.125 11.0096 0.267972 10.3259 0.54493 9.69258C0.821888 9.05928 1.22685 8.49011 1.73435 8.02084L8.97935 1.17834C9.72449 0.498182 10.6969 0.121094 11.7058 0.121094C12.7147 0.121094 13.6871 0.498182 14.4323 1.17834C14.8208 1.539 15.1323 1.97454 15.348 2.45874C15.5638 2.94295 15.6793 3.46581 15.6877 3.99584C15.6903 4.45389 15.598 4.90752 15.4165 5.32812C15.2351 5.74871 14.9685 6.12716 14.6335 6.43959L7.37894 13.2917C6.94118 13.6978 6.36609 13.9235 5.76894 13.9235C5.17178 13.9235 4.59669 13.6978 4.15894 13.2917C3.94172 13.0915 3.76835 12.8485 3.64976 12.578C3.53118 12.3075 3.46995 12.0154 3.46995 11.72C3.46995 11.4246 3.53118 11.1325 3.64976 10.862C3.76835 10.5915 3.94172 10.3485 4.15894 10.1483L10.8673 3.83292C11.002 3.69832 11.1847 3.62272 11.3752 3.62272C11.5657 3.62272 11.7483 3.69832 11.8831 3.83292C12.0177 3.96769 12.0933 4.15037 12.0933 4.34084C12.0933 4.53131 12.0177 4.71399 11.8831 4.84875L5.17477 11.1642C5.09953 11.2298 5.03922 11.3108 4.99789 11.4018C4.95657 11.4927 4.93519 11.5914 4.93519 11.6913C4.93519 11.7911 4.95657 11.8898 4.99789 11.9807C5.03922 12.0717 5.09953 12.1527 5.17477 12.2183C5.34835 12.3668 5.56926 12.4484 5.79769 12.4484C6.02611 12.4484 6.24702 12.3668 6.4206 12.2183L13.6752 5.38542C13.8598 5.20453 14.0058 4.98818 14.1047 4.74938C14.2035 4.51058 14.253 4.25426 14.2502 3.99584C14.2423 3.66275 14.1668 3.33474 14.0285 3.03165C13.8901 2.72856 13.6917 2.45669 13.4452 2.2325C12.9721 1.79402 12.3509 1.55039 11.7058 1.55039C11.0608 1.55039 10.4395 1.79402 9.96643 2.2325L2.75019 9.06542C2.38474 9.4003 2.09294 9.80752 1.89332 10.2612C1.69369 10.7149 1.5906 11.2052 1.5906 11.7008C1.5906 12.1965 1.69369 12.6868 1.89332 13.1405C2.09294 13.5942 2.38474 14.0014 2.75019 14.3363C3.53076 15.0638 4.55813 15.4683 5.62519 15.4683C6.69224 15.4683 7.71961 15.0638 8.50019 14.3363L15.6781 7.54167C15.7442 7.47386 15.8232 7.41997 15.9104 7.38317C15.9976 7.34637 16.0913 7.32742 16.186 7.32742C16.2807 7.32742 16.3744 7.34637 16.4616 7.38317C16.5489 7.41997 16.6279 7.47386 16.6939 7.54167C16.8285 7.67644 16.9041 7.85912 16.9041 8.04959C16.9041 8.24006 16.8285 8.42274 16.6939 8.5575L9.45852 15.3808C8.40244 16.3616 7.00874 16.8971 5.56769 16.8758Z"
-          fill="#533893"
-        />
-      </svg>
+      clip
     ),
     iconOnly: true,
     className: "custom-choose-btn p-button-rounded p-button-outlined",
@@ -170,46 +166,7 @@ export const UploadComponent = (props: Atributos) => {
   };
   const cancelOptions = {
     icon: (
-      <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
-          d="M14.1212 18.375H6.8762C5.96008 18.375 5.19883 17.668 5.13058 16.7536L4.3457 6.125H16.6255L15.8668 16.7493C15.8012 17.6654 15.0391 18.375 14.1212 18.375V18.375Z"
-          stroke="#FF0000"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-        <path
-          d="M10.5 9.625V14.875"
-          stroke="#FF0000"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-        <path d="M3.5 6.125H17.5" stroke="#FF0000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-        <path
-          d="M14.875 6.125L13.9886 3.76075C13.7323 3.07737 13.0795 2.625 12.3497 2.625H8.65025C7.9205 2.625 7.26775 3.07737 7.01138 3.76075L6.125 6.125"
-          stroke="#FF0000"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-        <path
-          d="M13.5016 9.625L13.1254 14.875"
-          stroke="#FF0000"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-        <path
-          d="M7.4984 9.625L7.87465 14.875"
-          stroke="#FF0000"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-      </svg>
+      trashIcon
     ),
     iconOnly: true,
     className: "custom-cancel-btn p-button-danger p-button-rounded p-button-outlined",
