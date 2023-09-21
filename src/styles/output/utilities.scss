@@ -7891,6 +7891,10 @@ video {
   margin-bottom:auto
 }
 
+.\!mr-0{
+  margin-right:0px !important
+}
+
 .-mb-0{
   margin-bottom:-0px
 }
@@ -7947,6 +7951,10 @@ video {
   margin-top:0.875rem
 }
 
+.mt-4{
+  margin-top:1rem
+}
+
 .mt-6{
   margin-top:1.5rem
 }
@@ -7957,10 +7965,6 @@ video {
 
 .mt-auto{
   margin-top:auto
-}
-
-.mt-4{
-  margin-top:1rem
 }
 
 .block{
@@ -8003,6 +8007,10 @@ video {
   width:10rem !important
 }
 
+.w-1\/2{
+  width:50%
+}
+
 .w-10{
   width:2.5rem
 }
@@ -8033,10 +8041,6 @@ video {
 
 .w-full{
   width:100%
-}
-
-.w-1\/2{
-  width:50%
 }
 
 .min-w-\[103px\]{
@@ -8283,12 +8287,12 @@ video {
   padding:1rem
 }
 
-.p-8{
-  padding:2rem
-}
-
 .p-5{
   padding:1.25rem
+}
+
+.p-8{
+  padding:2rem
 }
 
 .\!px-10{
@@ -8416,10 +8420,6 @@ video {
 
 .pt-3{
   padding-top:0.75rem
-}
-
-.pb-6{
-  padding-bottom:1.5rem
 }
 
 .text-left{
@@ -8698,6 +8698,25 @@ video {
     tbody *{
       font-family:Rubik, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important
     }
+  }
+}
+
+.borderless {
+  .p-datatable .p-datatable-thead>tr>th,
+    .p-datatable .p-datatable-tbody>tr>td {
+    border: none !important;
+  }
+}
+
+.reverse-striped {
+  .p-datatable .p-datatable-thead>tr>th {
+    background: transparent;
+  }
+  .p-datatable .p-datatable-tbody>tr {
+    background: #F4F4F4;
+  }
+  .p-datatable.p-datatable-striped .p-datatable-tbody>tr.p-row-odd {
+    background: transparent;
   }
 }
 
