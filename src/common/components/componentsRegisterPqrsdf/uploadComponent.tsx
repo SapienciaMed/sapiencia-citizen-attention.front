@@ -3,7 +3,8 @@ import { FileUpload, ItemTemplateOptions } from 'primereact/fileupload';
 import { ProgressBar } from 'primereact/progressbar';
 import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
-import { Dialog } from 'primereact/dialog';
+import { Dialog } from 'primereact/dialog'; 
+import { PrimeIcons } from 'primereact/api';       
 
 interface Atributos {
     id:string;
@@ -148,7 +149,9 @@ export const UploadComponent = (props:Atributos)=> {
             <FileUpload id={id} ref={fileUploadRef} name="demo[]" multiple={false} accept=".pdf" maxFileSize={1000000}
                 onUpload={onTemplateUpload} onSelect={onTemplateSelect} onError={onTemplateClear} onClear={onTemplateClear}
                 headerTemplate={headerTemplate} itemTemplate={itemTemplate} emptyTemplate={emptyTemplate}
-                chooseOptions={chooseOptions} uploadOptions={uploadOptions} cancelOptions={cancelOptions} />
+                chooseOptions={chooseOptions} uploadOptions={uploadOptions} cancelOptions={cancelOptions}
+                pt={{}}
+                 />
         </div>
     )
 }
