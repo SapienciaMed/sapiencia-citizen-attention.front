@@ -1,5 +1,5 @@
-//const urlBase = process.env.urlApiCitizenAttention;
-const urlBase = 'http://127.0.0.1:57962'
+const urlBase = process.env.urlApiCitizenAttention;
+//const urlBase = 'http://127.0.0.1:57962'
 
 function getSuspender(promise) {
     let status = "pending";

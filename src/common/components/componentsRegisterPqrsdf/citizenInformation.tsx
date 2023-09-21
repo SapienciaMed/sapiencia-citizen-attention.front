@@ -271,10 +271,7 @@ export const CitizenInformation = () => {
         "isActive": true
       },		
   }
-
-    console.log('-->',pqrsdf);
     
-    console.log( data );
     setValueTypeSolicitud(null);
     setValueDocument(null);
     setValueTypeEntidad(null);
@@ -290,9 +287,7 @@ export const CitizenInformation = () => {
     showClasificacion.current = '';
     
     const resp = await pqrsdfService.createPqrsdf(pqrsdf)
-    console.log('Response ->', resp);
     
-
     if(resp.operation['code']=='OK'){
       radicado.current = resp.data.filingNumber;
       setVisibleMsg(true); 
