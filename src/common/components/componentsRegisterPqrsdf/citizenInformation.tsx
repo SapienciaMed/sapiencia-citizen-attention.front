@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, Suspense } from 'react';
+import { useRef, useState, Suspense } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
@@ -12,7 +12,8 @@ import { ScrollPanelComponent } from "./scrollPanelComponent";
 import { TriStateCheckboxComponent } from "./triStateCheckboxComponent";
 import { UploadComponent } from "./uploadComponent";
 import { classNames } from 'primereact/utils';
-import { ItemTemplateOptions } from 'primereact/fileupload';
+import { usePqrsdfService } from '../../hooks/PqrsdfService.hook'; 
+import { FormPqrsdf, IPqrsdf } from '../../interfaces/pqrsdf.interfaces';
 
 const ApiDatatypoSolicitudes = fetchData("/get-type-solicituds");
 const ApiDatatypoDocument = fetchData("/get-type-docuement");
@@ -37,6 +38,8 @@ export const CitizenInformation = () => {
   const linkPoliticaCondiciones = ApiDataListaParametros.read();
   const paises = ApiDataPais.read();
   const { LPA_VALOR } = linkPoliticaCondiciones[0];
+
+  const pqrsdfService = usePqrsdfService();
   
   const defaultValues = {
     tipoDeSolicitud: '',
@@ -59,8 +62,8 @@ export const CitizenInformation = () => {
     municipio:'',
     fechaNacimento:'',
     politicaTratamiento: null,
-    Descripción:'',
-    RazónSocial:'',
+    Descripcion:'',
+    RazonSocial:'',
     archivo:''
   };
 
@@ -81,6 +84,8 @@ export const CitizenInformation = () => {
   const showClasificacion = useRef('')
   const showDeptoMupio = useRef(null)
   const showMupio = useRef(null)
+  const radicado = useRef(null)
+  const birthdateData = useRef(null)
 
   const [ valueTypeSolicitud, setValueTypeSolicitud] = useState(null);
   const [ valueDocument, setValueDocument] = useState(null);
@@ -94,6 +99,7 @@ export const CitizenInformation = () => {
   const [ program, setprogram] = useState(null);
   const [visible, setVisible] = useState<boolean>(false);
   const [file, setfile] = useState<File>(null);
+  const [ visibleMsg, setVisibleMsg] = useState(null);
 
   const seleTipoSsolicitud = ( solicitud:{TSO_CODIGO:number, TSO_DESCRIPTION:string} ) => {
     setValueTypeSolicitud( solicitud );
@@ -108,15 +114,15 @@ export const CitizenInformation = () => {
     
     switch (showFieldPersons.current) {
       case 'Cedula de Ciudadania':
-        resetField('RazónSocial');
+        resetField('RazonSocial');
         setValueTypeEntidad(null);
         break;
       case 'Cedula de Extranjeria':
-        resetField('RazónSocial');
+        resetField('RazonSocial');
         setValueTypeEntidad(null);
         break;
       case 'Tarjeta de Identidad':
-        resetField('RazónSocial');
+        resetField('RazonSocial');
         setValueTypeEntidad(null);
         break;
       case 'NIT':
@@ -227,7 +233,46 @@ export const CitizenInformation = () => {
     return estado;
   }
 
-  const onSubmit = (data) => {
+  const handleDateChange = (date:Date, data:string) => {
+    const birthdate = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
+    birthdateData.current = birthdate;
+    return data
+  };
+
+  const onSubmit = async (data:FormPqrsdf) => {
+    
+    const pqrsdf:IPqrsdf = {
+      "requestTypeId": data.tipoDeSolicitud['TSO_CODIGO'],
+      "responseMediumId": data.medioRespuesta['MRE_CODIGO'],
+      "requestSubjectId": 1,
+      "clasification": data.programaSolicitud['CLP_DESCRIPCION'],
+      "dependency": data.programaSolicitud['DEP_DESCRIPCION'],
+      "description": data['Descripcion'],
+      "person": {
+        "identification": data['noDocumento'],
+        "documentTypeId": data.tipo['LGE_CODIGO'],
+        "entityTypeId": data.tipoEntidad['TEJ_CODIGO'],
+        "firstName": data['primerNombre'],
+        "secondName": data['segundoNombre'],
+        "firstSurname": data['primerApellido'],
+        "secondSurname": data['segundoApellido'],
+        "birthdate": birthdateData.current ,
+        "firstContactNumber": data['noContacto1'],
+        "secondContactNumber": data['noContacto2'],
+        "email": data['correoElectronico'],
+        "address": data['direccion'],
+        "countryId": data.pais['LGE_CODIGO'],
+        "departmentId": data.departamento['LGE_CODIGO'],
+        "municipalityId": data.municipio['LGE_CODIGO'],
+        "isBeneficiary": true		
+      },		
+      "file": {			
+        "name": file? file.name : '' ,
+        "isActive": true
+      },		
+  }
+
+    console.log('-->',pqrsdf);
     
     console.log( data );
     setValueTypeSolicitud(null);
@@ -243,8 +288,17 @@ export const CitizenInformation = () => {
     setfile(null);
     showDependecia.current = '';
     showClasificacion.current = '';
+    
+    const resp = await pqrsdfService.createPqrsdf(pqrsdf)
+    console.log('Response ->', resp);
+    
 
-    reset();
+    if(resp.operation['code']=='OK'){
+      radicado.current = resp.data.filingNumber;
+      setVisibleMsg(true); 
+      reset();
+    }
+    
   };
 
   const getFormErrorMessage = (name) => {
@@ -256,8 +310,14 @@ export const CitizenInformation = () => {
       onSubmit={handleSubmit(onSubmit)}
       className="form-container" 
     >
-      <div className="div-container" style={{marginBottom:'0'}}>
 
+      <Dialog header="Header" visible={visibleMsg} style={{ width: '50vw' }} onHide={() => setVisibleMsg(false)}>
+          <p className="m-0">
+            Se ha registrado satisfactoriamente la PQRSDF con número de radicado {radicado.current}
+          </p>
+      </Dialog>
+
+      <div className="div-container" style={{marginBottom:'0'}}>
         <div className='row-1 width-25'>
           <label className='font-label'>Tipo de solicitud<span className='required'>*</span></label>
           <Controller
@@ -398,7 +458,7 @@ export const CitizenInformation = () => {
             <div className='row-1 width-50'>
               <label className='font-label'>Razón social<span className='required'>*</span></label>
               <Controller
-                name="RazónSocial"
+                name="RazonSocial"
                 control={control}
                 rules={{ 
                   required: 'Campo obligatorio.',
@@ -560,7 +620,7 @@ export const CitizenInformation = () => {
                         <CalendarComponent
                           inputId={field.name} 
                           value={field.value} 
-                          onChange={field.onChange} 
+                          onChange={(e)=> field.onChange(handleDateChange(e.target.value, e.value))} 
                           dateFormat="dd/mm/yy" 
                           className={classNames({ 'p-invalid ': fieldState.error },'!h-10 pi pi-spin pi-cog')}
                       
@@ -910,7 +970,7 @@ export const CitizenInformation = () => {
       <div className="div_container width-100">
           <label className='font-label'>Descripción<span className='required'>*</span></label>
           <Controller
-            name="Descripción"
+            name="Descripcion"
             control={control}
             rules={{ 
               required: 'Campo obligatorio.',

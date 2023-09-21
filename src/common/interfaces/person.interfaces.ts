@@ -15,7 +15,7 @@ export interface IPerson {
   secondSurname: string;
   birthdate: Date;
   firstContactNumber: string;
-  SecondContactNumber: string;
+  secondContactNumber: string;
   email: string;
   address: string;
   countryId: number;
@@ -25,6 +25,6 @@ export interface IPerson {
   department?: IGenericData;
   municipality?: IGenericData;
   isBeneficiary: boolean;
-  createdAt: DateTime;
-  updatedAt: DateTime;
+  createdAt?: DateTime;
+  updatedAt?: DateTime;
 }
