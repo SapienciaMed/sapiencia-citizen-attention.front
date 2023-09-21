@@ -31,8 +31,8 @@ function QueryPqrsdfPage(): React.JSX.Element {
     try {
       let payload = getValues() as { filingNumber: number; identification: number };
       const response = await pqrsdfService.getPqrsdfByIdentificationAndFilingNumber(
-        payload.identification,
-        payload.filingNumber
+        payload?.identification,
+        payload?.filingNumber
       );
 
       if (response.operation.code === EResponseCodes.OK) {
@@ -81,7 +81,7 @@ function QueryPqrsdfPage(): React.JSX.Element {
   };
 
   const statusTemplate = (rowData: IPqrsdf) => {
-    return rowData.answer && rowData.answerDate ? "Cerrada" : "Abierta";
+    return rowData?.answer && rowData?.answerDate ? "Cerrada" : "Abierta";
   };
 
   return (
@@ -256,21 +256,21 @@ function QueryPqrsdfPage(): React.JSX.Element {
                 <div className="p-5 p-card md:hidden block relative rounded-2xl md:rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
                   <div className="flex flex-wrap pb-5">
                     <div className="w-1/2 text-sm">No. PQRSDF</div>
-                    <div className="w-1/2 text-sm !font-sans text-right">{data[0].filingNumber}</div>
+                    <div className="w-1/2 text-sm !font-sans text-right">{data[0]?.filingNumber}</div>
                     <div className="w-1/2 text-sm mt-4">Fecha radicado</div>
                     <div className="w-1/2 text-sm mt-4 !font-sans text-right">{dateBodyTemplate(data[0], { field: "createdAt" })}</div>
                     <div className="w-1/2 text-sm mt-4">Programa</div>
-                    <div className="w-1/2 text-sm mt-4 !font-sans text-right">{data[0].dependency}</div>
+                    <div className="w-1/2 text-sm mt-4 !font-sans text-right">{data[0]?.dependency}</div>
                     <div className="w-1/2 text-sm mt-4">Clasificación</div>
-                    <div className="w-1/2 text-sm mt-4 !font-sans text-right">{data[0].clasification}</div>
+                    <div className="w-1/2 text-sm mt-4 !font-sans text-right">{data[0]?.clasification}</div>
                     <div className="w-1/2 text-sm mt-4">Asunto</div>
-                    <div className="w-1/2 text-sm mt-4 !font-sans text-right">{data[0].requestSubject.aso_asunto}</div>
+                    <div className="w-1/2 text-sm mt-4 !font-sans text-right">{data[0]?.requestSubject?.aso_asunto}</div>
                     <div className="w-1/2 text-sm mt-4">Estado</div>
                     <div className="w-1/2 text-sm mt-4 !font-sans text-right">{statusTemplate(data[0])}</div>
                     <div className="w-1/2 text-sm mt-4">Fecha respuesta</div>
                     <div className="w-1/2 text-sm mt-4 !font-sans text-right">{dateBodyTemplate(data[0], { field: "answerDate" })}</div>
                     <div className="w-1/2 text-sm mt-4">Respuesta</div>
-                    <div className="w-1/2 text-sm mt-4 !font-sans text-right">{data[0].answer}</div>
+                    <div className="w-1/2 text-sm mt-4 !font-sans text-right">{data[0]?.answer}</div>
                   </div>
                 </div>
               </div>
