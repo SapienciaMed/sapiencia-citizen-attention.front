@@ -75,7 +75,7 @@ export const AccordionComponent = () => {
                         <th className='td-table'>OBJETO</th>
                         <th className='td-table'>TÉRMINO DÍAS HÁBILES</th>
                     </tr>
-                    {   data.map((data: { OBS_CODIGO: string; OBS_DESCRIPCION: string; OBS_TERMINO_DIAS_HABILES:string })=>(
+                    {   data?.map((data: { OBS_CODIGO: string; OBS_DESCRIPCION: string; OBS_TERMINO_DIAS_HABILES:string })=>(
 
                             <tr key={data.OBS_CODIGO}>
                             <td className='td-table'>{data.OBS_DESCRIPCION}</td>
