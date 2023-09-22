@@ -48,6 +48,8 @@ function QueryPqrsdfPage(): React.JSX.Element {
         setData([response.data]);
         setShowTable(true);
       } else {
+        setData([]);
+        setShowTable(false);
         confirmDialog({
           id: "messages",
           message: (
