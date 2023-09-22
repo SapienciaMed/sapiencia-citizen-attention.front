@@ -299,18 +299,29 @@ export const CitizenInformation = () => {
   const getFormErrorMessage = (name) => {
     return errors[name] ? <small className="p-error">{errors[name].message}</small> : <small className="p-error">&nbsp;</small>;
   };
- 
+
   return (
     <form 
       onSubmit={handleSubmit(onSubmit)}
       className="form-container" 
     >
 
-      <Dialog header="Header" visible={visibleMsg} style={{ width: '50vw' }} onHide={() => setVisibleMsg(false)}>
-          <p className="m-0">
-            Se ha registrado satisfactoriamente la PQRSDF con número de radicado {radicado.current}
-          </p>
-      </Dialog>
+        <div className=" flex justify-content-center">
+          <Dialog
+            header="¡Registro enviado!"
+            className="p-dialog-titlebar-icon"
+            visible={visibleMsg}
+            onHide={() => setVisibleMsg(false)}
+            pt={{
+              root: { className: "text-center" },
+              header: { style: { color: "#5e3893" } },
+              closeButton: { style: { color: "#5e3893", display: "none" } },
+            }}
+          >
+            <p className="m-0">Se ha registrado satisfactoriamente la PQRSDF con número de radicado {radicado.current}</p>
+            <Button className='mt-8' style={{backgroundColor:'533893'}} onClick={() => setVisibleMsg(false) } label="Cerrar"  rounded />
+          </Dialog>
+        </div>
 
       <div className="div-container" style={{marginBottom:'0'}}>
         <div className='row-1 width-25'>
