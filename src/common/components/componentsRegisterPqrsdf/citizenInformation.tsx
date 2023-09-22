@@ -1011,10 +1011,12 @@ export const CitizenInformation = () => {
                 <UploadComponent
                   id={field.name}
                   dataArchivo={(e:File)=> field.onChange(getFile(e))}
+                  showModal={(e:boolean) => field.onChange( setVisible(e))}
                 />
               </>
             )}
           />
+          <Button className='mt-8' style={{backgroundColor:'533893'}} onClick={() => setVisible(false) } label="Cancelar"  rounded />
         </Dialog>
       </div>
 
