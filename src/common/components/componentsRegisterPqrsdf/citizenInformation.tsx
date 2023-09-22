@@ -314,11 +314,12 @@ export const CitizenInformation = () => {
             onHide={() => setVisibleMsg(false)}
             pt={{
               root: { className: "text-center" },
-              header: { style: { color: "#5e3893" } },
+              header: { style: { color: "#5e3893", fontSize:'1.8rem' } },
               closeButton: { style: { color: "#5e3893", display: "none" } },
             }}
           >
-            <p className="m-0">Se ha registrado satisfactoriamente la PQRSDF con número de radicado {radicado.current}</p>
+            <p className="m-0" style={{fontSize:'smaller'}}>Se ha registrado satisfactoriamente la PQRSDF</p>
+            <p className="m-0" style={{fontSize:'smaller'}}>Con número de radicado {radicado.current}</p>
             <Button className='mt-8' style={{backgroundColor:'533893'}} onClick={() => setVisibleMsg(false) } label="Cerrar"  rounded />
           </Dialog>
         </div>
