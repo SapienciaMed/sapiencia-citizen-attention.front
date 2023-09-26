@@ -18,6 +18,7 @@ function App() {
   const HomePage = lazy(() => import("./common/components/home.page"));
   const CalendarPage = lazy(() => import("./common/components/calendar.page"));
   const QueryPqrsdfPage = lazy(() => import("./common/components/query-pqrsdf.page"));
+  const EditWorkEntitiesPage = lazy(() => import("./common/components/edit-work-entities.page"))
   const { publish } = useAppCominicator();
 
   // Effect que cominica la aplicacion actual
@@ -37,6 +38,7 @@ function App() {
               <Route path={"/atencion-ciudadana/"} element={<Register_pqrsdf />} />
               <Route path={"/atencion-ciudadana/calendario"} element={<CalendarPage />} />;
               <Route path={"/atencion-ciudadana/register-pqrsdf"} element={<Register_pqrsdf />} />
+              <Route path={"/atencion-ciudadana/entidades-trabajo/*"} element={<EditWorkEntitiesPage />} />
             </Routes>
           </Suspense>
         </Router>
