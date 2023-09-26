@@ -1,10 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
+import { useForm, Controller } from 'react-hook-form';
 import { Card } from "primereact/card";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
-import { InputSwitch, InputSwitchChangeEvent } from "primereact/inputswitch";
-        
-import '../../styles/workEntities-styles.scss' 
+import { InputSwitch, InputSwitchChangeEvent } from "primereact/inputswitch";  
+import { ChangeResponsibleComponent } from "./componentsEditWorkEntities/changeResponsible.component";  
+
+import '../../styles/workEntities-styles.scss'; 
+
 
 
 
@@ -12,9 +15,24 @@ const EditWorkEntitiesPage = () => {
 
   const [anchoDePantalla, setAnchoDePantalla] = useState(window.innerWidth);
   const [checked, setChecked] = useState<boolean>(false);
+  const [visible, setVisible] = useState<boolean>(false);
 
   const WidthRef = useRef(null);
   WidthRef.current = document.getElementById('sidebar').offsetWidth;
+
+  const defaultValues = {
+  };
+
+  const {
+    formState: { errors, isValid },
+    handleSubmit,
+  } = useForm({ defaultValues, mode:'all' });
+
+  const onSubmit = async (data) => {
+	
+  }
+
+
 
   useEffect(() => {
 
@@ -27,11 +45,13 @@ const EditWorkEntitiesPage = () => {
     };
   }, []);
 
-
   return (
 
-    <div className='container'>
-      <form>
+    <div className='container !py-5 !px-5 md:!px-11'>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="form-container" 
+      >
         <Card className='card card-body card-h'>
           <Card 
               title='Editar entidad de trabajo'
@@ -114,7 +134,7 @@ const EditWorkEntitiesPage = () => {
 
                 </div>
 
-                <div className="flex flex-wrap justify-between items-center">
+                <div className="flex flex-wrap justify-between items-center mt-4">
                   <div className="flex flex-row items-center">
                     <div>
                       <label>Correo electrónico</label><br/>
@@ -134,13 +154,17 @@ const EditWorkEntitiesPage = () => {
                   </div>
 
                   <div style={{marginTop:'22px'}}>
-                    <Button className="rounded-full !h-10">Cambiar responsable</Button>
+                    <ChangeResponsibleComponent/>
                   </div>
                 </div>
 
               </Card>
-              <div className="flex flex-grow justify-end pr-5">
-                <Button className="rounded-full !h-10 mt-10" style={{padding:'1.25rem'}}>Asignar programas</Button>
+              <div className="flex flex-grow justify-end pr-5" style={{paddingRight:'1.25rem'}}>
+                <Button 
+                  className="rounded-full !h-10 mt-10" 
+                  >
+                    Asignar programas
+                  </Button>
               </div>
             
           </Card>
