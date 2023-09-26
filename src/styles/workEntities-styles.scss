@@ -7,15 +7,32 @@
 }
 
 .buton-fixe{
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 10px;
+    
     position: fixed;
     bottom: -37px;
     right: 0;
-    max-width: 1024;
     margin-bottom: 30px;
     background-color: white;
     border-top: solid 1px #a8a8a8; 
+
+
 }
 
-.card-h{
-    height: 46em;
+.container {
+    padding-top: 30px;
+    padding-right: 20px;
+    padding-left: 20px;
+    margin: 0 auto;
+}
+
+.card {
+    border-radius: 20px;
+    border: 1px solid #CACACA;
+    box-shadow: none;
+    color: #000000;
 }
