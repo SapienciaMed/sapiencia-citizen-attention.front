@@ -8214,6 +8214,10 @@ video {
   overflow:auto
 }
 
+.overflow-hidden{
+  overflow:hidden
+}
+
 .overflow-x-auto{
   overflow-x:auto
 }
@@ -8785,6 +8789,10 @@ video {
   }
 }
 
+.p-dropdown.mini-select .p-inputtext{
+  padding: 0.532rem 0.675rem;
+}
+
 .hover\:text-primary:hover{
   --tw-text-opacity:1;
   color:rgb(83 56 147 / var(--tw-text-opacity))
@@ -8815,8 +8823,8 @@ video {
     max-width:148px
   }
 
-  .sm\:max-w-\[calc\(100vw-7\.25rem\)\]{
-    max-width:calc(100vw - 7.25rem)
+  .sm\:max-w-\[calc\(100vw-10\.1rem\)\]{
+    max-width:calc(100vw - 10.1rem)
   }
 }
 
@@ -8993,8 +9001,8 @@ video {
 }
 
 @media (min-width: 1024px){
-  .lg\:max-w-\[calc\(100vw-23\.8rem\)\]{
-    max-width:calc(100vw - 23.8rem)
+  .lg\:max-w-\[calc\(100vw-27\.75rem\)\]{
+    max-width:calc(100vw - 27.75rem)
   }
 }
 

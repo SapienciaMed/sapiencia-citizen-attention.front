@@ -6,7 +6,8 @@ export interface IWorkEntity {
   id?: number;
   userId: number;
   workEntityTypeId: number;
-  order: number;
+  status?: boolean;
+  order?: number;
   name: string;
   user?: IUser;
   workEntityType?: IWorkEntityType;
