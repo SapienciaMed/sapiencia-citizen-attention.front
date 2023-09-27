@@ -168,6 +168,19 @@
     .p-datatable.p-datatable-striped .p-datatable-tbody>tr.p-row-odd {
         background: transparent;
     }
+}
 
+.justify-center .p-column-header-content {
+    justify-content: center;
+}
 
+.p-radiobutton.mini-radio .p-radiobutton-box {
+    border: 0.4px solid #d1ceda;
+    width: 16px;
+    height: 16px;
+
+    .p-radiobutton-icon {
+        width: 6px;
+        height: 6px;
+    }
 }

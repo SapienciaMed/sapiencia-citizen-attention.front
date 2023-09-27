@@ -1,7 +1,7 @@
 
 
 export interface IAuthorization {
-  user: IUser;
+  user: IAuthUser;
   allowedActions: Array<string>;
   allowedApplications: Array<{
     aplicationId: number;
@@ -10,7 +10,7 @@ export interface IAuthorization {
   encryptedAccess: string;
 }
 
-export interface IUser {
+export interface IAuthUser {
   id?: number;
   names: string;
   lastNames: string;

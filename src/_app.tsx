@@ -9,6 +9,8 @@ import useAppCominicator from "./common/hooks/app-communicator.hook";
 import primereact_es from "./common/langs/primereact_es.json";
 import "./styles/_app.scss";
 import "./styles/output/utilities.scss";
+import WorkEntitiesPage from "./common/components/work-entities.page";
+import CreateWorkEntitiesPage from "./common/components/create-work-entities.page";
 
 function App() {
   //const HomePage = lazy(() => import("./common/components/home.page"));
@@ -38,7 +40,9 @@ function App() {
               <Route path={"/atencion-ciudadana/"} element={<Register_pqrsdf />} />
               <Route path={"/atencion-ciudadana/calendario"} element={<CalendarPage />} />;
               <Route path={"/atencion-ciudadana/register-pqrsdf"} element={<Register_pqrsdf />} />
-              <Route path={"/atencion-ciudadana/entidades-trabajo/*"} element={<EditWorkEntitiesPage />} />
+              <Route path={"/atencion-ciudadana/entidades-trabajo/"} element={<WorkEntitiesPage />} />
+              <Route path={"/atencion-ciudadana/entidades-trabajo/crear"} element={<CreateWorkEntitiesPage />} />
+              <Route path={"/atencion-ciudadana/entidades-trabajo/editar/:id"} element={<EditWorkEntitiesPage />} />
             </Routes>
           </Suspense>
         </Router>
