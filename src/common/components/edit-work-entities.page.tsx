@@ -1,8 +1,9 @@
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm, Controller } from 'react-hook-form';
 import { Card } from "primereact/card";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
+import { classNames } from "primereact/utils";
 import { InputSwitch, InputSwitchChangeEvent } from "primereact/inputswitch";  
 import { ChangeResponsibleComponent } from "./componentsEditWorkEntities/changeResponsible.component";  
 
@@ -11,28 +12,14 @@ import '../../styles/workEntities-styles.scss';
 
 
 
+
 const EditWorkEntitiesPage = () => {
 
   const [anchoDePantalla, setAnchoDePantalla] = useState(window.innerWidth);
   const [checked, setChecked] = useState<boolean>(false);
-  const [visible, setVisible] = useState<boolean>(false);
-
+ 
   const WidthRef = useRef(null);
   WidthRef.current = document.getElementById('sidebar').offsetWidth;
-
-  const defaultValues = {
-  };
-
-  const {
-    formState: { errors, isValid },
-    handleSubmit,
-  } = useForm({ defaultValues, mode:'all' });
-
-  const onSubmit = async (data) => {
-	
-  }
-
-
 
   useEffect(() => {
 
@@ -44,6 +31,24 @@ const EditWorkEntitiesPage = () => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+
+  const defaultValues = {
+    etityName: ''
+  };
+
+  const {
+    formState: { errors, isValid },
+    handleSubmit,
+    control
+  } = useForm({ defaultValues, mode:'all' });
+
+  const onSubmit = async (data) => {
+	
+  }
+
+  const getFormErrorMessage = (name) => {
+    return errors[name] ? <small className="p-error">{errors[name].message}</small> : <small className="p-error">&nbsp;</small>;
+  };
 
   return (
 
@@ -82,10 +87,27 @@ const EditWorkEntitiesPage = () => {
                   <span className='split'></span>
 
                   <div>
-                    <label>Nombre entidad</label><br/>
-                    <InputText
-                      className="!h-10"
-                      />
+                    <label>Nombre entidad<span style={{color:'red'}}>*</span></label><br/>
+                    <Controller
+                      name="etityName"
+                      control={control}
+                      rules={{
+                        required: 'Campo obligatorio.',
+                        maxLength: {value:100, message:'Solo se permiten 100 caracteres'}
+                      }}
+                      render={({ field, fieldState }) => (
+                        <>
+                         <InputText
+                          id={field.name}
+                          value={field.value}
+                          className={classNames({'p-invalid': fieldState.error},'!h-10')}
+                          onChange={(e) => field.onChange(e.target.value)}
+                         />
+                         <br />
+                         {getFormErrorMessage(field.name)}
+                        </>
+                      )}
+                    />
                   </div>
                 </div>
               </Card>
