@@ -25,8 +25,8 @@ function WorkEntitiesPage(): React.JSX.Element {
   const [data, setData] = useState<IPagingData<IWorkEntity>>({
     array: [],
     meta: {
-      total: 0
-    }
+      total: 0,
+    },
   });
   const [workEntityTypes, setWorkEntityTypes] = useState<IWorkEntityType[]>([]);
   const [showTable, setShowTable] = useState(false);
@@ -58,7 +58,7 @@ function WorkEntitiesPage(): React.JSX.Element {
     setLoading(true);
     try {
       let payload = getValues() as IWorkEntityFilters;
-      const response = await workEntityService.getWorkEntityByFilters(payload)
+      const response = await workEntityService.getWorkEntityByFilters(payload);
 
       if (response.operation.code === EResponseCodes.OK) {
         setData(response.data);
@@ -67,9 +67,9 @@ function WorkEntitiesPage(): React.JSX.Element {
         setShowTable(false);
         setData({
           array: [],
-          meta:{
-            total: 0
-          }
+          meta: {
+            total: 0,
+          },
         });
         confirmDialog({
           id: "messages",
@@ -153,13 +153,13 @@ function WorkEntitiesPage(): React.JSX.Element {
       .filter((column) => !column.hasOwnProperty("showForm") || column?.showForm)
       .map((column) => {
         return [column.key, ""];
-      });    
+      });
     reset(Object.fromEntries(toResetArray), { keepValues: false, keepErrors: false });
     setData({
       array: [],
-      meta:{
-        total: 0
-      }
+      meta: {
+        total: 0,
+      },
     });
     setShowTable(false);
   };
@@ -308,10 +308,23 @@ function WorkEntitiesPage(): React.JSX.Element {
           data-pr-position="right"
         >
           <svg width="16" height="15" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M1.293 10.7776L11.619 1.43897C12.009 1.08626 12.642 1.08626 13.032 1.43897L14.708 2.9547C15.098 3.30741 15.098 3.87988 14.708 4.23259L4.381 13.5703C4.194 13.7403 3.94 13.8353 3.675 13.8353H1V11.4161C1 11.1764 1.105 10.9467 1.293 10.7776Z" stroke="#0CA529" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M9.75 3.12744L12.84 5.92197" stroke="#0CA529" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M1.293 10.7776L11.619 1.43897C12.009 1.08626 12.642 1.08626 13.032 1.43897L14.708 2.9547C15.098 3.30741 15.098 3.87988 14.708 4.23259L4.381 13.5703C4.194 13.7403 3.94 13.8353 3.675 13.8353H1V11.4161C1 11.1764 1.105 10.9467 1.293 10.7776Z"
+              stroke="#0CA529"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M9.75 3.12744L12.84 5.92197"
+              stroke="#0CA529"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
         </Link>
       </span>
     );
