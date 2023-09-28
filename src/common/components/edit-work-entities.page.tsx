@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useForm, Controller } from 'react-hook-form';
+import { useParams  } from "react-router-dom";
 import { Card } from "primereact/card";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
 import { InputSwitch, InputSwitchChangeEvent } from "primereact/inputswitch";  
-import { ChangeResponsibleComponent } from "./componentsEditWorkEntities/changeResponsible.component";  
+import { ChangeResponsibleComponent } from "./componentsEditWorkEntities/changeResponsible.component";
+import { useWorkEntityService } from "../hooks/WorkEntityService.hook"; 
 
 import '../../styles/workEntities-styles.scss'; 
 
@@ -15,14 +17,44 @@ import '../../styles/workEntities-styles.scss';
 
 const EditWorkEntitiesPage = () => {
 
+  const userEntity =  useWorkEntityService();
+
   const [anchoDePantalla, setAnchoDePantalla] = useState(window.innerWidth);
   const [checked, setChecked] = useState<boolean>(false);
- 
   const WidthRef = useRef(null);
+  const dataUser = useRef(null);
   WidthRef.current = document.getElementById('sidebar').offsetWidth;
 
-  useEffect(() => {
+  const { id } = useParams();
 
+  const getUser = async ( id:string )=>{
+    const responseUser = await  userEntity.getWorkEntityById(parseInt(id))
+    return responseUser
+  }
+
+  useEffect(()=>{
+    getUser(id).then(({data, operation})=> {
+      
+      if(operation.code != 'OK'){
+        return
+      }
+      dataUser.current = data;
+      console.log(dataUser.current );
+      
+    })
+  },[])
+
+  try {
+
+   
+  } catch (error) {
+    
+  }
+  useEffect(()=>{
+
+  },[])
+
+  useEffect(() => {
     const handleResize = () => {
       setAnchoDePantalla(window.innerWidth);
     };
@@ -33,7 +65,14 @@ const EditWorkEntitiesPage = () => {
   }, []);
 
   const defaultValues = {
-    etityName: ''
+    etityName: '',
+    IdEntity:'',
+    TypeEntity:'',
+    DocumentEntity:'',
+    name:'',
+    noContact1:'',
+    noContact2:'',
+    email:''
   };
 
   const {
@@ -68,20 +107,50 @@ const EditWorkEntitiesPage = () => {
                 <div className="flex flex-row flex-wrap ">
                   <div>
                     <label>Id Entidad</label><br/>
-                    <InputText
-                      className="!h-10 input-desabled"
-                      disabled
-                      />
+                    <Controller
+                      name="IdEntity"
+                      control={control}
+                      rules={{
+                        required: 'Campo obligatorio.',
+                        maxLength: {value:100, message:'Solo se permiten 100 caracteres'}
+                      }}
+                      render={({ field, fieldState }) => (
+                        <>
+                         <InputText
+                          id={field.name}
+                          value={field.value}
+                          disabled
+                          className={classNames({'p-invalid': fieldState.error},'!h-10 input-desabled')}
+                          onChange={(e) => field.onChange(e.target.value)}
+                         />
+                        </>
+                      )}
+                    />
                   </div>
 
                   <span className='split'></span>
 
                   <div>
                     <label>Tipo entidad </label><br/>
-                    <InputText
-                      className="!h-10 input-desabled"
-                      disabled
-                      />
+                    <Controller
+                      name="TypeEntity"
+                      control={control}
+                      rules={{
+                        required: 'Campo obligatorio.',
+                        maxLength: {value:100, message:'Solo se permiten 100 caracteres'}
+                      }}
+                      render={({ field, fieldState }) => (
+                        <>
+                         <InputText
+                          id={field.name}
+                          value={field.value}
+                          disabled
+                          className={classNames({'p-invalid': fieldState.error},'!h-10 input-desabled')}
+                          onChange={(e) => field.onChange(e.target.value)}
+                         />
+                        </>
+                      )}
+                    />
                   </div>
 
                   <span className='split'></span>
@@ -118,40 +187,100 @@ const EditWorkEntitiesPage = () => {
                 <div className="flex flex-row flex-wrap ">
                   <div>
                     <label>Doc. Identidad</label><br/>
-                    <InputText
-                      className="!h-10 input-desabled"
-                      disabled
-                      />
+                    <Controller
+                      name="DocumentEntity"
+                      control={control}
+                      rules={{
+                        required: 'Campo obligatorio.',
+                        maxLength: {value:100, message:'Solo se permiten 100 caracteres'}
+                      }}
+                      render={({ field, fieldState }) => (
+                        <>
+                         <InputText
+                          id={field.name}
+                          value={field.value}
+                          disabled
+                          className={classNames({'p-invalid': fieldState.error},'!h-10 input-desabled')}
+                          onChange={(e) => field.onChange(e.target.value)}
+                         />
+                        </>
+                      )}
+                    />
                   </div>
 
                   <span className='split'></span>
 
                   <div>
                     <label>Nombres y apellidos</label><br/>
-                    <InputText
-                      className="!h-10 input-desabled"
-                      disabled
-                      />
+                    <Controller
+                      name="name"
+                      control={control}
+                      rules={{
+                        required: 'Campo obligatorio.',
+                        maxLength: {value:100, message:'Solo se permiten 100 caracteres'}
+                      }}
+                      render={({ field, fieldState }) => (
+                        <>
+                         <InputText
+                          id={field.name}
+                          value={field.value}
+                          disabled
+                          className={classNames({'p-invalid': fieldState.error},'!h-10 input-desabled')}
+                          onChange={(e) => field.onChange(e.target.value)}
+                         />
+                        </>
+                      )}
+                    />
                   </div>
 
                   <span className='split'></span>
 
                   <div>
                     <label>No. Contacto 1</label><br/>
-                    <InputText
-                      className="!h-10 input-desabled"
-                      disabled
-                      />
+                    <Controller
+                      name="noContact1"
+                      control={control}
+                      rules={{
+                        required: 'Campo obligatorio.',
+                        maxLength: {value:100, message:'Solo se permiten 100 caracteres'}
+                      }}
+                      render={({ field, fieldState }) => (
+                        <>
+                         <InputText
+                          id={field.name}
+                          value={field.value}
+                          disabled
+                          className={classNames({'p-invalid': fieldState.error},'!h-10 input-desabled')}
+                          onChange={(e) => field.onChange(e.target.value)}
+                         />
+                        </>
+                      )}
+                    />
                   </div>
 
                   <span className='split'></span>
 
                   <div>
                     <label>No. Contacto 2</label><br/>
-                    <InputText
-                      className="!h-10 input-desabled"
-                      disabled
-                      />
+                    <Controller
+                      name="noContact2"
+                      control={control}
+                      rules={{
+                        required: 'Campo obligatorio.',
+                        maxLength: {value:100, message:'Solo se permiten 100 caracteres'}
+                      }}
+                      render={({ field, fieldState }) => (
+                        <>
+                         <InputText
+                          id={field.name}
+                          value={field.value}
+                          disabled
+                          className={classNames({'p-invalid': fieldState.error},'!h-10 input-desabled')}
+                          onChange={(e) => field.onChange(e.target.value)}
+                         />
+                        </>
+                      )}
+                    />
                   </div>
 
                 </div>
@@ -159,11 +288,25 @@ const EditWorkEntitiesPage = () => {
                 <div className="flex flex-wrap justify-between items-center mt-4">
                   <div className="flex flex-row items-center">
                     <div>
-                      <label>Correo electrónico</label><br/>
-                      <InputText
-                        className="!h-10 input-desabled"
-                        disabled
-                        />
+                    <Controller
+                      name="email"
+                      control={control}
+                      rules={{
+                        required: 'Campo obligatorio.',
+                        maxLength: {value:100, message:'Solo se permiten 100 caracteres'}
+                      }}
+                      render={({ field, fieldState }) => (
+                        <>
+                         <InputText
+                          id={field.name}
+                          value={field.value}
+                          disabled
+                          className={classNames({'p-invalid': fieldState.error},'!h-10 input-desabled')}
+                          onChange={(e) => field.onChange(e.target.value)}
+                         />
+                        </>
+                      )}
+                    />
                     </div>
 
                     <span className='split'></span>

@@ -72,11 +72,10 @@ export const ChangeResponsibleComponent = () => {
                                                 }]);
 
     const getData = (data: DataTableSelection<Data[]>) =>{
-        console.log(data);
         
     }
 
-    console.log(selectPage);
+
     
 
     useEffect(() => {
