@@ -35,3 +35,24 @@
     box-shadow: none;
     color: #000000;
 }
+
+.content-card-table{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.paginado{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.col-1{
+    width: 50%;
+}
+
+
+
