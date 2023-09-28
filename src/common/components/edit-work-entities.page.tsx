@@ -52,7 +52,7 @@ const EditWorkEntitiesPage = () => {
 
   return (
 
-    <div className='container !py-5 !px-5 md:!px-11'>
+    <div className='container !py-5 !px-5 md:!px-4'>
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="form-container" 

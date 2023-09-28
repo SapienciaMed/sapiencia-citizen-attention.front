@@ -7,26 +7,37 @@ import { classNames } from "primereact/utils";
 import { Card } from "primereact/card";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
+import { InputSwitch } from "primereact/inputswitch";
 
 interface Product {
-    id: string;
-    code: string;
-    name: string;
-    description: string;
-    image: string;
-    price: number;
-    category: string;
-    quantity: number;
-    inventoryStatus: string;
-    rating: number;
+    udDocument: string;
+    fullName: string;
+    email: string;
+    contact: string;
+    selet: string;
 }
 
 
 export const ChangeResponsibleComponent = () => {
 
     const [visible, setVisible] = useState<boolean>(false);
+    const [rowClick, setRowClick] = useState(true);
 
     const [products, setProducts] = useState<Product[]>([]);
+    
+    const data:Product[] = [{ 
+        udDocument: 'string1',
+        fullName: 'string2',
+        email: 'string3',
+        contact: 'string4',
+        selet: 'string5',
+    },{ 
+        udDocument: 'string1',
+        fullName: 'string2',
+        email: 'string3',
+        contact: 'string4',
+        selet: 'string5',
+    }]
 
     useEffect(() => {
         //consumimos servicios
@@ -41,12 +52,14 @@ export const ChangeResponsibleComponent = () => {
 
     const {
         formState: { errors, isValid },
-        control
+        control,
+        handleSubmit
       } = useForm({ defaultValues, mode:'all' });
 
-    const getFormErrorMessage = (name) => {
-        return errors[name] ? <small className="p-error">{errors[name].message}</small> : <small className="p-error">&nbsp;</small>;
-      };
+      const onSubmit = async (data) => {
+	
+      }
+
 
     return (
         <>
@@ -57,82 +70,101 @@ export const ChangeResponsibleComponent = () => {
                     >
                         Cambiar responsable
             </Button>
+            
             <Dialog 
                 header="Cambiar responsable"
                 headerClassName="text-2xl" 
                 visible={visible} 
-                style={{ width: '70vw' }} 
+                style={{ width: '75vw' }} 
                 onHide={() => setVisible(false)} 
             >
+                <form
+                    onSubmit={handleSubmit(onSubmit)}
+                    className="form-container"
+                >
+                    <div>
+                        <div style={{marginBottom:'8px'}}>
+                            <label className="text-xl">Buscar por</label>
+                        </div>
+                        <div className="flex flex-row flex-wrap justify-between mb-4">
+                            <div>
+                                <label>Documento de identidad</label><br/>
+                                <Controller
+                                name="etityDocument"
+                                control={control}
+                                render={({ field, fieldState }) => (
+                                    <>
+                                    <InputText
+                                    id={field.name}
+                                    value={field.value}
+                                    className={classNames({'p-invalid': fieldState.error},'!h-10')}
+                                    onChange={(e) => field.onChange(e.target.value)}
+                                    />
+                                    </>
+                                )}
+                                />
+                            </div>
+
+                            <span className='split'></span>
+
+                            <div>
+                                <label>Nombres</label><br/>
+                                <InputText
+                                className="!h-10"
+                                />
+                            </div>
+
+                            <span className='split'></span>
+
+                            <div>
+                                <label>Apellidos</label><br/>
+                                <InputText
+                                className="!h-10"
+                                />
+                            </div>
+
+                            <span className='split'></span>
+
+                            <div>
+                                <label>Correo electrónico</label><br/>
+                                <InputText
+                                className="!h-10"
+                                />
+                            </div>
+                    </div>
+                    <div className="flex justify-end mb-4">
+                        <Button
+                        text
+                        className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10"
+                        >Limpiar Campos</Button>
+                        <Button className="rounded-full !h-10">Buscar</Button>
+                    </div>
+                </div>
+            </form>
             <div>
-                <div style={{marginBottom:'8px'}}>
-                    <label className="text-xl">Buscar por</label>
-                </div>
-                <div className="flex flex-row flex-wrap ">
-                  <div>
-                    <label>Documento de identidad</label><br/>
-                    <Controller
-                      name="etityDocument"
-                      control={control}
-                      render={({ field, fieldState }) => (
-                        <>
-                         <InputText
-                          id={field.name}
-                          value={field.value}
-                          className={classNames({'p-invalid': fieldState.error},'!h-10')}
-                          onChange={(e) => field.onChange(e.target.value)}
-                         />
-                         <br />
-                         {getFormErrorMessage(field.name)}
-                        </>
-                      )}
-                    />
-                  </div>
+                <Card className="card">
+                    <div className="">
+                        <div>
+                            <label htmlFor="input-rowclick">Resultados de búsqueda</label>
+                        </div>
+                        <div>
 
-                  <span className='split'></span>
-
-                  <div>
-                    <label>Nombres</label><br/>
-                    <InputText
-                      className="!h-10"
-                      />
-                  </div>
-
-                  <span className='split'></span>
-
-                  <div>
-                    <label>Apellidos</label><br/>
-                    <InputText
-                      className="!h-10"
-                      />
-                  </div>
-
-                  <span className='split'></span>
-
-                  <div>
-                    <label>Correo electrónico</label><br/>
-                    <InputText
-                      className="!h-10"
-                      />
-                  </div>
-
-                </div>
-                <div className="flex justify-end">
-                    <Button
-                    text
-                    className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10"
-                    >Limpiar Campos</Button>
-                    <Button className="rounded-full !h-10">Buscar</Button>
-                </div>
-            </div>
-            <div>
-                <Card>
-                <DataTable value={products} stripedRows tableStyle={{ minWidth: '50rem' }}>
-                    <Column field="code" header="Code"></Column>
-                    <Column field="name" header="Name"></Column>
-                    <Column field="category" header="Category"></Column>
-                    <Column field="quantity" header="Quantity"></Column>
-                </DataTable>
+                        </div>
+                    </div>
+                    <DataTable value={data} stripedRows paginator>
+                        <Column field="udDocument" header="Doc. Identidad"></Column>
+                        <Column field="fullName" header="Nombre y apellidos"></Column>
+                        <Column field="email" header="Correo"></Column>
+                        <Column field="contact" header="No. Contacto 1"></Column>
+                        <Column field="selet" header="Seleccionar"></Column>
+                    </DataTable>
+                    <div className="flex justify-center mt-8">
+                        <Button
+                        text
+                        className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10"
+                        >Cancelar</Button>
+                        <Button className="rounded-full !h-10">Cambiar</Button>
+                    </div>
                 </Card>
             </div>
           
