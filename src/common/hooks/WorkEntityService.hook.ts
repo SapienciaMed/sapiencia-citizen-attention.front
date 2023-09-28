@@ -1,5 +1,6 @@
 import { EResponseCodes } from "../constants/api.enum";
 import { IWorkEntity, IWorkEntityFilters } from "../interfaces/workEntity.interfaces";
+import { IWorkEntityType } from "../interfaces/workEntityType.interface";
 import { ApiResponse } from "../utils/api-response";
 import useCrudService from "./crud-service.hook";
 
@@ -35,6 +36,15 @@ export function useWorkEntityService() {
     }
   }
 
+  async function getWorkEntityTypes(): Promise<ApiResponse<IWorkEntityType[]>> {
+    try {
+      const endpoint: string = `/get-types`;
+      return await get(`${listUrl}${endpoint}`);
+    } catch (error) {
+      return new ApiResponse([] as IWorkEntityType[], EResponseCodes.FAIL, "Error no controlado");
+    }
+  }
+
   async function createWorkEntity(workEntity: IWorkEntity): Promise<ApiResponse<IWorkEntity>> {
     try {
       const endpoint: string = `/create/`;
@@ -48,6 +58,7 @@ export function useWorkEntityService() {
     createWorkEntity,
     getUserByDocument,
     getWorkEntityById,
+    getWorkEntityTypes,
     getWorkEntityByFilters,
   };
 }

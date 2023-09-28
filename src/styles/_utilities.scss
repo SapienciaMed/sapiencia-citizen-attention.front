@@ -36,6 +36,7 @@
     border-radius: 3px;
 }
 
+
 .p-button:not(.p-link):disabled,
 .p-button.disabled:not(.p-link) {
     background-color: #E2E2E2;
@@ -183,4 +184,8 @@
         width: 6px;
         height: 6px;
     }
+}
+
+.p-dropdown.mini-select .p-inputtext{
+    padding: 0.532rem 0.675rem;
 }

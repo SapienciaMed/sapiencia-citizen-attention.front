@@ -1,6 +1,6 @@
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
-import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import { ConfirmDialog, ConfirmDialogOptions, confirmDialog } from "primereact/confirmdialog";
 import { DataTable } from "primereact/datatable";
 import { InputText } from "primereact/inputtext";
 import { classNames } from "primereact/utils";
@@ -14,13 +14,17 @@ import { EResponseCodes } from "../constants/api.enum";
 import { RadioButton } from "primereact/radiobutton";
 
 import { IUser } from "../interfaces/user.interfaces";
+import { Dropdown } from "primereact/dropdown";
+import { IWorkEntityType } from "../interfaces/workEntityType.interface";
 function CreateWorkEntitiesPage(): React.JSX.Element {
   const parentForm = useRef(null);
   const searchButton = useRef(null);
+  const createEntityForm = useRef(null);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [data, setData] = useState<IWorkEntity[]>([]);
+  const [workEntityTypes, setWorkEntityTypes] = useState<IWorkEntityType[]>([]);
   const [showTable, setShowTable] = useState(false);
   const [buttonWidth, setButtonWidth] = useState({
     width: 0,
@@ -46,6 +50,36 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
     </svg>
   );
 
+  const cancelButtons = (options: ConfirmDialogOptions) => {
+    return (
+      <div className="flex items-center justify-center gap-2 pb-2">
+        <Button
+          text
+          rounded
+          severity="secondary"
+          className="!py-2 !text-base !font-sans !text-black"
+          disabled={loading}
+          onClick={(e) => {
+            options.accept();
+            resetForm();
+            navigate(-1);
+          }}
+        >
+          Cancelar
+        </Button>
+        <Button
+          label="Continuar"
+          rounded
+          className="!px-4 !py-2 !text-base !mr-0"
+          disabled={loading}
+          onClick={(e) => {
+            options.reject();            
+          }}
+        />
+      </div>
+    );
+  };
+
   const acceptButton = (options) => {
     return (
       <div className="flex items-center justify-center gap-2 pb-2">
@@ -62,7 +96,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
     );
   };
 
-  const onSubmit = async () => {
+  const onSearch = async () => {
     setLoading(true);
     try {
       let payload = getValues() as { identification: number };
@@ -72,14 +106,19 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
         setData([response.data]);
         setShowTable(true);
       } else {
-        setData([]);
         setShowTable(false);
+        setData([]);
         confirmDialog({
           id: "messages",
+          className: "rounded-2xl",
+          headerClassName: "rounded-t-2xl",
+          contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
           message: (
             <div className="flex flex-wrap w-full items-center justify-center">
               <div className="mx-auto text-primary text-3xl w-full text-center">Lo sentimos</div>
-              <div className="flex items-center justify-center w-full mt-6 pt-0.5">No se encontraron resultados</div>
+              <div className="flex items-center justify-center text-center w-full mt-6 pt-0.5">
+                {response.operation.message}
+              </div>
             </div>
           ),
           closeIcon: closeIcon,
@@ -89,6 +128,58 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
       }
     } catch (error) {
       console.error("Error al obtener la PQRSDF:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onSave = async () => {
+    setLoading(true);
+    try {
+      let payload = getValues() as IWorkEntity;
+      payload.userId = selectedUser;
+      const response = await workEntityService.createWorkEntity(payload);
+
+      if (response.operation.code === EResponseCodes.OK) {
+        resetForm();
+        confirmDialog({
+          id: "messages",
+          className: "rounded-2xl",
+          headerClassName: "rounded-t-2xl",
+          contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
+          message: (
+            <div className="flex flex-wrap w-full items-center justify-center">
+              <div className="mx-auto text-primary text-2xl md:text-3xl w-full text-center">¡Cambios guardados!</div>
+              <div className="flex items-center justify-center text-center w-full mt-6 pt-0.5">¡Creación exitosa!</div>
+            </div>
+          ),
+          closeIcon: closeIcon,
+          acceptLabel: "Cerrar",
+          footer: (options) => acceptButton(options),
+        });
+      } else {
+        /* setShowTable(false);
+        setData([]); */
+        confirmDialog({
+          id: "messages",
+          className: "rounded-2xl",
+          headerClassName: "rounded-t-2xl",
+          contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
+          message: (
+            <div className="flex flex-wrap w-full items-center justify-center">
+              <div className="mx-auto text-primary text-3xl w-full text-center">Lo sentimos</div>
+              <div className="flex items-center justify-center text-center w-full mt-6 pt-0.5">
+                {response.operation.message}
+              </div>
+            </div>
+          ),
+          closeIcon: closeIcon,
+          acceptLabel: "Aceptar",
+          footer: (options) => acceptButton(options),
+        });
+      }
+    } catch (error) {
+      console.error("Error al crear Entidad:", error);
     } finally {
       setLoading(false);
     }
@@ -107,6 +198,21 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
   };
 
   useEffect(() => {
+    const fetchWorkEntityTypes = async () => {
+      setLoading(true);
+      try {
+        const response = await workEntityService.getWorkEntityTypes();
+
+        if (response.operation.code === EResponseCodes.OK) {
+          setWorkEntityTypes(response.data);
+        }
+      } catch (error) {
+        console.error("Error al obtener la lista de tipos de entidades:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchWorkEntityTypes();
     handleResize();
     window.addEventListener("resize", handleResize);
 
@@ -119,23 +225,33 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
     reset({ identification: "" }, { keepValues: false, keepErrors: false });
     setData([]);
     setShowTable(false);
+    setSelectedUser(null);
+  };
+
+  const cancel = () => {
+    confirmDialog({
+      id: "messages",
+      className: "rounded-2xl",
+      headerClassName: "rounded-t-2xl",
+      contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
+      message: (
+        <div className="flex flex-wrap w-full items-center justify-center mx-auto">
+          <div className="mx-auto text-primary text-2xl md:text-3xl w-full text-center">Cancelar acción</div>
+          <div className="flex items-center justify-center text-center w-full mt-6 pt-0.5">
+            ¿Desea cancelar la acción?,
+            <br />
+            no se guardarán los datos
+          </div>
+        </div>
+      ),
+      closeIcon: closeIcon,
+      acceptLabel: "Cerrar",
+      footer: (options) => cancelButtons(options),
+    });
   };
 
   const getFormErrorMessage = (name) => {
     return errors[name] ? <small className="p-error">{errors[name].message}</small> : "";
-  };
-
-  const dateBodyTemplate = (rowData, field) => {
-    if (!rowData?.[field.field]) {
-      return rowData?.[field.field];
-    } else {
-      let date = typeof rowData?.[field.field] == "string" ? new Date(rowData?.[field.field]) : rowData?.[field.field];
-      return date?.toLocaleDateString("es-CO", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      });
-    }
   };
 
   const columns = () => {
@@ -144,14 +260,14 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
         name: "Doc. identidad",
         key: "numberDocument",
         body: (rowData: IUser) => {
-          return rowData.typeDocument + " " + rowData.numberDocument;
+          return rowData?.typeDocument + " " + rowData?.numberDocument;
         },
       },
       {
         name: "Nombres y Apellidos",
         key: "name",
         body: (rowData: IUser) => {
-          return rowData.names + " " + rowData.lastNames;
+          return rowData?.names + " " + rowData?.lastNames;
         },
       },
       {
@@ -202,7 +318,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
             <span className="text-3xl md:block hidden">Crear Entidad de trabajo</span>
           </div>
           <div className="p-card-content !pb-0 !pt-0 md:!pt-10">
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-wrap gap-6 w-full">
+            <form onSubmit={handleSubmit(onSearch)} className="flex flex-wrap gap-6 w-full">
               <Controller
                 name="identification"
                 control={control}
@@ -256,13 +372,13 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
       {showTable && (
         <div className="relative pb-16 md:pb-28 z-0">
           <div className="relative p-card rounded-2xl md:rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
-            <div className="p-card-body !pt-3 !px-3 md:!pt-8 md:!pb-3 md:!px-6">
+            <div className="p-card-body !py-6 !px-6 md:!px-11">
               <div className="p-card-title justify-between flex">
                 <span className="text-xl md:text-3xl">Resultados de búsqueda</span>
                 <span></span>
               </div>
               <div className="p-card-content !pb-0 !pt-0 md:!pt-10">
-                <div className="max-w-[calc(100vw-4.6rem)] sm:max-w-[calc(100vw-7.25rem)] lg:max-w-[calc(100vw-23.8rem)] hidden md:block borderless reverse-striped">
+                <div className="overflow-hidden max-w-[calc(100vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] hidden md:block borderless reverse-striped">
                   <DataTable
                     value={data}
                     showGridlines={false}
@@ -301,24 +417,115 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
               </div>
             </div>
           </div>
+          {selectedUser && (
+            <div className="relative p-card rounded-2xl md:rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
+              <div className="p-card-body !py-6 !px-6 md:!px-11">
+                <div className="p-card-title justify-between flex">
+                  <span className="text-xl md:text-3xl">Entidad</span>
+                  <span></span>
+                </div>
+                <div className="p-card-content !pb-0 !pt-0 md:!pt-10">
+                  <form onSubmit={handleSubmit(onSave)} className="flex flex-wrap gap-6 w-full" ref={createEntityForm}>
+                    <Controller
+                      name="workEntityTypeId"
+                      control={control}
+                      rules={{
+                        required: "Campo obligatorio.",
+                      }}
+                      render={({ field, fieldState }) => (
+                        <div className="flex flex-col gap-y-1.5 md:max-w-2xs w-full">
+                          <label htmlFor={field.name} className="text-base">
+                            Tipo entidad <span className="text-red-600">*</span>
+                          </label>
+                          <Dropdown
+                            id={field.name}
+                            value={field.value}
+                            className={classNames({ "p-invalid": fieldState.error }, "w-full !font-sans mini-select")}
+                            optionLabel="tet_descripcion"
+                            options={workEntityTypes}
+                            optionValue="tet_codigo"
+                            onChange={(e) => field.onChange(e.value)}
+                            placeholder="Seleccionar"
+                          />
+
+                          {getFormErrorMessage(field.name)}
+                        </div>
+                      )}
+                    />
+                    <Controller
+                      name="name"
+                      control={control}
+                      rules={{
+                        required: "Campo obligatorio.",
+                        maxLength: { value: 100, message: "No debe tener más de 100 caracteres." },
+                      }}
+                      render={({ field, fieldState }) => (
+                        <div className="flex flex-col gap-y-1.5 md:max-w-[16rem] w-full">
+                          <label htmlFor={field.name} className="text-base">
+                            Nombre entidad <span className="text-red-600">*</span>
+                          </label>
+                          <InputText
+                            id={field.name}
+                            value={field.value}
+                            inputMode="text"
+                            className={classNames({ "p-invalid": fieldState.error }, "w-full py-2 !font-sans")}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            maxLength={100}
+                          />
+                          {getFormErrorMessage(field.name)}
+                        </div>
+                      )}
+                    />
+                    <div
+                      className="fixed z-30 p-card rounded-none shadow-none border-t border-[#D9D9D9] w-full top-[calc(100vh-65px)] md:top-[calc(100vh-91px)]"
+                      style={{ width: buttonWidth.width, left: buttonWidth.left }}
+                    >
+                      <div className="p-card-body !py-3 md:!py-6 md:!px-10 flex gap-x-6 justify-center md:justify-end max-w-[1200px] mx-auto">
+                        <Button
+                          text
+                          rounded
+                          type="button"
+                          severity="secondary"
+                          className="!py-2 !text-base !font-sans !text-black"
+                          disabled={loading}
+                          onClick={() => cancel()}
+                        >
+                          Cancelar
+                        </Button>
+                        <Button
+                          label="Guardar"
+                          rounded
+                          className="!px-4 !py-2 !text-base"
+                          type="submit"
+                          disabled={!isValid || loading}
+                        />
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
-      <div
-        className="fixed z-30 p-card rounded-none shadow-none border-t border-[#D9D9D9] w-full top-[calc(100vh-65px)] md:top-[calc(100vh-91px)]"
-        style={{ width: buttonWidth.width, left: buttonWidth.left }}
-      >
-        <div className="p-card-body !py-3 md:!py-6 md:!px-10 flex gap-x-7 justify-center md:justify-start max-w-[1200px] mx-auto">
-          <Button
-            label="Regresar"
-            rounded
-            className="!px-8 !py-2 !text-base"
-            onClick={() => {
-              navigate(-1);
-            }}
-            disabled={loading}
-          />
+      {!selectedUser && (
+        <div
+          className="fixed z-30 p-card rounded-none shadow-none border-t border-[#D9D9D9] w-full top-[calc(100vh-65px)] md:top-[calc(100vh-91px)]"
+          style={{ width: buttonWidth.width, left: buttonWidth.left }}
+        >
+          <div className="p-card-body !py-3 md:!py-6 md:!px-10 flex gap-x-7 justify-center md:justify-start max-w-[1200px] mx-auto">
+            <Button
+              label="Regresar"
+              rounded
+              className="!px-8 !py-2 !text-base"
+              onClick={() => {
+                navigate(-1);
+              }}
+              disabled={loading}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -4,20 +4,32 @@ import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { DataTable } from "primereact/datatable";
 import { InputText } from "primereact/inputtext";
 import { classNames } from "primereact/utils";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { EResponseCodes } from "../constants/api.enum";
 // import { useWorkEntityService } from "../hooks/WorkEntityService.hook";
 // import { IWorkEntity } from "../interfaces/workEntity.interfaces";
 import { Tooltip } from "primereact/tooltip";
 import { Link } from "react-router-dom";
+import { IWorkEntity } from "../interfaces/workEntity.interfaces";
+import { IUser } from "../interfaces/user.interfaces";
+import { KeyFilterType } from "primereact/keyfilter";
+import { inputMode } from "../utils/helpers";
+import { Dropdown } from "primereact/dropdown";
+import { IWorkEntityType } from "../interfaces/workEntityType.interface";
+import { useWorkEntityService } from "../hooks/WorkEntityService.hook";
 function WorkEntitiesPage(): React.JSX.Element {
   const parentForm = useRef(null);
   const [loading, setLoading] = useState(false);
-  // const [data, setData] = useState<IWorkEntity[]>([]);
+  const [data, setData] = useState<IWorkEntity[]>([]);
+  const [workEntityTypes, setWorkEntityTypes] = useState<IWorkEntityType[]>([]);
   const [showTable, setShowTable] = useState(false);
+  const [buttonWidth, setButtonWidth] = useState({
+    width: 0,
+    left: 0,
+  });
 
-  // const workEntityService = useWorkEntityService();
+  const workEntityService = useWorkEntityService();
 
   const {
     control,
@@ -83,6 +95,42 @@ function WorkEntitiesPage(): React.JSX.Element {
     }
   };
 
+  const handleResize = () => {
+    if (parentForm.current?.offsetWidth) {
+      let style = getComputedStyle(parentForm.current);
+      let domReact = parentForm.current.getBoundingClientRect();
+
+      setButtonWidth({
+        width: parentForm?.current.offsetWidth + parseInt(style.marginLeft) + parseInt(style.marginRight),
+        left: domReact.x - parseInt(style.marginLeft),
+      });
+    }
+  };
+
+  useEffect(() => {
+    const fetchWorkEntityTypes = async () => {
+      setLoading(true);
+      try {
+        const response = await workEntityService.getWorkEntityTypes();
+
+        if (response.operation.code === EResponseCodes.OK) {
+          setWorkEntityTypes(response.data);
+        }
+      } catch (error) {
+        console.error("Error al obtener la lista de tipos de entidades:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchWorkEntityTypes();
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   const resetForm = () => {
     reset({ identification: "", filingNumber: "" }, { keepValues: false, keepErrors: false });
     // setData([]);
@@ -92,33 +140,144 @@ function WorkEntitiesPage(): React.JSX.Element {
   const getFormErrorMessage = (name) => {
     return errors[name] ? (
       <small className="p-error">{errors[name].message}</small>
-    ) : (
-      <small className="p-error">&nbsp;</small>
-    );
+    ) : '';
   };
 
-  const dateBodyTemplate = (rowData, field) => {
-    if (!rowData?.[field.field]) {
-      return rowData?.[field.field];
-    } else {
-      let date = typeof rowData?.[field.field] == "string" ? new Date(rowData?.[field.field]) : rowData?.[field.field];
-      return date?.toLocaleDateString("es-CO", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      });
-    }
+  const columns = () => {
+    return [
+      {
+        name: "Id entidad",
+        key: "id",
+        field: "id",
+        formClass: "w-[115px]",
+        rules: {
+          required: false,
+          maxLength: { value: 5, message: "No debe tener más de 5 caracteres." },
+        },
+        keyfilter: () => {
+          return "int" as KeyFilterType;
+        },
+        inputMode: (): inputMode => {
+          return "tel";
+        },
+      },
+      {
+        name: "Tipo entidad",
+        type: "select",
+        key: "workEntityTypeId",
+        formClass: "w-[212px]",
+        optionLabel: "tet_descripcion",
+        optionValue: "tet_codigo",
+        options: workEntityTypes,
+        body: (rowData: IWorkEntity) => {
+          return rowData?.workEntityType?.tet_descripcion;
+        },
+      },
+      {
+        name: "Nombre entidad",
+        key: "name",
+        field: "name",        
+        formClass: "w-full sm:w-[260px] 1xl:ml-6",
+        rules: {
+          maxLength: { value: 100, message: "No debe tener más de 100 caracteres." },
+        },
+      },
+      {
+        name: "Documento de identidad",
+        key: "identification",
+        formClass: "w-full sm:w-[260px] 1xl:ml-auto",
+        rules: {
+          maxLength: { value: 15, message: "No debe tener más de 15 caracteres." },
+        },
+        body: (rowData: IWorkEntity) => {
+          return rowData?.user?.typeDocument + " " + rowData?.user?.numberDocument;
+        },
+      },
+      {
+        name: "Nombres",
+        key: "names",
+        formClass: "w-full sm:w-[260px] mx-auto",
+        showTable: false,
+        rules: {
+          maxLength: { value: 50, message: "No debe tener más de 50 caracteres." },
+        },
+        keyfilter: () => {
+          return /^[A-Za-z\s]*$/ as KeyFilterType;
+        },        
+      },
+      {
+        name: "Apellidos",
+        key: "lastNames",
+        showTable: false,
+        rules: {
+          maxLength: { value: 50, message: "No debe tener más de 50 caracteres." },
+        },
+        keyfilter: () => {
+          return /^[A-Za-z\s]*$/ as KeyFilterType;
+        },        
+      },
+      {
+        name: "Nombres y Apellidos",
+        key: "names",
+        body: (rowData: IWorkEntity) => {
+          return rowData?.user?.names + " " + rowData?.user?.lastNames;
+        },
+        showForm: false,
+      },
+      {
+        name: "Correo electrónico",
+        key: "email",
+        field: "user.email",
+        rules: {
+          maxLength: { value: 100, message: "No debe tener más de 100 caracteres." },
+        },
+        keyfilter: () => {
+          return "email" as KeyFilterType;
+        },
+        inputMode: (): inputMode => {
+          return "email";
+        },
+      },
+      {
+        name: "N° contacto 1",
+        key: "numberContact1",
+        field: "user.numberContact1",
+        showForm: false,
+      },
+      {
+        name: "N° contacto 2",
+        key: "numberContact2",
+        field: "user.numberContact2",
+        showForm: false,
+      },
+      {
+        name: "Estado",
+        key: "status",
+        body: (rowData: IWorkEntity) => {
+          return rowData?.status ? "Activo" : "Inactivo";
+        },
+        showForm: false,
+      },
+      {
+        name: "Acción",
+        key: "name",
+        body: (rowData: IWorkEntity) => {
+          return editUser(rowData);
+        },
+        showForm: false,
+      },
+    ];
   };
 
-  const fileBodyTemplate = (rowData) => {
+  const editUser = (rowData: IWorkEntity) => {
     return (
       <span>
         <Tooltip target=".tooltip-see-attached-dt" />
-        <a
-          href={rowData?.file?.name}
-          target="_blank"
+        <Link
+          to={"editar/" + rowData?.userId}
           className="hover:text-primary flex mx-auto items-center justify-center tooltip-see-attached-dt"
-          data-pr-tooltip="Ver adjunto" data-pr-position="right"
+          data-pr-tooltip="Editar"
+          data-pr-position="right"
         >
           <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
@@ -126,7 +285,7 @@ function WorkEntitiesPage(): React.JSX.Element {
               fill="#533893"
             />
           </svg>
-        </a>
+        </Link>
       </span>
     );
   };
@@ -140,12 +299,10 @@ function WorkEntitiesPage(): React.JSX.Element {
       <ConfirmDialog id="messages"></ConfirmDialog>
       <span className="text-3xl block md:hidden pb-5">Entidades de trabajo</span>
       <div className="p-card rounded-2xl md:rounded-4xl shadow-none border border-[#D9D9D9]">
-        <div className="p-card-body !py-6 md:!py-8 !pr-6 !pl-6 md:!pr-16 md:!pl-7">
+        <div className="p-card-body !py-6 !px-6 md:!px-11">
           <div className="p-card-title flex justify-end md:justify-between">
             <span className="text-3xl md:block hidden">Entidades de trabajo</span>
-            <Link to="crear"
-              className="my-auto text-base text-main flex items-center gap-x-2 cursor-pointer"              
-            >
+            <Link to="crear" className="my-auto text-base text-main flex items-center gap-x-2 cursor-pointer">
               <span>Crear</span>
               <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -175,57 +332,50 @@ function WorkEntitiesPage(): React.JSX.Element {
             </Link>
           </div>
           <div className="p-card-content !pb-0 !pt-0 md:!pt-10">
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-wrap gap-6 w-full">
-              <Controller
-                name="identification"
-                control={control}
-                rules={{
-                  required: "Campo obligatorio.",
-                  maxLength: { value: 15, message: "No debe tener más de 15 caracteres." },
-                }}
-                render={({ field, fieldState }) => (
-                  <div className="flex flex-col gap-y-1.5 md:max-w-2xs w-full">
-                    <label htmlFor={field.name} className="text-base">
-                      Documento de identidad <span className="text-red-600">*</span>
-                    </label>
-                    <InputText
-                      keyfilter="int"
-                      id={field.name}
-                      value={field.value}
-                      inputMode="tel"
-                      className={classNames({ "p-invalid": fieldState.error }, "w-full py-2 !font-sans")}
-                      onChange={(e) => field.onChange(e.target.value)}
-                      maxLength={15}
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-wrap gap-x-3.5 gap-y-6 w-full">
+              {columns().map((column, index) => {
+                if (!column.hasOwnProperty("showForm") || column?.showForm) {
+                  return (
+                    <Controller
+                      key={index}
+                      name={column.key}
+                      control={control}
+                      rules={column.rules}
+                      render={({ field, fieldState }) => (
+                        <div className={classNames("flex flex-col gap-y-1.5",column?.formClass)}>
+                          <label htmlFor={field.name} className="text-base">
+                            {column?.name} {column?.rules?.required && (<span className="text-red-600">*</span>)}
+                          </label>
+                          {!column?.type && (
+                            <InputText
+                              keyfilter={column.hasOwnProperty("keyfilter") ? column?.keyfilter() : undefined}
+                              id={field.name}
+                              value={field.value}
+                              inputMode={column.hasOwnProperty("inputMode") ? column.inputMode() : undefined}
+                              className={classNames({ "p-invalid": fieldState.error }, "w-full py-2 !font-sans")}
+                              onChange={(e) => field.onChange(e.target.value)}
+                              maxLength={column?.rules?.maxLength?.value}
+                            />
+                          )}
+                          {column?.type == "select" && (
+                            <Dropdown
+                              id={field.name}
+                              value={field.value}
+                              className={classNames({ "p-invalid": fieldState.error }, "w-full !font-sans mini-select")}
+                              optionLabel={column?.optionLabel}
+                              options={column?.options}
+                              optionValue={column?.optionValue}
+                              onChange={(e) => field.onChange(e.value)}
+                              placeholder="Seleccionar"
+                            />
+                          )}
+                          {getFormErrorMessage(field.name)}
+                        </div>
+                      )}
                     />
-                    {getFormErrorMessage(field.name)}
-                  </div>
-                )}
-              />
-              <Controller
-                name="filingNumber"
-                control={control}
-                rules={{
-                  required: "Campo obligatorio.",
-                  maxLength: { value: 12, message: "No debe tener más de 12 caracteres." },
-                }}
-                render={({ field, fieldState }) => (
-                  <div className="flex flex-col gap-y-1.5 md:max-w-2xs w-full">
-                    <label htmlFor={field.name} className="text-base">
-                      No. Radicado PQRSDF <span className="text-red-600">*</span>
-                    </label>
-                    <InputText
-                      keyfilter="alphanum"
-                      id={field.name}
-                      value={field.value}
-                      inputMode="tel"
-                      className={classNames({ "p-invalid": fieldState.error }, "w-full py-2 !font-sans")}
-                      onChange={(e) => field.onChange(e.target.value)}
-                      maxLength={12}
-                    />
-                    {getFormErrorMessage(field.name)}
-                  </div>
-                )}
-              />
+                  );
+                }
+              })}
               <div className="md:mt-8 flex w-full gap-x-3 justify-end">
                 <Button
                   text
@@ -253,141 +403,48 @@ function WorkEntitiesPage(): React.JSX.Element {
       {showTable && (
         <div className="relative pb-16 md:pb-28 z-0">
           <div className="relative p-card rounded-2xl md:rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
-            <div className="p-card-body !pt-3 !px-3 md:!pt-8 md:!pb-3 md:!px-6">
+            <div className="p-card-body !py-6 !px-6 md:!px-11">
               <div className="p-card-title justify-between flex">
                 <span className="text-xl md:text-3xl">Resultados de búsqueda</span>
                 <span></span>
               </div>
               <div className="p-card-content !pb-0 !pt-0 md:!pt-10">
-                <div className="overflow-auto max-w-[calc(100vw-4.6rem)] md:max-w-[calc(100vw-25.1rem)] hidden md:block borderless reverse-striped">
+                <div className="overflow-hidden max-w-[calc(100vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] hidden md:block borderless reverse-striped">
                   <DataTable
-                    // value={data}
+                    value={data}
                     showGridlines={false}
                     stripedRows={true}
                     emptyMessage={<span className="!font-sans">No se encontraron resultados</span>}
                     tableStyle={{ minWidth: "22.625rem", marginBottom: "6.063rem" }}
                   >
-                    <Column
-                      bodyClassName="text-base !font-sans text-center"
-                      headerClassName="text-base font-medium !text-black text-center"
-                      key="filingNumber"
-                      field="filingNumber"
-                      header="No. PQRSDF"
-                    ></Column>
-                    <Column
-                      bodyClassName="text-base !font-sans text-center"
-                      headerClassName="text-base font-medium !text-black text-center"
-                      key="createdAt"
-                      field="createdAt"
-                      header="Fecha radicado"
-                      dataType="date"
-                      body={dateBodyTemplate}
-                    ></Column>
-                    <Column
-                      bodyClassName="text-base !font-sans text-center"
-                      headerClassName="text-base font-medium !text-black text-center"
-                      key="dependency"
-                      field="dependency"
-                      header="Programa"
-                    ></Column>
-                    <Column
-                      bodyClassName="text-base !font-sans text-center"
-                      headerClassName="text-base font-medium !text-black text-center"
-                      key="clasification"
-                      field="clasification"
-                      header="Clasificación"
-                    ></Column>
-                    <Column
-                      bodyClassName="text-base !font-sans text-center"
-                      headerClassName="text-base font-medium !text-black text-center"
-                      key="requestSubject"
-                      field="requestSubject.aso_asunto"
-                      header="Asunto"
-                    ></Column>
-                    <Column
-                      bodyClassName="text-base !font-sans text-center"
-                      headerClassName="text-base font-medium !text-black text-center"
-                      key="status"
-                      header="Estado"
-                      // body={statusTemplate}
-                    ></Column>
-                    <Column
-                      bodyClassName="text-base !font-sans text-center"
-                      headerClassName="text-base font-medium !text-black text-center"
-                      key="answerDate"
-                      field="answerDate"
-                      header="Fecha respuesta"
-                      dataType="date"
-                      body={dateBodyTemplate}
-                    ></Column>
-                    <Column
-                      bodyClassName="text-base !font-sans text-center"
-                      headerClassName="text-base font-medium !text-black text-center"
-                      key="answer"
-                      field="answer"
-                      header="Respuesta"
-                    ></Column>
-                    <Column
-                      bodyClassName="text-base !font-sans text-center"
-                      headerClassName="text-base font-medium !text-black text-center"
-                      key="file"
-                      field="file.name"
-                      header="Acción"
-                      body={fileBodyTemplate}
-                    ></Column>
+                    {columns().map((column) => {
+                      return (
+                        <Column
+                          bodyClassName="text-base !font-sans !text-center min-w-[207px] w-[207px]"
+                          headerClassName="text-base font-medium !text-black !text-center min-w-[207px] w-[207px] justify-center"
+                          key={column.key}
+                          header={column.name}
+                          field={column?.field}
+                          body={column?.body}
+                        ></Column>
+                      );
+                    })}
                   </DataTable>
                 </div>
-                {/* <div className="p-5 p-card md:hidden block relative rounded-2xl md:rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
-                  <div className="flex flex-wrap pb-5 items-start justify-between">
-                    <div className="w-1/2 text-sm">No. PQRSDF</div>
-                    <div className="w-1/2 text-sm !font-sans text-right">{data[0]?.filingNumber}</div>
-                    <div className="w-1/2 text-sm mt-4">Fecha radicado</div>
-                    <div className="w-1/2 text-sm mt-4 !font-sans text-right">
-                      {dateBodyTemplate(data[0], { field: "createdAt" })}
-                    </div>
-                    <div className="w-1/2 text-sm mt-4">Programa</div>
-                    <div className="w-1/2 text-sm mt-4 !font-sans text-right">{data[0]?.dependency}</div>
-                    <div className="w-1/2 text-sm mt-4">Clasificación</div>
-                    <div className="w-1/2 text-sm mt-4 !font-sans text-right">{data[0]?.clasification}</div>
-                    <div className="w-1/2 text-sm mt-4">Asunto</div>
-                    <div className="w-1/2 text-sm mt-4 !font-sans text-right">
-                      {data[0]?.requestSubject?.aso_asunto}
-                    </div>
-                    <div className="w-1/2 text-sm mt-4">Estado</div>
-                    <div className="w-1/2 text-sm mt-4 !font-sans text-right">{statusTemplate(data[0])}</div>
-                    <div className="w-1/2 text-sm mt-4">Fecha respuesta</div>
-                    <div className="w-1/2 text-sm mt-4 !font-sans text-right">
-                      {dateBodyTemplate(data[0], { field: "answerDate" })}
-                    </div>
-                    <div className="w-1/2 text-sm mt-4">Respuesta</div>
-                    <div className="w-1/2 text-sm mt-4 !font-sans text-right">{data[0]?.answer}</div>
-                    <div className="w-1/2 text-sm mt-4">Acción</div>
-                    <div className="w-1/2 text-sm mt-4 !font-sans text-right flex items-end justify-end">
-                      <Tooltip target=".tooltip-see-attached" />
-                      <a
-                        href={data[0]?.file?.name}
-                        target="_blank"
-                        className="flex tooltip-see-attached"
-                        data-pr-tooltip="Ver adjunto"
-                        data-pr-position="left"
-                      >
-                        <svg
-                          className="mx-auto"
-                          width="17"
-                          height="17"
-                          viewBox="0 0 17 17"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M5.82244 16.1475C4.52493 16.1525 3.27393 15.6646 2.32244 14.7825C1.85906 14.354 1.48932 13.8343 1.23644 13.2561C0.983567 12.6779 0.853027 12.0536 0.853027 11.4225C0.853027 10.7914 0.983567 10.1671 1.23644 9.58885C1.48932 9.01062 1.85906 8.49094 2.32244 8.06248L8.93744 1.81498C9.61777 1.19397 10.5057 0.84967 11.4268 0.84967C12.348 0.84967 13.2358 1.19397 13.9162 1.81498C14.2709 2.14428 14.5553 2.54195 14.7523 2.98405C14.9493 3.42615 15.0548 3.90354 15.0624 4.38748C15.0648 4.8057 14.9805 5.21989 14.8149 5.60391C14.6492 5.98793 14.4058 6.33347 14.0999 6.61873L7.47619 12.875C7.0765 13.2458 6.55142 13.4519 6.00619 13.4519C5.46096 13.4519 4.93587 13.2458 4.53619 12.875C4.33786 12.6922 4.17956 12.4704 4.07129 12.2234C3.96301 11.9764 3.90711 11.7097 3.90711 11.44C3.90711 11.1703 3.96301 10.9036 4.07129 10.6566C4.17956 10.4096 4.33786 10.1877 4.53619 10.005L10.6612 4.23873C10.7842 4.11584 10.951 4.04681 11.1249 4.04681C11.2988 4.04681 11.4656 4.11584 11.5887 4.23873C11.7116 4.36178 11.7806 4.52857 11.7806 4.70248C11.7806 4.87639 11.7116 5.04318 11.5887 5.16623L5.46369 10.9325C5.39499 10.9924 5.33992 11.0664 5.30219 11.1494C5.26446 11.2324 5.24494 11.3225 5.24494 11.4137C5.24494 11.5049 5.26446 11.595 5.30219 11.678C5.33992 11.7611 5.39499 11.835 5.46369 11.895C5.62218 12.0305 5.82388 12.105 6.03244 12.105C6.24099 12.105 6.44269 12.0305 6.60119 11.895L13.2249 5.65623C13.3935 5.49107 13.5268 5.29353 13.6171 5.0755C13.7073 4.85746 13.7525 4.62343 13.7499 4.38748C13.7427 4.08336 13.6738 3.78387 13.5475 3.50713C13.4211 3.2304 13.24 2.98217 13.0149 2.77748C12.583 2.37712 12.0158 2.15468 11.4268 2.15468C10.8379 2.15468 10.2706 2.37712 9.83869 2.77748L3.24994 9.01623C2.91627 9.32199 2.64984 9.6938 2.46758 10.108C2.28531 10.5223 2.19119 10.9699 2.19119 11.4225C2.19119 11.875 2.28531 12.3227 2.46758 12.7369C2.64984 13.1512 2.91627 13.523 3.24994 13.8287C3.96263 14.493 4.90067 14.8624 5.87494 14.8624C6.8492 14.8624 7.78724 14.493 8.49994 13.8287L15.0537 7.62498C15.114 7.56307 15.1861 7.51386 15.2658 7.48026C15.3454 7.44667 15.431 7.42936 15.5174 7.42936C15.6039 7.42936 15.6894 7.44667 15.7691 7.48026C15.8487 7.51386 15.9209 7.56307 15.9812 7.62498C16.1041 7.74803 16.1731 7.91482 16.1731 8.08873C16.1731 8.26264 16.1041 8.42943 15.9812 8.55248L9.37494 14.7825C8.41069 15.6779 7.13818 16.1669 5.82244 16.1475Z"
-                            fill="#533893"
-                          />
-                        </svg>
-                      </a>
-                    </div>
+                <div className="p-5 p-card md:hidden block relative rounded-2xl md:rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
+                  <div className="pb-5">
+                    {columns().map((column, index) => {
+                      return (
+                        <div className="flex flex-wrap items-start justify-between" key={index}>
+                          <div className={classNames("w-1/2 text-sm", { "mt-4": index > 0 })}>{column.name}</div>
+                          <div className={classNames("w-1/2 text-sm !font-sans text-right", { "mt-4": index > 0 })}>
+                            {column.hasOwnProperty("body") ? column?.body(data[0]) : data[0]?.[column?.key]}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                </div> */}
+                </div>
               </div>
             </div>
           </div>
