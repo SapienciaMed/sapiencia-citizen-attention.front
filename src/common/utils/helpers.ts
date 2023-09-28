@@ -1,5 +1,8 @@
 import moment from "moment-timezone";
 
+
+export type inputMode = 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search' | undefined
+
 const toLocaleDate = (date:string|Date, isMoment = false) : Date => {
   let parseDate = date;
   if (typeof date == "string") {
