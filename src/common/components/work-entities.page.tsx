@@ -302,7 +302,7 @@ function WorkEntitiesPage(): React.JSX.Element {
       <span>
         <Tooltip target=".tooltip-see-attached-dt" />
         <Link
-          to={"editar/" + rowData?.userId}
+          to={"editar/" + rowData?.id}
           className="hover:text-primary flex mx-auto items-center justify-center tooltip-see-attached-dt"
           data-pr-tooltip="Editar"
           data-pr-position="right"
@@ -449,7 +449,7 @@ function WorkEntitiesPage(): React.JSX.Element {
                 <span></span>
               </div>
               <div className="p-card-content !pb-0 !pt-0 md:!pt-10">
-                <div className="overflow-hidden max-w-[calc(100vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] hidden md:block borderless reverse-striped">
+                <div className="overflow-hidden mx-auto max-w-[calc(100vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] hidden md:block borderless reverse-striped">
                   <DataTable
                     value={data.array}
                     showGridlines={false}

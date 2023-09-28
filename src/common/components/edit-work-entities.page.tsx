@@ -8,6 +8,10 @@ import { InputSwitch, InputSwitchChangeEvent } from "primereact/inputswitch";
 import { ChangeResponsibleComponent } from "./componentsEditWorkEntities/changeResponsible.component";  
 
 import '../../styles/workEntities-styles.scss'; 
+import { useWorkEntityService } from "../hooks/WorkEntityService.hook";
+import { useNavigate, useParams } from "react-router-dom";
+import { EResponseCodes } from "../constants/api.enum";
+import { IWorkEntity } from "../interfaces/workEntity.interfaces";
 
 
 
@@ -17,11 +21,33 @@ const EditWorkEntitiesPage = () => {
 
   const [anchoDePantalla, setAnchoDePantalla] = useState(window.innerWidth);
   const [checked, setChecked] = useState<boolean>(false);
+  const [workEntity, setWorkEntity] = useState<IWorkEntity>();
+
+  const workEntityService = useWorkEntityService();
+  const navigate = useNavigate();
  
   const WidthRef = useRef(null);
   WidthRef.current = document.getElementById('sidebar').offsetWidth;
+  const { id } = useParams();
 
   useEffect(() => {
+    const fetchWorkEntity = async () => {      
+      // setLoading(true);
+      try {
+        const response = await workEntityService.getWorkEntityById(parseInt(id));
+
+        if (response.operation.code === EResponseCodes.OK) {
+          setWorkEntity(response.data);
+          
+        }
+      } catch (error) {
+        console.error("Error al obtener la entidad de trabajo:", error);
+        navigate(-1);
+      } finally {
+        // setLoading(false);
+      }
+    };
+    fetchWorkEntity();
 
     const handleResize = () => {
       setAnchoDePantalla(window.innerWidth);
@@ -71,6 +97,7 @@ const EditWorkEntitiesPage = () => {
                     <InputText
                       className="!h-10 input-desabled"
                       disabled
+                      value={workEntity?.id.toString()}
                       />
                   </div>
 
@@ -81,6 +108,7 @@ const EditWorkEntitiesPage = () => {
                     <InputText
                       className="!h-10 input-desabled"
                       disabled
+                      value={workEntity?.workEntityType?.tet_descripcion}
                       />
                   </div>
 
@@ -91,6 +119,7 @@ const EditWorkEntitiesPage = () => {
                     <Controller
                       name="etityName"
                       control={control}
+                      defaultValue={workEntity?.name}
                       rules={{
                         required: 'Campo obligatorio.',
                         maxLength: {value:100, message:'Solo se permiten 100 caracteres'}
