@@ -127,7 +127,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
         });
       }
     } catch (error) {
-      console.error("Error al obtener la PQRSDF:", error);
+      console.error("Error al obtener el usuario:", error);
     } finally {
       setLoading(false);
     }
