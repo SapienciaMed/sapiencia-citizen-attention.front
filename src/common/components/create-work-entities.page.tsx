@@ -348,6 +348,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
                 <Button
                   text
                   rounded
+                  type="button"
                   severity="secondary"
                   className="!py-2 !text-base !font-sans !text-black"
                   disabled={loading}

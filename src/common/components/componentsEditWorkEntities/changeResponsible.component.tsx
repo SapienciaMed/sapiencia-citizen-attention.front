@@ -258,6 +258,7 @@ export const ChangeResponsibleComponent = () => {
                                 text
                                 className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10"
                                 onClick={ resetForm }
+                                type="button"
                             >
                                 Limpiar Campos
                             </Button>
