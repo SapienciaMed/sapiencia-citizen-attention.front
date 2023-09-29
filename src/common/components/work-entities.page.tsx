@@ -372,7 +372,8 @@ function WorkEntitiesPage(): React.JSX.Element {
             </Link>
           </div>
           <div className="p-card-content !pb-0 !pt-0 md:!pt-10">
-            <form onSubmit={handleSubmit(onSearch)} className="flex flex-wrap gap-x-3.5 gap-y-6 w-full">
+            <p className="text-lg">Buscar por</p>
+            <form onSubmit={handleSubmit(onSearch)} className="flex flex-wrap gap-x-3.5 gap-y-6 w-full mt-10">
               {columns().map((column, index) => {
                 if (!column.hasOwnProperty("showForm") || column?.showForm) {
                   return (
