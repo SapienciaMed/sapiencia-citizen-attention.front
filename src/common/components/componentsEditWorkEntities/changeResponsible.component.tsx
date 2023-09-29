@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useForm, Controller } from 'react-hook-form';
+import { useWorkEntityService } from "../../hooks/WorkEntityService.hook";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
@@ -8,6 +9,7 @@ import { Card } from "primereact/card";
 import { DataTable, DataTableSelection } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
+import { IWorkEntityFilters } from "../../interfaces/workEntity.interfaces"; 
 
 interface Data {
     numberDocument: string;
@@ -23,6 +25,8 @@ interface PageNumber {
 
 
 export const ChangeResponsibleComponent = () => {
+
+    const workEntityService = useWorkEntityService();
 
     const [visible, setVisible] = useState<boolean>(false);
     const [rowClick, setRowClick] = useState(true);
@@ -76,8 +80,6 @@ export const ChangeResponsibleComponent = () => {
     }
 
 
-    
-
     useEffect(() => {
         //consumimos servicios
     }, []);
@@ -92,12 +94,31 @@ export const ChangeResponsibleComponent = () => {
     const {
         formState: { errors, isValid },
         control,
-        handleSubmit
+        handleSubmit,
+        getValues,
+        reset
       } = useForm({ defaultValues, mode:'all' });
 
-      const onSubmit = async (data: any) => {
-	
+    const resetForm = ()=> {
+        reset()
+    }
+
+    const onSubmit = async (data: any) => {
+        try {
+
+            let payload = getValues() as IWorkEntityFilters;
+            const response = await workEntityService.getWorkEntityByFilters(payload);
+            console.log('-> ',response);
+            
+
+        } catch (error) {
+            
+        }
       }
+
+    const getFormErrorMessage = (name) => {
+        return errors[name] ? <small className="p-error">{errors[name].message}</small> : <small className="p-error">&nbsp;</small>;
+    };
       
     return (
         <>
@@ -129,16 +150,22 @@ export const ChangeResponsibleComponent = () => {
                             <div className="col-100">
                                 <label>Documento de identidad</label><br/>
                                 <Controller
-                                name="etityDocument"
-                                control={control}
-                                render={({ field, fieldState }) => (
+                                    name="etityDocument"
+                                    control={control}
+                                    rules={{
+                                       maxLength:{value:15, message:'Solo se permiten 15 caracteres'} 
+                                    }}
+                                    render={({ field, fieldState }) => (
                                     <>
-                                    <InputText
-                                    id={field.name}
-                                    value={field.value}
-                                    className={classNames({'p-invalid': fieldState.error},'!h-10 col-100')}
-                                    onChange={(e) => field.onChange(e.target.value)}
-                                    />
+                                        <InputText
+                                        id={field.name}
+                                        value={field.value}
+                                        keyfilter='alphanum'
+                                        className={classNames({'p-invalid': fieldState.error},'!h-10 col-100')}
+                                        onChange={(e) => field.onChange(e.target.value)}
+                                        />
+                                        <br/>
+                                        {getFormErrorMessage(field.name)}
                                     </>
                                 )}
                                 />
@@ -148,8 +175,25 @@ export const ChangeResponsibleComponent = () => {
 
                             <div className="col-100">
                                 <label>Nombres</label><br/>
-                                <InputText
-                                className="!h-10 col-100"
+                                <Controller
+                                    name="name"
+                                    control={control}
+                                    rules={{
+                                        maxLength:{value:50, message:'Solo se permiten 50 caracteres'} 
+                                    }}
+                                    render={({ field, fieldState }) => (
+                                    <>
+                                        <InputText
+                                        id={field.name}
+                                        value={field.value}
+                                        keyfilter='alpha'
+                                        className={classNames({'p-invalid': fieldState.error},'!h-10 col-100')}
+                                        onChange={(e) => field.onChange(e.target.value)}
+                                        />
+                                        <br/>
+                                        {getFormErrorMessage(field.name)}
+                                    </>
+                                )}
                                 />
                             </div>
 
@@ -157,8 +201,25 @@ export const ChangeResponsibleComponent = () => {
 
                             <div className="col-100">
                                 <label>Apellidos</label><br/>
-                                <InputText
-                                className="!h-10 col-100"
+                                <Controller
+                                    name="lastName"
+                                    control={control}
+                                    rules={{
+                                        maxLength:{value:50, message:'Solo se permiten 50 caracteres'} 
+                                    }}
+                                    render={({ field, fieldState }) => (
+                                    <>
+                                        <InputText
+                                        id={field.name}
+                                        value={field.value}
+                                        keyfilter='alpha'
+                                        className={classNames({'p-invalid': fieldState.error},'!h-10 col-100')}
+                                        onChange={(e) => field.onChange(e.target.value)}
+                                        />
+                                        <br/>
+                                        {getFormErrorMessage(field.name)}
+                                    </>
+                                )}
                                 />
                             </div>
 
@@ -166,17 +227,41 @@ export const ChangeResponsibleComponent = () => {
 
                             <div className="col-100">
                                 <label>Correo electrónico</label><br/>
-                                <InputText
-                                className="!h-10 col-100"
+                                <Controller
+                                    name="email"
+                                    control={control}
+                                    rules={{
+                                        maxLength:{value:100, message:'Solo se permiten 100 caracteres'},
+                                        pattern: {
+                                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, 
+                                            message: "Correo electrónico no válido",
+                                          }, 
+                                    }}
+                                    render={({ field, fieldState }) => (
+                                    <>
+                                        <InputText
+                                        id={field.name}
+                                        value={field.value}
+                                        keyfilter='email'
+                                        className={classNames({'p-invalid': fieldState.error},'!h-10 col-100')}
+                                        onChange={(e) => field.onChange(e.target.value)}
+                                        />
+                                        <br/>
+                                        {getFormErrorMessage(field.name)}
+                                    </>
+                                )}
                                 />
                             </div>
                         </div>
                         <div className="flex justify-end mb-4 col-100 movil-5">
                             <Button
-                            text
-                            className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10"
-                            >Limpiar Campos</Button>
-                            <Button className="rounded-full !h-10">Buscar</Button>
+                                text
+                                className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10"
+                                onClick={ resetForm }
+                            >
+                                Limpiar Campos
+                            </Button>
+                            <Button className="rounded-full !h-10" type="submit">Buscar</Button>
                         </div>
                     </div>
                 </form>
