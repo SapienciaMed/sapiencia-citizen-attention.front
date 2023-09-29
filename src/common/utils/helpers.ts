@@ -3,6 +3,8 @@ import moment from "moment-timezone";
 
 export type inputMode = 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search' | undefined
 
+const emailPattern = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+
 const toLocaleDate = (date:string|Date, isMoment = false) : Date => {
   let parseDate = date;
   if (typeof date == "string") {
@@ -42,4 +44,4 @@ const capitalize = (str: string): string => {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 };
 
-export { toLocaleDate, allMonths, capitalize };
+export { toLocaleDate, allMonths, capitalize, emailPattern };

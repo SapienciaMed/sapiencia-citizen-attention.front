@@ -1,7 +1,7 @@
 import { EResponseCodes } from "../constants/api.enum";
 import { IWorkEntity, IWorkEntityFilters } from "../interfaces/workEntity.interfaces";
 import { IWorkEntityType } from "../interfaces/workEntityType.interface";
-import { ApiResponse } from "../utils/api-response";
+import { ApiResponse, IPagingData } from "../utils/api-response";
 import useCrudService from "./crud-service.hook";
 
 export function useWorkEntityService() {
@@ -27,12 +27,12 @@ export function useWorkEntityService() {
     }
   }
 
-  async function getWorkEntityByFilters(filters: IWorkEntityFilters): Promise<ApiResponse<IWorkEntity>> {
+  async function getWorkEntityByFilters(filters: IWorkEntityFilters): Promise<ApiResponse<IPagingData<IWorkEntity | null>>> {
     try {
       const endpoint: string = `/get-by-filters`;
       return await post(`${listUrl}${endpoint}`, filters);
     } catch (error) {
-      return new ApiResponse({} as IWorkEntity, EResponseCodes.FAIL, "Error no controlado");
+      return new ApiResponse({} as IPagingData<IWorkEntity | null>, EResponseCodes.FAIL, "Error no controlado");
     }
   }
 

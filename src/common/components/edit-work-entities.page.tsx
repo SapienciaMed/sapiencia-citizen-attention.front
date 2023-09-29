@@ -10,6 +10,9 @@ import { ChangeResponsibleComponent } from "./componentsEditWorkEntities/changeR
 import { useWorkEntityService } from "../hooks/WorkEntityService.hook"; 
 
 import '../../styles/workEntities-styles.scss'; 
+import { useNavigate } from "react-router-dom";
+import { EResponseCodes } from "../constants/api.enum";
+import { IWorkEntity } from "../interfaces/workEntity.interfaces";
 
 
 
@@ -29,6 +32,10 @@ const EditWorkEntitiesPage = () => {
   const [consta1, setConsta1] = useState<string>('');
   const [consta2, setConsta2] = useState<string>('');
   const [email, setEmail] = useState<string>('');
+  const [workEntity, setWorkEntity] = useState<IWorkEntity>();
+
+  const workEntityService = useWorkEntityService();
+  const navigate = useNavigate();
 
   const WidthRef = useRef(null);
   const dataUser = useRef(null);
@@ -45,6 +52,7 @@ const EditWorkEntitiesPage = () => {
     getUser(id).then(({data, operation})=> {
       
       if(operation.code != 'OK'){
+        navigate(-1);
         return
       }
       dataUser.current = data;
@@ -86,13 +94,6 @@ const EditWorkEntitiesPage = () => {
 
   const defaultValues = {
     etityName: '',
-    IdEntity:'',
-    TypeEntity:'',
-    DocumentEntity:'',
-    name:'',
-    noContact1:'',
-    noContact2:'',
-    email:''
   };
 
   const {
@@ -154,6 +155,7 @@ const EditWorkEntitiesPage = () => {
                     <Controller
                       name="etityName"
                       control={control}
+                      defaultValue={workEntity?.name}
                       rules={{
                         required: 'Campo obligatorio.',
                         maxLength: {value:100, message:'Solo se permiten 100 caracteres'}
