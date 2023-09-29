@@ -21,6 +21,15 @@ const EditWorkEntitiesPage = () => {
 
   const [anchoDePantalla, setAnchoDePantalla] = useState(window.innerWidth);
   const [checked, setChecked] = useState<boolean>(false);
+  const [idEntity, setIdEntity] = useState<string>('');
+  const [typeEntity, setTypeEntity] = useState<string>('');
+  const [nameEntity, setNameEntity] = useState<string>('');
+  const [documenUser, setDocumenUser] = useState<string>('');
+  const [nameUser, setNameUser] = useState<string>('');
+  const [consta1, setConsta1] = useState<string>('');
+  const [consta2, setConsta2] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+
   const WidthRef = useRef(null);
   const dataUser = useRef(null);
   WidthRef.current = document.getElementById('sidebar').offsetWidth;
@@ -39,6 +48,17 @@ const EditWorkEntitiesPage = () => {
         return
       }
       dataUser.current = data;
+      setIdEntity(data.id.toString());
+      setTypeEntity(data.workEntityType['tet_descripcion']);
+      setNameEntity(data['name']);
+      setDocumenUser(data.user['numberDocument']);
+      setNameUser(`${data.user['names']} ${data.user['lastNames']}`)
+      setConsta1(data.user['numberContact1']);
+      setConsta2(data.user['numberContact2']);
+      setEmail(data.user['email']);
+      const status = data['status']? true : false;
+      setChecked(status);
+
       console.log(dataUser.current );
       
     })
@@ -107,24 +127,11 @@ const EditWorkEntitiesPage = () => {
                 <div className="flex flex-row flex-wrap ">
                   <div>
                     <label>Id Entidad</label><br/>
-                    <Controller
-                      name="IdEntity"
-                      control={control}
-                      rules={{
-                        required: 'Campo obligatorio.',
-                        maxLength: {value:100, message:'Solo se permiten 100 caracteres'}
-                      }}
-                      render={({ field, fieldState }) => (
-                        <>
-                         <InputText
-                          id={field.name}
-                          value={field.value}
-                          disabled
-                          className={classNames({'p-invalid': fieldState.error},'!h-10 input-desabled')}
-                          onChange={(e) => field.onChange(e.target.value)}
-                         />
-                        </>
-                      )}
+                    <InputText
+                      value={idEntity}
+                      className="h-10 input-desabled"
+                      disabled
+                      onChange={(e) => setIdEntity(e.target.value)}
                     />
                   </div>
 
@@ -132,24 +139,11 @@ const EditWorkEntitiesPage = () => {
 
                   <div>
                     <label>Tipo entidad </label><br/>
-                    <Controller
-                      name="TypeEntity"
-                      control={control}
-                      rules={{
-                        required: 'Campo obligatorio.',
-                        maxLength: {value:100, message:'Solo se permiten 100 caracteres'}
-                      }}
-                      render={({ field, fieldState }) => (
-                        <>
-                         <InputText
-                          id={field.name}
-                          value={field.value}
-                          disabled
-                          className={classNames({'p-invalid': fieldState.error},'!h-10 input-desabled')}
-                          onChange={(e) => field.onChange(e.target.value)}
-                         />
-                        </>
-                      )}
+                    <InputText
+                      value={typeEntity}
+                      className="h-10 input-desabled"
+                      disabled
+                      onChange={(e) => setTypeEntity(e.target.value)}
                     />
                   </div>
 
@@ -187,24 +181,11 @@ const EditWorkEntitiesPage = () => {
                 <div className="flex flex-row flex-wrap ">
                   <div>
                     <label>Doc. Identidad</label><br/>
-                    <Controller
-                      name="DocumentEntity"
-                      control={control}
-                      rules={{
-                        required: 'Campo obligatorio.',
-                        maxLength: {value:100, message:'Solo se permiten 100 caracteres'}
-                      }}
-                      render={({ field, fieldState }) => (
-                        <>
-                         <InputText
-                          id={field.name}
-                          value={field.value}
-                          disabled
-                          className={classNames({'p-invalid': fieldState.error},'!h-10 input-desabled')}
-                          onChange={(e) => field.onChange(e.target.value)}
-                         />
-                        </>
-                      )}
+                    <InputText
+                      value={documenUser}
+                      className="h-10 input-desabled"
+                      disabled
+                      onChange={(e) => setDocumenUser(e.target.value)}
                     />
                   </div>
 
@@ -212,24 +193,11 @@ const EditWorkEntitiesPage = () => {
 
                   <div>
                     <label>Nombres y apellidos</label><br/>
-                    <Controller
-                      name="name"
-                      control={control}
-                      rules={{
-                        required: 'Campo obligatorio.',
-                        maxLength: {value:100, message:'Solo se permiten 100 caracteres'}
-                      }}
-                      render={({ field, fieldState }) => (
-                        <>
-                         <InputText
-                          id={field.name}
-                          value={field.value}
-                          disabled
-                          className={classNames({'p-invalid': fieldState.error},'!h-10 input-desabled')}
-                          onChange={(e) => field.onChange(e.target.value)}
-                         />
-                        </>
-                      )}
+                    <InputText
+                      value={nameUser}
+                      className="h-10 input-desabled"
+                      disabled
+                      onChange={(e) => setNameUser(e.target.value)}
                     />
                   </div>
 
@@ -237,24 +205,11 @@ const EditWorkEntitiesPage = () => {
 
                   <div>
                     <label>No. Contacto 1</label><br/>
-                    <Controller
-                      name="noContact1"
-                      control={control}
-                      rules={{
-                        required: 'Campo obligatorio.',
-                        maxLength: {value:100, message:'Solo se permiten 100 caracteres'}
-                      }}
-                      render={({ field, fieldState }) => (
-                        <>
-                         <InputText
-                          id={field.name}
-                          value={field.value}
-                          disabled
-                          className={classNames({'p-invalid': fieldState.error},'!h-10 input-desabled')}
-                          onChange={(e) => field.onChange(e.target.value)}
-                         />
-                        </>
-                      )}
+                    <InputText
+                      value={consta1}
+                      className="h-10 input-desabled"
+                      disabled
+                      onChange={(e) => setConsta1(e.target.value)}
                     />
                   </div>
 
@@ -262,24 +217,11 @@ const EditWorkEntitiesPage = () => {
 
                   <div>
                     <label>No. Contacto 2</label><br/>
-                    <Controller
-                      name="noContact2"
-                      control={control}
-                      rules={{
-                        required: 'Campo obligatorio.',
-                        maxLength: {value:100, message:'Solo se permiten 100 caracteres'}
-                      }}
-                      render={({ field, fieldState }) => (
-                        <>
-                         <InputText
-                          id={field.name}
-                          value={field.value}
-                          disabled
-                          className={classNames({'p-invalid': fieldState.error},'!h-10 input-desabled')}
-                          onChange={(e) => field.onChange(e.target.value)}
-                         />
-                        </>
-                      )}
+                    <InputText
+                      value={consta2}
+                      className="h-10 input-desabled"
+                      disabled
+                      onChange={(e) => setConsta2(e.target.value)}
                     />
                   </div>
 
@@ -288,24 +230,12 @@ const EditWorkEntitiesPage = () => {
                 <div className="flex flex-wrap justify-between items-center mt-4">
                   <div className="flex flex-row items-center">
                     <div>
-                    <Controller
-                      name="email"
-                      control={control}
-                      rules={{
-                        required: 'Campo obligatorio.',
-                        maxLength: {value:100, message:'Solo se permiten 100 caracteres'}
-                      }}
-                      render={({ field, fieldState }) => (
-                        <>
-                         <InputText
-                          id={field.name}
-                          value={field.value}
-                          disabled
-                          className={classNames({'p-invalid': fieldState.error},'!h-10 input-desabled')}
-                          onChange={(e) => field.onChange(e.target.value)}
-                         />
-                        </>
-                      )}
+                    <label>Correo electrónico</label><br/>
+                    <InputText
+                      value={email}
+                      className="h-10 input-desabled"
+                      disabled
+                      onChange={(e) => setEmail(e.target.value)}
                     />
                     </div>
 
