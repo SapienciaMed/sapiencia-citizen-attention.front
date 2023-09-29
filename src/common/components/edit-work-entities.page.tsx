@@ -52,7 +52,7 @@ const EditWorkEntitiesPage = () => {
     getUser(id).then(({data, operation})=> {
       
       if(operation.code != 'OK'){
-        navigate(-1);
+        //navigate(-1);
         return
       }
       dataUser.current = data;
@@ -112,37 +112,37 @@ const EditWorkEntitiesPage = () => {
 
   return (
 
-    <div className='container !py-5 !px-5 md:!px-4'>
+    <div className='container'>
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="form-container" 
       >
-        <Card className='card card-body card-h'>
+        <Card className='card card-body'>
           <Card 
               title='Editar entidad de trabajo'
-              className='card'
+              className='card card-container-movil'
           >
-            
-
-              <Card title='Entidad' className="card">
+              <Card title='Entidad' className="card card-movil">
                 <div className="flex flex-row flex-wrap ">
-                  <div>
-                    <label>Id Entidad</label><br/>
-                    <InputText
-                      value={idEntity}
-                      className="h-10 input-desabled"
-                      disabled
-                      onChange={(e) => setIdEntity(e.target.value)}
-                    />
+                  <div className="col-100 idEntity">
+                    <div className="col-50">
+                      <label>Id Entidad</label><br/>
+                      <InputText
+                        value={idEntity}
+                        className="h-10 input-desabled col-100"
+                        disabled
+                        onChange={(e) => setIdEntity(e.target.value)}
+                      />
+                    </div>
                   </div>
 
                   <span className='split'></span>
 
-                  <div>
+                  <div className="col-100">
                     <label>Tipo entidad </label><br/>
                     <InputText
                       value={typeEntity}
-                      className="h-10 input-desabled"
+                      className="h-10 input-desabled col-100"
                       disabled
                       onChange={(e) => setTypeEntity(e.target.value)}
                     />
@@ -150,7 +150,7 @@ const EditWorkEntitiesPage = () => {
 
                   <span className='split'></span>
 
-                  <div>
+                  <div className="col-100">
                     <label>Nombre entidad<span style={{color:'red'}}>*</span></label><br/>
                     <Controller
                       name="etityName"
@@ -165,7 +165,7 @@ const EditWorkEntitiesPage = () => {
                          <InputText
                           id={field.name}
                           value={field.value}
-                          className={classNames({'p-invalid': fieldState.error},'!h-10')}
+                          className={classNames({'p-invalid': fieldState.error},'!h-10 col-100')}
                           onChange={(e) => field.onChange(e.target.value)}
                          />
                          <br />
@@ -179,13 +179,13 @@ const EditWorkEntitiesPage = () => {
 
               <br />
 
-              <Card title='Usuario responsable' className="card">
+              <Card title='Usuario responsable' className="card card-movil">
                 <div className="flex flex-row flex-wrap ">
-                  <div>
+                  <div className="col-100">
                     <label>Doc. Identidad</label><br/>
                     <InputText
                       value={documenUser}
-                      className="h-10 input-desabled"
+                      className="h-10 input-desabled col-100"
                       disabled
                       onChange={(e) => setDocumenUser(e.target.value)}
                     />
@@ -193,11 +193,11 @@ const EditWorkEntitiesPage = () => {
 
                   <span className='split'></span>
 
-                  <div>
+                  <div className="col-100">
                     <label>Nombres y apellidos</label><br/>
                     <InputText
                       value={nameUser}
-                      className="h-10 input-desabled"
+                      className="h-10 input-desabled col-100"
                       disabled
                       onChange={(e) => setNameUser(e.target.value)}
                     />
@@ -205,11 +205,11 @@ const EditWorkEntitiesPage = () => {
 
                   <span className='split'></span>
 
-                  <div>
+                  <div className="col-100">
                     <label>No. Contacto 1</label><br/>
                     <InputText
                       value={consta1}
-                      className="h-10 input-desabled"
+                      className="h-10 input-desabled col-100"
                       disabled
                       onChange={(e) => setConsta1(e.target.value)}
                     />
@@ -217,11 +217,11 @@ const EditWorkEntitiesPage = () => {
 
                   <span className='split'></span>
 
-                  <div>
+                  <div className="col-100">
                     <label>No. Contacto 2</label><br/>
                     <InputText
                       value={consta2}
-                      className="h-10 input-desabled"
+                      className="h-10 input-desabled col-100"
                       disabled
                       onChange={(e) => setConsta2(e.target.value)}
                     />
@@ -229,34 +229,37 @@ const EditWorkEntitiesPage = () => {
 
                 </div>
 
-                <div className="flex flex-wrap justify-between items-center mt-4">
-                  <div className="flex flex-row items-center">
-                    <div>
+                <div className="flex flex-wrap justify-between items-center mt-4 ">
+                  <div className="flex flex-row items-center movil-2 col-100">
+                    <div className="col-100">
                     <label>Correo electrónico</label><br/>
                     <InputText
                       value={email}
-                      className="h-10 input-desabled"
+                      className="h-10 input-desabled col-100"
                       disabled
                       onChange={(e) => setEmail(e.target.value)}
                     />
                     </div>
 
                     <span className='split'></span>
-
-                    <div className="flex flex-row" style={{paddingTop:'24px'}}>
-                      <span className="mr-4">Activo</span>
-                      <InputSwitch checked={checked} onChange={(e: InputSwitchChangeEvent) => setChecked(e.value)} />
-                      <span className="ml-4">Inactivo</span>
+                
+                    <div className="flex flex-col ml-3 movil-3 col-100">
+                      <label>Estado</label>
+                      <div className="flex flex-row mt-3 movil-4">
+                        <span className="mr-4">Activo</span>
+                        <InputSwitch checked={checked} onChange={(e: InputSwitchChangeEvent) => setChecked(e.value)} />
+                        <span className="ml-4">Inactivo</span>
+                      </div>
                     </div>
                   </div>
 
-                  <div style={{marginTop:'22px'}}>
+                  <div style={{marginTop:'22px'}} className="bt-movil-1 col-100">
                     <ChangeResponsibleComponent/>
                   </div>
                 </div>
 
               </Card>
-              <div className="flex flex-grow justify-end pr-5" style={{paddingRight:'1.25rem'}}>
+              <div className="flex flex-grow justify-end pr-5 col-100 bt-movil-1" style={{paddingRight:'1.25rem'}}>
                 <Button 
                   className="rounded-full !h-10 mt-10" 
                   >
