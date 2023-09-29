@@ -403,7 +403,7 @@ function WorkEntitiesPage(): React.JSX.Element {
                               value={field.value}
                               className={classNames({ "p-invalid": fieldState.error }, "w-full !font-sans mini-select")}
                               optionLabel={column?.optionLabel}
-                              options={column?.options}
+                              options={[{ [column?.optionLabel]: "Seleccionar", [column?.optionValue]: "" }, ...column?.options]}
                               optionValue={column?.optionValue}
                               onChange={(e) => field.onChange(e.value)}
                               placeholder="Seleccionar"

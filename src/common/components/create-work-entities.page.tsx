@@ -73,18 +73,18 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
           className="!px-4 !py-2 !text-base !mr-0"
           disabled={loading}
           onClick={(e) => {
-            options.reject();            
+            options.reject();
           }}
         />
       </div>
     );
   };
 
-  const acceptButton = (options) => {
+  const acceptButton = (options, label='Aceptar') => {
     return (
       <div className="flex items-center justify-center gap-2 pb-2">
         <Button
-          label="Aceptar"
+          label={label}
           rounded
           className="!px-4 !py-2 !text-base !mr-0"
           disabled={loading}
@@ -155,7 +155,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
           ),
           closeIcon: closeIcon,
           acceptLabel: "Cerrar",
-          footer: (options) => acceptButton(options),
+          footer: (options) => acceptButton(options, 'Cerrar'),
         });
       } else {
         /* setShowTable(false);
@@ -442,7 +442,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
                             value={field.value}
                             className={classNames({ "p-invalid": fieldState.error }, "w-full !font-sans mini-select")}
                             optionLabel="tet_descripcion"
-                            options={workEntityTypes}
+                            options={[{ tet_descripcion: "Seleccionar", ted_codigo: "" }, ...workEntityTypes]}
                             optionValue="tet_codigo"
                             onChange={(e) => field.onChange(e.value)}
                             placeholder="Seleccionar"
