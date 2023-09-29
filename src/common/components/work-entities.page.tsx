@@ -30,6 +30,8 @@ function WorkEntitiesPage(): React.JSX.Element {
   });
   const [workEntityTypes, setWorkEntityTypes] = useState<IWorkEntityType[]>([]);
   const [showTable, setShowTable] = useState(false);
+  const [perPage, setPerPage] = useState(10);
+  const [page, setPage] = useState(1);
   const [buttonWidth, setButtonWidth] = useState({
     width: 0,
     left: 0,
@@ -58,10 +60,13 @@ function WorkEntitiesPage(): React.JSX.Element {
     setLoading(true);
     try {
       let payload = getValues() as IWorkEntityFilters;
+      payload.perPage = perPage;
       const response = await workEntityService.getWorkEntityByFilters(payload);
 
       if (response.operation.code === EResponseCodes.OK) {
         setData(response.data);
+        console.log(response.data.meta.per_page);
+        
         setShowTable(true);
       } else {
         setShowTable(false);
@@ -69,6 +74,7 @@ function WorkEntitiesPage(): React.JSX.Element {
           array: [],
           meta: {
             total: 0,
+            per_page: perPage,
           },
         });
         confirmDialog({
@@ -95,6 +101,10 @@ function WorkEntitiesPage(): React.JSX.Element {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    onSearch();
+  }, [perPage, page]);
 
   const acceptButton = (options) => {
     return (
@@ -159,6 +169,7 @@ function WorkEntitiesPage(): React.JSX.Element {
       array: [],
       meta: {
         total: 0,
+        per_page: perPage,
       },
     });
     setShowTable(false);
@@ -402,9 +413,12 @@ function WorkEntitiesPage(): React.JSX.Element {
                             <Dropdown
                               id={field.name}
                               value={field.value}
-                              className={classNames({ "p-invalid": fieldState.error }, "w-full !font-sans mini-select")}
+                              className={classNames({ "p-invalid": fieldState.error }, "w-full !font-sans select-sm")}
                               optionLabel={column?.optionLabel}
-                              options={[{ [column?.optionLabel]: "Seleccionar", [column?.optionValue]: "" }, ...column?.options]}
+                              options={[
+                                { [column?.optionLabel]: "Seleccionar", [column?.optionValue]: "" },
+                                ...column?.options,
+                              ]}
                               optionValue={column?.optionValue}
                               onChange={(e) => field.onChange(e.value)}
                               placeholder="Seleccionar"
@@ -446,9 +460,30 @@ function WorkEntitiesPage(): React.JSX.Element {
         <div className="relative pb-16 md:pb-28 z-0">
           <div className="relative p-card rounded-2xl md:rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
             <div className="p-card-body !py-6 !px-6 md:!px-11">
-              <div className="p-card-title justify-between flex">
+              <div className="p-card-title justify-between flex items-center">
                 <span className="text-xl md:text-3xl">Resultados de búsqueda</span>
-                <span></span>
+                <div className="flex text-sm items-center gap-x-5">
+                  <div className="min-w-[150px]">
+                    Total de resultados <span className="ml-2 text-primary">{data.meta.total}</span>
+                  </div>
+                  <div className="flex items-center min-w-[210px]">
+                    Registro por página
+                    <div className="ml-6">
+                    <Dropdown
+                      id="per_page"
+                      value={data.meta?.per_page ?? 3}
+                      className={"w-12 !font-sans select-xs"}
+                      panelClassName="select-xs"
+                      optionLabel="value"
+                      options={[{ value: 3 }, { value: 5 }, { value: 10 }, { value: 15 }, { value: 20 }, { value: 30 }]}
+                      optionValue="value"
+                      onChange={(e) => {
+                        setPerPage(e.value);
+                      }}
+                    />
+                    </div>
+                  </div>
+                </div>
               </div>
               <div className="p-card-content !pb-0 !pt-0 md:!pt-10">
                 <div className="overflow-hidden mx-auto max-w-[calc(100vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] hidden md:block borderless reverse-striped">

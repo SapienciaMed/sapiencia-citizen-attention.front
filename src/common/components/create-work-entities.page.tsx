@@ -298,7 +298,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
   const radioUser = (rowData: IUser) => {
     return (
       <RadioButton
-        className="mini-radio"
+        className="radio-sm"
         inputId={"selectedUser" + rowData?.id}
         name="selectedUser"
         value={rowData?.id}
@@ -441,7 +441,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
                           <Dropdown
                             id={field.name}
                             value={field.value}
-                            className={classNames({ "p-invalid": fieldState.error }, "w-full !font-sans mini-select")}
+                            className={classNames({ "p-invalid": fieldState.error }, "w-full !font-sans select-sm")}
                             optionLabel="tet_descripcion"
                             options={[{ tet_descripcion: "Seleccionar", ted_codigo: "" }, ...workEntityTypes]}
                             optionValue="tet_codigo"
