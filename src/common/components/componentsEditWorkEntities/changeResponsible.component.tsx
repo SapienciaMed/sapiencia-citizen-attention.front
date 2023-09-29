@@ -98,8 +98,7 @@ export const ChangeResponsibleComponent = () => {
       const onSubmit = async (data: any) => {
 	
       }
-
-
+      
     return (
         <>
             <Button 
@@ -115,7 +114,8 @@ export const ChangeResponsibleComponent = () => {
                 headerClassName="text-2xl" 
                 visible={visible} 
                 style={{ width: '75vw' }} 
-                onHide={() => setVisible(false)} 
+                onHide={() => setVisible(false)}
+                className="dialog-movil" 
             >
                 <form
                     onSubmit={handleSubmit(onSubmit)}
@@ -126,7 +126,7 @@ export const ChangeResponsibleComponent = () => {
                             <label className="text-xl">Buscar por</label>
                         </div>
                         <div className="flex flex-row flex-wrap justify-between mb-4">
-                            <div>
+                            <div className="col-100">
                                 <label>Documento de identidad</label><br/>
                                 <Controller
                                 name="etityDocument"
@@ -136,7 +136,7 @@ export const ChangeResponsibleComponent = () => {
                                     <InputText
                                     id={field.name}
                                     value={field.value}
-                                    className={classNames({'p-invalid': fieldState.error},'!h-10')}
+                                    className={classNames({'p-invalid': fieldState.error},'!h-10 col-100')}
                                     onChange={(e) => field.onChange(e.target.value)}
                                     />
                                     </>
@@ -146,32 +146,32 @@ export const ChangeResponsibleComponent = () => {
 
                             <span className='split'></span>
 
-                            <div>
+                            <div className="col-100">
                                 <label>Nombres</label><br/>
                                 <InputText
-                                className="!h-10"
+                                className="!h-10 col-100"
                                 />
                             </div>
 
                             <span className='split'></span>
 
-                            <div>
+                            <div className="col-100">
                                 <label>Apellidos</label><br/>
                                 <InputText
-                                className="!h-10"
+                                className="!h-10 col-100"
                                 />
                             </div>
 
                             <span className='split'></span>
 
-                            <div>
+                            <div className="col-100">
                                 <label>Correo electrónico</label><br/>
                                 <InputText
-                                className="!h-10"
+                                className="!h-10 col-100"
                                 />
                             </div>
-                    </div>
-                        <div className="flex justify-end mb-4">
+                        </div>
+                        <div className="flex justify-end mb-4 col-100 movil-5">
                             <Button
                             text
                             className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10"

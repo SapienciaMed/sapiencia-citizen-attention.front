@@ -122,6 +122,13 @@
         margin: 0;
     }
 
+    .movil-5{
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: center;
+    }
+
     .buton-fixe{
         width: 100% !important;
         display: flex;
@@ -143,6 +150,13 @@
         padding: 0 !important;
     }
 
+    .dialog-movil{
+        width: 96vw !important;
+    }
+    
+    .hidden {
+        display: block;
+    }
   }
 
 
