@@ -1,18 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 import { useForm, Controller } from 'react-hook-form';
+import { useNavigate } from "react-router-dom";
 import { useParams  } from "react-router-dom";
+import { useWorkEntityService } from "../hooks/WorkEntityService.hook";
 import { Card } from "primereact/card";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
+import { TreeTable } from 'primereact/treetable';
+import { Column } from "primereact/column";
+import { TreeNode } from "primereact/treenode";
 import { InputSwitch, InputSwitchChangeEvent } from "primereact/inputswitch";  
 import { ChangeResponsibleComponent } from "./componentsEditWorkEntities/changeResponsible.component";
-import { useWorkEntityService } from "../hooks/WorkEntityService.hook"; 
+import { AssignProgramComponent } from "./componentsEditWorkEntities/assignProgram.component"
+import { IWorkEntity } from "../interfaces/workEntity.interfaces";
+
 
 import '../../styles/workEntities-styles.scss'; 
-import { useNavigate } from "react-router-dom";
-import { EResponseCodes } from "../constants/api.enum";
-import { IWorkEntity } from "../interfaces/workEntity.interfaces";
+
 
 
 
@@ -33,6 +38,7 @@ const EditWorkEntitiesPage = () => {
   const [consta2, setConsta2] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [workEntity, setWorkEntity] = useState<IWorkEntity>();
+  const [nodes, setNodes] = useState<TreeNode[]>([{children:[{data:{name:'backup-1.zip'},key:'1-0'}],data:{name: "Cloud",size: "20kb", type: "Folder"}, key:'1'}]);
 
   const workEntityService = useWorkEntityService();
   const navigate = useNavigate();
@@ -52,7 +58,7 @@ const EditWorkEntitiesPage = () => {
     getUser(id).then(({data, operation})=> {
       
       if(operation.code != 'OK'){
-        navigate(-1);
+        //navigate(-1);
         return
       }
       dataUser.current = data;
@@ -259,14 +265,17 @@ const EditWorkEntitiesPage = () => {
                 </div>
 
               </Card>
-              <div className="flex flex-grow justify-end pr-5 col-100 bt-movil-1" style={{paddingRight:'1.25rem'}}>
-                <Button 
-                  className="rounded-full !h-10 mt-10" 
-                  >
-                    Asignar programas
-                  </Button>
-              </div>
-            
+
+              <Card className="card card-movil mt-6">
+
+                <TreeTable value={nodes} tableStyle={{ minWidth: '50rem' }}>
+                  <Column field="name" header="Resumen programas y asuntos seleccionados" expander></Column>
+                </TreeTable>
+
+                <div className="flex flex-grow justify-end pr-5 col-100 bt-movil-1" style={{paddingRight:'1.25rem'}}>
+                    <AssignProgramComponent/>
+                </div>
+              </Card>
           </Card>
         </Card>
         <div className="buton-fixe " style={{width:(anchoDePantalla-WidthRef.current)}}>

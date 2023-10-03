@@ -9,14 +9,15 @@ import { Card } from "primereact/card";
 import { DataTable, DataTableSelection } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
-import { IWorkEntityFilters } from "../../interfaces/workEntity.interfaces"; 
+import { IWorkEntityFilters } from "../../interfaces/workEntity.interfaces";
+import { MessageComponent } from "./message.component"; 
+import { ProgressSpinner } from 'primereact/progressspinner';
 
 interface Data {
     numberDocument: string;
     name: string;
     email: string;
     numberContact1: string;
-    selet: string;
 }
 
 interface PageNumber {
@@ -30,6 +31,8 @@ export const ChangeResponsibleComponent = () => {
 
     const [visible, setVisible] = useState<boolean>(false);
     const [rowClick, setRowClick] = useState(true);
+    const [load, setLoad] = useState(false);
+    const [error, setError] = useState(false);
     const [selectPage, setSelectPage] = useState<PageNumber>({page: 5});
     const pageNumber: PageNumber[] = [
         { page: 5 },
@@ -37,47 +40,13 @@ export const ChangeResponsibleComponent = () => {
         { page: 15 },
         { page: 20 },
     ]
-    const [data, setData] = useState<Data[]>([{ 
-                                                    numberDocument: 'string1',
-                                                    name: 'string2',
-                                                    email: 'string3',
-                                                    numberContact1: 'string4',
-                                                    selet: 'preuba'
-                                                },{ 
-                                                    numberDocument: 'string2',
-                                                    name: 'string6',
-                                                    email: 'string7',
-                                                    numberContact1: 'string8',
-                                                    selet: 'string9',
-                                                },{ 
-                                                    numberDocument: 'string1',
-                                                    name: 'string2',
-                                                    email: 'string3',
-                                                    numberContact1: 'string4',
-                                                    selet: 'preuba'
-                                                },{ 
-                                                    numberDocument: 'string2',
-                                                    name: 'string6',
-                                                    email: 'string7',
-                                                    numberContact1: 'string8',
-                                                    selet: 'string9',
-                                                },{ 
-                                                    numberDocument: 'string1',
-                                                    name: 'string2',
-                                                    email: 'string3',
-                                                    numberContact1: 'string4',
-                                                    selet: 'preuba'
-                                                },{ 
-                                                    numberDocument: 'string2',
-                                                    name: 'string6',
-                                                    email: 'string7',
-                                                    numberContact1: 'string8',
-                                                    selet: 'string9',
-                                                }]);
+    const [data, setData] = useState<Data[]>([]);
 
     const getData = (data: DataTableSelection<Data[]>) =>{
+        console.log('data table-> ', data);
         
     }
+    
 
 
     useEffect(() => {
@@ -85,7 +54,7 @@ export const ChangeResponsibleComponent = () => {
     }, []);
 
     const defaultValues = {
-        etityDocument: '',
+        entityDocument: '',
         name:'',
         lastName:'',
         email:''
@@ -100,17 +69,40 @@ export const ChangeResponsibleComponent = () => {
       } = useForm({ defaultValues, mode:'all' });
 
     const resetForm = ()=> {
+        setLoad(false),
+        setError(false),
         reset()
     }
 
-    const onSubmit = async (data: any) => {
-        try {
 
+    const onSubmit = async () => {
+        setLoad(true)
+        try {
             let payload = getValues() as IWorkEntityFilters;
-            const response = await workEntityService.getWorkEntityByFilters(payload);
-            console.log('-> ',response);
+            const { email, identification, lastNames, name} = payload;
+            //if (email==='') { return }
             
 
+            console.log('...',payload);
+            
+            const response = await workEntityService.getWorkEntityByFilters(payload);
+            const { data, operation } = response;
+
+            if(operation.code !== "OK"){
+                setLoad(false),
+                setError(true)
+                console.log('->e ',response);
+            }
+
+            const usersData = data.array.map( data =>({
+                numberDocument: data['user']['numberDocument'],
+                name: `${data['user']['names']} ${data['user']['lastNames']}`,
+                email: data['user']['email'],
+                numberContact1: data['user']['numberContact1'],
+            }))
+            setLoad(false),
+            setData(usersData)
+            console.log('-> ',response);
         } catch (error) {
             
         }
@@ -138,6 +130,10 @@ export const ChangeResponsibleComponent = () => {
                 onHide={() => setVisible(false)}
                 className="dialog-movil" 
             >
+                {error?(<>
+                            <MessageComponent headerMsg="Error" msg="No se encontraron resultados para la búsqueda realizada"/>
+                        </>):(<></>)}
+                
                 <form
                     onSubmit={handleSubmit(onSubmit)}
                     className="form-container"
@@ -150,7 +146,7 @@ export const ChangeResponsibleComponent = () => {
                             <div className="col-100">
                                 <label>Documento de identidad</label><br/>
                                 <Controller
-                                    name="etityDocument"
+                                    name="entityDocument"
                                     control={control}
                                     rules={{
                                        maxLength:{value:15, message:'Solo se permiten 15 caracteres'} 
@@ -160,7 +156,7 @@ export const ChangeResponsibleComponent = () => {
                                         <InputText
                                         id={field.name}
                                         value={field.value}
-                                        keyfilter='alphanum'
+                                        keyfilter='num'
                                         className={classNames({'p-invalid': fieldState.error},'!h-10 col-100')}
                                         onChange={(e) => field.onChange(e.target.value)}
                                         />
@@ -258,10 +254,17 @@ export const ChangeResponsibleComponent = () => {
                                 text
                                 className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10"
                                 onClick={ resetForm }
+                                type="button"
                             >
                                 Limpiar Campos
                             </Button>
-                            <Button className="rounded-full !h-10" type="submit">Buscar</Button>
+                            <Button 
+                                className="rounded-full !h-10" 
+                                type="submit"
+                                disabled={load}
+                            >
+                                Buscar
+                            </Button>
                         </div>
                     </div>
                 </form>
@@ -294,10 +297,8 @@ export const ChangeResponsibleComponent = () => {
                                     rows={selectPage.page} 
                                     showGridlines={false}
                                     stripedRows={true}
-                                    selectionMode={rowClick ? undefined : 'radiobutton'}
-                                    selectionAutoFocus
                                     onSelectionChange={(e) => getData(e.value)} dataKey="id"
-                                    emptyMessage={<span className="!font-sans">No se encontraron resultados</span>}
+                                    emptyMessage={<span className="!font-sans">{load?(<><ProgressSpinner/></>):(<></>)}</span>}
                                 >
                                     <Column style={{textAlign:'center'}} field="numberDocument" header="Doc. Identidad"></Column>
                                     <Column style={{textAlign:'center'}} field="name" header="Nombre y apellidos"></Column>
