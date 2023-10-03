@@ -19,6 +19,7 @@ import { IWorkEntity, IWorkEntityFilters } from "../interfaces/workEntity.interf
 import { IWorkEntityType } from "../interfaces/workEntityType.interface";
 import { IPagingData } from "../utils/api-response";
 import { emailPattern, inputMode } from "../utils/helpers";
+import useCheckMobileScreen from "../hooks/isMobile.hook";
 function WorkEntitiesPage(): React.JSX.Element {
   const parentForm = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -30,6 +31,7 @@ function WorkEntitiesPage(): React.JSX.Element {
   });
   const [workEntityTypes, setWorkEntityTypes] = useState<IWorkEntityType[]>([]);
   const [showTable, setShowTable] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [perPage, setPerPage] = useState(10);
   const [page, setPage] = useState(1);
   const [first, setFirst] = useState<number>(0);
@@ -38,6 +40,8 @@ function WorkEntitiesPage(): React.JSX.Element {
     width: 0,
     left: 0,
   });
+
+  const checkMobileScreen = useCheckMobileScreen();
 
   const workEntityService = useWorkEntityService();
 
@@ -51,7 +55,6 @@ function WorkEntitiesPage(): React.JSX.Element {
 
   const checkIsFilled = () => {
     const values = Object.values(getValues()).filter((val) => val != null && val != "" && val != undefined);
-    console.log(values);
 
     setIsFilled(!!values.length);
   };
@@ -75,8 +78,6 @@ function WorkEntitiesPage(): React.JSX.Element {
 
       if (response.operation.code === EResponseCodes.OK) {
         setData(response.data);
-        console.log(response.data.meta.per_page);
-
         setShowTable(true);
       } else {
         setShowTable(false);
@@ -117,6 +118,16 @@ function WorkEntitiesPage(): React.JSX.Element {
       onSearch();
     }
   }, [perPage, page]);
+
+  useEffect(() => {
+    if (checkMobileScreen && !isMobile) {
+      setIsMobile(true);
+      setPerPage(1);
+    } else if (!checkMobileScreen && isMobile) {
+      setIsMobile(false);
+      setPerPage(10);
+    }
+  }, [checkMobileScreen]);
 
   const acceptButton = (options) => {
     return (
@@ -406,7 +417,7 @@ function WorkEntitiesPage(): React.JSX.Element {
   const onPageChange = (event: PaginatorPageChangeEvent): void => {
     setPerPage(event.rows);
     setFirst(event.first);
-    setPage(event.page+1);
+    setPage(event.page + 1);
   };
 
   return (
@@ -564,8 +575,8 @@ function WorkEntitiesPage(): React.JSX.Element {
                   </div>
                 </div>
               </div>
-              <div className="p-card-content !pb-0 !pt-0 md:!pt-10">
-                <div className="overflow-hidden citizen-attention-paginator mx-auto max-w-[calc(100vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] hidden md:block borderless reverse-striped">
+              <div className="p-card-content !pb-0 !pt-0 md:!pt-10 citizen-attention-paginator">
+                <div className="overflow-hidden mx-auto max-w-[calc(100vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] hidden md:block borderless reverse-striped">
                   <DataTable
                     value={data?.array ?? []}
                     loading={loading}
@@ -589,29 +600,34 @@ function WorkEntitiesPage(): React.JSX.Element {
                       }
                     })}
                   </DataTable>
-                  <Paginator
-                    first={first}
-                    rows={perPage}
-                    onPageChange={onPageChange}
-                    template={paginatorTemplate()}
-                    totalRecords={data?.meta?.total ?? 0}
-                    className="mt-11"
-                  />
                 </div>
                 <div className="p-5 p-card md:hidden block relative rounded-2xl md:rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
                   <div className="pb-5">
                     {columns().map((column, index) => {
-                      return (
-                        <div className="flex flex-wrap items-start justify-between" key={index}>
-                          <div className={classNames("w-1/2 text-sm", { "mt-4": index > 0 })}>{column.name}</div>
-                          <div className={classNames("w-1/2 text-sm !font-sans text-right", { "mt-4": index > 0 })}>
-                            {column.hasOwnProperty("body") ? column?.body(data[0]) : data[0]?.[column?.key]}
+                      if (!column.hasOwnProperty("showTable") || column?.showTable) {
+                        return (
+                          <div className="flex flex-wrap items-start justify-between" key={index}>
+                            <div className={classNames("w-1/2 text-sm", { "mt-4": index > 0 })}>{column.name}</div>
+                            <div className={classNames("w-1/2 text-sm !font-sans text-right", { "mt-4": index > 0 })}>
+                              {column.hasOwnProperty("body")
+                                ? column?.body(data?.array?.[0])
+                                : data?.array?.[0]?.[column?.key]}
+                            </div>
                           </div>
-                        </div>
-                      );
+                        );
+                      }
                     })}
                   </div>
                 </div>
+                <Paginator
+                  first={first}
+                  rows={perPage}
+                  pageLinkSize={isMobile ? 3 : 7}
+                  onPageChange={onPageChange}
+                  template={paginatorTemplate()}
+                  totalRecords={data?.meta?.total ?? 0}
+                  className="mt-11"
+                />
               </div>
             </div>
           </div>
