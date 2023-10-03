@@ -3,16 +3,30 @@ import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 import { Dialog } from "primereact/dialog";
 import { Fieldset } from 'primereact/fieldset';
-import { Tree } from "primereact/tree";
+import { Tree, TreeCheckboxSelectionKeys } from "primereact/tree";
 import { TreeNode } from "primereact/treenode";
 
 export const AssignProgramComponent = () => {
-    
     const [visible, setVisible] = useState<boolean>(false);
-    const [nodes, setNodes] = useState<TreeNode[]>([{children:[{data: "Meeting",key: "1-0",label: "cambio de programa y univesidad"},{data: "Meeting",key: "1-1",label: "cambio de programa y univesidad"}],data:'Envent',key:'1',label:'Becas mejores bachilleres'}]);
+    const [nodes, setNodes] = useState<TreeNode[]>([
+        {children:[{data: "Meeting",key: "1-0",label: "cambio de programa y univesidad"},{data: "Meeting",key: "1-1",label: "cambio de programa y univesidad"}],data:'Envent',key:'1',label:'Becas mejores bachilleres'},
+        {children:[{data: "Pruebas",key: "2-0",label: "Programa y univesidad"},{data: "Meeting-2",key: "2-1",label: "cambio de programa "}],data:'Envent',key:'2',label:'Mejores bachilleres'},
+        {children:[{data: "Pruebas1",key: "3-0",label: "Univesidad"},{data: "Meeting-3",key: "3-1",label: "cambio de programa "}],data:'Envent',key:'3',label:'Bachilleres'}
+    ]);
     const [nodesSeleted, setNodesSeleted] = useState<TreeNode[]>([]);
-    const [selectedKeysProgram, setSelectedKeysProgram] = useState(null);
+    const [selectedKeys, setSelectedKeys] = useState(null);
     const [selectedProgram, setSelectedProgram] = useState(null);
+    
+    const addProgram = ()=>{
+            const programs = [];
+            programs.push(selectedKeys);
+            const keyProgram = programs[0]!== null?Object.keys(programs[0]):[]; 
+
+            nodes.filter( (nodos, index )=> {
+                
+            });
+        
+   }
 
   return (
     <>
@@ -42,8 +56,8 @@ export const AssignProgramComponent = () => {
                             <Tree 
                                 value={nodes} 
                                 selectionMode="checkbox" 
-                                selectionKeys={selectedKeysProgram} 
-                                onSelectionChange={(e) => setSelectedKeysProgram(e.value)}
+                                selectionKeys={selectedKeys} 
+                                onSelectionChange={(e) => setSelectedKeys(e.value)}
                                 filterMode='lenient' 
                                 className="w-full md:w-30rem"
                                 style={{border:0, padding:0}} 
@@ -54,7 +68,7 @@ export const AssignProgramComponent = () => {
                         <div>
                             <Button 
                                 className="rounded-full !h-10 mt-10"
-                                onClick={() => setVisible(true)} 
+                                onClick={addProgram} 
                             > 
                                 Agregar 
                             </Button>
@@ -92,7 +106,11 @@ export const AssignProgramComponent = () => {
                 >
                     Cancelar
                 </Button>
-                <Button className="rounded-full !h-10">Cambiar</Button>
+                <Button 
+                    className="rounded-full !h-10"
+                >
+                Asignar
+                </Button>
             </div>
 
         </Dialog>

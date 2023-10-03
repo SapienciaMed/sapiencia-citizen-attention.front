@@ -58,7 +58,7 @@ const EditWorkEntitiesPage = () => {
     getUser(id).then(({data, operation})=> {
       
       if(operation.code != 'OK'){
-        //navigate(-1);
+        navigate(-1);
         return
       }
       dataUser.current = data;

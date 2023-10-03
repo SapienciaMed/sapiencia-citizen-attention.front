@@ -13,15 +13,17 @@ import { IWorkEntityFilters } from "../../interfaces/workEntity.interfaces";
 import { MessageComponent } from "./message.component"; 
 import { ProgressSpinner } from 'primereact/progressspinner';
 
-interface Data {
-    numberDocument: string;
-    name: string;
-    email: string;
-    numberContact1: string;
-}
+
 
 interface PageNumber {
     page: number;
+}
+
+interface Payload { 
+    email:'', 
+    identification:'', 
+    lastNames:'', 
+    name:''
 }
 
 
@@ -34,27 +36,23 @@ export const ChangeResponsibleComponent = () => {
     const [load, setLoad] = useState(false);
     const [error, setError] = useState(false);
     const [selectPage, setSelectPage] = useState<PageNumber>({page: 5});
+
     const pageNumber: PageNumber[] = [
         { page: 5 },
         { page: 10 },
         { page: 15 },
         { page: 20 },
     ]
-    const [data, setData] = useState<Data[]>([]);
+    const [data, setData] = useState([]);
 
-    const getData = (data: DataTableSelection<Data[]>) =>{
+    const getData = (data: DataTableSelection<[]>) =>{
         console.log('data table-> ', data);
         
     }
     
 
-
-    useEffect(() => {
-        //consumimos servicios
-    }, []);
-
     const defaultValues = {
-        entityDocument: '',
+        identification: '',
         name:'',
         lastName:'',
         email:''
@@ -75,13 +73,22 @@ export const ChangeResponsibleComponent = () => {
     }
 
 
-    const onSubmit = async () => {
+    const onSubmit = async ( filter:Payload) => {
+        console.log('-...->', data);
+        
         setLoad(true)
         try {
-            let payload = getValues() as IWorkEntityFilters;
-            const { email, identification, lastNames, name} = payload;
+
+            const { email, identification, lastNames, name} = filter;
             //if (email==='') { return }
+
             
+            const payload:IWorkEntityFilters = {
+                email,
+                lastNames,
+                name,
+                identification: parseInt(identification)
+            }
 
             console.log('...',payload);
             
@@ -146,7 +153,7 @@ export const ChangeResponsibleComponent = () => {
                             <div className="col-100">
                                 <label>Documento de identidad</label><br/>
                                 <Controller
-                                    name="entityDocument"
+                                    name="identification"
                                     control={control}
                                     rules={{
                                        maxLength:{value:15, message:'Solo se permiten 15 caracteres'} 
