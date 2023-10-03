@@ -269,58 +269,61 @@ export const ChangeResponsibleComponent = () => {
                     </div>
                 </form>
                 <div>
-                    <Card className="card">
-                        <div className="content-card-table mb-8">
-                            <div className="col-1">
-                                <label className="text-2xl">Resultados de búsqueda</label>
-                            </div>
-                            <div className="paginado col-1">
-                                <div className="pl-8"><label className="mr-2 text-base">Total de resultados</label>{'3'}</div>
-                                <div className="">
-                                    <label className="mr-2 p-colorpicker">Registro por página</label>
-                                    <Dropdown 
-                                        value={selectPage} 
-                                        onChange={(e: DropdownChangeEvent) => setSelectPage(e.value)} 
-                                        options={pageNumber} 
-                                        optionLabel="page"
-                                     />
+                {data.length > 0?(
+                    <>
+                        <Card className="card">
+                            <div className="content-card-table mb-8">
+                                <div className="col-1">
+                                    <label className="text-2xl">Resultados de búsqueda</label>
+                                </div>
+                                <div className="paginado col-1">
+                                    <div className="pl-8"><label className="mr-2 text-base">Total de resultados</label>{'3'}</div>
+                                    <div className="">
+                                        <label className="mr-2 p-colorpicker">Registro por página</label>
+                                        <Dropdown 
+                                            value={selectPage} 
+                                            onChange={(e: DropdownChangeEvent) => setSelectPage(e.value)} 
+                                            options={pageNumber} 
+                                            optionLabel="page"
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+
                                 </div>
                             </div>
-                            <div>
-
+                                <div className="overflow-hidden max-w-[calc(100vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] hidden md:block borderless reverse-striped">
+                                    <DataTable
+                                        value={data}
+                                        paginator 
+                                        rows={selectPage.page} 
+                                        showGridlines={false}
+                                        stripedRows={true}
+                                        onSelectionChange={(e) => getData(e.value)} dataKey="id"
+                                        emptyMessage={<span className="!font-sans">{load?(<><ProgressSpinner/></>):(<></>)}</span>}
+                                    >
+                                        <Column style={{textAlign:'center'}} field="numberDocument" header="Doc. Identidad"></Column>
+                                        <Column style={{textAlign:'center'}} field="name" header="Nombre y apellidos"></Column>
+                                        <Column style={{textAlign:'center'}} field="email" header="Correo" ></Column>
+                                        <Column style={{textAlign:'center'}} field="numberContact1" header="No. Contacto 1" ></Column>
+                                        <Column 
+                                            field="selet" 
+                                            header="Seleccionar" 
+                                            selectionMode="single"
+                                            style={{textAlign:'center'}} 
+                                            headerStyle={{display:'flex',justifyContent:'center'}} 
+                                        ></Column>
+                                    </DataTable>
+                                </div>
+                            <div className="flex justify-center mt-8">
+                                <Button
+                                text
+                                className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10"
+                                >Cancelar</Button>
+                                <Button className="rounded-full !h-10">Cambiar</Button>
                             </div>
-                        </div>
-                            <div className="overflow-hidden max-w-[calc(100vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] hidden md:block borderless reverse-striped">
-                                <DataTable
-                                    value={data}
-                                    paginator 
-                                    rows={selectPage.page} 
-                                    showGridlines={false}
-                                    stripedRows={true}
-                                    onSelectionChange={(e) => getData(e.value)} dataKey="id"
-                                    emptyMessage={<span className="!font-sans">{load?(<><ProgressSpinner/></>):(<></>)}</span>}
-                                >
-                                    <Column style={{textAlign:'center'}} field="numberDocument" header="Doc. Identidad"></Column>
-                                    <Column style={{textAlign:'center'}} field="name" header="Nombre y apellidos"></Column>
-                                    <Column style={{textAlign:'center'}} field="email" header="Correo" ></Column>
-                                    <Column style={{textAlign:'center'}} field="numberContact1" header="No. Contacto 1" ></Column>
-                                    <Column 
-                                        field="selet" 
-                                        header="Seleccionar" 
-                                        selectionMode="single"
-                                        style={{textAlign:'center'}} 
-                                        headerStyle={{display:'flex',justifyContent:'center'}} 
-                                    ></Column>
-                                </DataTable>
-                            </div>
-                        <div className="flex justify-center mt-8">
-                            <Button
-                            text
-                            className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10"
-                            >Cancelar</Button>
-                            <Button className="rounded-full !h-10">Cambiar</Button>
-                        </div>
-                    </Card>
+                        </Card>
+                    </>):(<></>)}
                 </div>
             </Dialog>
         </>

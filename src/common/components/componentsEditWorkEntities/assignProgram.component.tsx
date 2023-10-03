@@ -7,13 +7,12 @@ import { Tree } from "primereact/tree";
 import { TreeNode } from "primereact/treenode";
 
 export const AssignProgramComponent = () => {
+    
     const [visible, setVisible] = useState<boolean>(false);
     const [nodes, setNodes] = useState<TreeNode[]>([{children:[{data: "Meeting",key: "1-0",label: "cambio de programa y univesidad"},{data: "Meeting",key: "1-1",label: "cambio de programa y univesidad"}],data:'Envent',key:'1',label:'Becas mejores bachilleres'}]);
     const [nodesSeleted, setNodesSeleted] = useState<TreeNode[]>([]);
     const [selectedKeysProgram, setSelectedKeysProgram] = useState(null);
     const [selectedProgram, setSelectedProgram] = useState(null);
-
-    console.log(nodes)
 
   return (
     <>

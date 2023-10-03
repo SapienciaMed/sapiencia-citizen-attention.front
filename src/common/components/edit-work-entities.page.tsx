@@ -72,8 +72,6 @@ const EditWorkEntitiesPage = () => {
       setEmail(data.user['email']);
       const status = data['status']? true : false;
       setChecked(status);
-
-      console.log(dataUser.current );
       
     })
   },[])
