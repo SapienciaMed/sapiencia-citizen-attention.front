@@ -9,16 +9,17 @@ import { Controller, useForm } from "react-hook-form";
 import { EResponseCodes } from "../constants/api.enum";
 // import { useWorkEntityService } from "../hooks/WorkEntityService.hook";
 // import { IWorkEntity } from "../interfaces/workEntity.interfaces";
+import { Dropdown } from "primereact/dropdown";
+import { KeyFilterType } from "primereact/keyfilter";
+import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
 import { Tooltip } from "primereact/tooltip";
 import { Link } from "react-router-dom";
-import { IWorkEntity, IWorkEntityFilters } from "../interfaces/workEntity.interfaces";
-import { IUser } from "../interfaces/user.interfaces";
-import { KeyFilterType } from "primereact/keyfilter";
-import { emailPattern, inputMode } from "../utils/helpers";
-import { Dropdown } from "primereact/dropdown";
-import { IWorkEntityType } from "../interfaces/workEntityType.interface";
 import { useWorkEntityService } from "../hooks/WorkEntityService.hook";
+import { IWorkEntity, IWorkEntityFilters } from "../interfaces/workEntity.interfaces";
+import { IWorkEntityType } from "../interfaces/workEntityType.interface";
 import { IPagingData } from "../utils/api-response";
+import { emailPattern, inputMode } from "../utils/helpers";
+import useCheckMobileScreen from "../hooks/isMobile.hook";
 function WorkEntitiesPage(): React.JSX.Element {
   const parentForm = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -30,20 +31,33 @@ function WorkEntitiesPage(): React.JSX.Element {
   });
   const [workEntityTypes, setWorkEntityTypes] = useState<IWorkEntityType[]>([]);
   const [showTable, setShowTable] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [perPage, setPerPage] = useState(10);
+  const [page, setPage] = useState(1);
+  const [first, setFirst] = useState<number>(0);
+  const [isFilled, setIsFilled] = useState(false);
   const [buttonWidth, setButtonWidth] = useState({
     width: 0,
     left: 0,
   });
 
+  const checkMobileScreen = useCheckMobileScreen();
+
   const workEntityService = useWorkEntityService();
 
   const {
     control,
-    formState: { errors, isValid },
+    formState: { errors },
     handleSubmit,
     getValues,
     reset,
   } = useForm({ mode: "all" });
+
+  const checkIsFilled = () => {
+    const values = Object.values(getValues()).filter((val) => val != null && val != "" && val != undefined);
+
+    setIsFilled(!!values.length);
+  };
 
   const closeIcon = () => (
     <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -58,6 +72,8 @@ function WorkEntitiesPage(): React.JSX.Element {
     setLoading(true);
     try {
       let payload = getValues() as IWorkEntityFilters;
+      payload.perPage = perPage;
+      payload.page = page;
       const response = await workEntityService.getWorkEntityByFilters(payload);
 
       if (response.operation.code === EResponseCodes.OK) {
@@ -69,6 +85,7 @@ function WorkEntitiesPage(): React.JSX.Element {
           array: [],
           meta: {
             total: 0,
+            per_page: perPage,
           },
         });
         confirmDialog({
@@ -95,6 +112,22 @@ function WorkEntitiesPage(): React.JSX.Element {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (showTable) {
+      onSearch();
+    }
+  }, [perPage, page]);
+
+  useEffect(() => {
+    if (checkMobileScreen && !isMobile) {
+      setIsMobile(true);
+      setPerPage(1);
+    } else if (!checkMobileScreen && isMobile) {
+      setIsMobile(false);
+      setPerPage(10);
+    }
+  }, [checkMobileScreen]);
 
   const acceptButton = (options) => {
     return (
@@ -159,9 +192,60 @@ function WorkEntitiesPage(): React.JSX.Element {
       array: [],
       meta: {
         total: 0,
+        per_page: perPage,
       },
     });
     setShowTable(false);
+    checkIsFilled();
+  };
+
+  const paginatorTemplate = (prev = "Anterior", next = "Siguiente") => {
+    return {
+      layout: "PrevPageLink PageLinks NextPageLink",
+      PrevPageLink: (options) => {
+        return (
+          <Button
+            type="button"
+            className={classNames(options.className, "!rounded-lg")}
+            onClick={options.onClick}
+            disabled={options.disabled || loading}
+          >
+            <span className="p-3 text-black">{prev}</span>
+          </Button>
+        );
+      },
+      NextPageLink: (options) => {
+        return (
+          <Button
+            className={classNames(options.className, "!rounded-lg")}
+            onClick={options.onClick}
+            disabled={options.disabled || loading}
+          >
+            <span className="p-3 text-black">{next}</span>
+          </Button>
+        );
+      },
+      PageLinks: (options) => {
+        if (
+          (options.view.startPage === options.page && options.view.startPage !== 0) ||
+          (options.view.endPage === options.page && options.page + 1 !== options.totalPages)
+        ) {
+          const className = classNames(options.className, { "p-disabled": true });
+
+          return (
+            <span className={className} style={{ userSelect: "none" }}>
+              ...
+            </span>
+          );
+        }
+
+        return (
+          <Button disabled={loading} className={options.className} onClick={options.onClick}>
+            {options.page + 1}
+          </Button>
+        );
+      },
+    };
   };
 
   const getFormErrorMessage = (name) => {
@@ -330,9 +414,11 @@ function WorkEntitiesPage(): React.JSX.Element {
     );
   };
 
-  /* const statusTemplate = (rowData: IWorkEntity) => {
-    return rowData?.answer && rowData?.answerDate ? "Cerrada" : "Abierta";
-  }; */
+  const onPageChange = (event: PaginatorPageChangeEvent): void => {
+    setPerPage(event.rows);
+    setFirst(event.first);
+    setPage(event.page + 1);
+  };
 
   return (
     <div className="p-4 md:p-6 max-w-[1200px] mx-auto" ref={parentForm}>
@@ -372,7 +458,12 @@ function WorkEntitiesPage(): React.JSX.Element {
             </Link>
           </div>
           <div className="p-card-content !pb-0 !pt-0 md:!pt-10">
-            <form onSubmit={handleSubmit(onSearch)} className="flex flex-wrap gap-x-3.5 gap-y-6 w-full">
+            <p className="text-lg">Buscar por</p>
+            <form
+              onSubmit={handleSubmit(onSearch)}
+              onChange={checkIsFilled}
+              className="flex flex-wrap gap-x-3.5 gap-y-6 w-full mt-10"
+            >
               {columns().map((column, index) => {
                 if (!column.hasOwnProperty("showForm") || column?.showForm) {
                   return (
@@ -401,11 +492,17 @@ function WorkEntitiesPage(): React.JSX.Element {
                             <Dropdown
                               id={field.name}
                               value={field.value}
-                              className={classNames({ "p-invalid": fieldState.error }, "w-full !font-sans mini-select")}
+                              className={classNames({ "p-invalid": fieldState.error }, "w-full !font-sans select-sm")}
                               optionLabel={column?.optionLabel}
-                              options={column?.options}
+                              options={[
+                                { [column?.optionLabel]: "Seleccionar", [column?.optionValue]: "" },
+                                ...column?.options,
+                              ]}
                               optionValue={column?.optionValue}
-                              onChange={(e) => field.onChange(e.value)}
+                              onChange={(e) => {
+                                field.onChange(e.value);
+                                checkIsFilled();
+                              }}
                               placeholder="Seleccionar"
                             />
                           )}
@@ -420,6 +517,7 @@ function WorkEntitiesPage(): React.JSX.Element {
                 <Button
                   text
                   rounded
+                  type="button"
                   severity="secondary"
                   className="!py-2 !text-base !font-sans !text-black"
                   disabled={loading}
@@ -433,7 +531,7 @@ function WorkEntitiesPage(): React.JSX.Element {
                   className="!px-4 !py-2 !text-base"
                   type="submit"
                   // onClick={save}
-                  disabled={!isValid || loading}
+                  disabled={loading || !isFilled}
                 />
               </div>
             </form>
@@ -444,14 +542,44 @@ function WorkEntitiesPage(): React.JSX.Element {
         <div className="relative pb-16 md:pb-28 z-0">
           <div className="relative p-card rounded-2xl md:rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
             <div className="p-card-body !py-6 !px-6 md:!px-11">
-              <div className="p-card-title justify-between flex">
+              <div className="p-card-title justify-between flex items-center">
                 <span className="text-xl md:text-3xl">Resultados de búsqueda</span>
-                <span></span>
+                <div className="flex text-sm items-center gap-x-5">
+                  <div className="min-w-[150px]">
+                    Total de resultados <span className="ml-2 text-primary">{data.meta.total}</span>
+                  </div>
+                  <div className="flex items-center min-w-[210px]">
+                    Registro por página
+                    <div className="ml-6">
+                      <Dropdown
+                        id="per_page"
+                        value={data.meta?.per_page ?? 3}
+                        className={"w-12 !font-sans select-xs"}
+                        panelClassName="select-xs"
+                        optionLabel="value"
+                        options={[
+                          { value: 1 },
+                          { value: 3 },
+                          { value: 5 },
+                          { value: 10 },
+                          { value: 15 },
+                          { value: 20 },
+                          { value: 30 },
+                        ]}
+                        optionValue="value"
+                        onChange={(e) => {
+                          setPerPage(e.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="p-card-content !pb-0 !pt-0 md:!pt-10">
+              <div className="p-card-content !pb-0 !pt-0 md:!pt-10 citizen-attention-paginator">
                 <div className="overflow-hidden mx-auto max-w-[calc(100vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] hidden md:block borderless reverse-striped">
                   <DataTable
-                    value={data.array}
+                    value={data?.array ?? []}
+                    loading={loading}
                     showGridlines={false}
                     stripedRows={true}
                     emptyMessage={<span className="!font-sans">No se encontraron resultados</span>}
@@ -476,17 +604,30 @@ function WorkEntitiesPage(): React.JSX.Element {
                 <div className="p-5 p-card md:hidden block relative rounded-2xl md:rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
                   <div className="pb-5">
                     {columns().map((column, index) => {
-                      return (
-                        <div className="flex flex-wrap items-start justify-between" key={index}>
-                          <div className={classNames("w-1/2 text-sm", { "mt-4": index > 0 })}>{column.name}</div>
-                          <div className={classNames("w-1/2 text-sm !font-sans text-right", { "mt-4": index > 0 })}>
-                            {column.hasOwnProperty("body") ? column?.body(data[0]) : data[0]?.[column?.key]}
+                      if (!column.hasOwnProperty("showTable") || column?.showTable) {
+                        return (
+                          <div className="flex flex-wrap items-start justify-between" key={index}>
+                            <div className={classNames("w-1/2 text-sm", { "mt-4": index > 0 })}>{column.name}</div>
+                            <div className={classNames("w-1/2 text-sm !font-sans text-right", { "mt-4": index > 0 })}>
+                              {column.hasOwnProperty("body")
+                                ? column?.body(data?.array?.[0])
+                                : data?.array?.[0]?.[column?.key]}
+                            </div>
                           </div>
-                        </div>
-                      );
+                        );
+                      }
                     })}
                   </div>
                 </div>
+                <Paginator
+                  first={first}
+                  rows={perPage}
+                  pageLinkSize={isMobile ? 3 : 7}
+                  onPageChange={onPageChange}
+                  template={paginatorTemplate()}
+                  totalRecords={data?.meta?.total ?? 0}
+                  className="mt-11"
+                />
               </div>
             </div>
           </div>

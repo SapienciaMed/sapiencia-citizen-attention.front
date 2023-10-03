@@ -113,7 +113,18 @@
 }
 
 .day-parametrization,
-.no-month-navigator {
+.no-month-navigator,
+.citizen-attention-paginator {
+    .p-paginator {
+        border: unset;
+
+        .p-paginator-pages .p-paginator-page {
+            min-width: 2.5rem;
+            height: 2.5rem;
+            padding: 0.75rem .5rem;
+        }
+    }
+
     .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
         background: #533893;
         border-color: #533893;
@@ -175,7 +186,7 @@
     justify-content: center;
 }
 
-.p-radiobutton.mini-radio .p-radiobutton-box {
+.p-radiobutton.radio-sm .p-radiobutton-box {
     border: 0.4px solid #d1ceda;
     width: 16px;
     height: 16px;
@@ -186,6 +197,31 @@
     }
 }
 
-.p-dropdown.mini-select .p-inputtext{
+.p-dropdown.select-sm .p-inputtext {
     padding: 0.532rem 0.675rem;
+}
+
+.p-dropdown.select-xs {
+    .p-inputtext {
+        padding: 0.25rem 0.25rem;
+        @apply !text-sm;
+    }
+
+    .p-dropdown-trigger {
+        width: 1.25rem;
+
+        .p-icon {
+            width: 0.75rem;
+            height: 0.75rem;
+        }
+    }
+}
+
+.p-dropdown-panel.select-xs {
+    .p-dropdown-items {
+        .p-dropdown-item {
+            padding: 0.5rem .65rem;
+            @apply !text-xs;
+        }
+    }
 }
