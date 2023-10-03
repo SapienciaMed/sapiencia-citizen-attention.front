@@ -8005,6 +8005,14 @@ video {
   margin-top:auto
 }
 
+.mt-12{
+  margin-top:3rem
+}
+
+.mt-11{
+  margin-top:2.75rem
+}
+
 .block{
   display:block
 }
@@ -8292,6 +8300,10 @@ video {
 
 .\!rounded-\[10px\]{
   border-radius:10px !important
+}
+
+.\!rounded-lg{
+  border-radius:0.5rem !important
 }
 
 .rounded{
@@ -8787,7 +8799,16 @@ video {
 }
 
 .day-parametrization,
-.no-month-navigator {
+.no-month-navigator,
+.citizen-attention-paginator {
+  .p-paginator {
+    border: unset;
+    .p-paginator-pages .p-paginator-page {
+      min-width: 2.5rem;
+      height: 2.5rem;
+      padding: 0.75rem .5rem;
+    }
+  }
   .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
     background: #533893;
     border-color: #533893;
@@ -8873,9 +8894,9 @@ video {
   }
 }
 
-.p-dropdown-panel.select-xs{
+.p-dropdown-panel.select-xs {
   .p-dropdown-items {
-    .p-dropdown-item{
+    .p-dropdown-item {
       padding: 0.5rem .65rem;
     }
     .p-dropdown-item{
@@ -9143,4 +9164,4 @@ video {
   .\31xl\:ml-auto{
     margin-left:auto
   }
-} 
+}

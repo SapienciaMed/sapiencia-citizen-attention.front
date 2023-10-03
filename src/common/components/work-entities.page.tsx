@@ -9,16 +9,16 @@ import { Controller, useForm } from "react-hook-form";
 import { EResponseCodes } from "../constants/api.enum";
 // import { useWorkEntityService } from "../hooks/WorkEntityService.hook";
 // import { IWorkEntity } from "../interfaces/workEntity.interfaces";
+import { Dropdown } from "primereact/dropdown";
+import { KeyFilterType } from "primereact/keyfilter";
+import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
 import { Tooltip } from "primereact/tooltip";
 import { Link } from "react-router-dom";
-import { IWorkEntity, IWorkEntityFilters } from "../interfaces/workEntity.interfaces";
-import { IUser } from "../interfaces/user.interfaces";
-import { KeyFilterType } from "primereact/keyfilter";
-import { emailPattern, inputMode } from "../utils/helpers";
-import { Dropdown } from "primereact/dropdown";
-import { IWorkEntityType } from "../interfaces/workEntityType.interface";
 import { useWorkEntityService } from "../hooks/WorkEntityService.hook";
+import { IWorkEntity, IWorkEntityFilters } from "../interfaces/workEntity.interfaces";
+import { IWorkEntityType } from "../interfaces/workEntityType.interface";
 import { IPagingData } from "../utils/api-response";
+import { emailPattern, inputMode } from "../utils/helpers";
 function WorkEntitiesPage(): React.JSX.Element {
   const parentForm = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -32,6 +32,7 @@ function WorkEntitiesPage(): React.JSX.Element {
   const [showTable, setShowTable] = useState(false);
   const [perPage, setPerPage] = useState(10);
   const [page, setPage] = useState(1);
+  const [first, setFirst] = useState<number>(0);
   const [isFilled, setIsFilled] = useState(false);
   const [buttonWidth, setButtonWidth] = useState({
     width: 0,
@@ -49,10 +50,10 @@ function WorkEntitiesPage(): React.JSX.Element {
   } = useForm({ mode: "all" });
 
   const checkIsFilled = () => {
-    const values = Object.values(getValues()).filter(val => val!=null && val!='' && val != undefined);
+    const values = Object.values(getValues()).filter((val) => val != null && val != "" && val != undefined);
     console.log(values);
-    
-    setIsFilled(!!values.length)    
+
+    setIsFilled(!!values.length);
   };
 
   const closeIcon = () => (
@@ -69,6 +70,7 @@ function WorkEntitiesPage(): React.JSX.Element {
     try {
       let payload = getValues() as IWorkEntityFilters;
       payload.perPage = perPage;
+      payload.page = page;
       const response = await workEntityService.getWorkEntityByFilters(payload);
 
       if (response.operation.code === EResponseCodes.OK) {
@@ -184,6 +186,55 @@ function WorkEntitiesPage(): React.JSX.Element {
     });
     setShowTable(false);
     checkIsFilled();
+  };
+
+  const paginatorTemplate = (prev = "Anterior", next = "Siguiente") => {
+    return {
+      layout: "PrevPageLink PageLinks NextPageLink",
+      PrevPageLink: (options) => {
+        return (
+          <Button
+            type="button"
+            className={classNames(options.className, "!rounded-lg")}
+            onClick={options.onClick}
+            disabled={options.disabled || loading}
+          >
+            <span className="p-3 text-black">{prev}</span>
+          </Button>
+        );
+      },
+      NextPageLink: (options) => {
+        return (
+          <Button
+            className={classNames(options.className, "!rounded-lg")}
+            onClick={options.onClick}
+            disabled={options.disabled || loading}
+          >
+            <span className="p-3 text-black">{next}</span>
+          </Button>
+        );
+      },
+      PageLinks: (options) => {
+        if (
+          (options.view.startPage === options.page && options.view.startPage !== 0) ||
+          (options.view.endPage === options.page && options.page + 1 !== options.totalPages)
+        ) {
+          const className = classNames(options.className, { "p-disabled": true });
+
+          return (
+            <span className={className} style={{ userSelect: "none" }}>
+              ...
+            </span>
+          );
+        }
+
+        return (
+          <Button disabled={loading} className={options.className} onClick={options.onClick}>
+            {options.page + 1}
+          </Button>
+        );
+      },
+    };
   };
 
   const getFormErrorMessage = (name) => {
@@ -352,9 +403,11 @@ function WorkEntitiesPage(): React.JSX.Element {
     );
   };
 
-  /* const statusTemplate = (rowData: IWorkEntity) => {
-    return rowData?.answer && rowData?.answerDate ? "Cerrada" : "Abierta";
-  }; */
+  const onPageChange = (event: PaginatorPageChangeEvent): void => {
+    setPerPage(event.rows);
+    setFirst(event.first);
+    setPage(event.page+1);
+  };
 
   return (
     <div className="p-4 md:p-6 max-w-[1200px] mx-auto" ref={parentForm}>
@@ -395,7 +448,11 @@ function WorkEntitiesPage(): React.JSX.Element {
           </div>
           <div className="p-card-content !pb-0 !pt-0 md:!pt-10">
             <p className="text-lg">Buscar por</p>
-            <form onSubmit={handleSubmit(onSearch)} onChange={checkIsFilled} className="flex flex-wrap gap-x-3.5 gap-y-6 w-full mt-10">
+            <form
+              onSubmit={handleSubmit(onSearch)}
+              onChange={checkIsFilled}
+              className="flex flex-wrap gap-x-3.5 gap-y-6 w-full mt-10"
+            >
               {columns().map((column, index) => {
                 if (!column.hasOwnProperty("showForm") || column?.showForm) {
                   return (
@@ -431,7 +488,10 @@ function WorkEntitiesPage(): React.JSX.Element {
                                 ...column?.options,
                               ]}
                               optionValue={column?.optionValue}
-                              onChange={(e) =>{ field.onChange(e.value);checkIsFilled()}}
+                              onChange={(e) => {
+                                field.onChange(e.value);
+                                checkIsFilled();
+                              }}
                               placeholder="Seleccionar"
                             />
                           )}
@@ -487,6 +547,7 @@ function WorkEntitiesPage(): React.JSX.Element {
                         panelClassName="select-xs"
                         optionLabel="value"
                         options={[
+                          { value: 1 },
                           { value: 3 },
                           { value: 5 },
                           { value: 10 },
@@ -504,9 +565,10 @@ function WorkEntitiesPage(): React.JSX.Element {
                 </div>
               </div>
               <div className="p-card-content !pb-0 !pt-0 md:!pt-10">
-                <div className="overflow-hidden mx-auto max-w-[calc(100vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] hidden md:block borderless reverse-striped">
+                <div className="overflow-hidden citizen-attention-paginator mx-auto max-w-[calc(100vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] hidden md:block borderless reverse-striped">
                   <DataTable
-                    value={data.array}
+                    value={data?.array ?? []}
+                    loading={loading}
                     showGridlines={false}
                     stripedRows={true}
                     emptyMessage={<span className="!font-sans">No se encontraron resultados</span>}
@@ -527,6 +589,14 @@ function WorkEntitiesPage(): React.JSX.Element {
                       }
                     })}
                   </DataTable>
+                  <Paginator
+                    first={first}
+                    rows={perPage}
+                    onPageChange={onPageChange}
+                    template={paginatorTemplate()}
+                    totalRecords={data?.meta?.total ?? 0}
+                    className="mt-11"
+                  />
                 </div>
                 <div className="p-5 p-card md:hidden block relative rounded-2xl md:rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
                   <div className="pb-5">
