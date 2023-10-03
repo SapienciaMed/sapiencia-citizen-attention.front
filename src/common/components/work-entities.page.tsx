@@ -32,6 +32,7 @@ function WorkEntitiesPage(): React.JSX.Element {
   const [showTable, setShowTable] = useState(false);
   const [perPage, setPerPage] = useState(10);
   const [page, setPage] = useState(1);
+  const [isFilled, setIsFilled] = useState(false);
   const [buttonWidth, setButtonWidth] = useState({
     width: 0,
     left: 0,
@@ -41,11 +42,18 @@ function WorkEntitiesPage(): React.JSX.Element {
 
   const {
     control,
-    formState: { errors, isValid },
+    formState: { errors },
     handleSubmit,
     getValues,
     reset,
   } = useForm({ mode: "all" });
+
+  const checkIsFilled = () => {
+    const values = Object.values(getValues()).filter(val => val!=null && val!='' && val != undefined);
+    console.log(values);
+    
+    setIsFilled(!!values.length)    
+  };
 
   const closeIcon = () => (
     <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -66,7 +74,7 @@ function WorkEntitiesPage(): React.JSX.Element {
       if (response.operation.code === EResponseCodes.OK) {
         setData(response.data);
         console.log(response.data.meta.per_page);
-        
+
         setShowTable(true);
       } else {
         setShowTable(false);
@@ -103,7 +111,9 @@ function WorkEntitiesPage(): React.JSX.Element {
   };
 
   useEffect(() => {
-    onSearch();
+    if (showTable) {
+      onSearch();
+    }
   }, [perPage, page]);
 
   const acceptButton = (options) => {
@@ -173,6 +183,7 @@ function WorkEntitiesPage(): React.JSX.Element {
       },
     });
     setShowTable(false);
+    checkIsFilled();
   };
 
   const getFormErrorMessage = (name) => {
@@ -384,7 +395,7 @@ function WorkEntitiesPage(): React.JSX.Element {
           </div>
           <div className="p-card-content !pb-0 !pt-0 md:!pt-10">
             <p className="text-lg">Buscar por</p>
-            <form onSubmit={handleSubmit(onSearch)} className="flex flex-wrap gap-x-3.5 gap-y-6 w-full mt-10">
+            <form onSubmit={handleSubmit(onSearch)} onChange={checkIsFilled} className="flex flex-wrap gap-x-3.5 gap-y-6 w-full mt-10">
               {columns().map((column, index) => {
                 if (!column.hasOwnProperty("showForm") || column?.showForm) {
                   return (
@@ -420,7 +431,7 @@ function WorkEntitiesPage(): React.JSX.Element {
                                 ...column?.options,
                               ]}
                               optionValue={column?.optionValue}
-                              onChange={(e) => field.onChange(e.value)}
+                              onChange={(e) =>{ field.onChange(e.value);checkIsFilled()}}
                               placeholder="Seleccionar"
                             />
                           )}
@@ -449,7 +460,7 @@ function WorkEntitiesPage(): React.JSX.Element {
                   className="!px-4 !py-2 !text-base"
                   type="submit"
                   // onClick={save}
-                  disabled={!isValid || loading}
+                  disabled={loading || !isFilled}
                 />
               </div>
             </form>
@@ -469,18 +480,25 @@ function WorkEntitiesPage(): React.JSX.Element {
                   <div className="flex items-center min-w-[210px]">
                     Registro por página
                     <div className="ml-6">
-                    <Dropdown
-                      id="per_page"
-                      value={data.meta?.per_page ?? 3}
-                      className={"w-12 !font-sans select-xs"}
-                      panelClassName="select-xs"
-                      optionLabel="value"
-                      options={[{ value: 3 }, { value: 5 }, { value: 10 }, { value: 15 }, { value: 20 }, { value: 30 }]}
-                      optionValue="value"
-                      onChange={(e) => {
-                        setPerPage(e.value);
-                      }}
-                    />
+                      <Dropdown
+                        id="per_page"
+                        value={data.meta?.per_page ?? 3}
+                        className={"w-12 !font-sans select-xs"}
+                        panelClassName="select-xs"
+                        optionLabel="value"
+                        options={[
+                          { value: 3 },
+                          { value: 5 },
+                          { value: 10 },
+                          { value: 15 },
+                          { value: 20 },
+                          { value: 30 },
+                        ]}
+                        optionValue="value"
+                        onChange={(e) => {
+                          setPerPage(e.value);
+                        }}
+                      />
                     </div>
                   </div>
                 </div>
