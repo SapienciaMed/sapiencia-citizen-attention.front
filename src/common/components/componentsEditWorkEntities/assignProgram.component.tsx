@@ -1,12 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useWorkEntityService } from "../../hooks/WorkEntityService.hook";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 import { Dialog } from "primereact/dialog";
 import { Fieldset } from 'primereact/fieldset';
 import { Tree, TreeCheckboxSelectionKeys } from "primereact/tree";
 import { TreeNode } from "primereact/treenode";
+import { EResponseCodes } from "../../constants/api.enum";
+import { useFetcher } from "react-router-dom";
+
 
 export const AssignProgramComponent = () => {
+
+    const workEntityService = useWorkEntityService();
+
     const [visible, setVisible] = useState<boolean>(false);
     const [nodes, setNodes] = useState<TreeNode[]>([
         {children:[{data: "Meeting",key: "1-0",label: "cambio de programa y univesidad"},{data: "Meeting",key: "1-1",label: "cambio de programa y univesidad"}],data:'Envent',key:'1',label:'Becas mejores bachilleres'},
@@ -17,9 +24,50 @@ export const AssignProgramComponent = () => {
     const [selectedKeys, setSelectedKeys] = useState(null);
     const [selectedProgram, setSelectedProgram] = useState(null);
     
+
+    const fetchPrograms = async () => {
+
+        try {
+          const response = await workEntityService.getProgramsAffairs();
+          
+          if (response.operation.code === EResponseCodes.OK) {
+            const treePrograms = response.data.map((program) => {
+              let affairs = program.affairs.map((affair) => {
+                return {
+                  id: affair.aso_codigo.toString(),
+                  key: program.prg_codigo + "_" + affair.aso_codigo,
+                  label: affair.aso_asunto,
+                  data: affair,
+                } as TreeNode;
+              });
+              return {
+                id: program.prg_codigo.toString(),
+                key: program.prg_codigo,
+                label: program.prg_descripcion,
+                data: program,
+                children: affairs,
+              } as TreeNode;
+            });
+            setNodes(treePrograms)
+          }
+        } catch (error) {
+          console.error("Error al obtener la lista de programas:", error);
+        } finally {
+        }
+      };
+      //fetchPrograms();
+
+      useEffect(()=>{
+        fetchPrograms();
+      },[])
+
+
     const addProgram = ()=>{
             const programs = [];
             programs.push(selectedKeys);
+
+            console.log('Select', selectedKeys);
+            
             const keyProgram = programs[0]!== null?Object.keys(programs[0]):[]; 
 
             nodes.filter( (nodos, index )=> {

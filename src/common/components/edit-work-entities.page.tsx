@@ -14,9 +14,10 @@ import { InputSwitch, InputSwitchChangeEvent } from "primereact/inputswitch";
 import { ChangeResponsibleComponent } from "./componentsEditWorkEntities/changeResponsible.component";
 import { AssignProgramComponent } from "./componentsEditWorkEntities/assignProgram.component"
 import { IWorkEntity } from "../interfaces/workEntity.interfaces";
-
+import { EResponseCodes } from "../constants/api.enum";
 
 import '../../styles/workEntities-styles.scss'; 
+
 
 
 interface User {
@@ -31,7 +32,6 @@ interface User {
 const EditWorkEntitiesPage = () => {
 
   const userEntity =  useWorkEntityService();
-  const getPrograms =  useWorkEntityService();
 
   const [anchoDePantalla, setAnchoDePantalla] = useState(window.innerWidth);
   const [checked, setChecked] = useState<boolean>(false);
@@ -53,7 +53,6 @@ const EditWorkEntitiesPage = () => {
     setDocumenUser(data.numberDocument)
   }
   
-  const workEntityService = useWorkEntityService();
   const navigate = useNavigate();
 
   const WidthRef = useRef(null);
@@ -74,14 +73,8 @@ const EditWorkEntitiesPage = () => {
     return responseUser
   }
 
-  const getProgramsSffairs = async ()=>{
-    return await getPrograms.getProgramsAffairs()
-  }
 
   useEffect(()=>{
-    //const programs = getProgramsSffairs()
-    //console.log(programs);
-    
     getUser(id).then(({data, operation})=> {
       
       if(operation.code != 'OK'){
@@ -92,7 +85,8 @@ const EditWorkEntitiesPage = () => {
       dataUser.current = data;
       setIdEntity(data.id.toString());
       setTypeEntity(data.workEntityType['tet_descripcion']);
-      setNameEntity(data['name']);
+      //setNameEntity(data['name']);
+      getNameEntite(data['name'])
       setDocumenUser(data.user['numberDocument']);
       setNameUser(`${data.user['names']} ${data.user['lastNames']}`)
       setConsta1(data.user['numberContact1']);
@@ -104,14 +98,8 @@ const EditWorkEntitiesPage = () => {
     })
   },[])
 
-  try {
-
-   
-  } catch (error) {
-    
-  }
   useEffect(()=>{
-
+    
   },[])
 
   useEffect(() => {
@@ -125,22 +113,23 @@ const EditWorkEntitiesPage = () => {
   }, []);
 
   const defaultValues = {
-    etityName: '',
+    etityName: 'Nombre entidad',
   };
 
   const {
     formState: { errors, isValid },
     handleSubmit,
     control
-  } = useForm({ defaultValues, mode:'all' });
+  } = useForm({ defaultValues, mode:'all',  });
 
   const onSubmit = async (data) => {
-	
+    
   }
 
   const getFormErrorMessage = (name) => {
     return errors[name] ? <small className="p-error">{errors[name].message}</small> : <small className="p-error">&nbsp;</small>;
   };
+  
 
   return (
 
@@ -181,13 +170,11 @@ const EditWorkEntitiesPage = () => {
                   </div>
 
                   <span className='split'></span>
-
                   <div className="col-100">
                     <label>Nombre entidad<span style={{color:'red'}}>*</span></label><br/>
                     <Controller
                       name="etityName"
                       control={control}
-                      defaultValue={workEntity?.name}
                       rules={{
                         required: 'Campo obligatorio.',
                         maxLength: {value:100, message:'Solo se permiten 100 caracteres'}
@@ -311,6 +298,7 @@ const EditWorkEntitiesPage = () => {
             <Button
               text
               rounded
+              onClick={()=>navigate(-1)}
               severity="secondary"
               className="!px-8 !py-2 !text-base !text-black mr-4 !h-10"
               label="Cancelar"
