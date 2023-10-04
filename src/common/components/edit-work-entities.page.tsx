@@ -31,6 +31,7 @@ interface User {
 const EditWorkEntitiesPage = () => {
 
   const userEntity =  useWorkEntityService();
+  const getPrograms =  useWorkEntityService();
 
   const [anchoDePantalla, setAnchoDePantalla] = useState(window.innerWidth);
   const [checked, setChecked] = useState<boolean>(false);
@@ -73,7 +74,14 @@ const EditWorkEntitiesPage = () => {
     return responseUser
   }
 
+  const getProgramsSffairs = async ()=>{
+    return await getPrograms.getProgramsAffairs()
+  }
+
   useEffect(()=>{
+    //const programs = getProgramsSffairs()
+    //console.log(programs);
+    
     getUser(id).then(({data, operation})=> {
       
       if(operation.code != 'OK'){
