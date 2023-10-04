@@ -23,7 +23,7 @@ interface Payload {
     email:'', 
     identification:'', 
     lastNames:'', 
-    name:''
+    names:''
 }
 
 interface User {
@@ -69,7 +69,7 @@ export const ChangeResponsibleComponent = (props:Props) => {
 
     const defaultValues = {
         identification: '',
-        name:'',
+        names:'',
         lastName:'',
         email:''
       };
@@ -107,7 +107,7 @@ export const ChangeResponsibleComponent = (props:Props) => {
     }
 
     let statusButon = true
-    if(watch('name').length>0 || watch('identification').length>0 || watch('lastName').length>0 || watch('email').length>0  ){
+    if(watch('names').length>0 || watch('identification').length>0 || watch('lastName').length>0 || watch('email').length>0  ){
         statusButon = false
     }
     
@@ -116,16 +116,18 @@ export const ChangeResponsibleComponent = (props:Props) => {
         setLoad(true)
         try {
 
-            const { email, identification, lastNames, name} = filter;
-            //if (email==='') { return }
+            const { email, identification, lastNames, names} = filter;
+            console.log(filter)
 
             
             const payload:IWorkEntityFilters = {
                 email,
                 lastNames,
-                name,
+                names,
                 identification: parseInt(identification)
             }
+
+            console.log(payload);
             
             const response = await workEntityService.getWorkEntityByFilters(payload);
             const { data, operation } = response;
@@ -217,7 +219,7 @@ export const ChangeResponsibleComponent = (props:Props) => {
                             <div className="col-100">
                                 <label>Nombres</label><br/>
                                 <Controller
-                                    name="name"
+                                    name="names"
                                     control={control}
                                     rules={{
                                         maxLength:{value:50, message:'Solo se permiten 50 caracteres'} 
@@ -322,7 +324,7 @@ export const ChangeResponsibleComponent = (props:Props) => {
                                     <label className="text-2xl">Resultados de búsqueda</label>
                                 </div>
                                 <div className="paginado col-1">
-                                    <div className="pl-8"><label className="mr-2 text-base">Total de resultados</label>{'3'}</div>
+                                    <div className="pl-8"><label className="mr-2 text-base">Total de resultados</label>{data.length}</div>
                                     <div className="">
                                         <label className="mr-2 p-colorpicker">Registro por página</label>
                                         <Dropdown 
