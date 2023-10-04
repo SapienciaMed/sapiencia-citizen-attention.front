@@ -35,6 +35,7 @@ export const ChangeResponsibleComponent = () => {
     const [rowClick, setRowClick] = useState(true);
     const [load, setLoad] = useState(false);
     const [error, setError] = useState(false);
+    const [cancelar, setCancelar] = useState(false);
     const [selectPage, setSelectPage] = useState<PageNumber>({page: 5});
 
     const pageNumber: PageNumber[] = [
@@ -62,7 +63,7 @@ export const ChangeResponsibleComponent = () => {
         formState: { errors, isValid },
         control,
         handleSubmit,
-        getValues,
+        watch,
         reset
       } = useForm({ defaultValues, mode:'all' });
 
@@ -72,9 +73,21 @@ export const ChangeResponsibleComponent = () => {
         reset()
     }
 
+    const cancelarChanges = ()=> { 
+        setCancelar(false)
+        setLoad(false),
+        setError(false),
+        setData([]),
+        setVisible(false)
+        reset()
+    }
 
+    let statusButon = true
+    if(watch('name').length>0 || watch('identification').length>0 || watch('lastName').length>0 || watch('email').length>0  ){
+        statusButon = false
+    }
+    
     const onSubmit = async ( filter:Payload) => {
-        console.log('-...->', data);
         
         setLoad(true)
         try {
@@ -109,7 +122,6 @@ export const ChangeResponsibleComponent = () => {
             }))
             setLoad(false),
             setData(usersData)
-            console.log('-> ',response);
         } catch (error) {
             
         }
@@ -138,7 +150,12 @@ export const ChangeResponsibleComponent = () => {
                 className="dialog-movil" 
             >
                 {error?(<>
-                            <MessageComponent headerMsg="Error" msg="No se encontraron resultados para la búsqueda realizada"/>
+                            <MessageComponent 
+                                twoBtn={false}
+                                nameBtn1="Cerrar"
+                                onClickBt1={resetForm} 
+                                headerMsg="Error" 
+                                msg="No se encontraron resultados para la búsqueda realizada"/>
                         </>):(<></>)}
                 
                 <form
@@ -268,7 +285,7 @@ export const ChangeResponsibleComponent = () => {
                             <Button 
                                 className="rounded-full !h-10" 
                                 type="submit"
-                                disabled={load}
+                                disabled={load || statusButon}
                             >
                                 Buscar
                             </Button>
@@ -322,10 +339,21 @@ export const ChangeResponsibleComponent = () => {
                                         ></Column>
                                     </DataTable>
                                 </div>
+
+                                {cancelar?(<><MessageComponent
+                                                twoBtn={true}
+                                                nameBtn1="Continuar"
+                                                nameBtn2="Cancelar"
+                                                onClickBt2={() =>setCancelar(false)}
+                                                onClickBt1={ cancelarChanges }
+                                                headerMsg="Cancelar cambios" 
+                                                msg="Desea cancelar la acción, no se guardarán los datos"/></>):(<></>)}
+                           
                             <div className="flex justify-center mt-8">
                                 <Button
                                 text
                                 className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10"
+                                onClick={ () =>setCancelar(true)}
                                 >Cancelar</Button>
                                 <Button className="rounded-full !h-10">Cambiar</Button>
                             </div>

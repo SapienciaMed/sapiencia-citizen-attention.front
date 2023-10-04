@@ -47,6 +47,13 @@ const EditWorkEntitiesPage = () => {
   const dataUser = useRef(null);
   WidthRef.current = document.getElementById('sidebar').offsetWidth;
 
+  const getNameEntite = (name:string)=>{
+
+    setNameEntity(name)
+
+    return name
+  }
+
   const { id } = useParams();
 
   const getUser = async ( id:string )=>{
@@ -61,6 +68,8 @@ const EditWorkEntitiesPage = () => {
         navigate(-1);
         return
       }
+      console.log('Data-> ',data);
+      
       dataUser.current = data;
       setIdEntity(data.id.toString());
       setTypeEntity(data.workEntityType['tet_descripcion']);
@@ -168,9 +177,9 @@ const EditWorkEntitiesPage = () => {
                         <>
                          <InputText
                           id={field.name}
-                          value={field.value}
+                          value={nameEntity}
                           className={classNames({'p-invalid': fieldState.error},'!h-10 col-100')}
-                          onChange={(e) => field.onChange(e.target.value)}
+                          onChange={(e) => field.onChange(getNameEntite(e.target.value))}
                          />
                          <br />
                          {getFormErrorMessage(field.name)}

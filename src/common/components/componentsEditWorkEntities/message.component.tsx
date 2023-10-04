@@ -3,15 +3,20 @@ import { Dialog } from "primereact/dialog"
 import { useEffect, useState } from "react";
 
 interface Props {
-    headerMsg: string
-    msg:string, 
+    headerMsg: string;
+    msg:string;
+    twoBtn: boolean;
+    nameBtn1: string;
+    nameBtn2?: string;
+    onClickBt1?:(...event: any[]) => void;
+    onClickBt2?:(...event: any[]) => void;  
 }
 
 export const MessageComponent = (props:Props) => {
 
-    const [ visibleMsg, setVisibleMsg] = useState(null);
+    const [ visibleMsg, setVisibleMsg] = useState(false);
 
-    const { headerMsg, msg } = props
+    const { headerMsg, msg, onClickBt1, onClickBt2, twoBtn, nameBtn1, nameBtn2 } = props
 
     useEffect(()=>{
         setVisibleMsg(true)
@@ -32,7 +37,18 @@ export const MessageComponent = (props:Props) => {
             }}
           >
             <p className="m-0 textMsg">{msg}</p>
-            <Button className='mt-8' style={{backgroundColor:'533893'}} onClick={() => setVisibleMsg(false) }  rounded>Cerrar</Button>
+            <div className="flex justify-center mt-8">
+              {twoBtn?(<>
+                <Button
+                  text
+                  className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10"
+                  onClick={onClickBt2}
+                  >{nameBtn2}</Button>
+              </>):(<></>)}
+                <Button 
+                  onClick={onClickBt1} 
+                  className="rounded-full !h-10">{nameBtn1}</Button>
+            </div>
           </Dialog>
         </div>
     </>
