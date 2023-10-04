@@ -387,7 +387,7 @@ function WorkEntitiesPage(): React.JSX.Element {
         <Tooltip target=".tooltip-see-attached-dt" />
         <Link
           to={"editar/" + rowData?.id}
-          className="hover:text-primary flex mx-auto items-center justify-center tooltip-see-attached-dt"
+          className="hover:text-primary inline-flex mx-auto items-center justify-center tooltip-see-attached-dt"
           data-pr-tooltip="Editar"
           data-pr-position="right"
         >
@@ -528,7 +528,7 @@ function WorkEntitiesPage(): React.JSX.Element {
                 <Button
                   label="Buscar"
                   rounded
-                  className="!px-4 !py-2 !text-base"
+                  className="!px-4 !py-2 !text-base !font-sans"
                   type="submit"
                   // onClick={save}
                   disabled={loading || !isFilled}

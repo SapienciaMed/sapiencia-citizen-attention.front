@@ -1,4 +1,5 @@
 import { EResponseCodes } from "../constants/api.enum";
+import { IProgram } from "../interfaces/program.interfaces";
 import { IWorkEntity, IWorkEntityFilters } from "../interfaces/workEntity.interfaces";
 import { IWorkEntityType } from "../interfaces/workEntityType.interface";
 import { ApiResponse, IPagingData } from "../utils/api-response";
@@ -45,6 +46,15 @@ export function useWorkEntityService() {
     }
   }
 
+  async function getProgramsAffairs(): Promise<ApiResponse<IProgram[]>> {
+    try {
+      const endpoint: string = `/get-programs`;
+      return await get(`${listUrl}${endpoint}`);
+    } catch (error) {
+      return new ApiResponse([] as IProgram[], EResponseCodes.FAIL, "Error no controlado");
+    }
+  }
+
   async function createWorkEntity(workEntity: IWorkEntity): Promise<ApiResponse<IWorkEntity>> {
     try {
       const endpoint: string = `/create/`;
@@ -59,6 +69,7 @@ export function useWorkEntityService() {
     getUserByDocument,
     getWorkEntityById,
     getWorkEntityTypes,
+    getProgramsAffairs,
     getWorkEntityByFilters,
   };
 }
