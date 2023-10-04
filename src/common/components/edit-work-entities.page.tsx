@@ -19,7 +19,12 @@ import { IWorkEntity } from "../interfaces/workEntity.interfaces";
 import '../../styles/workEntities-styles.scss'; 
 
 
-
+interface User {
+  email: string
+  name: string
+  numberContact1: string
+  numberDocument: string
+}
 
 
 
@@ -40,6 +45,13 @@ const EditWorkEntitiesPage = () => {
   const [workEntity, setWorkEntity] = useState<IWorkEntity>();
   const [nodes, setNodes] = useState<TreeNode[]>([{children:[{data:{name:'backup-1.zip'},key:'1-0'}],data:{name: "Cloud",size: "20kb", type: "Folder"}, key:'1'}]);
 
+  const changedUser = (data:User)=> {
+    setConsta1(data.numberContact1)
+    setEmail(data.email)
+    setNameUser(data.name)
+    setDocumenUser(data.numberDocument)
+  }
+  
   const workEntityService = useWorkEntityService();
   const navigate = useNavigate();
 
@@ -267,7 +279,9 @@ const EditWorkEntitiesPage = () => {
                   </div>
 
                   <div style={{marginTop:'22px'}} className="bt-movil-1 col-100">
-                    <ChangeResponsibleComponent/>
+                    <ChangeResponsibleComponent
+                     dataUser={(e:User)=> changedUser(e)}
+                    />
                   </div>
                 </div>
 

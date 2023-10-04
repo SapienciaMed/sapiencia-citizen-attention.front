@@ -26,9 +26,21 @@ interface Payload {
     name:''
 }
 
+interface User {
+    email: string
+    name: string
+    numberContact1: string
+    numberDocument: string
+}
 
-export const ChangeResponsibleComponent = () => {
+interface Props {
+    dataUser: (data: User) => void;
+}
 
+
+export const ChangeResponsibleComponent = (props:Props) => {
+
+    const { dataUser } = props
     const workEntityService = useWorkEntityService();
 
     const [visible, setVisible] = useState<boolean>(false);
@@ -36,7 +48,10 @@ export const ChangeResponsibleComponent = () => {
     const [load, setLoad] = useState(false);
     const [error, setError] = useState(false);
     const [cancelar, setCancelar] = useState(false);
+    const [changeUser, setChangeUser] = useState(false);
+    const [changeBtn, setChangeBtn] = useState(true);
     const [selectPage, setSelectPage] = useState<PageNumber>({page: 5});
+    const dataTable = useRef(null)
 
     const pageNumber: PageNumber[] = [
         { page: 5 },
@@ -47,8 +62,8 @@ export const ChangeResponsibleComponent = () => {
     const [data, setData] = useState([]);
 
     const getData = (data: DataTableSelection<[]>) =>{
-        console.log('data table-> ', data);
-        
+        dataTable.current = data
+        setChangeBtn(false)
     }
     
 
@@ -70,6 +85,7 @@ export const ChangeResponsibleComponent = () => {
     const resetForm = ()=> {
         setLoad(false),
         setError(false),
+        setData([]),
         reset()
     }
 
@@ -78,8 +94,16 @@ export const ChangeResponsibleComponent = () => {
         setLoad(false),
         setError(false),
         setData([]),
-        setVisible(false)
         reset()
+        setVisible(false)
+    }
+
+    const userChanges = () =>{
+        dataUser(dataTable.current)
+        setChangeUser(false)
+        setData([])
+        reset()
+        setVisible(false)
     }
 
     let statusButon = true
@@ -348,6 +372,13 @@ export const ChangeResponsibleComponent = () => {
                                                 onClickBt1={ cancelarChanges }
                                                 headerMsg="Cancelar cambios" 
                                                 msg="Desea cancelar la acción, no se guardarán los datos"/></>):(<></>)}
+                                
+                                {changeUser?(<><MessageComponent
+                                                twoBtn={false}
+                                                nameBtn1="Cerrar"
+                                                onClickBt1={ userChanges }
+                                                headerMsg="Cambio realizado" 
+                                                msg={`El usuario ha sido asociado a la Entidad,\n recuerde Guardar para que  \n  se haga efectivo el cambio`}/></>):(<></>)}
                            
                             <div className="flex justify-center mt-8">
                                 <Button
@@ -355,7 +386,11 @@ export const ChangeResponsibleComponent = () => {
                                 className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10"
                                 onClick={ () =>setCancelar(true)}
                                 >Cancelar</Button>
-                                <Button className="rounded-full !h-10">Cambiar</Button>
+                                <Button 
+                                    className="rounded-full !h-10"
+                                    onClick={()=> setChangeUser(true)}
+                                    disabled={changeBtn}
+                                >Cambiar</Button>
                             </div>
                         </Card>
                     </>):(<></>)}
