@@ -80,7 +80,6 @@ const EditWorkEntitiesPage = () => {
         navigate(-1);
         return
       }
-      console.log('Data-> ',data);
       
       dataUser.current = data;
       setIdEntity(data.id.toString());

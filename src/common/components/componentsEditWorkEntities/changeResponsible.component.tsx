@@ -126,8 +126,6 @@ export const ChangeResponsibleComponent = (props:Props) => {
                 name,
                 identification: parseInt(identification)
             }
-
-            console.log('...',payload);
             
             const response = await workEntityService.getWorkEntityByFilters(payload);
             const { data, operation } = response;
@@ -135,7 +133,6 @@ export const ChangeResponsibleComponent = (props:Props) => {
             if(operation.code !== "OK"){
                 setLoad(false),
                 setError(true)
-                console.log('->e ',response);
             }
 
             const usersData = data.array.map( data =>({
