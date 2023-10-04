@@ -70,7 +70,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
         <Button
           label="Continuar"
           rounded
-          className="!px-4 !py-2 !text-base !mr-0"
+          className="!px-4 !py-2 !text-base !mr-0 !font-sans"
           disabled={loading}
           onClick={(e) => {
             options.reject();
@@ -86,7 +86,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
         <Button
           label={label}
           rounded
-          className="!px-4 !py-2 !text-base !mr-0"
+          className="!px-4 !py-2 !text-base !mr-0 !font-sans"
           disabled={loading}
           onClick={(e) => {
             options.accept();
@@ -345,6 +345,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
                 )}
               />
               <div className="md:mt-8 flex w-full md:w-auto gap-x-3 justify-end ml-auto">
+                <div>
                 <Button
                   text
                   rounded
@@ -356,15 +357,18 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
                 >
                   Limpiar campos
                 </Button>
+                </div>
+                <div>
                 <Button
                   label="Buscar"
                   ref={searchButton}
                   rounded
-                  className="!px-4 !py-2 !text-base"
+                  className="!px-4 !py-2 !text-base !font-sans"
                   type="submit"
                   // onClick={save}
                   disabled={!isValid || loading}
                 />
+              </div>
               </div>
             </form>
           </div>
@@ -496,7 +500,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
                         <Button
                           label="Guardar"
                           rounded
-                          className="!px-4 !py-2 !text-base"
+                          className="!px-4 !py-2 !text-base !font-sans"
                           type="submit"
                           disabled={!isValid || loading}
                         />
@@ -518,7 +522,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
             <Button
               label="Regresar"
               rounded
-              className="!px-8 !py-2 !text-base"
+              className="!px-8 !py-2 !text-base !font-sans"
               onClick={() => {
                 navigate(-1);
               }}
