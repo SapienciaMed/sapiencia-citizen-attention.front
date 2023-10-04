@@ -3,18 +3,19 @@ import { Column } from "primereact/column";
 import { ConfirmDialog, ConfirmDialogOptions, confirmDialog } from "primereact/confirmdialog";
 import { DataTable } from "primereact/datatable";
 import { InputText } from "primereact/inputtext";
+import { RadioButton } from "primereact/radiobutton";
 import { classNames } from "primereact/utils";
 import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useWorkEntityService } from "../hooks/WorkEntityService.hook";
-import { IWorkEntity } from "../interfaces/workEntity.interfaces";
-import { Tooltip } from "primereact/tooltip";
 import { useNavigate } from "react-router-dom";
 import { EResponseCodes } from "../constants/api.enum";
-import { RadioButton } from "primereact/radiobutton";
+import { useWorkEntityService } from "../hooks/WorkEntityService.hook";
+import { IWorkEntity } from "../interfaces/workEntity.interfaces";
 
-import { IUser } from "../interfaces/user.interfaces";
 import { Dropdown } from "primereact/dropdown";
+import { Tree } from "primereact/tree";
+import { TreeNode } from "primereact/treenode";
+import { IUser } from "../interfaces/user.interfaces";
 import { IWorkEntityType } from "../interfaces/workEntityType.interface";
 function CreateWorkEntitiesPage(): React.JSX.Element {
   const parentForm = useRef(null);
@@ -23,6 +24,8 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [programs, setPrograms] = useState<TreeNode[]>([]);
+  const [selectedPrograms, setSelectedPrograms] = useState(null);
   const [data, setData] = useState<IWorkEntity[]>([]);
   const [workEntityTypes, setWorkEntityTypes] = useState<IWorkEntityType[]>([]);
   const [showTable, setShowTable] = useState(false);
@@ -80,7 +83,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
     );
   };
 
-  const acceptButton = (options, label='Aceptar') => {
+  const acceptButton = (options, label = "Aceptar") => {
     return (
       <div className="flex items-center justify-center gap-2 pb-2">
         <Button
@@ -155,7 +158,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
           ),
           closeIcon: closeIcon,
           acceptLabel: "Cerrar",
-          footer: (options) => acceptButton(options, 'Cerrar'),
+          footer: (options) => acceptButton(options, "Cerrar"),
         });
       } else {
         /* setShowTable(false);
@@ -212,7 +215,40 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
         setLoading(false);
       }
     };
+
+    const fetchPrograms = async () => {
+      setLoading(true);
+      try {
+        const response = await workEntityService.getProgramsAffairs();
+
+        if (response.operation.code === EResponseCodes.OK) {
+          const treePrograms = response.data.map((program) => {
+            let affairs = program.affairs.map((affair) => {
+              return {
+                id: affair.aso_codigo.toString(),
+                key: program.prg_codigo + "_" + affair.aso_codigo,
+                label: affair.aso_asunto,
+                data: affair,
+              } as TreeNode;
+            });
+            return {
+              id: program.prg_codigo.toString(),
+              key: program.prg_codigo,
+              label: program.prg_descripcion,
+              data: program,
+              children: affairs,
+            } as TreeNode;
+          });
+          setPrograms(treePrograms);
+        }
+      } catch (error) {
+        console.error("Error al obtener la lista de programas:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchWorkEntityTypes();
+    fetchPrograms();
     handleResize();
     window.addEventListener("resize", handleResize);
 
@@ -346,29 +382,29 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
               />
               <div className="md:mt-8 flex w-full md:w-auto gap-x-3 justify-end ml-auto">
                 <div>
-                <Button
-                  text
-                  rounded
-                  type="button"
-                  severity="secondary"
-                  className="!py-2 !text-base !font-sans !text-black"
-                  disabled={loading}
-                  onClick={() => resetForm()}
-                >
-                  Limpiar campos
-                </Button>
+                  <Button
+                    text
+                    rounded
+                    type="button"
+                    severity="secondary"
+                    className="!py-2 !text-base !font-sans !text-black"
+                    disabled={loading}
+                    onClick={() => resetForm()}
+                  >
+                    Limpiar campos
+                  </Button>
                 </div>
                 <div>
-                <Button
-                  label="Buscar"
-                  ref={searchButton}
-                  rounded
-                  className="!px-4 !py-2 !text-base !font-sans"
-                  type="submit"
-                  // onClick={save}
-                  disabled={!isValid || loading}
-                />
-              </div>
+                  <Button
+                    label="Buscar"
+                    ref={searchButton}
+                    rounded
+                    className="!px-4 !py-2 !text-base !font-sans"
+                    type="submit"
+                    // onClick={save}
+                    disabled={!isValid || loading}
+                  />
+                </div>
               </div>
             </form>
           </div>
@@ -507,6 +543,25 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
                       </div>
                     </div>
                   </form>
+                </div>
+              </div>
+            </div>
+          )}
+          {selectedUser && (
+            <div className="relative p-card rounded-2xl md:rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
+              <div className="p-card-body !py-6 !px-6 md:!px-11">
+                <div className="p-card-title justify-between flex">
+                  <span className="text-xl md:text-3xl">Entidad</span>
+                  <span></span>
+                </div>
+                <div className="p-card-content !pb-0 !pt-0 md:!pt-10">
+                  <Tree
+                    value={programs}
+                    selectionMode="checkbox"
+                    selectionKeys={selectedPrograms}
+                    onSelectionChange={(e) => setSelectedPrograms(e.value)}
+                    className="w-full md:w-30rem"
+                  />
                 </div>
               </div>
             </div>
