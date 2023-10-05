@@ -65,8 +65,6 @@ export const AssignProgramComponent = () => {
     const addProgram = ()=>{
             const programs = [];
             programs.push(selectedKeys);
-
-            console.log('Select', selectedKeys);
             
             const keyProgram = programs[0]!== null?Object.keys(programs[0]):[]; 
 

@@ -117,17 +117,13 @@ export const ChangeResponsibleComponent = (props:Props) => {
         try {
 
             const { email, identification, lastNames, names} = filter;
-            console.log(filter)
-
-            
+      
             const payload:IWorkEntityFilters = {
                 email,
                 lastNames,
                 names,
                 identification: parseInt(identification)
             }
-
-            console.log(payload);
             
             const response = await workEntityService.getWorkEntityByFilters(payload);
             const { data, operation } = response;
