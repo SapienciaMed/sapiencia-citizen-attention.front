@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useForm, Controller } from 'react-hook-form';
 import { useWorkEntityService } from "../../hooks/WorkEntityService.hook";
 import { Button } from "primereact/button";
@@ -12,8 +12,6 @@ import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { IWorkEntityFilters } from "../../interfaces/workEntity.interfaces";
 import { MessageComponent } from "./message.component"; 
 import { ProgressSpinner } from 'primereact/progressspinner';
-
-
 
 interface PageNumber {
     page: number;
@@ -149,6 +147,61 @@ export const ChangeResponsibleComponent = (props:Props) => {
     const getFormErrorMessage = (name) => {
         return errors[name] ? <small className="p-error">{errors[name].message}</small> : <small className="p-error">&nbsp;</small>;
     };
+
+    const paginatorTemplate = (prev = "Anterior", next = "Siguiente") => {
+        return {
+          layout: "PrevPageLink PageLinks NextPageLink",
+          PrevPageLink: (options) => {
+            return (
+              <Button
+                type="button"
+                className={classNames(options.className, "!rounded-lg")}
+                onClick={options.onClick}
+                disabled={options.disabled }
+              >
+                <span className="p-3 text-black">{prev}</span>
+              </Button>
+            );
+          },
+          NextPageLink: (options) => {
+            return (
+              <Button
+                className={classNames(options.className, "!rounded-lg")}
+                onClick={options.onClick}
+                disabled={options.disabled }
+              >
+                <span className="p-3 text-black">{next}</span>
+              </Button>
+            );
+          },
+          PageLinks: (options) => {
+            console.log(options);
+            
+            if (
+              (options.view.startPage === options.page && options.view.startPage !== 0) ||
+              (options.view.endPage === options.page && options.page + 1 !== options.totalPages)
+            ) {
+              const className = classNames(options.className, { "p-disabled": true });
+    
+              return (
+                <span className={className} style={{ userSelect: "none" }}>
+                  ...
+                </span>
+              );
+            }
+    
+            return (
+              <Button 
+                style={{backgroundColor:'#533893', borderRadius:'4px', color:'white' }}
+                className={options.className} 
+                onClick={options.onClick}
+                >
+                {options.page + 1}
+              </Button>
+            );
+          },
+        };
+      };
       
     return (
         <>
@@ -320,7 +373,7 @@ export const ChangeResponsibleComponent = (props:Props) => {
                                     <label className="text-2xl">Resultados de búsqueda</label>
                                 </div>
                                 <div className="paginado col-1">
-                                    <div className="pl-8"><label className="mr-2 text-base">Total de resultados</label>{data.length}</div>
+                                    <div className="pl-8"><label className="mr-2 text-base ">Total de resultados</label> <span className="text-black bold big">{data.length}</span></div>
                                     <div className="">
                                         <label className="mr-2 p-colorpicker">Registro por página</label>
                                         <Dropdown 
@@ -338,7 +391,9 @@ export const ChangeResponsibleComponent = (props:Props) => {
                                 <div className="overflow-hidden max-w-[calc(100vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] hidden md:block borderless reverse-striped">
                                     <DataTable
                                         value={data}
-                                        paginator 
+                                        paginator
+                                        paginatorTemplate={paginatorTemplate()}
+                                        scrollable
                                         rows={selectPage.page} 
                                         showGridlines={false}
                                         stripedRows={true}

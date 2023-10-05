@@ -17,6 +17,7 @@ import { IWorkEntity } from "../interfaces/workEntity.interfaces";
 import { EResponseCodes } from "../constants/api.enum";
 
 import '../../styles/workEntities-styles.scss'; 
+import { MessageComponent } from "./componentsEditWorkEntities/message.component";
 
 
 
@@ -45,6 +46,7 @@ const EditWorkEntitiesPage = () => {
   const [email, setEmail] = useState<string>('');
   const [workEntity, setWorkEntity] = useState<IWorkEntity>();
   const [nodes, setNodes] = useState<TreeNode[]>([{children:[{data:{name:'backup-1.zip'},key:'1-0'}],data:{name: "Cloud",size: "20kb", type: "Folder"}, key:'1'}]);
+  const [cancelar, setCancelar] = useState(false);
 
   const changedUser = (data:User)=> {
     setConsta1(data.numberContact1)
@@ -52,6 +54,11 @@ const EditWorkEntitiesPage = () => {
     setNameUser(data.name)
     setDocumenUser(data.numberDocument)
   }
+
+  const cancelarChanges = ()=> { 
+    setCancelar(false)
+    navigate(-1);
+}
   
   const navigate = useNavigate();
 
@@ -293,12 +300,21 @@ const EditWorkEntitiesPage = () => {
               </Card>
           </Card>
         </Card>
+
+        {cancelar?(<><MessageComponent
+              twoBtn={true}
+              nameBtn1="Continuar"
+              nameBtn2="Cancelar"
+              onClickBt2={() =>setCancelar(false)}
+              onClickBt1={ cancelarChanges }
+              headerMsg="Cancelar cambios" 
+              msg="Desea cancelar la acción, no se guardarán los datos"/></>):(<></>)}
         <div className="buton-fixe " style={{width:(anchoDePantalla-WidthRef.current)}}>
           <div className="">
             <Button
               text
               rounded
-              onClick={()=>navigate(-1)}
+              onClick={ () =>setCancelar(true)}
               severity="secondary"
               className="!px-8 !py-2 !text-base !text-black mr-4 !h-10"
               label="Cancelar"
