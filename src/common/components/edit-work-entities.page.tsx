@@ -272,9 +272,9 @@ const EditWorkEntitiesPage = () => {
                     <div className="flex flex-col ml-3 movil-3 col-100">
                       <label>Estado</label>
                       <div className="flex flex-row mt-3 movil-4">
-                        <span className="mr-4">Activo</span>
+                        <span className="mr-4">Inactivo</span>
                         <InputSwitch checked={checked} onChange={(e: InputSwitchChangeEvent) => setChecked(e.value)} />
-                        <span className="ml-4">Inactivo</span>
+                        <span className="ml-4">Activo</span>
                       </div>
                     </div>
                   </div>
