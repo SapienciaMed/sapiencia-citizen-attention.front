@@ -303,7 +303,10 @@ const EditWorkEntitiesPage = () => {
               className="!px-8 !py-2 !text-base !text-black mr-4 !h-10"
               label="Cancelar"
             />
-            <Button className="rounded-full !h-10">Guardar</Button>
+            <Button 
+              className="rounded-full !h-10"
+              disabled={nameEntity?false:true}
+            >Guardar</Button>
           </div>
         </div>
       </form>
