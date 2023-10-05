@@ -295,7 +295,7 @@ const EditWorkEntitiesPage = () => {
                   <Column field="name" header="Resumen programas y asuntos seleccionados" expander></Column>
                 </TreeTable>
 
-                <div className="flex flex-grow justify-end pr-5 col-100 bt-movil-1" style={{paddingRight:'1.25rem'}}>
+                <div className="flex flex-grow justify-end pr-5 col-100 bt-movil-1" style={{paddingRight:'0.25rem'}}>
                     <AssignProgramComponent/>
                 </div>
               </Card>

@@ -226,7 +226,7 @@ export const ChangeResponsibleComponent = (props:Props) => {
                 headerStyle={{color:'black', display:'flex', flexDirection:'row'}}
                 headerClassName="prueba"
                 visible={visible} 
-                style={{ width: '60em'}} 
+                style={{ width: '64em'}} 
                 onHide={() => setVisible(false)}
                 className="dialog-movil"
                 closeIcon={closeIcon} 
@@ -412,7 +412,7 @@ export const ChangeResponsibleComponent = (props:Props) => {
                                     >
                                         <Column style={{textAlign:'center'}} field="numberDocument" header="Doc. Identidad"></Column>
                                         <Column style={{textAlign:'center'}} field="name" header="Nombre y apellidos"></Column>
-                                        <Column style={{textAlign:'center'}} field="email" header="Correo" ></Column>
+                                        <Column style={{textAlign:'center', justifyContent:'center'}} field="email" header="Correo" ></Column>
                                         <Column style={{textAlign:'center'}} field="numberContact1" header="No. Contacto 1" ></Column>
                                         <Column 
                                             field="selet" 
@@ -445,7 +445,8 @@ export const ChangeResponsibleComponent = (props:Props) => {
                                 text
                                 className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10"
                                 onClick={ () =>setCancelar(true)}
-                                >Cancelar</Button>
+                                label="Cancelar"
+                                ></Button>
                                 <Button 
                                     className="rounded-full !h-10"
                                     onClick={()=> setChangeUser(true)}

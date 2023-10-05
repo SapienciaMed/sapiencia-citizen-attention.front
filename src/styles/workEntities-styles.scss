@@ -84,6 +84,12 @@
     font-size: 29px !important;
 }
 
+.p-datatable .p-column-header-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /*MOVIL*/
 @media only screen and (max-width: 768px) {
     /* For mobile phones: */

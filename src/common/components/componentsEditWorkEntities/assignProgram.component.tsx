@@ -78,6 +78,7 @@ export const AssignProgramComponent = () => {
     <>
         <Button 
             className="rounded-full !h-10 mt-10"
+            style={{padding:'0.25rem'}}
             onClick={() => setVisible(true)} 
         > 
             Asignar programas 
