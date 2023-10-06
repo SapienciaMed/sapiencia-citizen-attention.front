@@ -378,6 +378,7 @@ const EditWorkEntitiesPage = () => {
 
   return (
     <div className="container">
+      <ConfirmDialog id="messages"></ConfirmDialog>
       <ConfirmDialog
         id="assingProgramsModal"
         className="rounded-2xl"        

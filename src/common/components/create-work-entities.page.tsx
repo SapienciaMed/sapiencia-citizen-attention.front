@@ -466,11 +466,23 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
         }
       });
       newProgram.children = newProgram.children.filter((children)=> !toDeleteChildren.includes(children.key.toString()));
+      let oldChildrens = newProgram.children.filter((children)=> toDeleteChildren.includes(children.key.toString()));
       if (newProgram.children.length) {
         newUnassignePrograms.push(newProgram);
       }else{
-        newSelectionPrograms.push(program)
+        let oldProgram = {...program}
+        oldProgram.children = oldChildrens;
+        newSelectionPrograms.push(oldProgram)
       }
+    });
+    let newPrograms = { ...programs };
+    newPrograms.selection = newSelectionPrograms;
+    newPrograms.selection.forEach(program => {
+      newSelectionPrograms.forEach(newProgram => {
+        /* if (program.key==) {
+        
+        } */
+      });      
     });
 
     setAssignedPrograms([...newUnassignePrograms]);
