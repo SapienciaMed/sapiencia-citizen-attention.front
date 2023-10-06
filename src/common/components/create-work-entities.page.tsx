@@ -24,8 +24,19 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [programs, setPrograms] = useState<TreeNode[]>([]);
+  const [programs, setPrograms] = useState<{
+    info: TreeNode[];
+    selection: TreeNode[];
+  }>({
+    info: [],
+    selection: [],
+  });
+  const [hasSelectedPrograms, setHasSelectedPrograms] = useState(false);
+  const [hasUnselectedPrograms, setHasUnselectedPrograms] = useState(false);
+  const [showAssignPrograms, setShowAssignPrograms] = useState(false);
+  const [assignedPrograms, setAssignedPrograms] = useState<TreeNode[]>([]);
   const [selectedPrograms, setSelectedPrograms] = useState(null);
+  const [unselectedPrograms, setUnselectedPrograms] = useState(null);
   const [data, setData] = useState<IWorkEntity[]>([]);
   const [workEntityTypes, setWorkEntityTypes] = useState<IWorkEntityType[]>([]);
   const [showTable, setShowTable] = useState(false);
@@ -53,7 +64,10 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
     </svg>
   );
 
-  const cancelButtons = (options: ConfirmDialogOptions) => {
+  const cancelButtons = (options: ConfirmDialogOptions, acceptLabel = "Continuar", callback = null, cancelCallback = null) => {
+    if (!callback) {
+      callback = options.reject();
+    }
     return (
       <div className="flex items-center justify-center gap-2 pb-2">
         <Button
@@ -64,19 +78,19 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
           disabled={loading}
           onClick={(e) => {
             options.accept();
-            resetForm();
-            navigate(-1);
+            if (cancelCallback) {
+            }
           }}
         >
           Cancelar
         </Button>
         <Button
-          label="Continuar"
+          label={acceptLabel}
           rounded
           className="!px-4 !py-2 !text-base !mr-0 !font-sans"
           disabled={loading}
           onClick={(e) => {
-            options.reject();
+            callback();
           }}
         />
       </div>
@@ -201,6 +215,19 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
   };
 
   useEffect(() => {
+    if (selectedPrograms) {            
+      const values:any[]= Object.values(selectedPrograms);      
+      const isChecked = values.map((value) => value.checked || value.partialChecked);      
+      setHasSelectedPrograms(isChecked.includes(true));
+    }
+    if (unselectedPrograms) {
+      const values:any[]= Object.values(unselectedPrograms);      
+      const isChecked = values.map((value) => value.checked || value.partialChecked);      
+      setHasUnselectedPrograms(isChecked.includes(true));
+    }
+  },[selectedPrograms,unselectedPrograms]);
+
+  useEffect(() => {
     const fetchWorkEntityTypes = async () => {
       setLoading(true);
       try {
@@ -222,23 +249,31 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
         const response = await workEntityService.getProgramsAffairs();
 
         if (response.operation.code === EResponseCodes.OK) {
-          const treePrograms = response.data.map((program) => {
-            let affairs = program.affairs.map((affair) => {
-              return {
-                id: affair.aso_codigo.toString(),
-                key: program.prg_codigo + "_" + affair.aso_codigo,
-                label: affair.aso_asunto,
-                data: affair,
-              } as TreeNode;
+          let treePrograms = {
+            info: [],
+            selection: [],
+          };
+          for await (const program of response.data) {
+            ["info", "selection"].forEach((key) => {
+              treePrograms[key] = response.data.map((program) => {
+                let affairs = program.affairs.map((affair) => {
+                  return {
+                    id: affair.aso_codigo.toString(),
+                    key: key + "_" + program.prg_codigo + "_" + affair.aso_codigo,
+                    label: affair.aso_asunto,
+                    data: affair,
+                  } as TreeNode;
+                });
+                return {
+                  id: program.prg_codigo.toString(),
+                  key: key + "_" + program.prg_codigo,
+                  label: program.prg_descripcion,
+                  data: program,
+                  children: affairs,
+                } as TreeNode;
+              });
             });
-            return {
-              id: program.prg_codigo.toString(),
-              key: program.prg_codigo,
-              label: program.prg_descripcion,
-              data: program,
-              children: affairs,
-            } as TreeNode;
-          });
+          }
           setPrograms(treePrograms);
         }
       } catch (error) {
@@ -344,9 +379,264 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
     );
   };
 
+  const nodeTemplate = (node, options) => {
+    let label = <span className="!font-sans">{node.label}</span>;
+
+    if (node.url) {
+      label = (
+        <a href={node.url} className="text-primary hover:underline font-semibold">
+          {node.label}
+        </a>
+      );
+    }
+
+    return <span className={options.className}>{label}</span>;
+  };
+
+  const addPrograms = () => {
+    let initPrograms = [...{ ...programs }.selection, ...assignedPrograms];
+    const programstoAdd = initPrograms?.filter((program) => selectedPrograms.hasOwnProperty({ ...program }.key));
+    let newAssignePrograms: TreeNode[] = [];
+    console.log(programstoAdd);
+
+    [...programstoAdd].forEach((program) => {
+      let newChildren: TreeNode[] = [];
+      let newProgram = { ...program };
+      newProgram.children.forEach((children) => {
+        if (
+          selectedPrograms[{ ...children }.key] &&
+          (selectedPrograms[{ ...children }.key].checked || selectedPrograms[{ ...children }.key].partialChecked)
+        ) {
+          newChildren.push({ ...children });
+        }
+      });
+
+      newProgram.children = newChildren;
+      const existsIndex = newAssignePrograms.findIndex((newAssigneProgram) => newAssigneProgram.key == newProgram.key);
+
+      if (existsIndex === -1) {
+        newAssignePrograms.push(newProgram);
+      } else {
+        newAssignePrograms[existsIndex].children = [...newChildren,...newAssignePrograms[existsIndex].children];
+      }
+    });
+    console.log(newAssignePrograms);
+
+    setAssignedPrograms([...newAssignePrograms]);
+
+    let newSelectionPrograms: TreeNode[] = [];
+    initPrograms.forEach((program) => {
+      let newChildren: TreeNode[] = [];
+      let newProgram = { ...program };
+      newProgram.children.forEach((children) => {
+        if (
+          !selectedPrograms[{ ...children }.key] ||
+          (!selectedPrograms[{ ...children }.key].checked && !selectedPrograms[{ ...children }.key].partialChecked)
+        ) {
+          newChildren.push({ ...children });
+        }
+      });
+
+      newProgram.children = newChildren;
+      if (newProgram.children.length) {
+        newSelectionPrograms.push(newProgram);
+      }
+    });
+    let newPrograms = { ...programs };
+    newPrograms.selection = newSelectionPrograms;
+
+    setPrograms(newPrograms);
+  };
+
+  const removePrograms = () => {
+    let initPrograms = [...assignedPrograms];
+    // const programstoRemove = initPrograms.filter((program) => unselectedPrograms.hasOwnProperty({ ...program }.key));
+    let newUnassignePrograms: TreeNode[] = [];
+    let newSelectionPrograms: TreeNode[] = [];
+
+    initPrograms.forEach((program) => {
+      let toDeleteChildren: string[]= [];
+      let newProgram = { ...program };
+      newProgram.children.forEach((children) => {
+        if (
+          unselectedPrograms[{ ...children }.key] &&
+          (unselectedPrograms[{ ...children }.key].checked || unselectedPrograms[{ ...children }.key].partialChecked)
+        ) {
+          toDeleteChildren.push(children.key.toString());
+        }
+      });
+      newProgram.children = newProgram.children.filter((children)=> !toDeleteChildren.includes(children.key.toString()));
+      if (newProgram.children.length) {
+        newUnassignePrograms.push(newProgram);
+      }else{
+        newSelectionPrograms.push(program)
+      }
+    });
+
+    setAssignedPrograms([...newUnassignePrograms]);
+  };
+
+  const assingPrograms = () => {
+    setShowAssignPrograms(false);
+    confirmDialog({
+      id: "messages",
+      className: "rounded-2xl",
+      headerClassName: "rounded-t-2xl",
+      contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
+      message: (
+        <div className="flex flex-wrap w-full items-center justify-center">
+          <div className="mx-auto text-primary text-2xl md:text-3xl w-full text-center">¡Asignación exitosa!</div>
+          <div className="flex items-center justify-center text-center w-full mt-6 pt-0.5">Programas asignados exitosamente</div>
+        </div>
+      ),
+      closeIcon: closeIcon,
+      acceptLabel: "Cerrar",
+      footer: (options) => acceptButton(options, "Cerrar"),
+    });
+  };
+
   return (
     <div className="p-4 md:p-6 max-w-[1200px] mx-auto" ref={parentForm}>
       <ConfirmDialog id="messages"></ConfirmDialog>
+      <ConfirmDialog
+        id="assingProgramsModal"
+        className="rounded-2xl"        
+        headerClassName="rounded-t-2xl"
+        header={
+          <div className="text-2xl w-full lg:hidden block">
+            Asignación de Programas
+            <br />
+            y/o asuntos de solicitudes
+          </div>
+        }
+        closeIcon={closeIcon}
+        contentClassName="w-full max-w-full lg:!pt-0 !px-0 justify-center"
+        visible={showAssignPrograms}
+        acceptLabel="Aceptar"
+        footer={(options) => cancelButtons(options, "Asignar",()=>{assingPrograms()})}
+        message={
+          <div className="grid grid-cols-1 max-h-[calc(100vh-19rem)] overflow-y-auto px-6">
+            <div className="mx-auto text-3xl w-full text-left col-span-full hidden lg:block">
+              Asignación de Programas y/o asuntos de solicitudes
+            </div>
+            <div className="p-card  shadow-none lg:border rounded-2xl lg:p-8 border-[#D9D9D9] grid lg:grid-cols-5 grid-cols-1 gap-7 text-center w-full mt-6">
+              <div className="max-h-[350px] border-b !border-[#D9D9D9] lg:rounded-md rounded-2xl overflow-y-auto relative citizen-attention sticky-header lg:col-span-2">
+                <Tree
+                  id="selection-programs"
+                  key="selection-programs"
+                  value={programs.selection}
+                  contentClassName="border-0"
+                  // onSelect={onSelect}
+                  collapseIcon={
+                    <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M2 2L6 6L10 2"
+                        stroke="#533893"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  }
+                  expandIcon={
+                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M2 10L6 6L2 2"
+                        stroke="#533893"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  }
+                  nodeTemplate={nodeTemplate}
+                  selectionMode="checkbox"
+                  selectionKeys={selectedPrograms}
+                  onSelectionChange={(e) => setSelectedPrograms(e.value)}
+                  className="w-full !p-0 text-left !border-[#D9D9D9] lg:!rounded-md !rounded-2xl sticky-header"
+                  header={
+                    <div className="text-base rubik-medium flex items-center justify-center">
+                      <span className="bg-[#EFEFEF] py-3 px-6 rounded-md hidden lg:inline-block">
+                        Programas y asuntos disponibles
+                      </span>
+                      <span className="bg-[#EFEFEF] py-3 px-6 rounded-md lg:hidden inline-block">
+                        Programas
+                        <br />y asuntos disponibles
+                      </span>
+                    </div>
+                  }
+                />
+              </div>
+              <div className="m-auto w-fit grid lg:grid-cols-1 grid-cols-2 col-span-1 gap-y-4 gap-x-6">
+                <Button
+                  label="Agregar"
+                  rounded
+                  className="!px-4 !py-2 !text-base !font-sans max-w-[120px]"
+                  type="submit"
+                  onClick={addPrograms}
+                  disabled={!hasSelectedPrograms}
+                />
+                <Button
+                  label="Quitar"
+                  rounded
+                  className="!px-4 !py-2 !text-base !font-sans max-w-[120px]"
+                  type="submit"
+                  onClick={removePrograms}
+                  disabled={!hasUnselectedPrograms}
+                />
+              </div>
+              <div className="max-h-[350px] border-b !border-[#D9D9D9] lg:rounded-md rounded-2xl overflow-y-auto relative citizen-attention  lg:col-span-2">
+                <Tree
+                  id="selected-programs"
+                  key="selected-programs"
+                  value={assignedPrograms}
+                  contentClassName="border-0"
+                  collapseIcon={
+                    <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M2 2L6 6L10 2"
+                        stroke="#533893"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  }
+                  expandIcon={
+                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M2 10L6 6L2 2"
+                        stroke="#533893"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  }
+                  nodeTemplate={nodeTemplate}
+                  selectionMode="checkbox"
+                  selectionKeys={unselectedPrograms}
+                  onSelectionChange={(e) => {
+                    setUnselectedPrograms(e.value);
+                  }}
+                  className="w-full !p-0 text-left !border-[#D9D9D9] lg:!rounded-md !rounded-2xl sticky-header"
+                  header={
+                    <div className="text-base rubik-medium flex items-center justify-center text-center">
+                      <span className="bg-[#EFEFEF] py-3 px-6 rounded-md hidden lg:inline-block">
+                        Programas y asuntos seleccionados
+                      </span>
+                      <span className="bg-[#EFEFEF] py-3 px-6 rounded-md lg:hidden inline-block">
+                        Programas
+                        <br />y asuntos seleccionados
+                      </span>
+                    </div>
+                  }
+                />
+              </div>
+            </div>
+          </div>
+        }
+      ></ConfirmDialog>
       <span className="text-3xl block md:hidden pb-5">Crear Entidad de trabajo</span>
       <div className="p-card rounded-2xl md:rounded-4xl shadow-none border border-[#D9D9D9]">
         <div className="p-card-body !py-6 !px-6 md:!px-11">
@@ -397,7 +687,6 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
                 <div>
                   <Button
                     label="Buscar"
-                    ref={searchButton}
                     rounded
                     className="!px-4 !py-2 !text-base !font-sans"
                     type="submit"
@@ -550,18 +839,51 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
           {selectedUser && (
             <div className="relative p-card rounded-2xl md:rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
               <div className="p-card-body !py-6 !px-6 md:!px-11">
-                <div className="p-card-title justify-between flex">
-                  <span className="text-xl md:text-3xl">Entidad</span>
-                  <span></span>
-                </div>
-                <div className="p-card-content !pb-0 !pt-0 md:!pt-10">
-                  <Tree
-                    value={programs}
-                    selectionMode="checkbox"
-                    selectionKeys={selectedPrograms}
-                    onSelectionChange={(e) => setSelectedPrograms(e.value)}
-                    className="w-full md:w-30rem"
-                  />
+                <div className="p-card-content !pb-0 !pt-0">
+                  <div className="max-h-96 overflow-y-auto relative citizen-attention">
+                    <Tree
+                      value={programs.info}
+                      contentClassName="border-0"
+                      collapseIcon={
+                        <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M2 2L6 6L10 2"
+                            stroke="#533893"
+                            stroke-width="3"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                      }
+                      expandIcon={
+                        <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M2 10L6 6L2 2"
+                            stroke="#533893"
+                            stroke-width="3"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                      }
+                      nodeTemplate={nodeTemplate}
+                      className="w-full !p-0 !border-0"
+                      header={
+                        <div className="bg-[#EFEFEF] border-b border-b-[#D9D9D9] text-base py-3 px-5 rubik-medium">
+                          Resumen programas y asuntos seleccionados
+                        </div>
+                      }
+                    />
+                    <div className="sticky bottom-0 pr-3 pt-9 pb-2.5 bg-white border-t border-t-[#D9D9D9] flex justify-end ">
+                      <Button
+                        label="Asignar programas"
+                        rounded
+                        className="!px-8 !py-2 !text-base !font-sans"
+                        onClick={() => setShowAssignPrograms(!showAssignPrograms)}
+                        disabled={loading}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
