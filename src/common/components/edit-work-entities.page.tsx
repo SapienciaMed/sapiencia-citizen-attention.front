@@ -721,16 +721,11 @@ const EditWorkEntitiesPage = () => {
               twoBtn={true}
               nameBtn1="Continuar"
               nameBtn2="Cancelar"
-              onClickBt2={() => setCancelar(false)}
-              onClickBt1={cancelarChanges}
-              headerMsg="Cancelar cambios"
-              msg="Desea cancelar la acción, no se guardarán los datos"
-            />
-          </>
-        ) : (
-          <></>
-        )}
-        <div className="buton-fixe " style={{ width: anchoDePantalla - WidthRef.current }}>
+              onClickBt2={ cancelarChanges }
+              onClickBt1={ () =>setCancelar(false) }
+              headerMsg="Cancelar cambios" 
+              msg="Desea cancelar la acción, no se guardarán los datos"/></>):(<></>)}
+        <div className="buton-fixe " style={{width:(anchoDePantalla-WidthRef.current)}}>
           <div className="">
             <Button
               text

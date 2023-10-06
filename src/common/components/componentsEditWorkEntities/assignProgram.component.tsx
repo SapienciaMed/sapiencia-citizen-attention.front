@@ -10,17 +10,26 @@ import { EResponseCodes } from "../../constants/api.enum";
 import { useFetcher } from "react-router-dom";
 
 
+export interface Program {
+    data:      string;
+    key:       string;
+    label:     string;
+    children?: Program[];
+}
+
+
+
 export const AssignProgramComponent = () => {
 
     const workEntityService = useWorkEntityService();
 
     const [visible, setVisible] = useState<boolean>(false);
-    const [nodes, setNodes] = useState<TreeNode[]>([
+    const [nodes, setNodes] = useState<Program[]>([
         {children:[{data: "Meeting",key: "1-0",label: "cambio de programa y univesidad"},{data: "Meeting",key: "1-1",label: "cambio de programa y univesidad"}],data:'Envent',key:'1',label:'Becas mejores bachilleres'},
         {children:[{data: "Pruebas",key: "2-0",label: "Programa y univesidad"},{data: "Meeting-2",key: "2-1",label: "cambio de programa "}],data:'Envent',key:'2',label:'Mejores bachilleres'},
         {children:[{data: "Pruebas1",key: "3-0",label: "Univesidad"},{data: "Meeting-3",key: "3-1",label: "cambio de programa "}],data:'Envent',key:'3',label:'Bachilleres'}
     ]);
-    const [nodesSeleted, setNodesSeleted] = useState<TreeNode[]>([]);
+    const [nodesSeleted, setNodesSeleted] = useState<Program[]>([]);
     const [selectedKeys, setSelectedKeys] = useState(null);
     const [selectedProgram, setSelectedProgram] = useState(null);
     
@@ -34,19 +43,19 @@ export const AssignProgramComponent = () => {
             const treePrograms = response.data.map((program) => {
               let affairs = program.affairs.map((affair) => {
                 return {
-                  id: affair.aso_codigo.toString(),
-                  key: program.prg_codigo + "_" + affair.aso_codigo,
-                  label: affair.aso_asunto,
-                  data: affair,
-                } as TreeNode;
+                    id: affair.aso_codigo.toString(),
+                    key: program.prg_codigo + "_" + affair.aso_codigo,
+                    label: affair.aso_asunto,
+                    data: affair,
+                } as unknown as Program;
               });
               return {
-                id: program.prg_codigo.toString(),
-                key: program.prg_codigo,
-                label: program.prg_descripcion,
-                data: program,
-                children: affairs,
-              } as TreeNode;
+                  id: program.prg_codigo.toString(),
+                  key: program.prg_codigo,
+                  label: program.prg_descripcion,
+                  data: program,
+                  children: affairs,
+              } as unknown as Program;
             });
             setNodes(treePrograms)
           }
@@ -63,16 +72,45 @@ export const AssignProgramComponent = () => {
 
 
     const addProgram = ()=>{
-            const programs = [];
-            programs.push(selectedKeys);
-            
-            const keyProgram = programs[0]!== null?Object.keys(programs[0]):[]; 
 
-            nodes.filter( (nodos, index )=> {
-                
-            });
+        const programs = [];
+        const idParen = [];
+        programs.push(selectedKeys);
         
+        console.log('--> ',programs);
+        
+        const keyProgram = programs[0]!== null?Object.keys(programs[0]):[]; 
+        const selectedNodesData = findNodesByKeys(nodes, keyProgram);
+
+        setNodesSeleted(selectedNodesData)
+        console.log('Resp--> ', selectedNodesData);
+
    }
+
+   const findNodesByKeys = (tree, keys) => {
+    const result = [];
+
+    const searchNodes = (nodes, parent) => {
+
+      nodes.forEach((node) => {
+        
+        if (keys.includes(node.key)) {
+            result.push({ ...node, parent });
+        }
+
+        if (node.children) {
+          searchNodes(node.children, node);
+        }
+        
+      });
+
+    };
+
+    searchNodes(tree, null);
+
+    return result;
+  };
+
 
   return (
     <>

@@ -1,3 +1,11 @@
+export interface ITransferBox {
+    key: string;
+    label: string;
+    children: ITransferBoxChildren[] | null;
+    id?: number;
+}
+
+
 export interface ITransferBoxTemplate {
     key: string;
     label: string;
