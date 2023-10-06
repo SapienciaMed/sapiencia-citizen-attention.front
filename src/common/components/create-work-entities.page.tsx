@@ -396,8 +396,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
   const addPrograms = () => {
     let initPrograms = [...{ ...programs }.selection, ...assignedPrograms];
     const programstoAdd = initPrograms?.filter((program) => selectedPrograms.hasOwnProperty({ ...program }.key));
-    let newAssignePrograms: TreeNode[] = [];
-    console.log(programstoAdd);
+    let newAssignePrograms: TreeNode[] = [];   
 
     [...programstoAdd].forEach((program) => {
       let newChildren: TreeNode[] = [];
@@ -420,7 +419,6 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
         newAssignePrograms[existsIndex].children = [...newChildren,...newAssignePrograms[existsIndex].children];
       }
     });
-    console.log(newAssignePrograms);
 
     setAssignedPrograms([...newAssignePrograms]);
 
@@ -489,7 +487,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
   };
 
   const assingPrograms = () => {
-    setShowAssignPrograms(false);
+    setShowAssignPrograms(false);    
     confirmDialog({
       id: "messages",
       className: "rounded-2xl",
