@@ -15,11 +15,11 @@ import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
 import { Tooltip } from "primereact/tooltip";
 import { Link } from "react-router-dom";
 import { useWorkEntityService } from "../hooks/WorkEntityService.hook";
+import useCheckMobileScreen from "../hooks/isMobile.hook";
 import { IWorkEntity, IWorkEntityFilters } from "../interfaces/workEntity.interfaces";
 import { IWorkEntityType } from "../interfaces/workEntityType.interface";
 import { IPagingData } from "../utils/api-response";
 import { emailPattern, inputMode } from "../utils/helpers";
-import useCheckMobileScreen from "../hooks/isMobile.hook";
 function WorkEntitiesPage(): React.JSX.Element {
   const parentForm = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -384,7 +384,7 @@ function WorkEntitiesPage(): React.JSX.Element {
   const editUser = (rowData: IWorkEntity) => {
     return (
       <span>
-        <Tooltip target=".tooltip-see-attached-dt" />
+        <Tooltip className="m-1" target=".tooltip-see-attached-dt" autoHide={false} />
         <Link
           to={"editar/" + rowData?.id}
           className="hover:text-primary inline-flex mx-auto items-center justify-center tooltip-see-attached-dt"
