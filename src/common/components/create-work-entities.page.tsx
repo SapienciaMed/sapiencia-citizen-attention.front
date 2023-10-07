@@ -17,6 +17,32 @@ import { Tree } from "primereact/tree";
 import { TreeNode } from "primereact/treenode";
 import { IUser } from "../interfaces/user.interfaces";
 import { IWorkEntityType } from "../interfaces/workEntityType.interface";
+
+interface Program {
+  id: string;
+  key: string;
+  label: string;
+  data: string;
+  children: Program[];
+}
+
+interface Parent {
+  id: string;
+  key: string;
+  label: string;
+  data: string;
+  children: Program[];
+}
+
+interface ProgramDelete {
+  id: string;
+  key: string;
+  label: string;
+  data: string;
+  parent: Parent;
+}
+
+
 function CreateWorkEntitiesPage(): React.JSX.Element {
   const parentForm = useRef(null);
   const searchButton = useRef(null);
@@ -447,8 +473,11 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
   };
 
   const removePrograms = () => {
+    
+    
     let initPrograms = [...assignedPrograms];
     // const programstoRemove = initPrograms.filter((program) => unselectedPrograms.hasOwnProperty({ ...program }.key));
+
     let newUnassignePrograms: TreeNode[] = [];
     let newSelectionPrograms: TreeNode[] = [];
 
@@ -464,26 +493,104 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
         }
       });
       newProgram.children = newProgram.children.filter((children)=> !toDeleteChildren.includes(children.key.toString()));
-      let oldChildrens = newProgram.children.filter((children)=> toDeleteChildren.includes(children.key.toString()));
+      
+     const programDelete =  findNodesByKeys(initPrograms,toDeleteChildren)
+     
+     
+     if( programDelete.length>0 ){
+
+      const parent: Parent = { id: '', key: '', label: '', data: '', children: [] };
+      const children: Program[] = [];
+
+      const prorgranActual = programs.selection.filter((prog)=>prog.id == programDelete[0].parent.id);
+
+        programDelete.forEach((program)=>{
+                
+          children.push({
+            id: program.id,
+            key: program.key,
+            label: program.label,
+            data: program.data,
+            children: [],
+          });
+
+
+          if(prorgranActual.length != 0 && children.length === programDelete.length){
+            
+            programs.selection.forEach((program, items)=>{
+
+              if(program.id === prorgranActual[0].id){
+            
+                for (let index = 0; index < children.length; index++) {
+                  programs.selection[items].children.push(children[index])
+                  
+                }
+                
+              }
+            })
+
+          }else{
+
+            if (parent.children.length === 0) {
+              parent.id = program.parent.id;
+              parent.key = program.parent.key;
+              parent.label = program.parent.label;
+              parent.data = program.parent.data;
+              parent.children.push({
+                id: program.id,
+                key: program.key,
+                label: program.label,
+                data: program.data,
+                children: [],
+              });
+            }
+
+
+          }
+          
+        })
+
+        parent.children = children;
+        if(prorgranActual.length === 0){
+          programs.selection.push(parent);
+        }
+        
+     }
+     
+
       if (newProgram.children.length) {
         newUnassignePrograms.push(newProgram);
+       
       }else{
-        let oldProgram = {...program}
-        oldProgram.children = oldChildrens;
-        newSelectionPrograms.push(oldProgram)
+        newSelectionPrograms.push(program)
       }
     });
-    let newPrograms = { ...programs };
-    newPrograms.selection = newSelectionPrograms;
-    newPrograms.selection.forEach(program => {
-      newSelectionPrograms.forEach(newProgram => {
-        /* if (program.key==) {
-        
-        } */
-      });      
-    });
-
+    
     setAssignedPrograms([...newUnassignePrograms]);
+  };
+
+  const findNodesByKeys = (tree, keys) => {
+    const result = [];
+
+    const searchNodes = (nodes, parent) => {
+
+      nodes.forEach((node) => {
+        
+        if (keys.includes(node.key)) {
+            result.push({ ...node, parent });
+        }
+
+        if (node.children) {
+          searchNodes(node.children, node);
+        }
+        
+      });
+
+    };
+
+    searchNodes(tree, null);
+
+    return result;
   };
 
   const assingPrograms = () => {
