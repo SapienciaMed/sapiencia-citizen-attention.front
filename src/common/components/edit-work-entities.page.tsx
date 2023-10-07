@@ -16,6 +16,7 @@ import { ConfirmDialog, ConfirmDialogOptions, confirmDialog } from "primereact/c
 import { Tree } from "primereact/tree";
 import "../../styles/workEntities-styles.scss";
 import { MessageComponent } from "./componentsEditWorkEntities/message.component";
+import { string } from "yup";
 
 interface User {
   email: string;
@@ -23,6 +24,31 @@ interface User {
   numberContact1: string;
   numberDocument: string;
 }
+
+interface Program {
+  id: string;
+  key: string;
+  label: string;
+  data: string;
+  children: Program[];
+}
+
+interface Parent {
+  id: string;
+  key: string;
+  label: string;
+  data: string;
+  children: Program[];
+}
+
+interface ProgramDelete {
+  id: string;
+  key: string;
+  label: string;
+  data: string;
+  parent: Parent;
+}
+
 
 const EditWorkEntitiesPage = () => {
   const workEntityService = useWorkEntityService();
@@ -60,6 +86,7 @@ const EditWorkEntitiesPage = () => {
   const [assignedPrograms, setAssignedPrograms] = useState<TreeNode[]>([]);
   const [selectedPrograms, setSelectedPrograms] = useState(null);
   const [unselectedPrograms, setUnselectedPrograms] = useState(null);
+  let progran = []
 
   const changedUser = (data: User) => {
     setConsta1(data.numberContact1);
@@ -98,7 +125,6 @@ const EditWorkEntitiesPage = () => {
         navigate(-1);
         return;
       }
-      console.log("-->", data);
 
       dataUser.current = data;
       setIdEntity(data.id.toString());
@@ -219,7 +245,6 @@ const EditWorkEntitiesPage = () => {
     let initPrograms = [...{ ...programs }.selection, ...assignedPrograms];
     const programstoAdd = initPrograms?.filter((program) => selectedPrograms.hasOwnProperty({ ...program }.key));
     let newAssignePrograms: TreeNode[] = [];
-    console.log(programstoAdd);
 
     [...programstoAdd].forEach((program) => {
       let newChildren: TreeNode[] = [];
@@ -242,7 +267,6 @@ const EditWorkEntitiesPage = () => {
         newAssignePrograms[existsIndex].children = [...newChildren,...newAssignePrograms[existsIndex].children];
       }
     });
-    console.log(newAssignePrograms);
 
     setAssignedPrograms([...newAssignePrograms]);
 
@@ -271,8 +295,11 @@ const EditWorkEntitiesPage = () => {
   };
 
   const removePrograms = () => {
+    
+    
     let initPrograms = [...assignedPrograms];
     // const programstoRemove = initPrograms.filter((program) => unselectedPrograms.hasOwnProperty({ ...program }.key));
+
     let newUnassignePrograms: TreeNode[] = [];
     let newSelectionPrograms: TreeNode[] = [];
 
@@ -288,14 +315,88 @@ const EditWorkEntitiesPage = () => {
         }
       });
       newProgram.children = newProgram.children.filter((children)=> !toDeleteChildren.includes(children.key.toString()));
+      
+     const programDelete =  findNodesByKeys(initPrograms,toDeleteChildren)
+     
+     //console.log('program.selet-> ',programs.selection);
+     //console.log('programDelete-> ',programDelete);
+     
+     if( programDelete.length>0 ){
+
+      const parent: Parent = { id: '', key: '', label: '', data: '', children: [] };
+      const children: Program[] = [];
+
+      const prorgranActual = programs.selection.filter((prog)=>prog.id == programDelete[0].parent.id);
+
+      //console.log('prueba-> ', prorgranActual.length);
+      //console.log('prueba-> ', prorgranActual);
+
+        programDelete.forEach((program)=>{
+                
+          children.push({
+            id: program.id,
+            key: program.key,
+            label: program.label,
+            data: program.data,
+            children: [],
+          });
+
+
+          if (parent.children.length === 0) {
+            parent.id = program.parent.id;
+            parent.key = program.parent.key;
+            parent.label = program.parent.label;
+            parent.data = program.parent.data;
+            parent.children.push({
+              id: program.id,
+              key: program.key,
+              label: program.label,
+              data: program.data,
+              children: [],
+            });
+          }
+          
+        })
+
+        
+        parent.children = children;
+        programs.selection.push(parent);
+     }
+     
+
       if (newProgram.children.length) {
         newUnassignePrograms.push(newProgram);
+       
       }else{
         newSelectionPrograms.push(program)
       }
     });
-
+    
     setAssignedPrograms([...newUnassignePrograms]);
+  };
+
+  const findNodesByKeys = (tree, keys) => {
+    const result = [];
+
+    const searchNodes = (nodes, parent) => {
+
+      nodes.forEach((node) => {
+        
+        if (keys.includes(node.key)) {
+            result.push({ ...node, parent });
+        }
+
+        if (node.children) {
+          searchNodes(node.children, node);
+        }
+        
+      });
+
+    };
+
+    searchNodes(tree, null);
+
+    return result;
   };
 
   const closeIcon = () => (
