@@ -318,8 +318,6 @@ const EditWorkEntitiesPage = () => {
       
      const programDelete =  findNodesByKeys(initPrograms,toDeleteChildren)
      
-     //console.log('program.selet-> ',programs.selection);
-     //console.log('programDelete-> ',programDelete);
      
      if( programDelete.length>0 ){
 
@@ -327,9 +325,6 @@ const EditWorkEntitiesPage = () => {
       const children: Program[] = [];
 
       const prorgranActual = programs.selection.filter((prog)=>prog.id == programDelete[0].parent.id);
-
-      //console.log('prueba-> ', prorgranActual.length);
-      //console.log('prueba-> ', prorgranActual);
 
         programDelete.forEach((program)=>{
                 
@@ -342,25 +337,46 @@ const EditWorkEntitiesPage = () => {
           });
 
 
-          if (parent.children.length === 0) {
-            parent.id = program.parent.id;
-            parent.key = program.parent.key;
-            parent.label = program.parent.label;
-            parent.data = program.parent.data;
-            parent.children.push({
-              id: program.id,
-              key: program.key,
-              label: program.label,
-              data: program.data,
-              children: [],
-            });
+          if(prorgranActual.length != 0 && children.length === programDelete.length){
+            
+            programs.selection.forEach((program, items)=>{
+
+              if(program.id === prorgranActual[0].id){
+            
+                for (let index = 0; index < children.length; index++) {
+                  programs.selection[items].children.push(children[index])
+                  
+                }
+                
+              }
+            })
+
+          }else{
+
+            if (parent.children.length === 0) {
+              parent.id = program.parent.id;
+              parent.key = program.parent.key;
+              parent.label = program.parent.label;
+              parent.data = program.parent.data;
+              parent.children.push({
+                id: program.id,
+                key: program.key,
+                label: program.label,
+                data: program.data,
+                children: [],
+              });
+            }
+
+
           }
           
         })
 
-        
         parent.children = children;
-        programs.selection.push(parent);
+        if(prorgranActual.length === 0){
+          programs.selection.push(parent);
+        }
+        
      }
      
 
