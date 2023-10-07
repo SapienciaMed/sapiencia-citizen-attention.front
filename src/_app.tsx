@@ -11,6 +11,7 @@ import "./styles/_app.scss";
 import "./styles/output/utilities.scss";
 import WorkEntitiesPage from "./common/components/work-entities.page";
 import CreateWorkEntitiesPage from "./common/components/create-work-entities.page";
+import PrivateRoute from "./common/components/Guard/auth-private-guard";
 
 function App() {
   //const HomePage = lazy(() => import("./common/components/home.page"));
@@ -20,7 +21,7 @@ function App() {
   const HomePage = lazy(() => import("./common/components/home.page"));
   const CalendarPage = lazy(() => import("./common/components/calendar.page"));
   const QueryPqrsdfPage = lazy(() => import("./common/components/query-pqrsdf.page"));
-  const EditWorkEntitiesPage = lazy(() => import("./common/components/edit-work-entities.page"))
+  const EditWorkEntitiesPage = lazy(() => import("./common/components/edit-work-entities.page"));
   const { publish } = useAppCominicator();
 
   // Effect que cominica la aplicacion actual
@@ -40,9 +41,20 @@ function App() {
               <Route path={"/atencion-ciudadana/"} element={<Register_pqrsdf />} />
               <Route path={"/atencion-ciudadana/calendario"} element={<CalendarPage />} />;
               <Route path={"/atencion-ciudadana/register-pqrsdf"} element={<Register_pqrsdf />} />
-              <Route path={"/atencion-ciudadana/entidades-trabajo/"} element={<WorkEntitiesPage />} />
-              <Route path={"/atencion-ciudadana/entidades-trabajo/crear"} element={<CreateWorkEntitiesPage />} />
-              <Route path={"/atencion-ciudadana/entidades-trabajo/editar/:id"} element={<EditWorkEntitiesPage />} />
+              <Route
+                path={"/atencion-ciudadana/entidades-trabajo/"}
+                element={<PrivateRoute element={<WorkEntitiesPage />} allowedAction={"ENTIDADES_TRABAJO_CONSULTAR"} />}
+              />
+              <Route
+                path={"/atencion-ciudadana/entidades-trabajo/crear"}
+                element={
+                  <PrivateRoute element={<CreateWorkEntitiesPage />} allowedAction={"ENTIDADES_TRABAJO_CREAR"} />
+                }
+              />
+              <Route
+                path={"/atencion-ciudadana/entidades-trabajo/editar/:id"}
+                element={<PrivateRoute element={<EditWorkEntitiesPage />} allowedAction={"ENTIDADES_TRABAJO_CREAR"} />}
+              />
             </Routes>
           </Suspense>
         </Router>

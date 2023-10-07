@@ -16,9 +16,10 @@ const PrivateRoute = ({ element, allowedAction }) => {
       title: "¡Acceso no autorizado!",
       description: "Consulte con el admimistrador del sistema.",
       show: true,
+      OkTitle: "Aceptar",
       onOk: () => setMessage({}),
     });
-    return <Navigate to={"/"} replace />;
+    return <Navigate to={"/core"} replace />;
   }
 };
 
