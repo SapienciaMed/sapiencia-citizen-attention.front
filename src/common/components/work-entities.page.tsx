@@ -14,15 +14,15 @@ import { KeyFilterType } from "primereact/keyfilter";
 import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
 import { Tooltip } from "primereact/tooltip";
 import { Link } from "react-router-dom";
+import { AppContext } from "../contexts/app.context";
 import { useWorkEntityService } from "../hooks/WorkEntityService.hook";
 import useCheckMobileScreen from "../hooks/isMobile.hook";
 import { IWorkEntity, IWorkEntityFilters } from "../interfaces/workEntity.interfaces";
 import { IWorkEntityType } from "../interfaces/workEntityType.interface";
 import { IPagingData } from "../utils/api-response";
 import { emailPattern, inputMode } from "../utils/helpers";
-import { AppContext } from "../contexts/app.context";
 function WorkEntitiesPage(): React.JSX.Element {
-  const { authorization, setMessage } = useContext(AppContext);
+  const { authorization } = useContext(AppContext);
   const parentForm = useRef(null);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<IPagingData<IWorkEntity>>({
@@ -177,6 +177,9 @@ function WorkEntitiesPage(): React.JSX.Element {
     fetchWorkEntityTypes();
     handleResize();
     window.addEventListener("resize", handleResize);
+
+    console.log(authorization);
+    
 
     return () => {
       window.removeEventListener("resize", handleResize);
@@ -430,8 +433,8 @@ function WorkEntitiesPage(): React.JSX.Element {
         <div className="p-card-body !py-6 !px-6 md:!px-11">
           <div className="p-card-title flex justify-end md:justify-between">
             <span className="text-3xl md:block hidden">Entidades de trabajo</span>
-            {!authorization?.allowedActions &&
-              authorization?.allowedActions?.findIndex((i) => i == "ENTIDADES_TRABAJO_CREAR") >= 0 && (
+            {(authorization?.allowedActions &&
+              authorization?.allowedActions?.findIndex((i) => i == "ENTIDADES_TRABAJO_CREAR") >= 0) && (
                 <Link to="crear" className="my-auto text-base text-main flex items-center gap-x-2 cursor-pointer">
                   <span>Crear</span>
                   <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">

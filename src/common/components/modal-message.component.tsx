@@ -13,18 +13,18 @@ function ModalMessageComponent(): React.JSX.Element {
   };
   useOnClickOutside(
     modal,
-    message.onClickOutClose ? handleClickOutsideFn : () => {}
+    message?.onClickOutClose ? handleClickOutsideFn : () => {}
   );
 
   return (
-    <div className={`modal ${message.background ? "modal-bg" : ""} ${message.show ? "is-open" : "modal-close"}`}>
+    <div id="modal" key={"modal"} className={`modal ${message?.background ? "modal-bg" : ""} ${message?.show ? "is-open" : "modal-close"}`}>
       <div ref={modal} className="modal-container">
         <div className="modal-header">
           <button
             className="close button-close tiny hover-three"
             onClick={
-              message.onClose
-                ? message.onClose
+              message?.onClose
+                ? message?.onClose
                 : () => setMessage((prev) => ({ ...prev, show: false }))
             }
           >
@@ -40,31 +40,31 @@ function ModalMessageComponent(): React.JSX.Element {
           )}
         </div>
         <div className="modal-footer">
-          {message.cancelTitle ? (
+          {message?.cancelTitle ? (
             <button
               className="button-cancel medium hover-three"
               onClick={
-                message.onCancel
-                  ? message.onCancel
+                message?.onCancel
+                  ? message?.onCancel
                   : () => setMessage((prev) => ({ ...prev, show: false }))
               }
             >
-              {message.cancelTitle}
+              {message?.cancelTitle}
               <img className="icons" src={cancelIcon} />
             </button>
           ) : (
             <></>
           )}
-          {message.OkTitle ? (
+          {message?.OkTitle ? (
             <button
               className="button-ok medium hover-three"
               onClick={
-                message.onOk
-                  ? message.onOk
+                message?.onOk
+                  ? message?.onOk
                   : () => setMessage((prev) => ({ ...prev, show: false }))
               }
             >
-              {message.OkTitle}
+              {message?.OkTitle}
               <img className="icons" src={okIcon} />
             </button>
           ) : (
