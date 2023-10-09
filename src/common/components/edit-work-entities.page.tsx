@@ -90,10 +90,12 @@ const EditWorkEntitiesPage = () => {
   const [selectedPrograms, setSelectedPrograms] = useState(null);
   const [unselectedPrograms, setUnselectedPrograms] = useState(null);
   const [fullName, setfullName] = useState<string[]>([]);
-  let progran = [];
+  const [msgResponse, setMsgResponse] = useState<string>('');
+  const [headerMsg, setHeaderMsg] = useState<string>('')
+  const [showMsg, setShowMsg] = useState(false);
 
   const changedUser = (data: User) => {
-    console.log('user-> ', data);
+    
     setuserId(data.userId)
     setConsta1(data.numberContact1);
     setEmail(data.email);
@@ -195,7 +197,7 @@ const EditWorkEntitiesPage = () => {
             selection: TreeNode[];
           };
           setPrograms(newTree);
-          console.log('assignedAffairsPrograms-> ', assignedAffairsPrograms);
+          
           
           setAssignedPrograms([...
             childrens.filter((selected) => {
@@ -248,9 +250,12 @@ const EditWorkEntitiesPage = () => {
     getValues
   } = useForm({ defaultValues, mode: "all" });
 
-  const onSubmit = async (data) => {
+  const onSubmit = async()=>{}
 
-    console.log('->>',assignedPrograms);
+
+  const onUpdate = async () => {
+
+   
     
 
     const payload:IWorkEntity = {
@@ -283,15 +288,22 @@ const EditWorkEntitiesPage = () => {
 
       }
 
-      console.log(payload);
-
-
-      const response = await workEntityService.updateWorkEntity(payload);
-
-      console.log('response-> ', response);
       
 
+      const response = await workEntityService.updateWorkEntity(payload);
+     
+      if(response['operation']['code'] === 'OK'){
+        setHeaderMsg('Asignación exitosa')
+        setMsgResponse(response['operation']['message'])
+        setShowMsg(true)
+      }else{
+        setHeaderMsg('Error')
+        setMsgResponse(response['operation']['message'])
+        setShowMsg(true)
+      }
+      
   };
+  
 
   const getFormErrorMessage = (name) => {
     return errors[name] ? (
@@ -925,6 +937,13 @@ const EditWorkEntitiesPage = () => {
         ) : (
           <></>
         )}
+
+{showMsg?(<><MessageComponent
+                        twoBtn={false}
+                        nameBtn1="Cancelar"
+                        onClickBt1={()=> setShowMsg(false) }
+                        headerMsg={headerMsg} 
+                        msg={msgResponse}/></>):(<></>)}
         <div className="buton-fixe " style={{ width: anchoDePantalla - WidthRef.current }}>
           <div className="">
             <Button
@@ -935,7 +954,7 @@ const EditWorkEntitiesPage = () => {
               className="!px-8 !py-2 !text-base !text-black mr-4 !h-10"
               label="Cancelar"
             />
-            <Button className="rounded-full !h-10" disabled={nameEntity ? false : true}>
+            <Button className="rounded-full !h-10" onClick={onUpdate} disabled={nameEntity ? false : true}>
               Guardar
             </Button>
           </div>
