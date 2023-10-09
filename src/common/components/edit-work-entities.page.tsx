@@ -192,7 +192,7 @@ const EditWorkEntitiesPage = () => {
                   label: program.prg_descripcion,
                   data: {
                     cod: program.prg_codigo,
-                    check: false
+                    check: false,
                   },
                   children: affairs,
                 } as TreeNode;
@@ -203,46 +203,53 @@ const EditWorkEntitiesPage = () => {
             info: TreeNode[];
             selection: TreeNode[];
           };
-          setPrograms(newTree);          
-          let assignedAffairProgramIds = assignedAffairsPrograms.map((assignedAffairsProgram) => assignedAffairsProgram.affairProgramId)
-          let newAssignedPrograms = newTree.selection.filter((assignedProgram)=>{
-            let childIds = assignedProgram.children.map((child)=> child.data);            
-            const contains = assignedAffairProgramIds.some(id => {
+          setPrograms(newTree);
+          let assignedAffairProgramIds = assignedAffairsPrograms.map(
+            (assignedAffairsProgram) => assignedAffairsProgram.affairProgramId
+          );
+          let newAssignedPrograms = newTree.selection.filter((assignedProgram) => {
+            let childIds = assignedProgram.children.map((child) => child.data);
+            const contains = assignedAffairProgramIds.some((id) => {
               return childIds.indexOf(id) !== -1;
             });
             return contains;
           });
-          
-          newAssignedPrograms.forEach(assignedProgram => {
+
+          newAssignedPrograms.forEach((assignedProgram) => {
             let totalChilds = assignedProgram.children.length;
             assignedProgram.children = assignedProgram.children.filter((child) => {
-              return assignedAffairProgramIds.includes(child.data)              
-            });   
+              return assignedAffairProgramIds.includes(child.data);
+            });
             assignedProgram.data.check = totalChilds == assignedProgram.children.length;
           });
+
+          setAssignedPrograms([...newAssignedPrograms]);
+
+          const selection = Object.assign(
+            {},
+            ...newAssignedPrograms.map((assignedProgram) => {
+              return {
+                [assignedProgram.key]: {
+                  checked: assignedProgram.data.check,
+                  partialChecked: !assignedProgram.data.check,
+                },
+                ...Object.assign(
+                  {},...assignedProgram.children.map((child) => {
+                  return {
+                    [child.key]: {
+                      checked: true,
+                      partialChecked: false,
+                    },
+                  };
+                })),
+              };
+            })
+          );
+
+          console.log(selection);
           
-          setAssignedPrograms([
-            ...newAssignedPrograms
-          ]);
-          
-          const selection = Object.assign({}, ...newAssignedPrograms.map((assignedProgram)=>{
-            return {
-              [assignedProgram.key] : {
-                checked:assignedProgram.data.check, 
-                partialChecked: !assignedProgram.data.check
-              },
-              ...assignedProgram.children.map((child)=>{
-                return {
-                  [child.key] : {
-                    checked:true,
-                partialChecked: false
-                  }
-                }
-              })[0]
-            }
-          }))          
-          
-          updatePrograms([...{ ...newTree }.selection, ...newAssignedPrograms],selection)
+
+          updatePrograms([...{ ...newTree }.selection, ...newAssignedPrograms], selection);
         }
       } catch (error) {
         console.error("Error al obtener la lista de programas:", error);
@@ -385,7 +392,7 @@ const EditWorkEntitiesPage = () => {
   };
 
   const updatePrograms = (initPrograms, defaultSelectedProgram = null) => {
-    defaultSelectedProgram = defaultSelectedProgram ? defaultSelectedProgram : selectedPrograms
+    defaultSelectedProgram = defaultSelectedProgram ? defaultSelectedProgram : selectedPrograms;
     let newSelectionPrograms: TreeNode[] = [];
     initPrograms.forEach((program) => {
       let newChildren: TreeNode[] = [];
@@ -393,7 +400,8 @@ const EditWorkEntitiesPage = () => {
       newProgram.children.forEach((children) => {
         if (
           !defaultSelectedProgram[{ ...children }.key] ||
-          (!defaultSelectedProgram[{ ...children }.key].checked && !defaultSelectedProgram[{ ...children }.key].partialChecked)
+          (!defaultSelectedProgram[{ ...children }.key].checked &&
+            !defaultSelectedProgram[{ ...children }.key].partialChecked)
         ) {
           newChildren.push({ ...children });
         }
@@ -408,7 +416,7 @@ const EditWorkEntitiesPage = () => {
     newPrograms.selection = newSelectionPrograms;
 
     setPrograms(newPrograms);
-  }
+  };
 
   const removePrograms = () => {
     let initPrograms = [...assignedPrograms];
