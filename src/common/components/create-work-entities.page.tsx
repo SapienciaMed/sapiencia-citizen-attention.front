@@ -612,8 +612,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
       closeIcon: closeIcon,
       acceptLabel: "Cerrar",
       footer: (options) => acceptButton(options, "Cerrar"),
-    });
-    console.log(assignedPrograms);
+    });    
     
     let newAssignedAffairsPrograms: IEntityAffairsProgram[] =[];
     assignedPrograms.forEach((assignedProgram) => {
@@ -717,7 +716,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
                   disabled={!hasUnselectedPrograms}
                 />
               </div>
-              <div className="max-h-[350px] border-b !border-[#D9D9D9] lg:rounded-md rounded-2xl overflow-y-auto relative citizen-attention  lg:col-span-2">
+              <div className="max-h-[350px] border-b !border-[#D9D9D9] lg:rounded-md rounded-2xl overflow-y-auto relative citizen-attention sticky-header lg:col-span-2">
                 <Tree
                   id="selected-programs"
                   key="selected-programs"

@@ -9,7 +9,7 @@ import { Controller, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { EResponseCodes } from "../constants/api.enum";
 import { useWorkEntityService } from "../hooks/WorkEntityService.hook";
-import { IWorkEntity } from "../interfaces/workEntity.interfaces";
+import { IEntityAffairsProgram, IWorkEntity } from "../interfaces/workEntity.interfaces";
 import { ChangeResponsibleComponent } from "./componentsEditWorkEntities/changeResponsible.component";
 
 import { ConfirmDialog, ConfirmDialogOptions, confirmDialog } from "primereact/confirmdialog";
@@ -83,6 +83,7 @@ const EditWorkEntitiesPage = () => {
   const [hasSelectedPrograms, setHasSelectedPrograms] = useState(false);
   const [hasUnselectedPrograms, setHasUnselectedPrograms] = useState(false);
   const [showAssignPrograms, setShowAssignPrograms] = useState(false);
+  const [assignedAffairsPrograms, setAssignedAffairsPrograms] = useState<IEntityAffairsProgram[]>([]);  
   const [assignedPrograms, setAssignedPrograms] = useState<TreeNode[]>([]);
   const [selectedPrograms, setSelectedPrograms] = useState(null);
   const [unselectedPrograms, setUnselectedPrograms] = useState(null);
@@ -141,7 +142,7 @@ const EditWorkEntitiesPage = () => {
     });
 
     const fetchPrograms = async () => {
-      // setLoading(true);
+      setLoading(true);
       try {
         const response = await workEntityService.getProgramsAffairs();
 
@@ -158,14 +159,14 @@ const EditWorkEntitiesPage = () => {
                     id: affair.aso_codigo.toString(),
                     key: key + "_" + program.prg_codigo + "_" + affair.aso_codigo,
                     label: affair.aso_asunto,
-                    data: affair,
+                    data: affair.affairProgramId,
                   } as TreeNode;
                 });
                 return {
                   id: program.prg_codigo.toString(),
                   key: key + "_" + program.prg_codigo,
                   label: program.prg_descripcion,
-                  data: program,
+                  data: program.prg_codigo,
                   children: affairs,
                 } as TreeNode;
               });
@@ -176,13 +177,11 @@ const EditWorkEntitiesPage = () => {
       } catch (error) {
         console.error("Error al obtener la lista de programas:", error);
       } finally {
-        // setLoading(false);
+        setLoading(false);
       }
     };
     fetchPrograms();
-  }, []);
-
-  useEffect(() => {}, []);
+  }, []);  
 
   useEffect(() => {
     const handleResize = () => {
@@ -459,7 +458,7 @@ const EditWorkEntitiesPage = () => {
   };
 
   const assingPrograms = () => {
-    setShowAssignPrograms(false);
+    setShowAssignPrograms(false);    
     confirmDialog({
       id: "messages",
       className: "rounded-2xl",
@@ -474,7 +473,17 @@ const EditWorkEntitiesPage = () => {
       closeIcon: closeIcon,
       acceptLabel: "Cerrar",
       footer: (options) => acceptButton(options, "Cerrar"),
+    });    
+    
+    let newAssignedAffairsPrograms: IEntityAffairsProgram[] =[];
+    assignedPrograms.forEach((assignedProgram) => {
+      assignedProgram.children.forEach((child)=>{
+        newAssignedAffairsPrograms.push(
+          {affairProgramId: child.data}
+        );        
+      })            
     });
+    setAssignedAffairsPrograms([...newAssignedAffairsPrograms])
   };
 
   const acceptButton = (options, label = "Aceptar") => {
@@ -583,7 +592,7 @@ const EditWorkEntitiesPage = () => {
                   disabled={!hasUnselectedPrograms}
                 />
               </div>
-              <div className="max-h-[350px] border-b !border-[#D9D9D9] lg:rounded-md rounded-2xl overflow-y-auto relative citizen-attention  lg:col-span-2">
+              <div className="max-h-[350px] border-b !border-[#D9D9D9] lg:rounded-md rounded-2xl overflow-y-auto relative citizen-attention sticky-header lg:col-span-2">
                 <Tree
                   id="selected-programs"
                   key="selected-programs"

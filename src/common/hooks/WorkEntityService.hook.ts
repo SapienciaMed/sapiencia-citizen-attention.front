@@ -64,6 +64,15 @@ export function useWorkEntityService() {
     }
   }
 
+  async function updateWorkEntity(workEntity: IWorkEntity): Promise<ApiResponse<IWorkEntity>> {
+    try {
+      const endpoint: string = `/update/`;
+      return await post(`${listUrl}${endpoint}`, { workEntity });
+    } catch (error) {
+      return new ApiResponse({} as IWorkEntity, EResponseCodes.FAIL, "Error no controlado");
+    }
+  }
+
   return {
     createWorkEntity,
     getUserByDocument,
