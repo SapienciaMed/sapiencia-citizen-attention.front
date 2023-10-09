@@ -63,7 +63,7 @@ const EditWorkEntitiesPage = () => {
   const [consta1, setConsta1] = useState<string>("");
   const [consta2, setConsta2] = useState<string>("");
   const [email, setEmail] = useState<string>("");
-  const [userId, setuserId] = useState<number>();
+  const [userId, setUserId] = useState<number>();
   const [loading, setLoading] = useState(false);
   const [workEntity, setWorkEntity] = useState<IWorkEntity>();
   const [nodes, setNodes] = useState<TreeNode[]>([
@@ -96,7 +96,7 @@ const EditWorkEntitiesPage = () => {
 
   const changedUser = (data: User) => {
     
-    setuserId(data.userId)
+    setUserId(data.userId)
     setConsta1(data.numberContact1);
     setEmail(data.email);
     const nameSplit = data['name'].split(' ')
@@ -145,9 +145,11 @@ const EditWorkEntitiesPage = () => {
       
       setIdEntity(data.id.toString());
       setAssignedAffairsPrograms([...data.affairsPrograms]);
+      
+
       setTypeEntity(data.workEntityType["tet_descripcion"]);
       //setNameEntity(data['name']);
-      setuserId(data.userId)
+      setUserId(data.userId)
       getNameEntite(data["name"]);
       setDocumenUser(data.user["numberDocument"]);
       setNameUser(`${data.user["names"]} ${data.user["lastNames"]}`);
@@ -157,8 +159,11 @@ const EditWorkEntitiesPage = () => {
       setEmail(data.user["email"]);
       const status = data["status"] ? true : false;
       setChecked(status);
-    });
-
+    });    
+  }, []);
+  
+  
+  useEffect(() => {
     const fetchPrograms = async () => {
       setLoading(true);
       try {
@@ -181,7 +186,9 @@ const EditWorkEntitiesPage = () => {
                     data: affair.affairProgramId,
                   } as TreeNode;
                 });
-                childrens.push(...affairs);
+                if (key=="selection") {                  
+                  childrens.push(...affairs);
+                }
                 return {
                   id: program.prg_codigo.toString(),
                   key: key + "_" + program.prg_codigo,
@@ -198,6 +205,8 @@ const EditWorkEntitiesPage = () => {
           };
           setPrograms(newTree);
           
+          console.log(childrens);
+          console.log(assignedAffairsPrograms);
           
           setAssignedPrograms([...
             childrens.filter((selected) => {
@@ -214,7 +223,7 @@ const EditWorkEntitiesPage = () => {
       }
     };
     fetchPrograms();
-  }, []);
+  }, [assignedAffairsPrograms]);
 
   useEffect(() => {
     const handleResize = () => {
