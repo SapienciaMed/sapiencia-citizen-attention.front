@@ -314,14 +314,8 @@ const EditWorkEntitiesPage = () => {
       affairsPrograms: [],
     };
 
-    if (assignedPrograms.length > 0) {
-      assignedPrograms.map((programs) => {
-        payload.affairsPrograms.push({
-          id: parseInt(programs.id),
-          workEntityId: parseInt(idEntity),
-          affairProgramId: programs.data,
-        });
-      });
+    if (assignedAffairsPrograms.length > 0) {
+      payload.affairsPrograms = assignedAffairsPrograms;
     }
 
     const response = await workEntityService.updateWorkEntity(payload);
