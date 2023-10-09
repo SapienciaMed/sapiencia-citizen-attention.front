@@ -49,7 +49,6 @@ interface ProgramDelete {
   parent: Parent;
 }
 
-
 const EditWorkEntitiesPage = () => {
   const workEntityService = useWorkEntityService();
 
@@ -83,11 +82,11 @@ const EditWorkEntitiesPage = () => {
   const [hasSelectedPrograms, setHasSelectedPrograms] = useState(false);
   const [hasUnselectedPrograms, setHasUnselectedPrograms] = useState(false);
   const [showAssignPrograms, setShowAssignPrograms] = useState(false);
-  const [assignedAffairsPrograms, setAssignedAffairsPrograms] = useState<IEntityAffairsProgram[]>([]);  
+  const [assignedAffairsPrograms, setAssignedAffairsPrograms] = useState<IEntityAffairsProgram[]>([]);
   const [assignedPrograms, setAssignedPrograms] = useState<TreeNode[]>([]);
   const [selectedPrograms, setSelectedPrograms] = useState(null);
   const [unselectedPrograms, setUnselectedPrograms] = useState(null);
-  let progran = []
+  let progran = [];
 
   const changedUser = (data: User) => {
     setConsta1(data.numberContact1);
@@ -115,13 +114,13 @@ const EditWorkEntitiesPage = () => {
 
   const { id } = useParams();
 
-  const getUser = async (id: string) => {
+  const getWorkEntity = async (id: string) => {
     const responseUser = await workEntityService.getWorkEntityById(parseInt(id));
     return responseUser;
   };
 
-  useEffect(() => {
-    getUser(id).then(({ data, operation }) => {
+  useEffect(() => {    
+    getWorkEntity(id).then(({ data, operation }) => {
       if (operation.code != "OK") {
         navigate(-1);
         return;
@@ -129,6 +128,7 @@ const EditWorkEntitiesPage = () => {
 
       dataUser.current = data;
       setIdEntity(data.id.toString());
+      setAssignedAffairsPrograms([...data.affairsPrograms]);
       setTypeEntity(data.workEntityType["tet_descripcion"]);
       //setNameEntity(data['name']);
       getNameEntite(data["name"]);
@@ -151,6 +151,7 @@ const EditWorkEntitiesPage = () => {
             info: [],
             selection: [],
           };
+          let childrens: TreeNode[] = [];
           for await (const program of response.data) {
             ["info", "selection"].forEach((key) => {
               treePrograms[key] = response.data.map((program) => {
@@ -162,6 +163,7 @@ const EditWorkEntitiesPage = () => {
                     data: affair.affairProgramId,
                   } as TreeNode;
                 });
+                childrens.push(...affairs);
                 return {
                   id: program.prg_codigo.toString(),
                   key: key + "_" + program.prg_codigo,
@@ -172,7 +174,20 @@ const EditWorkEntitiesPage = () => {
               });
             });
           }
-          setPrograms(treePrograms);
+          let newTree = treePrograms as {
+            info: TreeNode[];
+            selection: TreeNode[];
+          };
+          setPrograms(newTree);
+          console.log(assignedAffairsPrograms);
+          
+          setAssignedPrograms([...
+            childrens.filter((selected) => {
+              return assignedAffairsPrograms.filter(
+                (assignedAffairsProgram) => assignedAffairsProgram.id == selected.data
+              ).length;
+            })]
+          );
         }
       } catch (error) {
         console.error("Error al obtener la lista de programas:", error);
@@ -181,7 +196,7 @@ const EditWorkEntitiesPage = () => {
       }
     };
     fetchPrograms();
-  }, []);  
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -198,17 +213,17 @@ const EditWorkEntitiesPage = () => {
   };
 
   useEffect(() => {
-    if (selectedPrograms) {            
-      const values:any[]= Object.values(selectedPrograms);      
-      const isChecked = values.map((value) => value.checked || value.partialChecked);      
+    if (selectedPrograms) {
+      const values: any[] = Object.values(selectedPrograms);
+      const isChecked = values.map((value) => value.checked || value.partialChecked);
       setHasSelectedPrograms(isChecked.includes(true));
     }
     if (unselectedPrograms) {
-      const values:any[]= Object.values(unselectedPrograms);      
-      const isChecked = values.map((value) => value.checked || value.partialChecked);      
+      const values: any[] = Object.values(unselectedPrograms);
+      const isChecked = values.map((value) => value.checked || value.partialChecked);
       setHasUnselectedPrograms(isChecked.includes(true));
     }
-  },[selectedPrograms,unselectedPrograms]);
+  }, [selectedPrograms, unselectedPrograms]);
 
   const {
     formState: { errors, isValid },
@@ -263,7 +278,7 @@ const EditWorkEntitiesPage = () => {
       if (existsIndex === -1) {
         newAssignePrograms.push(newProgram);
       } else {
-        newAssignePrograms[existsIndex].children = [...newChildren,...newAssignePrograms[existsIndex].children];
+        newAssignePrograms[existsIndex].children = [...newChildren, ...newAssignePrograms[existsIndex].children];
       }
     });
 
@@ -294,8 +309,6 @@ const EditWorkEntitiesPage = () => {
   };
 
   const removePrograms = () => {
-    
-    
     let initPrograms = [...assignedPrograms];
     // const programstoRemove = initPrograms.filter((program) => unselectedPrograms.hasOwnProperty({ ...program }.key));
 
@@ -303,7 +316,7 @@ const EditWorkEntitiesPage = () => {
     let newSelectionPrograms: TreeNode[] = [];
 
     initPrograms.forEach((program) => {
-      let toDeleteChildren: string[]= [];
+      let toDeleteChildren: string[] = [];
       let newProgram = { ...program };
       newProgram.children.forEach((children) => {
         if (
@@ -313,20 +326,19 @@ const EditWorkEntitiesPage = () => {
           toDeleteChildren.push(children.key.toString());
         }
       });
-      newProgram.children = newProgram.children.filter((children)=> !toDeleteChildren.includes(children.key.toString()));
-      
-     const programDelete =  findNodesByKeys(initPrograms,toDeleteChildren)
-     
-     
-     if( programDelete.length>0 ){
+      newProgram.children = newProgram.children.filter(
+        (children) => !toDeleteChildren.includes(children.key.toString())
+      );
 
-      const parent: Parent = { id: '', key: '', label: '', data: '', children: [] };
-      const children: Program[] = [];
+      const programDelete = findNodesByKeys(initPrograms, toDeleteChildren);
 
-      const prorgranActual = programs.selection.filter((prog)=>prog.id == programDelete[0].parent.id);
+      if (programDelete.length > 0) {
+        const parent: Parent = { id: "", key: "", label: "", data: "", children: [] };
+        const children: Program[] = [];
 
-        programDelete.forEach((program)=>{
-                
+        const prorgranActual = programs.selection.filter((prog) => prog.id == programDelete[0].parent.id);
+
+        programDelete.forEach((program) => {
           children.push({
             id: program.id,
             key: program.key,
@@ -335,23 +347,15 @@ const EditWorkEntitiesPage = () => {
             children: [],
           });
 
-
-          if(prorgranActual.length != 0 && children.length === programDelete.length){
-            
-            programs.selection.forEach((program, items)=>{
-
-              if(program.id === prorgranActual[0].id){
-            
+          if (prorgranActual.length != 0 && children.length === programDelete.length) {
+            programs.selection.forEach((program, items) => {
+              if (program.id === prorgranActual[0].id) {
                 for (let index = 0; index < children.length; index++) {
-                  programs.selection[items].children.push(children[index])
-                  
+                  programs.selection[items].children.push(children[index]);
                 }
-                
               }
-            })
-
-          }else{
-
+            });
+          } else {
             if (parent.children.length === 0) {
               parent.id = program.parent.id;
               parent.key = program.parent.key;
@@ -365,28 +369,22 @@ const EditWorkEntitiesPage = () => {
                 children: [],
               });
             }
-
-
           }
-          
-        })
+        });
 
         parent.children = children;
-        if(prorgranActual.length === 0){
+        if (prorgranActual.length === 0) {
           programs.selection.push(parent);
         }
-        
-     }
-     
+      }
 
       if (newProgram.children.length) {
         newUnassignePrograms.push(newProgram);
-       
-      }else{
-        newSelectionPrograms.push(program)
+      } else {
+        newSelectionPrograms.push(program);
       }
     });
-    
+
     setAssignedPrograms([...newUnassignePrograms]);
   };
 
@@ -394,19 +392,15 @@ const EditWorkEntitiesPage = () => {
     const result = [];
 
     const searchNodes = (nodes, parent) => {
-
       nodes.forEach((node) => {
-        
         if (keys.includes(node.key)) {
-            result.push({ ...node, parent });
+          result.push({ ...node, parent });
         }
 
         if (node.children) {
           searchNodes(node.children, node);
         }
-        
       });
-
     };
 
     searchNodes(tree, null);
@@ -423,7 +417,12 @@ const EditWorkEntitiesPage = () => {
     </svg>
   );
 
-  const cancelButtons = (options: ConfirmDialogOptions, acceptLabel = "Continuar", callback = null, cancelCallback = null) => {
+  const cancelButtons = (
+    options: ConfirmDialogOptions,
+    acceptLabel = "Continuar",
+    callback = null,
+    cancelCallback = null
+  ) => {
     if (!callback) {
       callback = options.reject();
     }
@@ -437,8 +436,7 @@ const EditWorkEntitiesPage = () => {
           disabled={loading}
           onClick={(e) => {
             options.accept();
-            if (cancelCallback) {              
-              
+            if (cancelCallback) {
             }
           }}
         >
@@ -458,7 +456,7 @@ const EditWorkEntitiesPage = () => {
   };
 
   const assingPrograms = () => {
-    setShowAssignPrograms(false);    
+    setShowAssignPrograms(false);
     confirmDialog({
       id: "messages",
       className: "rounded-2xl",
@@ -467,23 +465,23 @@ const EditWorkEntitiesPage = () => {
       message: (
         <div className="flex flex-wrap w-full items-center justify-center">
           <div className="mx-auto text-primary text-2xl md:text-3xl w-full text-center">¡Asignación exitosa!</div>
-          <div className="flex items-center justify-center text-center w-full mt-6 pt-0.5">Programas asignados exitosamente</div>
+          <div className="flex items-center justify-center text-center w-full mt-6 pt-0.5">
+            Programas asignados exitosamente
+          </div>
         </div>
       ),
       closeIcon: closeIcon,
       acceptLabel: "Cerrar",
       footer: (options) => acceptButton(options, "Cerrar"),
-    });    
-    
-    let newAssignedAffairsPrograms: IEntityAffairsProgram[] =[];
-    assignedPrograms.forEach((assignedProgram) => {
-      assignedProgram.children.forEach((child)=>{
-        newAssignedAffairsPrograms.push(
-          {affairProgramId: child.data}
-        );        
-      })            
     });
-    setAssignedAffairsPrograms([...newAssignedAffairsPrograms])
+
+    let newAssignedAffairsPrograms: IEntityAffairsProgram[] = [];
+    assignedPrograms.forEach((assignedProgram) => {
+      assignedProgram.children.forEach((child) => {
+        newAssignedAffairsPrograms.push({ affairProgramId: child.data });
+      });
+    });
+    setAssignedAffairsPrograms([...newAssignedAffairsPrograms]);
   };
 
   const acceptButton = (options, label = "Aceptar") => {
@@ -507,7 +505,7 @@ const EditWorkEntitiesPage = () => {
       <ConfirmDialog id="messages"></ConfirmDialog>
       <ConfirmDialog
         id="assingProgramsModal"
-        className="rounded-2xl"        
+        className="rounded-2xl"
         headerClassName="rounded-t-2xl"
         header={
           <div className="text-2xl w-full lg:hidden block">
@@ -520,7 +518,11 @@ const EditWorkEntitiesPage = () => {
         contentClassName="w-full max-w-full lg:!pt-0 !px-0 justify-center"
         visible={showAssignPrograms}
         acceptLabel="Aceptar"
-        footer={(options) => cancelButtons(options, "Asignar",()=>{assingPrograms()})}
+        footer={(options) =>
+          cancelButtons(options, "Asignar", () => {
+            assingPrograms();
+          })
+        }
         message={
           <div className="grid grid-cols-1 max-h-[calc(100vh-19rem)] overflow-y-auto px-6">
             <div className="mx-auto text-3xl w-full text-left col-span-full hidden lg:block">
@@ -836,7 +838,6 @@ const EditWorkEntitiesPage = () => {
                   />
                 </div>
               </div>
-              
             </Card>
           </Card>
         </Card>
@@ -847,11 +848,16 @@ const EditWorkEntitiesPage = () => {
               twoBtn={true}
               nameBtn1="Continuar"
               nameBtn2="Cancelar"
-              onClickBt2={ cancelarChanges }
-              onClickBt1={ () =>setCancelar(false) }
-              headerMsg="Cancelar cambios" 
-              msg="Desea cancelar la acción, no se guardarán los datos"/></>):(<></>)}
-        <div className="buton-fixe " style={{width:(anchoDePantalla-WidthRef.current)}}>
+              onClickBt2={cancelarChanges}
+              onClickBt1={() => setCancelar(false)}
+              headerMsg="Cancelar cambios"
+              msg="Desea cancelar la acción, no se guardarán los datos"
+            />
+          </>
+        ) : (
+          <></>
+        )}
+        <div className="buton-fixe " style={{ width: anchoDePantalla - WidthRef.current }}>
           <div className="">
             <Button
               text
