@@ -908,7 +908,7 @@ const EditWorkEntitiesPage = () => {
                     </div>
                   }
                 />
-                <div className="sticky bottom-0 pr-3 pt-9 pb-2.5 bg-white border-t border-t-[#D9D9D9] flex justify-end ">
+                <div className="sticky bottom-0 pr-0 pt-9 pb-2.5 bg-white border-t border-t-[#D9D9D9] flex justify-end ">
                   <Button
                     label="Asignar programas"
                     rounded
@@ -938,12 +938,13 @@ const EditWorkEntitiesPage = () => {
           <></>
         )}
 
-{showMsg?(<><MessageComponent
-                        twoBtn={false}
-                        nameBtn1="Cancelar"
-                        onClickBt1={()=> setShowMsg(false) }
-                        headerMsg={headerMsg} 
-                        msg={msgResponse}/></>):(<></>)}
+        {showMsg?(<><MessageComponent
+                  twoBtn={false}
+                  nameBtn1="Cancelar"
+                  onClickBt1={()=> setShowMsg(false) }
+                  headerMsg={headerMsg} 
+                  msg={msgResponse}/></>):(<></>)}
+                        
         <div className="buton-fixe " style={{ width: anchoDePantalla - WidthRef.current }}>
           <div className="">
             <Button
