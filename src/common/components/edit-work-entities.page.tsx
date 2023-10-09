@@ -90,16 +90,15 @@ const EditWorkEntitiesPage = () => {
   const [selectedPrograms, setSelectedPrograms] = useState(null);
   const [unselectedPrograms, setUnselectedPrograms] = useState(null);
   const [fullName, setfullName] = useState<string[]>([]);
-  const [msgResponse, setMsgResponse] = useState<string>('');
-  const [headerMsg, setHeaderMsg] = useState<string>('')
+  const [msgResponse, setMsgResponse] = useState<string>("");
+  const [headerMsg, setHeaderMsg] = useState<string>("");
   const [showMsg, setShowMsg] = useState(false);
 
   const changedUser = (data: User) => {
-    
-    setUserId(data.userId)
+    setUserId(data.userId);
     setConsta1(data.numberContact1);
     setEmail(data.email);
-    const nameSplit = data['name'].split(' ')
+    const nameSplit = data["name"].split(" ");
     setfullName(nameSplit);
     setNameUser(data.name);
     setDocumenUser(data.numberDocument);
@@ -134,7 +133,7 @@ const EditWorkEntitiesPage = () => {
     return responseUser;
   };
 
-  useEffect(() => {    
+  useEffect(() => {
     getWorkEntity(id).then(({ data, operation }) => {
       if (operation.code != "OK") {
         navigate(-1);
@@ -142,27 +141,25 @@ const EditWorkEntitiesPage = () => {
       }
 
       dataUser.current = data;
-      
+
       setIdEntity(data.id.toString());
       setAssignedAffairsPrograms([...data.affairsPrograms]);
-      
 
       setTypeEntity(data.workEntityType["tet_descripcion"]);
       //setNameEntity(data['name']);
-      setUserId(data.userId)
+      setUserId(data.userId);
       getNameEntite(data["name"]);
       setDocumenUser(data.user["numberDocument"]);
       setNameUser(`${data.user["names"]} ${data.user["lastNames"]}`);
-      setfullName([data.user["names"], data.user["lastNames"]])
+      setfullName([data.user["names"], data.user["lastNames"]]);
       setConsta1(data.user["numberContact1"]);
       setConsta2(data.user["numberContact2"]);
       setEmail(data.user["email"]);
       const status = data["status"] ? true : false;
       setChecked(status);
-    });    
+    });
   }, []);
-  
-  
+
   useEffect(() => {
     const fetchPrograms = async () => {
       setLoading(true);
@@ -186,14 +183,17 @@ const EditWorkEntitiesPage = () => {
                     data: affair.affairProgramId,
                   } as TreeNode;
                 });
-                if (key=="selection") {                  
+                if (key == "selection") {
                   childrens.push(...affairs);
                 }
                 return {
                   id: program.prg_codigo.toString(),
                   key: key + "_" + program.prg_codigo,
                   label: program.prg_descripcion,
-                  data: program.prg_codigo,
+                  data: {
+                    cod: program.prg_codigo,
+                    check: false
+                  },
                   children: affairs,
                 } as TreeNode;
               });
@@ -203,18 +203,46 @@ const EditWorkEntitiesPage = () => {
             info: TreeNode[];
             selection: TreeNode[];
           };
-          setPrograms(newTree);
+          setPrograms(newTree);          
+          let assignedAffairProgramIds = assignedAffairsPrograms.map((assignedAffairsProgram) => assignedAffairsProgram.affairProgramId)
+          let newAssignedPrograms = newTree.selection.filter((assignedProgram)=>{
+            let childIds = assignedProgram.children.map((child)=> child.data);            
+            const contains = assignedAffairProgramIds.some(id => {
+              return childIds.indexOf(id) !== -1;
+            });
+            return contains;
+          });
           
-          console.log(childrens);
-          console.log(assignedAffairsPrograms);
+          newAssignedPrograms.forEach(assignedProgram => {
+            let totalChilds = assignedProgram.children.length;
+            assignedProgram.children = assignedProgram.children.filter((child) => {
+              return assignedAffairProgramIds.includes(child.data)              
+            });   
+            assignedProgram.data.check = totalChilds == assignedProgram.children.length;
+          });
           
-          setAssignedPrograms([...
-            childrens.filter((selected) => {
-              return assignedAffairsPrograms.filter(
-                (assignedAffairsProgram) => assignedAffairsProgram.id == selected.data
-              ).length;
-            })]
-          );
+          setAssignedPrograms([
+            ...newAssignedPrograms
+          ]);
+          
+          const selection = Object.assign({}, ...newAssignedPrograms.map((assignedProgram)=>{
+            return {
+              [assignedProgram.key] : {
+                checked:assignedProgram.data.check, 
+                partialChecked: !assignedProgram.data.check
+              },
+              ...assignedProgram.children.map((child)=>{
+                return {
+                  [child.key] : {
+                    checked:true,
+                partialChecked: false
+                  }
+                }
+              })[0]
+            }
+          }))          
+          
+          updatePrograms([...{ ...newTree }.selection, ...newAssignedPrograms],selection)
         }
       } catch (error) {
         console.error("Error al obtener la lista de programas:", error);
@@ -256,63 +284,51 @@ const EditWorkEntitiesPage = () => {
     formState: { errors, isValid },
     handleSubmit,
     control,
-    getValues
+    getValues,
   } = useForm({ defaultValues, mode: "all" });
 
-  const onSubmit = async()=>{}
-
+  const onSubmit = async () => {};
 
   const onUpdate = async () => {
-
-   
-    
-
-    const payload:IWorkEntity = {
-      userId: userId, 
+    const payload: IWorkEntity = {
+      userId: userId,
       workEntityTypeId: parseInt(idEntity),
-       name: nameEntity,
-       id: parseInt(idEntity),
-       status: checked ,
-       user: {
+      name: nameEntity,
+      id: parseInt(idEntity),
+      status: checked,
+      user: {
         names: fullName[0],
         lastNames: fullName[1],
         numberDocument: documenUser,
         email: email,
         numberContact1: consta1,
         numberContact2: consta2,
-       },
-       affairsPrograms: [],
-      }
+      },
+      affairsPrograms: [],
+    };
 
-      if(assignedPrograms.length>0){
+    if (assignedPrograms.length > 0) {
+      assignedPrograms.map((programs) => {
+        payload.affairsPrograms.push({
+          id: parseInt(programs.id),
+          workEntityId: parseInt(idEntity),
+          affairProgramId: programs.data,
+        });
+      });
+    }
 
-        assignedPrograms.map((programs)=>{
-          
-          payload.affairsPrograms.push({
-            id: parseInt(programs.id) ,
-            workEntityId: parseInt(idEntity),
-            affairProgramId: programs.data
-          })
-        })
+    const response = await workEntityService.updateWorkEntity(payload);
 
-      }
-
-      
-
-      const response = await workEntityService.updateWorkEntity(payload);
-     
-      if(response['operation']['code'] === 'OK'){
-        setHeaderMsg('Asignación exitosa')
-        setMsgResponse(response['operation']['message'])
-        setShowMsg(true)
-      }else{
-        setHeaderMsg('Error')
-        setMsgResponse(response['operation']['message'])
-        setShowMsg(true)
-      }
-      
+    if (response["operation"]["code"] === "OK") {
+      setHeaderMsg("Asignación exitosa");
+      setMsgResponse(response["operation"]["message"]);
+      setShowMsg(true);
+    } else {
+      setHeaderMsg("Error");
+      setMsgResponse(response["operation"]["message"]);
+      setShowMsg(true);
+    }
   };
-  
 
   const getFormErrorMessage = (name) => {
     return errors[name] ? (
@@ -365,14 +381,19 @@ const EditWorkEntitiesPage = () => {
 
     setAssignedPrograms([...newAssignePrograms]);
 
+    updatePrograms(initPrograms);
+  };
+
+  const updatePrograms = (initPrograms, defaultSelectedProgram = null) => {
+    defaultSelectedProgram = defaultSelectedProgram ? defaultSelectedProgram : selectedPrograms
     let newSelectionPrograms: TreeNode[] = [];
     initPrograms.forEach((program) => {
       let newChildren: TreeNode[] = [];
       let newProgram = { ...program };
       newProgram.children.forEach((children) => {
         if (
-          !selectedPrograms[{ ...children }.key] ||
-          (!selectedPrograms[{ ...children }.key].checked && !selectedPrograms[{ ...children }.key].partialChecked)
+          !defaultSelectedProgram[{ ...children }.key] ||
+          (!defaultSelectedProgram[{ ...children }.key].checked && !defaultSelectedProgram[{ ...children }.key].partialChecked)
         ) {
           newChildren.push({ ...children });
         }
@@ -387,7 +408,7 @@ const EditWorkEntitiesPage = () => {
     newPrograms.selection = newSelectionPrograms;
 
     setPrograms(newPrograms);
-  };
+  }
 
   const removePrograms = () => {
     let initPrograms = [...assignedPrograms];
@@ -510,16 +531,21 @@ const EditWorkEntitiesPage = () => {
 
     return (
       <div className="flex items-center justify-center gap-2 pb-2">
-
-        {cancelarAssign?(<><MessageComponent
-                        twoBtn={true}
-                        nameBtn1="Continuar"
-                        nameBtn2="Cancelar"
-                        onClickBt2={() =>setCancelarAsdign(false)}
-                        onClickBt1={ cancelarChangesAssing }
-                        headerMsg="Cancelar cambios" 
-                        msg="Desea cancelar la acción, no se guardarán los datos"/></>):(<></>)}
-
+        {cancelarAssign ? (
+          <>
+            <MessageComponent
+              twoBtn={true}
+              nameBtn1="Continuar"
+              nameBtn2="Cancelar"
+              onClickBt2={() => setCancelarAsdign(false)}
+              onClickBt1={cancelarChangesAssing}
+              headerMsg="Cancelar cambios"
+              msg="Desea cancelar la acción, no se guardarán los datos"
+            />
+          </>
+        ) : (
+          <></>
+        )}
 
         <Button
           text
@@ -527,7 +553,7 @@ const EditWorkEntitiesPage = () => {
           severity="secondary"
           className="!py-2 !text-base !font-sans !text-black"
           disabled={loading}
-          onClick={() => setCancelarAsdign(true) }
+          onClick={() => setCancelarAsdign(true)}
         >
           Cancelar
         </Button>
@@ -947,12 +973,19 @@ const EditWorkEntitiesPage = () => {
           <></>
         )}
 
-{showMsg?(<><MessageComponent
-                        twoBtn={false}
-                        nameBtn1="Cancelar"
-                        onClickBt1={()=> setShowMsg(false) }
-                        headerMsg={headerMsg} 
-                        msg={msgResponse}/></>):(<></>)}
+        {showMsg ? (
+          <>
+            <MessageComponent
+              twoBtn={false}
+              nameBtn1="Cancelar"
+              onClickBt1={() => setShowMsg(false)}
+              headerMsg={headerMsg}
+              msg={msgResponse}
+            />
+          </>
+        ) : (
+          <></>
+        )}
         <div className="buton-fixe " style={{ width: anchoDePantalla - WidthRef.current }}>
           <div className="">
             <Button
