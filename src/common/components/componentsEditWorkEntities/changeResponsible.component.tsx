@@ -161,6 +161,7 @@ export const ChangeResponsibleComponent = (props:Props) => {
                 className={classNames(options.className, "!rounded-lg")}
                 onClick={options.onClick}
                 disabled={options.disabled }
+                style={{opacity:'1.4'}}
               >
                 <span className="p-3 text-black">{prev}</span>
               </Button>
@@ -172,6 +173,7 @@ export const ChangeResponsibleComponent = (props:Props) => {
                 className={classNames(options.className, "!rounded-lg")}
                 onClick={options.onClick}
                 disabled={options.disabled }
+                style={{opacity:'1.4'}}
               >
                 <span className="p-3 text-black">{next}</span>
               </Button>
@@ -225,9 +227,11 @@ export const ChangeResponsibleComponent = (props:Props) => {
             </Button>
             
             <Dialog 
-                header="Cambiar responsable"
+                header={
+                    <h1>Cambiar responsable</h1>
+                }
                 headerStyle={{color:'black', display:'flex', flexDirection:'row'}}
-                headerClassName="prueba"
+               
                 visible={visible} 
                 style={{ width: '64em'}} 
                 onHide={() => setVisible(false)}
