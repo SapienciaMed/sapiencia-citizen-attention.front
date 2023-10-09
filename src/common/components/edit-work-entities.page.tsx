@@ -142,6 +142,7 @@ const EditWorkEntitiesPage = () => {
       }
 
       dataUser.current = data;
+      console.log(data);
       
       setIdEntity(data.id.toString());
       setAssignedAffairsPrograms([...data.affairsPrograms]);
