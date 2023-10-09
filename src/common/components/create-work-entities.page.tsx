@@ -651,7 +651,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
               Asignación de Programas y/o asuntos de solicitudes
             </div>
             <div className="p-card  shadow-none lg:border rounded-2xl lg:p-8 border-[#D9D9D9] grid lg:grid-cols-5 grid-cols-1 gap-7 text-center w-full mt-6">
-              <div className="max-h-[350px] border-b !border-[#D9D9D9] lg:rounded-md rounded-2xl overflow-y-auto relative citizen-attention sticky-header lg:col-span-2">
+              <div className="max-h-[450px] border-b !border-[#D9D9D9] lg:rounded-md rounded-2xl overflow-y-auto relative citizen-attention sticky-header lg:col-span-2">
                 <Tree
                   id="selection-programs"
                   key="selection-programs"
