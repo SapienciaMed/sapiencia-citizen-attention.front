@@ -346,7 +346,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
       ),
       closeIcon: closeIcon,
       acceptLabel: "Cerrar",
-      footer: (options) => cancelButtons(options, "Continuar",()=>{}, ()=>{resetForm(); navigate(-1);})      
+      footer: (options) => cancelButtons(options, "Continuar",()=>{options.accept()}, ()=>{resetForm(); navigate(-1);})      
     });
   };
 
