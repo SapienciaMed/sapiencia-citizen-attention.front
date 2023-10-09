@@ -97,6 +97,7 @@ export const ChangeResponsibleComponent = (props:Props) => {
     }
 
     const userChanges = () =>{
+        
         dataUser(dataTable.current)
         setChangeUser(false)
         setData([])
@@ -136,8 +137,10 @@ export const ChangeResponsibleComponent = (props:Props) => {
                 name: `${data['user']['names']} ${data['user']['lastNames']}`,
                 email: data['user']['email'],
                 numberContact1: data['user']['numberContact1'],
+                userId:data['userId']
             }))
             setLoad(false),
+            
             setData(usersData)
         } catch (error) {
             

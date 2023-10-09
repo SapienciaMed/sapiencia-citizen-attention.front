@@ -80,5 +80,6 @@ export function useWorkEntityService() {
     getWorkEntityTypes,
     getProgramsAffairs,
     getWorkEntityByFilters,
+    updateWorkEntity
   };
 }
