@@ -177,10 +177,6 @@ function WorkEntitiesPage(): React.JSX.Element {
     fetchWorkEntityTypes();
     handleResize();
     window.addEventListener("resize", handleResize);
-
-    console.log(authorization);
-    
-
     return () => {
       window.removeEventListener("resize", handleResize);
     };

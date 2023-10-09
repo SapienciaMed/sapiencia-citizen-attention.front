@@ -4,4 +4,5 @@ export interface IAffair {
   aso_dias_habiles?: number;
   aso_activo?: boolean;
   aso_orden?: number;
+  affairProgramId?: number;
 }

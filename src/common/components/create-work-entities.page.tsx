@@ -10,7 +10,7 @@ import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { EResponseCodes } from "../constants/api.enum";
 import { useWorkEntityService } from "../hooks/WorkEntityService.hook";
-import { IWorkEntity } from "../interfaces/workEntity.interfaces";
+import { IEntityAffairsProgram, IWorkEntity } from "../interfaces/workEntity.interfaces";
 
 import { Dropdown } from "primereact/dropdown";
 import { Tree } from "primereact/tree";
@@ -60,7 +60,8 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
   const [hasSelectedPrograms, setHasSelectedPrograms] = useState(false);
   const [hasUnselectedPrograms, setHasUnselectedPrograms] = useState(false);
   const [showAssignPrograms, setShowAssignPrograms] = useState(false);
-  const [assignedPrograms, setAssignedPrograms] = useState<TreeNode[]>([]);
+  const [assignedPrograms, setAssignedPrograms] = useState<TreeNode[]>([]);  
+  const [assignedAffairsPrograms, setAssignedAffairsPrograms] = useState<IEntityAffairsProgram[]>([]);  
   const [selectedPrograms, setSelectedPrograms] = useState(null);
   const [unselectedPrograms, setUnselectedPrograms] = useState(null);
   const [data, setData] = useState<IWorkEntity[]>([]);
@@ -105,6 +106,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
           onClick={(e) => {
             options.accept();
             if (cancelCallback) {
+              cancelCallback();
             }
           }}
         >
@@ -181,6 +183,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
     try {
       let payload = getValues() as IWorkEntity;
       payload.userId = selectedUser;
+      payload.affairsPrograms = assignedAffairsPrograms;
       const response = await workEntityService.createWorkEntity(payload);
 
       if (response.operation.code === EResponseCodes.OK) {
@@ -287,14 +290,14 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
                     id: affair.aso_codigo.toString(),
                     key: key + "_" + program.prg_codigo + "_" + affair.aso_codigo,
                     label: affair.aso_asunto,
-                    data: affair,
+                    data: affair.affairProgramId,
                   } as TreeNode;
                 });
                 return {
                   id: program.prg_codigo.toString(),
                   key: key + "_" + program.prg_codigo,
                   label: program.prg_descripcion,
-                  data: program,
+                  data: program.prg_codigo,
                   children: affairs,
                 } as TreeNode;
               });
@@ -343,7 +346,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
       ),
       closeIcon: closeIcon,
       acceptLabel: "Cerrar",
-      footer: (options) => cancelButtons(options),
+      footer: (options) => cancelButtons(options, "Continuar",()=>{}, ()=>{resetForm()})      
     });
   };
 
@@ -610,6 +613,18 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
       acceptLabel: "Cerrar",
       footer: (options) => acceptButton(options, "Cerrar"),
     });
+    console.log(assignedPrograms);
+    
+    let newAssignedAffairsPrograms: IEntityAffairsProgram[] =[];
+    assignedPrograms.forEach((assignedProgram) => {
+      assignedProgram.children.forEach((child)=>{
+        newAssignedAffairsPrograms.push(
+          {affairProgramId: child.data}
+        );        
+      })            
+    });
+    setAssignedAffairsPrograms([...newAssignedAffairsPrograms])
+
   };
 
   return (

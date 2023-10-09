@@ -11,6 +11,15 @@ export interface IWorkEntity {
   name: string;
   user?: IUser;
   workEntityType?: IWorkEntityType;
+  affairsPrograms?: IEntityAffairsProgram[];
+  createdAt?: DateTime;
+  updatedAt?: DateTime;
+}
+
+export interface IEntityAffairsProgram {
+  id?: number;
+  workEntityId?: number;
+  affairProgramId?: number;
   createdAt?: DateTime;
   updatedAt?: DateTime;
 }
