@@ -1,5 +1,6 @@
 import { EResponseCodes } from "../constants/api.enum";
 import { IProgram } from "../interfaces/program.interfaces";
+import { IUser } from "../interfaces/user.interfaces";
 import { IWorkEntity, IWorkEntityFilters } from "../interfaces/workEntity.interfaces";
 import { IWorkEntityType } from "../interfaces/workEntityType.interface";
 import { ApiResponse, IPagingData } from "../utils/api-response";
@@ -34,6 +35,15 @@ export function useWorkEntityService() {
       return await post(`${listUrl}${endpoint}`, filters);
     } catch (error) {
       return new ApiResponse({} as IPagingData<IWorkEntity | null>, EResponseCodes.FAIL, "Error no controlado");
+    }
+  }
+
+  async function getUserByFilters(filters: IWorkEntityFilters): Promise<ApiResponse<IUser | null>> {
+    try {
+      const endpoint: string = `/get-user-by-filters`;
+      return await post(`${listUrl}${endpoint}`, filters);
+    } catch (error) {
+      return new ApiResponse(null, EResponseCodes.FAIL, "Error no controlado");
     }
   }
 
@@ -75,6 +85,7 @@ export function useWorkEntityService() {
 
   return {
     createWorkEntity,
+    getUserByFilters,
     getUserByDocument,
     getWorkEntityById,
     getWorkEntityTypes,

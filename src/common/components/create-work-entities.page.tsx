@@ -42,10 +42,8 @@ interface ProgramDelete {
   parent: Parent;
 }
 
-
 function CreateWorkEntitiesPage(): React.JSX.Element {
   const parentForm = useRef(null);
-  const searchButton = useRef(null);
   const createEntityForm = useRef(null);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -60,8 +58,8 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
   const [hasSelectedPrograms, setHasSelectedPrograms] = useState(false);
   const [hasUnselectedPrograms, setHasUnselectedPrograms] = useState(false);
   const [showAssignPrograms, setShowAssignPrograms] = useState(false);
-  const [assignedPrograms, setAssignedPrograms] = useState<TreeNode[]>([]);  
-  const [assignedAffairsPrograms, setAssignedAffairsPrograms] = useState<IEntityAffairsProgram[]>([]);  
+  const [assignedPrograms, setAssignedPrograms] = useState<TreeNode[]>([]);
+  const [assignedAffairsPrograms, setAssignedAffairsPrograms] = useState<IEntityAffairsProgram[]>([]);
   const [selectedPrograms, setSelectedPrograms] = useState(null);
   const [unselectedPrograms, setUnselectedPrograms] = useState(null);
   const [data, setData] = useState<IWorkEntity[]>([]);
@@ -91,7 +89,13 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
     </svg>
   );
 
-  const cancelButtons = (options: ConfirmDialogOptions, acceptLabel = "Continuar", callback = null, cancelCallback = null) => {
+  const cancelButtons = (
+    options: ConfirmDialogOptions,
+    acceptLabel = "Continuar",
+    callback = null,
+    cancelCallback = null,
+    disabledCondition = false
+  ) => {
     if (!callback) {
       callback = options.reject();
     }
@@ -116,7 +120,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
           label={acceptLabel}
           rounded
           className="!px-4 !py-2 !text-base !mr-0 !font-sans"
-          disabled={loading}
+          disabled={loading || disabledCondition}
           onClick={(e) => {
             callback();
           }}
@@ -204,8 +208,6 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
           footer: (options) => acceptButton(options, "Cerrar"),
         });
       } else {
-        /* setShowTable(false);
-        setData([]); */
         confirmDialog({
           id: "messages",
           className: "rounded-2xl",
@@ -244,17 +246,20 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
   };
 
   useEffect(() => {
-    if (selectedPrograms) {            
-      const values:any[]= Object.values(selectedPrograms);      
-      const isChecked = values.map((value) => value.checked || value.partialChecked);      
+    if (selectedPrograms) {
+      const values: any[] = Object.values(selectedPrograms);
+      const isChecked = values.map((value) => value.checked || value.partialChecked);
       setHasSelectedPrograms(isChecked.includes(true));
     }
+  }, [selectedPrograms]);
+
+  useEffect(() => {
     if (unselectedPrograms) {
-      const values:any[]= Object.values(unselectedPrograms);      
-      const isChecked = values.map((value) => value.checked || value.partialChecked);      
+      const values: any[] = Object.values(unselectedPrograms);
+      const isChecked = values.map((value) => value.checked || value.partialChecked);
       setHasUnselectedPrograms(isChecked.includes(true));
     }
-  },[selectedPrograms,unselectedPrograms]);
+  }, [unselectedPrograms]);
 
   useEffect(() => {
     const fetchWorkEntityTypes = async () => {
@@ -282,27 +287,25 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
             info: [],
             selection: [],
           };
-          for await (const program of response.data) {
-            ["info", "selection"].forEach((key) => {
-              treePrograms[key] = response.data.map((program) => {
-                let affairs = program.affairs.map((affair) => {
-                  return {
-                    id: affair.aso_codigo.toString(),
-                    key: key + "_" + program.prg_codigo + "_" + affair.aso_codigo,
-                    label: affair.aso_asunto,
-                    data: affair.affairProgramId,
-                  } as TreeNode;
-                });
+          ["info", "selection"].forEach((key) => {
+            treePrograms[key] = response.data.map((program) => {
+              let affairs = program.affairs.map((affair) => {
                 return {
-                  id: program.prg_codigo.toString(),
-                  key: key + "_" + program.prg_codigo,
-                  label: program.prg_descripcion,
-                  data: program.prg_codigo,
-                  children: affairs,
+                  id: affair.aso_codigo.toString(),
+                  key: key + "_" + program.prg_codigo + "_" + affair.aso_codigo,
+                  label: affair.aso_asunto,
+                  data: affair.affairProgramId,
                 } as TreeNode;
               });
+              return {
+                id: program.prg_codigo.toString(),
+                key: key + "_" + program.prg_codigo,
+                label: program.prg_descripcion,
+                data: program.prg_codigo,
+                children: affairs,
+              } as TreeNode;
             });
-          }
+          });
           setPrograms(treePrograms);
         }
       } catch (error) {
@@ -346,7 +349,18 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
       ),
       closeIcon: closeIcon,
       acceptLabel: "Cerrar",
-      footer: (options) => cancelButtons(options, "Continuar",()=>{options.accept()}, ()=>{resetForm(); navigate(-1);})      
+      footer: (options) =>
+        cancelButtons(
+          options,
+          "Continuar",
+          () => {
+            options.accept();
+          },
+          () => {
+            resetForm();
+            navigate(-1);
+          }
+        ),
     });
   };
 
@@ -425,7 +439,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
   const addPrograms = () => {
     let initPrograms = [...{ ...programs }.selection, ...assignedPrograms];
     const programstoAdd = initPrograms?.filter((program) => selectedPrograms.hasOwnProperty({ ...program }.key));
-    let newAssignePrograms: TreeNode[] = [];   
+    let newAssignePrograms: TreeNode[] = [];
 
     [...programstoAdd].forEach((program) => {
       let newChildren: TreeNode[] = [];
@@ -445,7 +459,15 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
       if (existsIndex === -1) {
         newAssignePrograms.push(newProgram);
       } else {
-        newAssignePrograms[existsIndex].children = [...newChildren,...newAssignePrograms[existsIndex].children];
+        newAssignePrograms[existsIndex].children = [...newChildren, ...newAssignePrograms[existsIndex].children];
+      }
+      newChildren.forEach((child) => {
+        if (unselectedPrograms?.[child.key]) {
+          delete unselectedPrograms[child.key];          
+        }
+      });
+      if (unselectedPrograms?.[newProgram.key]) {        
+        delete unselectedPrograms[newProgram.key];
       }
     });
 
@@ -473,19 +495,17 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
     newPrograms.selection = newSelectionPrograms;
 
     setPrograms(newPrograms);
+    setHasSelectedPrograms(false);
   };
 
   const removePrograms = () => {
-    
-    
-    let initPrograms = [...assignedPrograms];
-    // const programstoRemove = initPrograms.filter((program) => unselectedPrograms.hasOwnProperty({ ...program }.key));
+    let initPrograms = [...assignedPrograms];    
 
     let newUnassignePrograms: TreeNode[] = [];
     let newSelectionPrograms: TreeNode[] = [];
 
     initPrograms.forEach((program) => {
-      let toDeleteChildren: string[]= [];
+      let toDeleteChildren: string[] = [];
       let newProgram = { ...program };
       newProgram.children.forEach((children) => {
         if (
@@ -495,20 +515,19 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
           toDeleteChildren.push(children.key.toString());
         }
       });
-      newProgram.children = newProgram.children.filter((children)=> !toDeleteChildren.includes(children.key.toString()));
-      
-     const programDelete =  findNodesByKeys(initPrograms,toDeleteChildren)
-     
-     
-     if( programDelete.length>0 ){
+      newProgram.children = newProgram.children.filter(
+        (children) => !toDeleteChildren.includes(children.key.toString())
+      );
 
-      const parent: Parent = { id: '', key: '', label: '', data: '', children: [] };
-      const children: Program[] = [];
+      const programDelete = findNodesByKeys(initPrograms, toDeleteChildren);
 
-      const prorgranActual = programs.selection.filter((prog)=>prog.id == programDelete[0].parent.id);
+      if (programDelete.length > 0) {
+        const parent: Parent = { id: "", key: "", label: "", data: "", children: [] };
+        const children: Program[] = [];
 
-        programDelete.forEach((program)=>{
-                
+        const currentProgram = programs.selection.filter((prog) => prog.id == programDelete[0].parent.id);
+
+        programDelete.forEach((program) => {
           children.push({
             id: program.id,
             key: program.key,
@@ -517,23 +536,15 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
             children: [],
           });
 
-
-          if(prorgranActual.length != 0 && children.length === programDelete.length){
-            
-            programs.selection.forEach((program, items)=>{
-
-              if(program.id === prorgranActual[0].id){
-            
-                for (let index = 0; index < children.length; index++) {
-                  programs.selection[items].children.push(children[index])
-                  
+          if (currentProgram.length != 0 && children.length === programDelete.length) {
+            programs.selection.forEach((program, items) => {
+              if (program.id === currentProgram[0].id) {
+                for (const element of children) {
+                  programs.selection[items].children.push(element);
                 }
-                
               }
-            })
-
-          }else{
-
+            });
+          } else {
             if (parent.children.length === 0) {
               parent.id = program.parent.id;
               parent.key = program.parent.key;
@@ -547,48 +558,47 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
                 children: [],
               });
             }
-
-
           }
-          
-        })
+        });
 
         parent.children = children;
-        if(prorgranActual.length === 0){
+        children.forEach((child) => {
+          if (selectedPrograms?.[child.key]) {            
+            delete selectedPrograms[child.key];
+          }
+        });
+        if (selectedPrograms?.[parent.key]) {
+          delete selectedPrograms[parent.key];
+        }
+        if (currentProgram.length === 0) {
           programs.selection.push(parent);
         }
-        
-     }
-     
+      }
 
       if (newProgram.children.length) {
         newUnassignePrograms.push(newProgram);
-       
-      }else{
-        newSelectionPrograms.push(program)
+      } else {
+        newSelectionPrograms.push(program);
       }
     });
-    
+
     setAssignedPrograms([...newUnassignePrograms]);
+    setHasUnselectedPrograms(false);
   };
 
   const findNodesByKeys = (tree, keys) => {
     const result = [];
 
     const searchNodes = (nodes, parent) => {
-
       nodes.forEach((node) => {
-        
         if (keys.includes(node.key)) {
-            result.push({ ...node, parent });
+          result.push({ ...node, parent });
         }
 
         if (node.children) {
           searchNodes(node.children, node);
         }
-        
       });
-
     };
 
     searchNodes(tree, null);
@@ -597,7 +607,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
   };
 
   const assingPrograms = () => {
-    setShowAssignPrograms(false);    
+    setShowAssignPrograms(false);
     confirmDialog({
       id: "messages",
       className: "rounded-2xl",
@@ -606,24 +616,23 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
       message: (
         <div className="flex flex-wrap w-full items-center justify-center">
           <div className="mx-auto text-primary text-2xl md:text-3xl w-full text-center">¡Asignación exitosa!</div>
-          <div className="flex items-center justify-center text-center w-full mt-6 pt-0.5">Programas asignados exitosamente</div>
+          <div className="flex items-center justify-center text-center w-full mt-6 pt-0.5">
+            Programas asignados exitosamente
+          </div>
         </div>
       ),
       closeIcon: closeIcon,
       acceptLabel: "Cerrar",
       footer: (options) => acceptButton(options, "Cerrar"),
-    });    
-    
-    let newAssignedAffairsPrograms: IEntityAffairsProgram[] =[];
-    assignedPrograms.forEach((assignedProgram) => {
-      assignedProgram.children.forEach((child)=>{
-        newAssignedAffairsPrograms.push(
-          {affairProgramId: child.data}
-        );        
-      })            
     });
-    setAssignedAffairsPrograms([...newAssignedAffairsPrograms])
 
+    let newAssignedAffairsPrograms: IEntityAffairsProgram[] = [];
+    assignedPrograms.forEach((assignedProgram) => {
+      assignedProgram.children.forEach((child) => {
+        newAssignedAffairsPrograms.push({ affairProgramId: child.data });
+      });
+    });
+    setAssignedAffairsPrograms([...newAssignedAffairsPrograms]);
   };
 
   return (
@@ -631,7 +640,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
       <ConfirmDialog id="messages"></ConfirmDialog>
       <ConfirmDialog
         id="assingProgramsModal"
-        className="rounded-2xl"        
+        className="rounded-2xl"
         headerClassName="rounded-t-2xl"
         header={
           <div className="text-2xl w-full lg:hidden block">
@@ -644,7 +653,17 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
         contentClassName="w-full max-w-full lg:!pt-0 !px-0 justify-center"
         visible={showAssignPrograms}
         acceptLabel="Aceptar"
-        footer={(options) => cancelButtons(options, "Asignar",()=>{assingPrograms()})}
+        footer={(options) =>
+          cancelButtons(
+            options,
+            "Asignar",
+            () => {
+              assingPrograms();
+            },
+            null,
+            !assignedPrograms.length
+          )
+        }
         message={
           <div className="grid grid-cols-1 max-h-[calc(100vh-19rem)] overflow-y-auto px-6">
             <div className="mx-auto text-3xl w-full text-left col-span-full hidden lg:block">
@@ -698,7 +717,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
                   }
                 />
               </div>
-              <div className="m-auto w-fit grid lg:grid-cols-1 grid-cols-2 col-span-1 gap-y-4 gap-x-6">
+              <div className="m-auto sticky bottom-1/4 w-fit grid lg:grid-cols-1 grid-cols-2 col-span-1 gap-y-4 gap-x-6">
                 <Button
                   label="Agregar"
                   rounded
@@ -865,7 +884,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
                   <div className="pb-5">
                     {columns().map((column, index) => {
                       return (
-                        <div className="flex flex-wrap items-start justify-between" key={index}>
+                        <div className="flex flex-wrap items-start justify-between" key={column.key}>
                           <div className={classNames("w-1/2 text-sm", { "mt-4": index > 0 })}>{column.name}</div>
                           <div className={classNames("w-1/2 text-sm !font-sans text-right", { "mt-4": index > 0 })}>
                             {column.hasOwnProperty("body") ? column?.body(data[0]) : data[0]?.[column?.key]}

@@ -124,7 +124,7 @@ export const ChangeResponsibleComponent = (props:Props) => {
                 identification: parseInt(identification)
             }
             
-            const response = await workEntityService.getWorkEntityByFilters(payload);
+            const response = await workEntityService.getUserByFilters(payload);
             const { data, operation } = response;
 
             if(operation.code !== "OK"){
@@ -132,13 +132,13 @@ export const ChangeResponsibleComponent = (props:Props) => {
                 setError(true)
             }
 
-            const usersData = data.array.map( data =>({
-                numberDocument: data['user']['numberDocument'],
-                name: `${data['user']['names']} ${data['user']['lastNames']}`,
-                email: data['user']['email'],
-                numberContact1: data['user']['numberContact1'],
-                userId:data['userId']
-            }))
+            const usersData = [{
+                numberDocument: data?.numberDocument,
+                name: `${data?.names} ${data?.lastNames}`,
+                email: data?.email,
+                numberContact1: data?.numberContact1,
+                userId: data?.id
+            }]
             setLoad(false),
             
             setData(usersData)

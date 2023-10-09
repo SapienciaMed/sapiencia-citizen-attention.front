@@ -141,7 +141,7 @@ const EditWorkEntitiesPage = () => {
       }
 
       dataUser.current = data;
-      
+
       setIdEntity(data.id.toString());
       setAssignedAffairsPrograms([...data.affairsPrograms]);
 
@@ -234,20 +234,21 @@ const EditWorkEntitiesPage = () => {
                   partialChecked: !assignedProgram.data.check,
                 },
                 ...Object.assign(
-                  {},...assignedProgram.children.map((child) => {
-                  return {
-                    [child.key]: {
-                      checked: true,
-                      partialChecked: false,
-                    },
-                  };
-                })),
+                  {},
+                  ...assignedProgram.children.map((child) => {
+                    return {
+                      [child.key]: {
+                        checked: true,
+                        partialChecked: false,
+                      },
+                    };
+                  })
+                ),
               };
             })
           );
 
-          console.log(selection);
-          
+          setSelectedPrograms(selection);
 
           updatePrograms([...{ ...newTree }.selection, ...newAssignedPrograms], selection);
         }
@@ -280,12 +281,15 @@ const EditWorkEntitiesPage = () => {
       const isChecked = values.map((value) => value.checked || value.partialChecked);
       setHasSelectedPrograms(isChecked.includes(true));
     }
+  }, [selectedPrograms]);
+
+  useEffect(() => {
     if (unselectedPrograms) {
       const values: any[] = Object.values(unselectedPrograms);
       const isChecked = values.map((value) => value.checked || value.partialChecked);
       setHasUnselectedPrograms(isChecked.includes(true));
     }
-  }, [selectedPrograms, unselectedPrograms]);
+  }, [unselectedPrograms]);
 
   const {
     formState: { errors, isValid },
@@ -321,7 +325,7 @@ const EditWorkEntitiesPage = () => {
     const response = await workEntityService.updateWorkEntity(payload);
 
     if (response["operation"]["code"] === "OK") {
-      setHeaderMsg("Asignación exitosa");
+      setHeaderMsg("¡Cambios guardados!");
       setMsgResponse(response["operation"]["message"]);
       setShowMsg(true);
     } else {
@@ -378,6 +382,14 @@ const EditWorkEntitiesPage = () => {
       } else {
         newAssignePrograms[existsIndex].children = [...newChildren, ...newAssignePrograms[existsIndex].children];
       }
+      newChildren.forEach((child) => {
+        if (unselectedPrograms?.[child.key]) {
+          delete unselectedPrograms[child.key];          
+        }
+      });
+      if (unselectedPrograms?.[newProgram.key]) {        
+        delete unselectedPrograms[newProgram.key];
+      }
     });
 
     setAssignedPrograms([...newAssignePrograms]);
@@ -386,7 +398,7 @@ const EditWorkEntitiesPage = () => {
   };
 
   const updatePrograms = (initPrograms, defaultSelectedProgram = null) => {
-    defaultSelectedProgram = defaultSelectedProgram ? defaultSelectedProgram : selectedPrograms;
+    defaultSelectedProgram = defaultSelectedProgram ?? selectedPrograms;
     let newSelectionPrograms: TreeNode[] = [];
     initPrograms.forEach((program) => {
       let newChildren: TreeNode[] = [];
@@ -410,6 +422,7 @@ const EditWorkEntitiesPage = () => {
     newPrograms.selection = newSelectionPrograms;
 
     setPrograms(newPrograms);
+    setHasSelectedPrograms(false);
   };
 
   const removePrograms = () => {
@@ -440,7 +453,7 @@ const EditWorkEntitiesPage = () => {
         const parent: Parent = { id: "", key: "", label: "", data: "", children: [] };
         const children: Program[] = [];
 
-        const prorgranActual = programs.selection.filter((prog) => prog.id == programDelete[0].parent.id);
+        const currentProgram = programs.selection.filter((prog) => prog.id == programDelete[0].parent.id);
 
         programDelete.forEach((program) => {
           children.push({
@@ -451,11 +464,11 @@ const EditWorkEntitiesPage = () => {
             children: [],
           });
 
-          if (prorgranActual.length != 0 && children.length === programDelete.length) {
+          if (currentProgram.length != 0 && children.length === programDelete.length) {
             programs.selection.forEach((program, items) => {
-              if (program.id === prorgranActual[0].id) {
-                for (let index = 0; index < children.length; index++) {
-                  programs.selection[items].children.push(children[index]);
+              if (program.id === currentProgram[0].id) {
+                for (const element of children) {
+                  programs.selection[items].children.push(element);
                 }
               }
             });
@@ -477,7 +490,15 @@ const EditWorkEntitiesPage = () => {
         });
 
         parent.children = children;
-        if (prorgranActual.length === 0) {
+        children.forEach((child) => {
+          if (selectedPrograms?.[child.key]) {            
+            delete selectedPrograms[child.key];
+          }
+        });
+        if (selectedPrograms?.[parent.key]) {
+          delete selectedPrograms[parent.key];
+        }
+        if (currentProgram.length === 0) {
           programs.selection.push(parent);
         }
       }
@@ -490,6 +511,7 @@ const EditWorkEntitiesPage = () => {
     });
 
     setAssignedPrograms([...newUnassignePrograms]);
+    setHasUnselectedPrograms(false);
   };
 
   const findNodesByKeys = (tree, keys) => {
@@ -525,7 +547,8 @@ const EditWorkEntitiesPage = () => {
     options: ConfirmDialogOptions,
     acceptLabel = "Continuar",
     callback = null,
-    cancelCallback = null
+    cancelCallback = null,
+    disabledCondition = false
   ) => {
     if (!callback) {
       callback = options.reject();
@@ -563,7 +586,7 @@ const EditWorkEntitiesPage = () => {
           label={acceptLabel}
           rounded
           className="!px-4 !py-2 !text-base !mr-0 !font-sans"
-          disabled={loading}
+          disabled={loading || disabledCondition}
           onClick={(e) => {
             callback();
           }}
@@ -636,9 +659,15 @@ const EditWorkEntitiesPage = () => {
         visible={showAssignPrograms}
         acceptLabel="Aceptar"
         footer={(options) =>
-          cancelButtons(options, "Asignar", () => {
-            assingPrograms();
-          })
+          cancelButtons(
+            options,
+            "Asignar",
+            () => {
+              assingPrograms();
+            },
+            null,
+            !assignedPrograms.length
+          )
         }
         message={
           <div className="grid grid-cols-1 max-h-[calc(100vh-19rem)] overflow-y-auto px-6">
@@ -693,7 +722,7 @@ const EditWorkEntitiesPage = () => {
                   }
                 />
               </div>
-              <div className="m-auto w-fit grid lg:grid-cols-1 grid-cols-2 col-span-1 gap-y-4 gap-x-6">
+              <div className="m-auto sticky bottom-1/4 w-fit grid lg:grid-cols-1 grid-cols-2 col-span-1 gap-y-4 gap-x-6">
                 <Button
                   label="Agregar"
                   rounded

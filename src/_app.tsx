@@ -53,7 +53,7 @@ function App() {
               />
               <Route
                 path={"/atencion-ciudadana/entidades-trabajo/editar/:id"}
-                element={<PrivateRoute element={<EditWorkEntitiesPage />} allowedAction={"ENTIDADES_TRABAJO_CREAR"} />}
+                element={<PrivateRoute element={<EditWorkEntitiesPage />} allowedAction={"ENTIDADES_TRABAJO_EDITAR"} />}
               />
             </Routes>
           </Suspense>
