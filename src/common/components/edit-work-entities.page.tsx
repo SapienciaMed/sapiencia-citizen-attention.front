@@ -73,6 +73,7 @@ const EditWorkEntitiesPage = () => {
     },
   ]);
   const [cancelar, setCancelar] = useState(false);
+  const [cancelarAssign, setCancelarAsdign] = useState(false);
   const [programs, setPrograms] = useState<{
     info: TreeNode[];
     selection: TreeNode[];
@@ -99,6 +100,11 @@ const EditWorkEntitiesPage = () => {
   const cancelarChanges = () => {
     setCancelar(false);
     navigate(-1);
+  };
+
+  const cancelarChangesAssing = () => {
+    setCancelarAsdign(false);
+    setShowAssignPrograms(false);
   };
 
   const navigate = useNavigate();
@@ -128,6 +134,8 @@ const EditWorkEntitiesPage = () => {
       }
 
       dataUser.current = data;
+      console.log('->> ', data);
+      
       setIdEntity(data.id.toString());
       setTypeEntity(data.workEntityType["tet_descripcion"]);
       //setNameEntity(data['name']);
@@ -427,20 +435,27 @@ const EditWorkEntitiesPage = () => {
     if (!callback) {
       callback = options.reject();
     }
+
     return (
       <div className="flex items-center justify-center gap-2 pb-2">
+
+        {cancelarAssign?(<><MessageComponent
+                        twoBtn={true}
+                        nameBtn1="Continuar"
+                        nameBtn2="Cancelar"
+                        onClickBt2={() =>setCancelarAsdign(false)}
+                        onClickBt1={ cancelarChangesAssing }
+                        headerMsg="Cancelar cambios" 
+                        msg="Desea cancelar la acción, no se guardarán los datos"/></>):(<></>)}
+
+
         <Button
           text
           rounded
           severity="secondary"
           className="!py-2 !text-base !font-sans !text-black"
           disabled={loading}
-          onClick={(e) => {
-            options.accept();
-            if (cancelCallback) {              
-              
-            }
-          }}
+          onClick={() => setCancelarAsdign(true) }
         >
           Cancelar
         </Button>
@@ -794,7 +809,7 @@ const EditWorkEntitiesPage = () => {
             <Card className="card card-movil mt-6">
               <div className="max-h-96 overflow-y-auto relative citizen-attention">
                 <Tree
-                  value={programs.info}
+                  value={assignedPrograms}
                   contentClassName="border-0"
                   collapseIcon={
                     <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
