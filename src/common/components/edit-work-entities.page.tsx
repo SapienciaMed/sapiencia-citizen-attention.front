@@ -87,6 +87,7 @@ const EditWorkEntitiesPage = () => {
   const [showAssignPrograms, setShowAssignPrograms] = useState(false);
   const [assignedAffairsPrograms, setAssignedAffairsPrograms] = useState<IEntityAffairsProgram[]>([]);
   const [assignedPrograms, setAssignedPrograms] = useState<TreeNode[]>([]);
+  const [assignedProgramsAux, setAssignedProgramsAux] = useState<TreeNode[]>([]);
   const [selectedPrograms, setSelectedPrograms] = useState(null);
   const [unselectedPrograms, setUnselectedPrograms] = useState(null);
   const [fullName, setfullName] = useState<string[]>([]);
@@ -223,7 +224,8 @@ const EditWorkEntitiesPage = () => {
             assignedProgram.data.check = totalChilds == assignedProgram.children.length;
           });
 
-          setAssignedPrograms([...newAssignedPrograms]);
+          console.log('-->',...newAssignedPrograms);
+          setAssignedProgramsAux([...newAssignedPrograms]);
 
           const selection = Object.assign(
             {},
@@ -247,7 +249,7 @@ const EditWorkEntitiesPage = () => {
               };
             })
           );
-
+          
           setSelectedPrograms(selection);
 
           updatePrograms([...{ ...newTree }.selection, ...newAssignedPrograms], selection);
@@ -622,6 +624,7 @@ const EditWorkEntitiesPage = () => {
       });
     });
     setAssignedAffairsPrograms([...newAssignedAffairsPrograms]);
+    setAssignedProgramsAux(assignedPrograms)
   };
 
   const acceptButton = (options, label = "Aceptar") => {
@@ -942,7 +945,7 @@ const EditWorkEntitiesPage = () => {
             <Card className="card card-movil mt-6">
               <div className="max-h-96 overflow-y-auto relative citizen-attention">
                 <Tree
-                  value={assignedPrograms}
+                  value={assignedProgramsAux}
                   contentClassName="border-0"
                   collapseIcon={
                     <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
