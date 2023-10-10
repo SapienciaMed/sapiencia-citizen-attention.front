@@ -38,12 +38,12 @@ export function useWorkEntityService() {
     }
   }
 
-  async function getUserByFilters(filters: IWorkEntityFilters): Promise<ApiResponse<IUser | null>> {
+  async function getUserByFilters(filters: IWorkEntityFilters): Promise<ApiResponse<IUser[]>> {
     try {
       const endpoint: string = `/get-user-by-filters`;
       return await post(`${listUrl}${endpoint}`, filters);
     } catch (error) {
-      return new ApiResponse(null, EResponseCodes.FAIL, "Error no controlado");
+      return new ApiResponse([], EResponseCodes.FAIL, "Error no controlado");
     }
   }
 
