@@ -126,7 +126,8 @@ export const ChangeResponsibleComponent = (props:Props) => {
             
             const response = await workEntityService.getUserByFilters(payload);
             const { data, operation } = response;
-
+            console.log(response);
+            
             if(operation.code !== "OK"){
                 setLoad(false),
                 setError(true)

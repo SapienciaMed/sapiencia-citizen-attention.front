@@ -1017,7 +1017,9 @@ const EditWorkEntitiesPage = () => {
         ) : (
           <></>
         )}
-        <div className="buton-fixe " style={{ width: anchoDePantalla - WidthRef.current }}>
+
+       <div>
+        <div className="buton-pie" style={{paddingRight:'5em', paddingTop:'3em',paddingBottom:'3em'}}>
           <div className="">
             <Button
               text
@@ -1032,6 +1034,7 @@ const EditWorkEntitiesPage = () => {
             </Button>
           </div>
         </div>
+       </div>
       </form>
     </div>
   );
