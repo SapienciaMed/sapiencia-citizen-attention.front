@@ -564,8 +564,8 @@ const EditWorkEntitiesPage = () => {
               twoBtn={true}
               nameBtn1="Continuar"
               nameBtn2="Cancelar"
-              onClickBt2={() => setCancelarAsdign(false)}
-              onClickBt1={cancelarChangesAssing}
+              onClickBt2={cancelarChangesAssing}
+              onClickBt1={() => setCancelarAsdign(false) }
               headerMsg="Cancelar cambios"
               msg="Desea cancelar la acción, no se guardarán los datos"
             />
