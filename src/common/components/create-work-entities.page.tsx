@@ -59,6 +59,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
   const [hasUnselectedPrograms, setHasUnselectedPrograms] = useState(false);
   const [showAssignPrograms, setShowAssignPrograms] = useState(false);
   const [assignedPrograms, setAssignedPrograms] = useState<TreeNode[]>([]);
+  const [assignedProgramsAux, setAssignedProgramsAux] = useState<TreeNode[]>([]);
   const [assignedAffairsPrograms, setAssignedAffairsPrograms] = useState<IEntityAffairsProgram[]>([]);
   const [selectedPrograms, setSelectedPrograms] = useState(null);
   const [unselectedPrograms, setUnselectedPrograms] = useState(null);
@@ -633,6 +634,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
       });
     });
     setAssignedAffairsPrograms([...newAssignedAffairsPrograms]);
+    setAssignedProgramsAux(assignedPrograms);
   };
 
   return (
@@ -992,7 +994,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
                 <div className="p-card-content !pb-0 !pt-0">
                   <div className="max-h-96 overflow-y-auto relative citizen-attention">
                     <Tree
-                      value={assignedPrograms}
+                      value={assignedProgramsAux}
                       contentClassName="border-0"
                       collapseIcon={
                         <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">

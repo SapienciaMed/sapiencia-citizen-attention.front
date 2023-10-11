@@ -224,7 +224,7 @@ const EditWorkEntitiesPage = () => {
             assignedProgram.data.check = totalChilds == assignedProgram.children.length;
           });
 
-          console.log('-->',...newAssignedPrograms);
+          
           setAssignedProgramsAux([...newAssignedPrograms]);
 
           const selection = Object.assign(
@@ -327,8 +327,8 @@ const EditWorkEntitiesPage = () => {
     const response = await workEntityService.updateWorkEntity(payload);
 
     if (response["operation"]["code"] === "OK") {
-      setHeaderMsg("¡Cambios guardados!");
-      setMsgResponse(response["operation"]["message"]);
+      setHeaderMsg("Cambios guardados");
+      setMsgResponse('Actualización exitosa');
       setShowMsg(true);
     } else {
       setHeaderMsg("Error");
@@ -1012,7 +1012,7 @@ const EditWorkEntitiesPage = () => {
             <MessageComponent
               twoBtn={false}
               nameBtn1="Cancelar"
-              onClickBt1={() => setShowMsg(false)}
+              onClickBt1={() => {setShowMsg(false)}}
               headerMsg={headerMsg}
               msg={msgResponse}
             />
