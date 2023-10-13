@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Column } from "primereact/column"
 import { DataTable, DataTableSelectionChangeEvent } from "primereact/datatable"
@@ -22,39 +22,19 @@ interface PageNumber {
     page: number;
   }
 
-export const TableGenericComponent = () => {
+interface Props {
+  data: object[]
+}
+
+export const TableGenericComponent = (props:Props) => {
+
+    const { data } = props;
 
     const [selectPage, setSelectPage] = useState<PageNumber>({ page: 5 });
-    const [user, getUser] = useState<User[]>([{identification:'12',
-                                            names:'camilo',
-                                            lastName:'moreno',
-                                            email:'test1@gmail.com',
-                                            noContact1:'1231212',
-                                            noContact2:'352343',
-                                            userId:'1',
-                                            },
-                                            {identification:'13',
-                                            names:'daniel',
-                                            lastName:'moreno',
-                                            email:'test2@gmail.com',
-                                            noContact1:'1231212',
-                                            noContact2:'352343',
-                                            userId:'2',
-                                            },
-                                            {identification:'14',
-                                            names:'Gero',
-                                            lastName:'munera',
-                                            email:'test3@gmail.com',
-                                            noContact1:'1231212',
-                                            noContact2:'352343',
-                                            userId:'3',
-                                            }
-                                        ])
-
+    
     const pageNumber: PageNumber[] = [{ page: 5 }, { page: 10 }, { page: 15 }, { page: 20 }];
 
     const statusBodyTemplate = (user:DataTableSelectionChangeEvent<User[]>) => {
-        console.log(user);
         
         return (
             <>
@@ -154,7 +134,7 @@ export const TableGenericComponent = () => {
 
         <div className="overflow-hidden max-w-[calc(100vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] hidden md:block borderless reverse-striped">
             <DataTable
-                value={user}
+                value={data}
                 paginator
                 paginatorTemplate={paginatorTemplate()}
                 rows={selectPage.page}

@@ -1,18 +1,47 @@
 import { Controller, useForm } from 'react-hook-form';
+import { useState } from 'react';
+import { Button } from 'primereact/button';
 import { Card } from "primereact/card";
 import "../../styles/attentionCitizens-styles.scss"
 import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
 import { classNames } from 'primereact/utils';
 import { TableGenericComponent } from './genericComponent/table.component';
+import { useWorkEntityService } from '../hooks/WorkEntityService.hook';
+
+import { IWorkEntityFilters } from '../interfaces/workEntity.interfaces';
+import { MessageComponent } from './componentsEditWorkEntities/message.component';
+
+interface User {
+  identification: string;
+  names: string;
+  lastName: string;
+  email: string;
+  noContact1: string;
+  noContact2: string;
+  userId:string
+}
+
+interface Payload {
+  email: "";
+  identification: "";
+  lastNames: "";
+  names: "";
+}
+
 
 const AttentionTocitizens = ()=> {
+
+  const [load, setLoad] = useState(false);
+  const [user, setUser] = useState<object[]>([]);
+
+  const workEntityService = useWorkEntityService();
 
   const defaultValues = {
     typeDocument:"",
     identification: "",
     names: "",
-    lastName: "",
+    lastNames: "",
     email: "",
     noContact:""
   };
@@ -24,6 +53,65 @@ const AttentionTocitizens = ()=> {
     watch,
     reset,
   } = useForm({ defaultValues, mode: "all" });
+
+  const resetForm = () => {
+    setLoad(false), 
+    reset();
+    setUser([])
+  };
+
+  let statusButon = true;
+  if (
+    watch("names").length > 0 ||
+    watch("identification").length > 0 ||
+    watch("lastNames").length > 0 ||
+    watch("email").length > 0
+  ) {
+    statusButon = false;
+  }
+
+  const onSubmit = async (filter: Payload) => {
+    console.log('filter-> ',filter);
+    
+    setLoad(true);
+    try {
+      const { email, identification, lastNames, names } = filter;
+
+      const payload: IWorkEntityFilters = {
+        email,
+        lastNames,
+        names,
+        identification: parseInt(identification),
+      };
+
+      console.log('payload-> ',payload);
+
+      const response = await workEntityService.getUserByFilters(payload);
+      const { data, operation } = response;
+      console.log('data-> ',data);
+      if (operation.code !== "OK") {
+        
+        setLoad(true)
+
+      }
+      
+      const usersData = data.map((user) => {
+        return {
+          identification: user?.numberDocument,
+          names: `${user?.names} ${user?.lastNames}`,
+          lastName: user?.lastNames,
+          email: user?.email,
+          noContact1: user?.numberContact1,
+          noContact2: user?.numberContact2,
+          userId: user?.id,
+        };
+      });
+      setUser(usersData)
+    } catch (error) {}
+  };
+
+  console.log('user-> ', user.length);
+  
 
   const getFormErrorMessage = (name) => {
     return errors[name] ? (
@@ -41,7 +129,7 @@ const AttentionTocitizens = ()=> {
             title='Radicar PQRDSF'
             className="card-container mb-4"
             >
-              <form>
+              <form onSubmit={handleSubmit(onSubmit)}>
 
                 <div style={{ marginBottom: "8px" }}>
                   <label className="text-xl">Buscar por</label>
@@ -54,12 +142,12 @@ const AttentionTocitizens = ()=> {
                       <Controller
                         name="typeDocument"
                         control={control}
-                        rules={{ required: 'Campo obligatorio.'}}
                         render={({ field, fieldState }) => (
                           <>
                             <Dropdown
                             className='h-10'
                             placeholder='Seleccionar'
+                            style={{alignItems:'center'}}
                             />
                           </>
                         )}
@@ -117,7 +205,7 @@ const AttentionTocitizens = ()=> {
                     <div>
                       <label>Apellidos</label><br />
                       <Controller
-                        name="lastName"
+                        name="lastNames"
                         control={control}
                         rules={{ maxLength:{value:50, message:'Solo se permiten 50 caracteres'} }}
                         render={({ field, fieldState }) => (
@@ -156,6 +244,7 @@ const AttentionTocitizens = ()=> {
                                   style={{width:'390px'}}
                                 />
                             </span>
+                            <br />
                             {getFormErrorMessage(field.name)}
                           </>
                       )}
@@ -190,13 +279,41 @@ const AttentionTocitizens = ()=> {
                     />
                   </div>
                 </div>
-
+                  <div className="flex justify-end mb-4 col-100 movil-5">
+                    <Button
+                      text
+                      className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10"
+                      onClick={resetForm}
+                      type="button"
+                      label="Limpiar Campos"
+                    ></Button>
+                    <Button className="rounded-full !h-10" type="submit" disabled={load || statusButon}>
+                      Buscar
+                    </Button>
+                </div>
               </form>
           </Card>
+          
+          {load?(
+              <MessageComponent
+              headerMsg='Usuario no encontrado'
+              msg='¿Desea radicar la PQRSDF de todas formas y crear el ciudadano?'
+              twoBtn={true}
+              nameBtn1='Radicar'
+              nameBtn2='Cancelar'
+              onClickBt2={()=> setLoad(false)}
+            />
+          ):(<></>)
 
-          <Card className="card-container">
-              <TableGenericComponent/>
-          </Card>
+          }
+
+          {user.length > 0 ? (
+              <Card className="card-container">
+                <TableGenericComponent data={user}/>
+              </Card>
+          ):(<></>)
+
+           }
         </Card>
       </div>
     </>
