@@ -12,6 +12,7 @@ import "./styles/output/utilities.scss";
 import WorkEntitiesPage from "./common/components/work-entities.page";
 import CreateWorkEntitiesPage from "./common/components/create-work-entities.page";
 import PrivateRoute from "./common/components/Guard/auth-private-guard";
+import PortalAuthRoutes from "./features/portal-auth/portal-auth.routes";
 
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
         <Router>
           <Suspense fallback={<p>Loading...</p>}>
             <Routes>
+              <Route path={"/portal/*"} element={<PortalAuthRoutes />} />
               {/*<Route path={"/atencion-ciudadana/"} element={<HomePage />} />;*/}
               <Route path={"/atencion-ciudadana/"} element={<Register_pqrsdf />} />
               <Route path={"/atencion-ciudadana/calendario"} element={<CalendarPage />} />;
