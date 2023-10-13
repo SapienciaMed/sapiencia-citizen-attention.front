@@ -13,6 +13,7 @@ import WorkEntitiesPage from "./common/components/work-entities.page";
 import CreateWorkEntitiesPage from "./common/components/create-work-entities.page";
 import PrivateRoute from "./common/components/Guard/auth-private-guard";
 
+
 function App() {
   //const HomePage = lazy(() => import("./common/components/home.page"));
   addLocale("es", primereact_es.es);
@@ -22,6 +23,7 @@ function App() {
   const CalendarPage = lazy(() => import("./common/components/calendar.page"));
   const QueryPqrsdfPage = lazy(() => import("./common/components/query-pqrsdf.page"));
   const EditWorkEntitiesPage = lazy(() => import("./common/components/edit-work-entities.page"));
+  const AttentionTocitizens = lazy(() => import("./common/components/attentionTocitizens.page"));
   const { publish } = useAppCominicator();
 
   // Effect que cominica la aplicacion actual
@@ -54,6 +56,10 @@ function App() {
               <Route
                 path={"/atencion-ciudadana/entidades-trabajo/editar/:id"}
                 element={<PrivateRoute element={<EditWorkEntitiesPage />} allowedAction={"ENTIDADES_TRABAJO_EDITAR"} />}
+              />
+              <Route 
+                path={"/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf"} 
+                element={<AttentionTocitizens />} 
               />
             </Routes>
           </Suspense>
