@@ -48,7 +48,7 @@ const AttentionTocitizens = ()=> {
                 </div>
 
                 <div className='flex flex-row'>
-                  <div className='flex flex-row'>
+                  <div className='flex flex-row mr-4'>
                     <div className='mr-2'>
                       <label className='font-label'>Tipos</label><br />
                       <Controller
@@ -91,7 +91,7 @@ const AttentionTocitizens = ()=> {
                     </div>
                   </div>
 
-                  <div>
+                  <div className='mr-4'>
                       <label>Nombres</label><br />
                       <Controller
                         name="names"
@@ -138,7 +138,7 @@ const AttentionTocitizens = ()=> {
                     </div>
                 </div>
                 <div className='flex flex-row'>
-                  <div>
+                  <div className='mr-4'>
                     <label>No. De contacto</label><br />
                     <Controller
                       name="noContact"
@@ -152,7 +152,8 @@ const AttentionTocitizens = ()=> {
                                   value={field.value} 
                                   className={classNames({ 'p-invalid': fieldState.error },'h-10')} 
                                   onChange={(e) => field.onChange(e.target.value)}
-                                  keyfilter='alpha' 
+                                  keyfilter='alpha'
+                                  style={{width:'390px'}}
                                 />
                             </span>
                             {getFormErrorMessage(field.name)}
