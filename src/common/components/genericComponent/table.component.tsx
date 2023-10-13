@@ -2,8 +2,10 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Column } from "primereact/column"
 import { DataTable, DataTableSelectionChangeEvent } from "primereact/datatable"
-import { Dropdown } from "primereact/dropdown"
+import { Dropdown, DropdownChangeEvent } from "primereact/dropdown"
 import { Tooltip } from "primereact/tooltip";
+import { Button } from "primereact/button";
+import { classNames } from "primereact/utils";
 
 
 interface User {
@@ -16,8 +18,13 @@ interface User {
     userId:string
 }
 
+interface PageNumber {
+    page: number;
+  }
+
 export const TableGenericComponent = () => {
 
+    const [selectPage, setSelectPage] = useState<PageNumber>({ page: 5 });
     const [user, getUser] = useState<User[]>([{identification:'12',
                                             names:'camilo',
                                             lastName:'moreno',
@@ -43,7 +50,8 @@ export const TableGenericComponent = () => {
                                             userId:'3',
                                             }
                                         ])
-    
+
+    const pageNumber: PageNumber[] = [{ page: 5 }, { page: 10 }, { page: 15 }, { page: 20 }];
 
     const statusBodyTemplate = (user:DataTableSelectionChangeEvent<User[]>) => {
         console.log(user);
@@ -66,34 +74,96 @@ export const TableGenericComponent = () => {
         );
     };
 
+    const paginatorTemplate = (prev = "Anterior", next = "Siguiente") => {
+        return {
+          layout: "PrevPageLink PageLinks NextPageLink",
+          PrevPageLink: (options) => {
+            return (
+              <Button
+                type="button"
+                className={classNames(options.className, "!rounded-lg")}
+                onClick={options.onClick}
+                disabled={options.disabled}
+                style={{ opacity: "1.4" }}
+              >
+                <span className="p-3 text-black">{prev}</span>
+              </Button>
+            );
+          },
+          NextPageLink: (options) => {
+            return (
+              <Button
+                className={classNames(options.className, "!rounded-lg")}
+                onClick={options.onClick}
+                disabled={options.disabled}
+                style={{ opacity: "1.4" }}
+              >
+                <span className="p-3 text-black">{next}</span>
+              </Button>
+            );
+          },
+          PageLinks: (options) => {
+            if (
+              (options.view.startPage === options.page && options.view.startPage !== 0) ||
+              (options.view.endPage === options.page && options.page + 1 !== options.totalPages)
+            ) {
+              const className = classNames(options.className, { "p-disabled": true });
+    
+              return (
+                <span className={className} style={{ userSelect: "none" }}>
+                  ...
+                </span>
+              );
+            }
+    
+            return (
+              <Button
+                style={{ backgroundColor: "#533893", borderRadius: "4px", color: "white" }}
+                className={options.className}
+                onClick={options.onClick}
+              >
+                {options.page + 1}
+              </Button>
+            );
+          },
+        };
+      };
+
   return (
     <>
-        <div className="content-card-table mb-8">
+        <div className="flex flex-row items-center justify-between mb-8">
             <div className="col-1">
-            <label className="text-2xl">Resultados de búsqueda</label>
+                <label className="text-2xl">Resultados de búsqueda</label>
             </div>
-            <div className="paginado col-1">
-            <div className="pl-8">
-                <label className="mr-2 text-base ">Total de resultados</label>{" "}
-                <span className="text-black bold big">{'3'}</span>
-            </div>
-            <div className="">
-                <label className="mr-2 p-colorpicker">Registro por página</label>
-                <Dropdown
-                    optionLabel="page"
-                />
-            </div>
+            <div className="flex flex-row items-center">
+                <div className="pl-8 mr-4">
+                    <label className="mr-2 text-base ">Total de resultados</label>{" "}
+                    <span className="text-black bold big">{'3'}</span>
+                </div>
+                <div className="">
+                    <label className="mr-2 p-colorpicker">Registro por página</label>
+                    <Dropdown
+                        value={selectPage}
+                        onChange={(e: DropdownChangeEvent) => setSelectPage(e.value)}
+                        options={pageNumber}
+                        optionLabel="page"
+                    />
+                </div>
             </div>
         </div>
 
         <div className="overflow-hidden max-w-[calc(100vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] hidden md:block borderless reverse-striped">
             <DataTable
                 value={user}
+                paginator
+                paginatorTemplate={paginatorTemplate()}
+                rows={selectPage.page}
                 stripedRows
                 selectionMode="single"
                 dataKey="id"
+                scrollable
             >
-                <Column header="No." headerStyle={{ width: '3rem' }} body={(data, options) => options.rowIndex + 1}></Column>
+                <Column header="No."  style={{ textAlign: "center" }} headerStyle={{ width: '3rem' }} body={(data, options) => options.rowIndex + 1}></Column>
                 <Column style={{ textAlign: "center" }} field="identification" header="Doc. Identidad"></Column>
                 <Column style={{ textAlign: "center" }} field="names" header="Nombre y apellidos"></Column>
                 <Column
