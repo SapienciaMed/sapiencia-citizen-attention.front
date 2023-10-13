@@ -1,4 +1,4 @@
-import { useRef, useState, Suspense } from 'react';
+import { useRef, useState, Suspense, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
@@ -14,6 +14,8 @@ import { UploadComponent } from "./uploadComponent";
 import { classNames } from 'primereact/utils';
 import { usePqrsdfService } from '../../hooks/PqrsdfService.hook'; 
 import { FormPqrsdf, IPqrsdf } from '../../interfaces/pqrsdf.interfaces';
+import { useWorkEntityService } from '../../hooks/WorkEntityService.hook';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const ApiDatatypoSolicitudes = fetchData("/get-type-solicituds");
 const ApiDatatypoDocument = fetchData("/get-type-docuement");
@@ -28,6 +30,9 @@ const ApiDataMunicipios = fetchData("/get-municipios/",'5');
 
 
 export const CitizenInformation = () => {
+
+  const workEntityService = useWorkEntityService();
+  const navigate = useNavigate();
   
   const optionSolicitudes = ApiDatatypoSolicitudes.read();
   const optionTypeDocument = ApiDatatypoDocument.read();
@@ -100,6 +105,18 @@ export const CitizenInformation = () => {
   const [visible, setVisible] = useState<boolean>(false);
   const [file, setfile] = useState<File>(null);
   const [ visibleMsg, setVisibleMsg] = useState(null);
+  const [ name, setName] = useState('');
+  const [ lastName, setLastName] = useState('');
+
+  const firtName = (name: string) => { 
+    setName(name);
+    return name 
+  };
+
+  const getlastName = (name: string) => { 
+    setLastName(name);
+    return name 
+  };
 
   const seleTipoSsolicitud = ( solicitud:{TSO_CODIGO:number, TSO_DESCRIPTION:string} ) => {
     setValueTypeSolicitud( solicitud );
@@ -232,6 +249,32 @@ export const CitizenInformation = () => {
     
     return estado;
   }
+
+  const getUser = async (identification: string) => {
+    const responseUser = await workEntityService.getUserByFilters({
+      identification:parseInt(identification)
+    });
+    return responseUser;
+  };
+  const { identification } = useParams();
+
+  useEffect(() => {
+    
+    console.log(identification);
+    
+    getUser(identification).then(({ data, operation }) => {
+
+      console.log('operation-> ', operation);
+    console.log('data-> ', data);
+
+    const user = data[0]
+
+    setName(user['names']);
+    setLastName(user['lastNames']);
+    
+
+    });
+  }, []);
 
   const handleDateChange = (date:Date, data:string) => {
     const birthdate = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
@@ -509,9 +552,9 @@ export const CitizenInformation = () => {
                     <>
                       <InputTextComponent
                         id={field.name}
-                        value={field.value}
+                        value={name}
                         className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
-                        onChange={(e) => field.onChange(e.target.value)}
+                        onChange={(e) => field.onChange(firtName(e.target.value))}
                         placeholder=''
                         width="100%"
                       />
@@ -564,9 +607,9 @@ export const CitizenInformation = () => {
                     <>
                       <InputTextComponent
                         id={field.name}
-                        value={field.value}
+                        value={lastName}
                         className={classNames({ 'p-invalid': fieldState.error }, '!h-10')}
-                        onChange={(e) => field.onChange(e.target.value)}
+                        onChange={(e) => field.onChange(getlastName(e.target.value))}
                         placeholder=''
                         width="100%"
                       />
