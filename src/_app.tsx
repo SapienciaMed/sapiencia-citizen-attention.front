@@ -62,7 +62,7 @@ function App() {
                 element={<AttentionTocitizens />} 
               />
               <Route 
-                path={"/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf/editar/:id"} 
+                path={"/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf/radicar/:documento"} 
                 element={<Register_pqrsdf />} 
               />
             </Routes>

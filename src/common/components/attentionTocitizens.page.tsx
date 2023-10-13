@@ -73,7 +73,6 @@ const AttentionTocitizens = ()=> {
   const onSubmit = async (filter: Payload) => {
     console.log('filter-> ',filter);
     
-    setLoad(true);
     try {
       const { email, identification, lastNames, names } = filter;
 
@@ -92,7 +91,7 @@ const AttentionTocitizens = ()=> {
       if (operation.code !== "OK") {
         
         setLoad(true)
-
+        return
       }
       
       const usersData = data.map((user) => {
@@ -106,6 +105,7 @@ const AttentionTocitizens = ()=> {
           userId: user?.id,
         };
       });
+      setLoad(false)
       setUser(usersData)
     } catch (error) {}
   };
