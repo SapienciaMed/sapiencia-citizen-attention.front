@@ -10,12 +10,12 @@ export interface IPerson {
   entityType?: ILegalEntityType;
   identification: string;
   firstName: string;
-  secondName: string;
+  secondName?: string;
   firstSurname: string;
-  secondSurname: string;
-  birthdate: Date;
+  secondSurname?: string;
+  birthdate?: Date;
   firstContactNumber: string;
-  secondContactNumber: string;
+  secondContactNumber?: string;
   email: string;
   address: string;
   countryId: number;

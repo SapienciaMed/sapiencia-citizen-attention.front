@@ -1,4 +1,5 @@
 import { EResponseCodes } from "../constants/api.enum";
+import { IPerson } from "../interfaces/person.interfaces";
 import { IPqrsdf } from "../interfaces/pqrsdf.interfaces";
 import { ApiResponse } from "../utils/api-response";
 import useCrudService from "./crud-service.hook";
@@ -41,6 +42,15 @@ export function usePqrsdfService() {
     }
   }
 
+  async function getPersonByDocument(identification: number): Promise<ApiResponse<IPerson | null>> {
+    try {
+      const endpoint: string = `/get-person-by-document/${identification}`;
+      return await get(`${listUrl}${endpoint}`);
+    } catch (error) {
+      return new ApiResponse({} as IPerson, EResponseCodes.FAIL, "Error no controlado");
+    }
+  }
+
   async function createPqrsdf(pqrsdf: IPqrsdf): Promise<ApiResponse<IPqrsdf>> {
     try {
       const endpoint: string = `/create/`;
@@ -54,6 +64,7 @@ export function usePqrsdfService() {
     getPqrsdfs,
     createPqrsdf,
     getPqrsdfById,
-    getPqrsdfByIdentificationAndFilingNumber
+    getPersonByDocument,
+    getPqrsdfByIdentificationAndFilingNumber,
   };
 }

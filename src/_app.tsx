@@ -67,6 +67,10 @@ function App() {
                 path={"/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf/radicar/:identification"} 
                 element={<Register_pqrsdf />} 
               />
+              <Route 
+                path={"/atencion-ciudadana/presentar-pqrsdf/:identification"} 
+                element={<Register_pqrsdf isPerson={true} />} 
+              />
             </Routes>
           </Suspense>
         </Router>
