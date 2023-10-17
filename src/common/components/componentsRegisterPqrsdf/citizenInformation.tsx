@@ -325,6 +325,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
 
   const onSubmit = async (data: FormPqrsdf) => {
     const pqrsdf: IPqrsdf = {
+      isPerson: isPerson,
       requestTypeId: data.tipoDeSolicitud["TSO_CODIGO"],
       responseMediumId: data.medioRespuesta["MRE_CODIGO"],
       requestSubjectId: 1,

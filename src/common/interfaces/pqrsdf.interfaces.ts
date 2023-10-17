@@ -4,13 +4,16 @@ import { IResponseMedium } from "./responseMedium.interfaces";
 import { IRequestSubject } from "./requestSubject.interfaces";
 import { IFile } from "./file.interfaces";
 import { IRequestType } from "./requestType.interfaces";
+import { IWorkEntity } from "./workEntity.interfaces";
 
 export interface IPqrsdf {
   id?: number;
+  isPerson?: boolean;
   requestTypeId: number;
   personId?: number;
   responseMediumId: number;
   requestSubjectId: number;
+  responsibleId?: number;
   fileId?: number;
   filingNumber?: number;
   clasification: string;
@@ -20,6 +23,7 @@ export interface IPqrsdf {
   person?: IPerson;
   answer?: string;
   answerDate?: DateTime;
+  responsible?: IWorkEntity;
   responseMedium?: IResponseMedium;
   requestSubject?: IRequestSubject;
   file?: IFile;

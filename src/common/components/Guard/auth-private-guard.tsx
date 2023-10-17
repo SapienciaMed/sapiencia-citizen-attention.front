@@ -1,7 +1,7 @@
 import { Button } from "primereact/button";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { useContext } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../contexts/app.context";
 
 const PrivateRoute = ({ element, allowedAction }) => {
