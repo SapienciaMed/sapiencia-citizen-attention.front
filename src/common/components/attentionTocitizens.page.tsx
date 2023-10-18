@@ -86,7 +86,12 @@ const AttentionTocitizens = () => {
 
       console.log("payload-> ", payload);
 
-      const response = await workEntityService.getUserByFilters(payload);
+      const response = await workEntityService.getUserByFilters({
+        email,
+        identification: parseInt(identification),
+        names,
+        lastNames,
+      });
       const { data, operation } = response;
       console.log("data-> ", data);
       if (operation.code !== "OK") {

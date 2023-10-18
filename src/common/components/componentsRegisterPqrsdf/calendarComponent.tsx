@@ -2,7 +2,7 @@ import { Calendar } from 'primereact/calendar';
 
 
 interface Attributes {
-    value: Date;
+    value: Date|string;
     inputId:string;
     dateFormat:string;
     className:  string | undefined;
