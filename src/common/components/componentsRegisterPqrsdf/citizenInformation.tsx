@@ -240,11 +240,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
   };
 
   const getUser = async (identification: string) => {
-    const responseUser = !isPerson
-      ? await workEntityService.getUserByFilters({
-          identification: parseInt(identification),
-        })
-      : pqrsdfService.getPersonByDocument(parseInt(identification));
+    const responseUser =  pqrsdfService.getPersonByDocument(parseInt(identification));
     return responseUser;
   };
   const { identification } = useParams();
@@ -252,12 +248,8 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
   useEffect(() => {
     if (identification) {
       getUser(identification).then(({ data, operation }) => {
-        const user = !isPerson ? data[0] : data;
+        const user = data;
 
-        if (!isPerson) {
-          setName(user["names"]);
-          setLastName(user["lastNames"]);
-        } else {
           console.log("data-> ", data);
           setName(user?.firstName);
           setValue("primerNombre", user?.firstName);
@@ -274,7 +266,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
           setValueIdentification(user?.identification);
           setValue("noDocumento", user?.identification);
           setBirthDate(toLocaleDate(user?.birthdate));
-          setValue("fechaNacimento", user?.birthdate);
+          //setValue("fechaNacimento", user?.birthdate);
           setEmail(user?.email);
           setValue("correoElectronico", user?.email);
           setFirstContactNumber(user?.firstContactNumber);
@@ -306,7 +298,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
             LGE_ELEMENTO_CODIGO: user?.municipality?.itemCode,
             LGE_ELEMENTO_DESCRIPCION: user?.municipality?.itemDescription
           });
-        }
+    
       });
     }
   }, []);

@@ -107,7 +107,7 @@ const AttentionTocitizens = () => {
       const response = await pqrsdfService.getPeopleByFilters(payload)
       const { data, operation } = response;
       const { array } = data;
-
+      
       if (operation.code !== "OK") {
         setLoad(true);
         return;
