@@ -1,7 +1,7 @@
 import { EResponseCodes } from "../constants/api.enum";
 import { IPerson, IPersonFilters } from "../interfaces/person.interfaces";
 import { IPqrsdf } from "../interfaces/pqrsdf.interfaces";
-import { ApiResponse } from "../utils/api-response";
+import { ApiResponse, IPagingData } from "../utils/api-response";
 import useCrudService from "./crud-service.hook";
 
 export function usePqrsdfService() {
@@ -51,12 +51,12 @@ export function usePqrsdfService() {
     }
   }
 
-  async function getPeopleByFilters(filters: IPersonFilters): Promise<ApiResponse<IPerson | null>> {
+  async function getPeopleByFilters(filters: IPersonFilters): Promise<ApiResponse<IPagingData<IPerson | null>>> {
     try {
       const endpoint: string = `/get-people-by-filters`;
-      return await post(`${listUrl}${endpoint}`, { filters });
+      return await post(`${listUrl}${endpoint}`,  filters );
     } catch (error) {
-      return new ApiResponse({} as IPerson, EResponseCodes.FAIL, "Error no controlado");
+      return new ApiResponse({} as IPagingData<IPerson | null>, EResponseCodes.FAIL, "Error no controlado");
     }
   }
 

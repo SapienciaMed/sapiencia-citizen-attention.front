@@ -3,15 +3,17 @@ import { Card } from "primereact/card";
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { classNames } from "primereact/utils";
-import { useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import "../../styles/attentionCitizens-styles.scss";
-import { useWorkEntityService } from "../hooks/WorkEntityService.hook";
 import { usePqrsdfService } from "../hooks/PqrsdfService.hook"
 import { TableGenericComponent } from "./genericComponent/table.component";
+import { mastersTablesServices } from "../hooks/masterTables.hook";
 
 import { IPersonFilters } from "../interfaces/person.interfaces";
+import { ItypeDocument } from "../interfaces/mastersTables.interface";
 import { MessageComponent } from "./componentsEditWorkEntities/message.component";
+import { useNavigate } from "react-router-dom";
 
 interface User {
   identification: string;
@@ -35,9 +37,14 @@ interface Payload {
 const AttentionTocitizens = () => {
   const [load, setLoad] = useState(false);
   const [user, setUser] = useState<object[]>([]);
+  const [selectDocumentType, setSelectDocumentType] = useState(null);
+  const [documentType, setDocumentType] = useState<ItypeDocument[]>([]);
 
-  const workEntityService = useWorkEntityService();
+  const navigate = useNavigate();
+  const statusButton = useRef(true)
+
   const pqrsdfService = usePqrsdfService();
+  const masterTablesServices = mastersTablesServices();
 
   const defaultValues = {
     typeDocument: "",
@@ -59,21 +66,32 @@ const AttentionTocitizens = () => {
   const resetForm = () => {
     setLoad(false), reset();
     setUser([]);
+    setSelectDocumentType(null)
   };
-
-  let statusButon = true;
+  
+ 
   if (
     watch("names").length > 0 ||
     watch("identification").length > 0 ||
     watch("lastNames").length > 0 ||
-    watch("email").length > 0
+    watch("email").length > 0 ||
+    selectDocumentType !== null ||
+    watch("noContact").length > 0
   ) {
-    statusButon = false;
+    statusButton.current = false;
   }
 
-  const onSubmit = async (filter: Payload) => {
-    console.log("filter-> ", filter);
+  const getDocumentType = async ()=>{
+    const docuementsTypes = await masterTablesServices.getDocuemntType()
+    return docuementsTypes
+  }
 
+  useEffect(()=>{
+    getDocumentType().then(({data})=>{ setDocumentType(data) });
+  },[])
+
+  const onSubmit = async (filter: Payload) => {
+    
     try {
       const { email, identification, lastNames, names, documentTypeId, contactNumber } = filter;
 
@@ -82,38 +100,38 @@ const AttentionTocitizens = () => {
         surname: lastNames,
         name: names,
         identification,
-        documentTypeId,
+        documentTypeId: selectDocumentType,
         contactNumber,
       };
 
-      console.log("payload-> ", payload);
-
-      const response = await pqrsdfService.getPeopleByFilters(payload);
+      const response = await pqrsdfService.getPeopleByFilters(payload)
       const { data, operation } = response;
-      console.log("data-> ", data);
+      const { array } = data;
+
       if (operation.code !== "OK") {
         setLoad(true);
         return;
       }
-
-      /*const usersData = data.map((user) => {
+  
+      const usersData = array.map((user) => {
         return {
-          identification: user?.numberDocument,
-          names: `${user?.names} ${user?.lastNames}`,
-          lastName: user?.lastNames,
-          email: user?.email,
-          noContact1: user?.numberContact1,
-          noContact2: user?.numberContact2,
-          userId: user?.id,
+          identification: `${user['documentType']['itemCode']} ${user['identification']}`,
+          names: `${user['firstName']} ${user['firstSurname']}`,
+          lastName: user['secondName'],
+          email: user['email'],
+          noContact1: user['firstContactNumber'],
+          noContact2: user['secondContactNumber'],
+          userId: user['id'],
         };
-      });*/
+      })
       setLoad(false);
-      //setUser(usersData);
+      
+      setUser(usersData);
     } catch (error) {}
   };
 
-  console.log("user-> ", user.length);
-
+  console.log('->',user);
+  
   const getFormErrorMessage = (name) => {
     return errors[name] ? (
       <small className="p-error">{errors[name].message}</small>
@@ -142,7 +160,15 @@ const AttentionTocitizens = () => {
                       control={control}
                       render={({ field, fieldState }) => (
                         <>
-                          <Dropdown className="h-10" placeholder="Seleccionar" style={{ alignItems: "center" }} />
+                          <Dropdown
+                            value={selectDocumentType}
+                            options={documentType}
+                            onChange={(e) => setSelectDocumentType(e.value)}
+                            optionLabel="LGE_ELEMENTO_DESCRIPCION" 
+                            optionValue="LGE_CODIGO"
+                            className="h-10" 
+                            placeholder="Seleccionar" 
+                            style={{ alignItems: "center" }} />
                         </>
                       )}
                     />
@@ -286,8 +312,14 @@ const AttentionTocitizens = () => {
                   type="button"
                   label="Limpiar Campos"
                 ></Button>
-                <Button className="rounded-full !h-10" type="submit" disabled={load || statusButon}>
-                  Buscar
+                <Button 
+                  className="rounded-full !h-10" 
+                  type="submit" 
+                  disabled={load || statusButton.current}
+                  label="Buscar"
+                  onClick={()=>{statusButton.current = true}}
+                  >
+              
                 </Button>
               </div>
             </form>
@@ -301,6 +333,7 @@ const AttentionTocitizens = () => {
               nameBtn1="Radicar"
               nameBtn2="Cancelar"
               onClickBt2={() => setLoad(false)}
+              onClickBt1={()=>{navigate("/atencion-ciudadana/register-pqrsdf")}}
             />
           ) : (
             <></>
