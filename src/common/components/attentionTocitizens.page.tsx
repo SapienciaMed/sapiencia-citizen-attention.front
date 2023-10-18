@@ -115,7 +115,7 @@ const AttentionTocitizens = () => {
   
       const usersData = array.map((user) => {
         return {
-          identification: `${user['documentType']['itemCode']} ${user['identification']}`,
+          identification: `${user['identification']}`,
           names: `${user['firstName']} ${user['firstSurname']}`,
           lastName: user['secondName'],
           email: user['email'],

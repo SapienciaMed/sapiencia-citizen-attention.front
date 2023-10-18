@@ -144,7 +144,8 @@ export const TableGenericComponent = (props:Props) => {
                 scrollable
             >
                 <Column header="No."  style={{ textAlign: "center" }} headerStyle={{ width: '3rem' }} body={(data, options) => options.rowIndex + 1}></Column>
-                <Column style={{ textAlign: "center" }} field="identification" header="Doc. Identidad"></Column>
+                <Column style={{ textAlign: "center" }} headerStyle={{ width: '3rem' }} body={(data, options) => 'CC'}></Column>
+                <Column style={{ textAlign: "center" }} field={"identification"} header="Doc. Identidad"></Column>
                 <Column style={{ textAlign: "center" }} field="names" header="Nombre y apellidos"></Column>
                 <Column
                     style={{ textAlign: "center", justifyContent: "center" }}
