@@ -17,6 +17,7 @@ interface Atributos {
 
 export const UploadComponent = (props: Atributos) => {
   const { id, dataArchivo, showModal } = props;
+  const fileGlobal = useRef(null)
 
   const [visible, setVisible] = useState(false);
 
@@ -36,6 +37,7 @@ export const UploadComponent = (props: Atributos) => {
   };
 
   const onTemplateUpload = (e) => {
+
     let _totalSize = 0;
 
     e.files.forEach((file) => {
@@ -52,7 +54,7 @@ export const UploadComponent = (props: Atributos) => {
   };
 
   const onTemplateClear = () => {
-    console.log('--4');
+    fileGlobal.current = true
     setVisible(true);
     setTotalSize(0);
   };
@@ -83,7 +85,6 @@ export const UploadComponent = (props: Atributos) => {
 
   const itemTemplate = (inFile: object, props: ItemTemplateOptions) => {
     const file = inFile as File;
-    console.log(file);
     
     const extencion = file.name.split(".");
 
@@ -92,7 +93,10 @@ export const UploadComponent = (props: Atributos) => {
       return;
     }
 
-    dataArchivo(inFile);
+    if(fileGlobal.current){
+      dataArchivo(inFile);
+    }
+    
 
     const footerContent = (
       <div className="text-center">
