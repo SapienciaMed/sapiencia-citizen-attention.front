@@ -6,6 +6,7 @@ import "../../styles/register_pqrsdf.scss";
 import { Controller, useForm } from "react-hook-form";
 import { Dropdown } from "primereact/dropdown";
 import { classNames } from "primereact/utils";
+import { mastersTablesServices } from "../hooks/masterTables.hook";
 
 interface Props {
   isPerson?: boolean;

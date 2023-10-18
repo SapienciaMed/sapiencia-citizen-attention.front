@@ -17,6 +17,8 @@ import { FormPqrsdf, IPqrsdf } from "../../interfaces/pqrsdf.interfaces";
 import { useWorkEntityService } from "../../hooks/WorkEntityService.hook";
 import { useNavigate, useParams } from "react-router-dom";
 import { Nullable } from "primereact/ts-helpers";
+import { Calendar } from "primereact/calendar";
+import { toLocaleDate } from "../../utils/helpers";
 
 const ApiDatatypoSolicitudes = fetchData("/get-type-solicituds");
 const ApiDatatypoDocument = fetchData("/get-type-docuement");
@@ -80,6 +82,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     formState: { errors, isValid },
     handleSubmit,
     getFieldState,
+    setValue,
     reset,
     resetField,
     watch,
@@ -175,7 +178,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     return pais;
   };
 
-  const seletDepartamentos = (depart: { LGE_CODIGO: number; LGE_ELEMENTO_DESCRIPCION: string }) => {
+  const seletDepartamentos = (depart: any) => {
     setValueDepartamento(depart);
 
     showMupio.current = depart == null ? "" : depart.LGE_CODIGO;
@@ -247,58 +250,71 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
   const { identification } = useParams();
 
   useEffect(() => {
-    console.log(identification);
+    if (identification) {
+      getUser(identification).then(({ data, operation }) => {
+        const user = !isPerson ? data[0] : data;
 
-    getUser(identification).then(({ data, operation }) => {
-      console.log("operation-> ", operation);
-      console.log("data-> ", data);
+        if (!isPerson) {
+          setName(user["names"]);
+          setLastName(user["lastNames"]);
+        } else {
+          console.log("data-> ", data);
+          setName(user?.firstName);
+          setValue("primerNombre", user?.firstName);
+          setLastName(user?.firstSurname);
+          setValue("primerApellido", user?.firstSurname);
+          setSecondName(user?.secondName);
+          setValue("segundoNombre", user?.secondName);
+          setSecondSurname(user?.secondSurname);
+          setValue("segundoApellido", user?.secondSurname);
+          setValueDocument({
+            LGE_CODIGO: user?.documentType?.id,
+            LGE_ELEMENTO_DESCRIPCION: user?.documentType?.itemDescription,
+          });
+          setValueIdentification(user?.identification);
+          setValue("noDocumento", user?.identification);
+          setBirthDate(toLocaleDate(user?.birthdate));
+          setValue("fechaNacimento", user?.birthdate);
+          setEmail(user?.email);
+          setValue("correoElectronico", user?.email);
+          setFirstContactNumber(user?.firstContactNumber);
+          setValue("noContacto1", user?.firstContactNumber);
+          setSecondContactNumber(user?.secondContactNumber);
+          setValue("noContacto2", user?.secondContactNumber);
+          setAddress(user?.address);
+          setValue("direccion", user?.address);
 
-      const user = !isPerson ? data[0] : data;
-
-      if (!isPerson) {
-        setName(user["names"]);
-        setLastName(user["lastNames"]);
-      } else {
-        setName(user?.firstName);
-        setLastName(user?.firstSurname);
-        setSecondName(user?.secondName);
-        setSecondSurname(user?.secondSurname);
-        setValueDocument({
-          LGE_CODIGO: user?.documentType?.id,
-          LGE_ELEMENTO_DESCRIPCION: user?.documentType?.itemDescription,
-        });
-        setValueIdentification(user?.identification);
-
-        setBirthDate(user?.birthdate);
-        setEmail(user?.email);
-        setFirstContactNumber(user?.firstContactNumber);
-        setSecondContactNumber(user?.secondContactNumber);
-        setAddress(user?.address);
-
-        setValueTypeEntidad({
-          TEJ_CODIGO: user?.entityType?.tej_codigo,
-          TEJ_NOMBRE: user?.entityType?.tej_nombre,
-        });
-        setValuePais({
-          LGE_CODIGO: user?.country?.id,
-          LGE_ELEMENTO_DESCRIPCION: user?.country?.itemDescription,
-        });
-        setValueDepartamento({
-          LGE_CODIGO: user?.department?.id,
-          LGE_ELEMENTO_DESCRIPCION: user?.department?.itemDescription,
-        });
-        setValueMunicipio({
-          LGE_CODIGO: user?.municipality?.id,
-          LGE_ELEMENTO_DESCRIPCION: user?.municipality?.itemDescription,
-        });
-      }
-    });
+          setValueTypeEntidad({
+            TEJ_CODIGO: user?.entityType?.tej_codigo,
+            TEJ_NOMBRE: user?.entityType?.tej_nombre,
+          });
+          seletDataPais({
+            LGE_CODIGO: user?.country?.id,
+            LGE_ELEMENTO_DESCRIPCION: user?.country?.itemDescription,
+          });
+          seletDepartamentos({
+            LGE_AGRUPADOR: user?.department?.grouper,
+            LGE_CAMPOS_ADICIONALES: user?.department?.additionalFields,
+            LGE_CODIGO: user?.departmentId,
+            LGE_ELEMENTO_CODIGO: user?.department?.itemCode,
+            LGE_ELEMENTO_DESCRIPCION: user?.department?.itemDescription,
+          });
+          setValueMunicipio({
+            LGE_AGRUPADOR: user?.municipality?.grouper,
+            LGE_CAMPOS_ADICIONALES: user?.municipality?.additionalFields,
+            LGE_CODIGO: user?.municipality?.id,
+            LGE_ELEMENTO_CODIGO: user?.municipality?.itemCode,
+            LGE_ELEMENTO_DESCRIPCION: user?.municipality?.itemDescription
+          });
+        }
+      });
+    }
   }, []);
 
-  const handleDateChange = (date: Date, data: string) => {
-    const birthdate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+  const handleDateChange = (date: any) => {
+    const birthdate = `${date?.getFullYear()}-${date?.getMonth() + 1}-${date?.getDate()}`;
     birthdateData.current = birthdate;
-    return data;
+    return birthdate;
   };
 
   const onSubmit = async (data: FormPqrsdf) => {
@@ -445,7 +461,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                   <Suspense fallback={<div>Cargando...</div>}>
                     <DropDownComponent
                       id={field.name}
-                      value={field.value}
+                      value={valueDocument}
                       disabled={isPerson}
                       optionLabel={"LGE_ELEMENTO_DESCRIPCION"}
                       className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
@@ -610,7 +626,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                       <>
                         <InputTextComponent
                           id={field.name}
-                          value={field.name}
+                          value={field.value}
                           className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
                           onChange={(e) =>
                             field.onChange(() => {
@@ -644,7 +660,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                       <>
                         <InputTextComponent
                           id={field.name}
-                          value={field.name}
+                          value={field.value}
                           className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
                           onChange={(e) =>
                             field.onChange(() => {
@@ -670,6 +686,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                   <Controller
                     name="primerApellido"
                     control={control}
+                    defaultValue={lastName}
                     rules={{
                       required: "Campo obligatorio.",
                       maxLength: { value: 50, message: "Solo se permiten 50 caracteres" },
@@ -678,9 +695,14 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                       <>
                         <InputTextComponent
                           id={field.name}
-                          value={lastName}
+                          value={field.value}
                           className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                          onChange={(e) => field.onChange(setLastName(e.target.value))}
+                          onChange={(e) =>
+                            field.onChange(() => {
+                              setLastName(e.target.value);
+                              return e.target.value;
+                            })
+                          }
                           placeholder=""
                           width="100%"
                         />
@@ -697,6 +719,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                   <Controller
                     name="segundoApellido"
                     control={control}
+                    defaultValue={secondSurname}
                     rules={{
                       maxLength: { value: 50, message: "Solo se permiten  50 caracteres" },
                     }}
@@ -704,9 +727,13 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                       <>
                         <InputTextComponent
                           id={field.name}
-                          value={secondSurname}
+                          value={field.value}
                           className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                          onChange={(e) => field.onChange(e.target.value)}
+                          onChange={(e) =>
+                            field.onChange(() => {
+                              setSecondSurname(e.target.value);
+                            })
+                          }
                           placeholder=""
                           width="100%"
                         />
@@ -740,14 +767,32 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                     rules={{ required: "Campo obligatorio." }}
                     render={({ field, fieldState }) => (
                       <>
-                        <CalendarComponent
-                          inputId={field.name}
-                          value={birthDate}
-                          onChange={(e) => field.onChange(handleDateChange(e.target.value, e.value))}
-                          dateFormat="dd/mm/yy"
-                          className={classNames({ "p-invalid ": fieldState.error }, "!h-10 pi pi-spin pi-cog")}
-                        />
-                        <span className="p-input-icon-right"></span>
+                        <span className="p-input-icon-right">
+                          <Calendar
+                            id={field.name}
+                            value={birthDate}
+                            className={classNames({ "p-invalid ": fieldState.error }, "!h-10 pi pi-spin pi-cog")}
+                            onChange={(e) => field.onChange(handleDateChange(e.value))}
+                            dateFormat="dd/mm/yy"
+                            style={{ width: "100%" }}
+                            placeholder="DD / MM / AAA"
+                          />
+                          <svg
+                            width="19"
+                            height="19"
+                            viewBox="0 0 16 16"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M10.6667 1.3335V4.00016M5.33333 1.3335V4.00016M2 6.00016H14M12.6667 2.66683H3.33333C2.59667 2.66683 2 3.2635 2 4.00016V12.6668C2 13.4035 2.59667 14.0002 3.33333 14.0002H12.6667C13.4033 14.0002 14 13.4035 14 12.6668V4.00016C14 3.2635 13.4033 2.66683 12.6667 2.66683ZM4.67533 8.48616C4.58333 8.48616 4.50867 8.56083 4.50933 8.65283C4.50933 8.74483 4.584 8.8195 4.676 8.8195C4.768 8.8195 4.84267 8.74483 4.84267 8.65283C4.84267 8.56083 4.768 8.48616 4.67533 8.48616ZM8.00867 8.48616C7.91667 8.48616 7.842 8.56083 7.84267 8.65283C7.84267 8.74483 7.91733 8.8195 8.00933 8.8195C8.10133 8.8195 8.176 8.74483 8.176 8.65283C8.176 8.56083 8.10133 8.48616 8.00867 8.48616ZM11.342 8.48616C11.25 8.48616 11.1753 8.56083 11.176 8.65283C11.176 8.74483 11.2507 8.8195 11.3427 8.8195C11.4347 8.8195 11.5093 8.74483 11.5093 8.65283C11.5093 8.56083 11.4347 8.48616 11.342 8.48616ZM4.67533 11.1528C4.58333 11.1528 4.50867 11.2275 4.50933 11.3195C4.50933 11.4115 4.584 11.4862 4.676 11.4862C4.768 11.4862 4.84267 11.4115 4.84267 11.3195C4.84267 11.2275 4.768 11.1528 4.67533 11.1528ZM8.00867 11.1528C7.91667 11.1528 7.842 11.2275 7.84267 11.3195C7.84267 11.4115 7.91733 11.4862 8.00933 11.4862C8.10133 11.4862 8.176 11.4115 8.176 11.3195C8.176 11.2275 8.10133 11.1528 8.00867 11.1528Z"
+                              stroke="#533893"
+                              stroke-width="1.5"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+                          </svg>
+                        </span>
                       </>
                     )}
                   />
@@ -774,7 +819,12 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                           id={field.name}
                           value={field.value}
                           className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                          onChange={(e) => field.onChange(setFirstContactNumber(e.target.value))}
+                          onChange={(e) =>
+                            field.onChange(() => {
+                              setFirstContactNumber(e.target.value);
+                              return e.target.value;
+                            })
+                          }
                           placeholder=""
                           width="100%"
                           keyfilter="int"
@@ -802,7 +852,12 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                           id={field.name}
                           value={field.value}
                           className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                          onChange={(e) => field.onChange(setSecondContactNumber(e.target.value))}
+                          onChange={(e) =>
+                            field.onChange(() => {
+                              setSecondContactNumber(e.target.value);
+                              return e.target.value;
+                            })
+                          }
                           placeholder=""
                           width="100%"
                           keyfilter="int"
@@ -840,13 +895,19 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                     message: "Correo electrónico no válido",
                   },
                 }}
+                defaultValue={email}
                 render={({ field, fieldState }) => (
                   <>
                     <InputTextComponent
                       id={field.name}
-                      value={email}
+                      value={field.value}
                       className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                      onChange={(e) => field.onChange(e.target.value)}
+                      onChange={(e) =>
+                        field.onChange(() => {
+                          setEmail(e.target.value);
+                          return e.target.value;
+                        })
+                      }
                       placeholder=""
                       keyfilter="email"
                       width="100%"
@@ -866,6 +927,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
               <Controller
                 name="direccion"
                 control={control}
+                defaultValue={address}
                 rules={{
                   required: "Campo obligatorio.",
                   maxLength: { value: 300, message: "Solo se permiten 300 caracteres" },
@@ -874,9 +936,14 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                   <>
                     <InputTextComponent
                       id={field.name}
-                      value={address}
+                      value={field.value}
                       className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                      onChange={(e) => field.onChange(e.target.value)}
+                      onChange={(e) =>
+                        field.onChange(() => {
+                          setAddress(e.target.value);
+                          return e.target.value;
+                        })
+                      }
                       placeholder=""
                       width="100%"
                     />
@@ -1141,7 +1208,12 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
 
       <div className="div-upload">
         <label className="font-label">Archivos o documentos que soportan la solicitud</label>
-        <label className="upload-label" style={{ display: "flex", alignItems: "center" }} htmlFor="modal">
+        <label
+          className="upload-label"
+          style={{ display: "flex", alignItems: "center" }}
+          htmlFor="modal"
+          onClick={() => setVisible(true)}
+        >
           Adjuntar archivos{" "}
           <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
