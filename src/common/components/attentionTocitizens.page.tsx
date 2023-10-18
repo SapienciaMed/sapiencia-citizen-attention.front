@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import "../../styles/attentionCitizens-styles.scss";
 import { useWorkEntityService } from "../hooks/WorkEntityService.hook";
+import { usePqrsdfService } from "../hooks/PqrsdfService.hook"
 import { TableGenericComponent } from "./genericComponent/table.component";
 
 import { IPersonFilters } from "../interfaces/person.interfaces";
@@ -36,6 +37,7 @@ const AttentionTocitizens = () => {
   const [user, setUser] = useState<object[]>([]);
 
   const workEntityService = useWorkEntityService();
+  const pqrsdfService = usePqrsdfService();
 
   const defaultValues = {
     typeDocument: "",
@@ -86,7 +88,7 @@ const AttentionTocitizens = () => {
 
       console.log("payload-> ", payload);
 
-      const response = await workEntityService.getUserByFilters(payload);
+      const response = await pqrsdfService.getPeopleByFilters(payload);
       const { data, operation } = response;
       console.log("data-> ", data);
       if (operation.code !== "OK") {
@@ -94,7 +96,7 @@ const AttentionTocitizens = () => {
         return;
       }
 
-      const usersData = data.map((user) => {
+      /*const usersData = data.map((user) => {
         return {
           identification: user?.numberDocument,
           names: `${user?.names} ${user?.lastNames}`,
@@ -104,9 +106,9 @@ const AttentionTocitizens = () => {
           noContact2: user?.numberContact2,
           userId: user?.id,
         };
-      });
+      });*/
       setLoad(false);
-      setUser(usersData);
+      //setUser(usersData);
     } catch (error) {}
   };
 
