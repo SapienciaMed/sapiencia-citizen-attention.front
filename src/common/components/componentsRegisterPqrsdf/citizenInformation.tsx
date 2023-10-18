@@ -119,22 +119,6 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
   const [secondContactNumber, setSecondContactNumber] = useState("");
   const [address, setAddress] = useState("");
 
-  const firtName = (name: string) => {
-    setName(name);
-    return name;
-  };
-
-  const getlastName = (name: string) => {
-    setLastName(name);
-    return name;
-  };
-
-  const seleTipoSsolicitud = (solicitud: { TSO_CODIGO: number; TSO_DESCRIPTION: string }) => {
-    setValueTypeSolicitud(solicitud);
-
-    return solicitud;
-  };
-
   const seleTipoDocument = (document: { LGE_CODIGO: number; LGE_ELEMENTO_DESCRIPCION: string }) => {
     setValueDocument(document);
 
@@ -176,12 +160,6 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     }
 
     return document;
-  };
-
-  const seleTipeEntidad = (entidad: { TEJ_CODIGO: number; TEJ_NOMBRE: string }) => {
-    setValueTypeEntidad(entidad);
-
-    return entidad;
   };
 
   const seletDataPais = (pais: { LGE_CODIGO: number; LGE_ELEMENTO_DESCRIPCION: string }) => {
@@ -422,15 +400,22 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
             name="tipoDeSolicitud"
             control={control}
             rules={{ required: "Campo obligatorio." }}
+            defaultValue={valueTypeSolicitud}
             render={({ field, fieldState }) => (
               <>
                 <Suspense fallback={<div>Cargando...</div>}>
                   <DropDownComponent
                     id={field.value}
-                    value={valueTypeSolicitud}
-                    optionLabel={"TSO_DESCRIPTION"}
+                    value={field.value}
+                    optionLabel="TSO_DESCRIPTION"
+                    optionValue="TSO_CODIGO"
                     className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                    onChange={(e) => field.onChange(seleTipoSsolicitud(e.value))}
+                    onChange={(e) =>
+                      field.onChange(() => {
+                        setValueTypeSolicitud(e.value);
+                        return e.value;
+                      })
+                    }
                     focusInputRef={field.ref}
                     options={optionSolicitudes.data}
                     placeholder="Seleccionar"
@@ -452,6 +437,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
             </label>
             <Controller
               name="tipo"
+              defaultValue={valueDocument}
               control={control}
               rules={{ required: "Campo obligatorio." }}
               render={({ field, fieldState }) => (
@@ -459,11 +445,16 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                   <Suspense fallback={<div>Cargando...</div>}>
                     <DropDownComponent
                       id={field.name}
-                      value={valueDocument}
+                      value={field.value}
                       disabled={isPerson}
                       optionLabel={"LGE_ELEMENTO_DESCRIPCION"}
                       className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                      onChange={(e) => field.onChange(seleTipoDocument(e.value))}
+                      onChange={(e) =>
+                        field.onChange(() => {
+                          seleTipoDocument(e.value);
+                          return e.value;
+                        })
+                      }
                       focusInputRef={field.ref}
                       options={optionTypeDocument.data}
                       placeholder="Seleccionar"
@@ -487,6 +478,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                 <Controller
                   name="noDocumento"
                   control={control}
+                  defaultValue={valueIdentification}
                   rules={{
                     required: "Campo obligatorio.",
                     maxLength: { value: 15, message: "Solo se permiten 15 caracteres" },
@@ -495,10 +487,15 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                     <>
                       <InputTextComponent
                         id={field.name}
-                        value={valueIdentification}
+                        value={field.value}
                         disabled={isPerson}
                         className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                        onChange={(e) => field.onChange(e.target.value)}
+                        onChange={(e) =>
+                          field.onChange(() => {
+                            setValueIdentification(e.target.value);
+                            return e.target.value;
+                          })
+                        }
                         placeholder=""
                         width="100%"
                       />
@@ -524,17 +521,24 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
             <Controller
               name="tipoEntidad"
               control={control}
+              defaultValue={valueTypeEntidad}
               rules={{ required: "Campo obligatorio." }}
               render={({ field, fieldState }) => (
                 <>
                   <Suspense fallback={<div>Cargando...</div>}>
                     <DropDownComponent
                       id={field.name}
-                      value={valueTypeEntidad}
+                      value={field.value}
                       className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                      onChange={(e) => field.onChange(seleTipeEntidad(e.value))}
+                      optionValue="TEJ_CODIGO"
+                      onChange={(e) =>
+                        field.onChange(() => {
+                          setValueTypeEntidad(e.value);
+                          return e.value;
+                        })
+                      }
                       focusInputRef={field.ref}
-                      optionLabel={"TEJ_NOMBRE"}
+                      optionLabel="TEJ_NOMBRE"
                       options={optionLegalEntity.data}
                       placeholder="Seleccionar"
                       width="100%"
@@ -597,6 +601,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                   <Controller
                     name="primerNombre"
                     control={control}
+                    defaultValue={name}
                     rules={{
                       required: "Campo obligatorio.",
                       maxLength: { value: 50, message: "Solo se permiten 50 caracteres" },
@@ -605,9 +610,14 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                       <>
                         <InputTextComponent
                           id={field.name}
-                          value={name}
+                          value={field.name}
                           className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                          onChange={(e) => field.onChange(firtName(e.target.value))}
+                          onChange={(e) =>
+                            field.onChange(() => {
+                              setName(e.target.value);
+                              return e.targe.value;
+                            })
+                          }
                           placeholder=""
                           width="100%"
                         />
@@ -625,6 +635,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                   <label className="font-label">Segundo nombre</label>
                   <Controller
                     name="segundoNombre"
+                    defaultValue={secondName}
                     control={control}
                     rules={{
                       maxLength: { value: 50, message: "Solo se permiten 50 caracteres" },
@@ -633,9 +644,14 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                       <>
                         <InputTextComponent
                           id={field.name}
-                          value={secondName}
+                          value={field.name}
                           className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                          onChange={(e) => field.onChange(e.target.value)}
+                          onChange={(e) =>
+                            field.onChange(() => {
+                              setSecondName(e.target.value);
+                              return e.targe.value;
+                            })
+                          }
                           placeholder=""
                           width="100%"
                         />
@@ -664,7 +680,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                           id={field.name}
                           value={lastName}
                           className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                          onChange={(e) => field.onChange(getlastName(e.target.value))}
+                          onChange={(e) => field.onChange(setLastName(e.target.value))}
                           placeholder=""
                           width="100%"
                         />
@@ -746,6 +762,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                   </label>
                   <Controller
                     name="noContacto1"
+                    defaultValue={firstContactNumber}
                     control={control}
                     rules={{
                       required: "Campo obligatorio.",
@@ -757,7 +774,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                           id={field.name}
                           value={field.value}
                           className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                          onChange={(e) => field.onChange(e.target.value)}
+                          onChange={(e) => field.onChange(setFirstContactNumber(e.target.value))}
                           placeholder=""
                           width="100%"
                           keyfilter="int"
@@ -775,6 +792,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                   <Controller
                     name="noContacto2"
                     control={control}
+                    defaultValue={secondContactNumber}
                     rules={{
                       maxLength: { value: 10, message: "Solo se permiten 10 caracteres" },
                     }}
@@ -784,7 +802,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                           id={field.name}
                           value={field.value}
                           className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                          onChange={(e) => field.onChange(e.target.value)}
+                          onChange={(e) => field.onChange(setSecondContactNumber(e.target.value))}
                           placeholder=""
                           width="100%"
                           keyfilter="int"

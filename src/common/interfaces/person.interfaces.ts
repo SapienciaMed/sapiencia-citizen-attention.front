@@ -28,3 +28,14 @@ export interface IPerson {
   createdAt?: DateTime;
   updatedAt?: DateTime;
 }
+
+export interface IPersonFilters {
+  documentTypeId?: number;
+  identification?: string;
+  name?: string;
+  surname?: string;
+  contactNumber?: string;
+  email?: string;
+  page?: number;
+  perPage?: number;
+}

@@ -1,11 +1,10 @@
-import { useState } from "react";
 import { Dropdown } from "primereact/dropdown";
 import { RefCallBack } from "react-hook-form";
-import { strict } from "yargs";
 
 interface Attributes {
   placeholder: string;
   optionLabel?: string;
+  optionValue?: string;
   disabled?: boolean;
   width: string;
   value: string;
@@ -25,7 +24,19 @@ const styles = {
 };
 
 export const DropDownComponent = (props: Attributes) => {
-  const { width, placeholder, id, className, focusInputRef, value, onChange, disabled, options, optionLabel } = props;
+  const {
+    width,
+    placeholder,
+    id,
+    className,
+    focusInputRef,
+    value,
+    onChange,
+    disabled,
+    options,
+    optionLabel,
+    optionValue,
+  } = props;
   styles.width = width;
   return (
     <Dropdown
@@ -33,6 +44,7 @@ export const DropDownComponent = (props: Attributes) => {
       onChange={onChange}
       options={options}
       optionLabel={optionLabel}
+      optionValue={optionValue}
       disabled={disabled}
       style={styles}
       placeholder={placeholder}
