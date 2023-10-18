@@ -250,7 +250,6 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
       getUser(identification).then(({ data, operation }) => {
         const user = data;
 
-          console.log("data-> ", data);
           setName(user?.firstName);
           setValue("primerNombre", user?.firstName);
           setLastName(user?.firstSurname);
