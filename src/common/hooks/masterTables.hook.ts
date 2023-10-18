@@ -1,5 +1,5 @@
 import { EResponseCodes } from "../constants/api.enum";
-import { IChannelAttetion, ItypeDocument } from "../interfaces/mastersTables.interface";
+import { IChannelAttetion, IChannelAttetionDetail, ItypeDocument } from "../interfaces/mastersTables.interface";
 import { ApiResponse } from "../utils/api-response";
 import useCrudService from "./crud-service.hook";
 
@@ -27,9 +27,19 @@ export function mastersTablesServices() {
       }
     };
 
+    async function getChannelAtencionid(id:number): Promise<ApiResponse<IChannelAttetionDetail[]>> {
+      try {
+        const endpoint: string = `/channel-attention-details/${id}`;
+        return await get(`${listUrl}${endpoint}`);
+      } catch (error) {
+        return new ApiResponse([], EResponseCodes.FAIL, "Error no controlado");
+      }
+    };
+
     return{
         getDocuemntType,
-        getChannelAtencion
+        getChannelAtencion,
+        getChannelAtencionid
     }    
     
 }

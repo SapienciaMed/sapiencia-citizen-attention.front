@@ -39,6 +39,7 @@ const AttentionTocitizens = () => {
   const [user, setUser] = useState<object[]>([]);
   const [selectDocumentType, setSelectDocumentType] = useState(null);
   const [documentType, setDocumentType] = useState<ItypeDocument[]>([]);
+  const [loadbuton, setLoadbuton] = useState(false);
 
   const navigate = useNavigate();
   const statusButton = useRef(true)
@@ -64,9 +65,12 @@ const AttentionTocitizens = () => {
   } = useForm({ defaultValues, mode: "all" });
 
   const resetForm = () => {
-    setLoad(false), reset();
+    setLoad(false), 
+    reset();
+    setLoadbuton(false)
     setUser([]);
     setSelectDocumentType(null)
+    statusButton.current = true;
   };
   
  
@@ -79,7 +83,7 @@ const AttentionTocitizens = () => {
     watch("noContact").length > 0
   ) {
     statusButton.current = false;
-  }
+  }  
 
   const getDocumentType = async ()=>{
     const docuementsTypes = await masterTablesServices.getDocuemntType()
@@ -91,7 +95,7 @@ const AttentionTocitizens = () => {
   },[])
 
   const onSubmit = async (filter: Payload) => {
-    
+    setLoadbuton(true)
     try {
       const { email, identification, lastNames, names, documentTypeId, contactNumber } = filter;
 
@@ -262,7 +266,7 @@ const AttentionTocitizens = () => {
                             value={field.value}
                             className={classNames({ "p-invalid": fieldState.error }, "h-10")}
                             onChange={(e) => field.onChange(e.target.value)}
-                            keyfilter="alpha"
+                            keyfilter="num"
                             style={{ width: "390px" }}
                           />
                         </span>
@@ -313,7 +317,7 @@ const AttentionTocitizens = () => {
                 <Button 
                   className="rounded-full !h-10" 
                   type="submit" 
-                  disabled={load || statusButton.current}
+                  disabled={loadbuton || statusButton.current }
                   label="Buscar"
                   onClick={()=>{statusButton.current = true}}
                   >
