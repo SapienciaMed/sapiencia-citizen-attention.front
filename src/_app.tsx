@@ -65,7 +65,7 @@ function App() {
               />
               <Route 
                 path={"/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf/radicar/:identification"} 
-                element={<Register_pqrsdf />} 
+                element={<Register_pqrsdf isPerson={true} />} 
               />
               <Route 
                 path={"/atencion-ciudadana/presentar-pqrsdf/:identification"} 
