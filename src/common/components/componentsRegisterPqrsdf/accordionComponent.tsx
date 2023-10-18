@@ -7,6 +7,9 @@ export const AccordionComponent = () => {
 
     const optionOjectoSocial = ApiDataObjectoSocial.read();
     const { data } = optionOjectoSocial
+
+    console.log(optionOjectoSocial);
+    
   
   return (
     <Accordion>
@@ -73,13 +76,13 @@ export const AccordionComponent = () => {
             <table className='t-table'>
                     <tr>
                         <th className='td-table'>OBJETO</th>
-                        <th className='td-table'>TÉRMINO DÍAS HÁBILES</th>
+                        <th className='td-table'>TÉRMINO DÍAS</th>
                     </tr>
-                    {   data?.map((data: { OBS_CODIGO: string; OBS_DESCRIPCION: string; OBS_TERMINO_DIAS_HABILES:string })=>(
+                    {   data?.map((data)=>(
 
                             <tr key={data.OBS_CODIGO}>
                             <td className='td-table'>{data.OBS_DESCRIPCION}</td>
-                            <td className='td-table'>{ data.OBS_TERMINO_DIAS_HABILES}</td>
+                            <td className='td-table'>{ data.OBS_TERMINO_DIAS} días {data.OBS_TIPO_DIAS}</td>
                             </tr>
 
                     ))
