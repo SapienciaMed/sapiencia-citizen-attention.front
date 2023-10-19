@@ -64,13 +64,14 @@ export const ModalEntityComponent = (prosp:Props) => {
         if(entityId !== undefined){
             
             getWorkEntity(entityId).then(({ data }) => {
-
+                console.log(data);
+                
                 setIdEntity(data.id.toString());
                 setAssignedAffairsPrograms([...data.affairsPrograms]);
                 setTypeEntity(data.workEntityType["tet_descripcion"]);
                 setNameEntity(data['name']);
                 setUserId(data.userId);
-                setDocumenUser(data.user["numberDocument"]);
+                setDocumenUser(`${data.user["typeDocument"]} ${data.user["numberDocument"]}`);
                 setNameUser(`${data.user["names"]} ${data.user["lastNames"]}`);
                 setfullName([data.user["names"], data.user["lastNames"]]);
                 setConsta1(data.user["numberContact1"]);
