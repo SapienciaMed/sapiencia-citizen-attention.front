@@ -1,24 +1,22 @@
-import { useRef, useState, Suspense, useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
+import { Suspense, useEffect, useRef, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { fetchData } from "../../apis/fetchData";
 
-import { CalendarComponent } from "./calendarComponent";
+import { Calendar } from "primereact/calendar";
+import { Nullable } from "primereact/ts-helpers";
+import { classNames } from "primereact/utils";
+import { useParams } from "react-router-dom";
+import { usePqrsdfService } from "../../hooks/PqrsdfService.hook";
+import { FormPqrsdf, IPqrsdf } from "../../interfaces/pqrsdf.interfaces";
+import { toLocaleDate } from "../../utils/helpers";
 import { DropDownComponent } from "./dropDownComponent";
 import { InputTextComponent } from "./inputTextComponent";
 import { CnputTextareaComponent } from "./inputTextarea.component";
 import { ScrollPanelComponent } from "./scrollPanelComponent";
 import { TriStateCheckboxComponent } from "./triStateCheckboxComponent";
 import { UploadComponent } from "./uploadComponent";
-import { classNames } from "primereact/utils";
-import { usePqrsdfService } from "../../hooks/PqrsdfService.hook";
-import { FormPqrsdf, IPqrsdf } from "../../interfaces/pqrsdf.interfaces";
-import { useWorkEntityService } from "../../hooks/WorkEntityService.hook";
-import { useNavigate, useParams } from "react-router-dom";
-import { Nullable } from "primereact/ts-helpers";
-import { Calendar } from "primereact/calendar";
-import { toLocaleDate } from "../../utils/helpers";
 
 const ApiDatatypoSolicitudes = fetchData("/get-type-solicituds");
 const ApiDatatypoDocument = fetchData("/get-type-docuement");
@@ -36,7 +34,6 @@ interface Props {
 }
 
 export const CitizenInformation = ({ isPerson = false }: Props) => {
-
   const optionSolicitudes = ApiDatatypoSolicitudes.read();
   const optionTypeDocument = ApiDatatypoDocument.read();
   const optionLegalEntity = ApiDatalegalEntity.read();
@@ -83,6 +80,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     setValue,
     reset,
     resetField,
+    getValues,
     watch,
   } = useForm({ defaultValues, mode: "all" });
 
@@ -119,7 +117,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
   const [firstContactNumber, setFirstContactNumber] = useState("");
   const [secondContactNumber, setSecondContactNumber] = useState("");
   const [address, setAddress] = useState("");
-  
+
   const seleTipoDocument = (document: { LGE_CODIGO: number; LGE_ELEMENTO_DESCRIPCION: string }) => {
     setValueDocument(document);
 
@@ -163,7 +161,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     return document;
   };
 
-  const seletDataPais = (pais: { LGE_CODIGO: number; LGE_ELEMENTO_DESCRIPCION: string }) => {
+  const selectCountry = (pais: { LGE_CODIGO: number; LGE_ELEMENTO_DESCRIPCION: string }) => {
     setValuePais(pais);
 
     showDeptoMupio.current = pais == null ? "" : pais.LGE_CODIGO;
@@ -176,7 +174,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     return pais;
   };
 
-  const seletDepartamentos = (depart: any) => {
+  const selectDepartment = (depart: any) => {
     setValueDepartamento(depart);
 
     showMupio.current = depart == null ? "" : depart.LGE_CODIGO;
@@ -189,13 +187,13 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     return depart;
   };
 
-  const seletMunicipios = (municipio: { LGE_CODIGO: number; LGE_ELEMENTO_DESCRIPCION: string }) => {
+  const selectMunicipality = (municipio: { LGE_CODIGO: number; LGE_ELEMENTO_DESCRIPCION: string }) => {
     setValueMunicipio(municipio);
 
     return municipio;
   };
 
-  const selePrograma = (programa: {
+  const selectProgram = (programa: {
     CLP_CODIGO: number;
     CLP_DESCRIPCION: string;
     DEP_CODIGO: number;
@@ -211,13 +209,13 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     return programa;
   };
 
-  const seletMedioRespuesta = (respuesta: { MRE_CODIGO: number; MRE_DESCRIPCION: string }) => {
+  const selectResponseMedium = (respuesta: { MRE_CODIGO: number; MRE_DESCRIPCION: string }) => {
     setValueMedioRespuesta(respuesta);
 
     return respuesta;
   };
 
-  const seletSolicitud = (respuesta: { ASO_CODIGO: number; ASO_ASUNTO: string }) => {
+  const selectRequestSubject = (respuesta: { ASO_CODIGO: number; ASO_ASUNTO: string }) => {
     setValueAsunto(respuesta);
 
     return respuesta;
@@ -238,7 +236,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
   };
 
   const getUser = async (identification: string) => {
-    const responseUser =  pqrsdfService.getPersonByDocument(parseInt(identification));
+    const responseUser = pqrsdfService.getPersonByDocument(parseInt(identification));
     return responseUser;
   };
   const { identification } = useParams();
@@ -248,54 +246,53 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
       getUser(identification).then(({ data, operation }) => {
         const user = data;
 
-          setName(user?.firstName);
-          setValue("primerNombre", user?.firstName);
-          setLastName(user?.firstSurname);
-          setValue("primerApellido", user?.firstSurname);
-          setSecondName(user?.secondName);
-          setValue("segundoNombre", user?.secondName);
-          setSecondSurname(user?.secondSurname);
-          setValue("segundoApellido", user?.secondSurname);
-          setValueDocument({
-            LGE_CODIGO: user?.documentType?.id,
-            LGE_ELEMENTO_DESCRIPCION: user?.documentType?.itemDescription,
-          });
-          setValueIdentification(user?.identification);
-          setValue("noDocumento", user?.identification);
-          setBirthDate(toLocaleDate(user?.birthdate));
-          //setValue("fechaNacimento", user?.birthdate);
-          setEmail(user?.email);
-          setValue("correoElectronico", user?.email);
-          setFirstContactNumber(user?.firstContactNumber);
-          setValue("noContacto1", user?.firstContactNumber);
-          setSecondContactNumber(user?.secondContactNumber);
-          setValue("noContacto2", user?.secondContactNumber);
-          setAddress(user?.address);
-          setValue("direccion", user?.address);
+        setName(user?.firstName);
+        setValue("primerNombre", user?.firstName);
+        setLastName(user?.firstSurname);
+        setValue("primerApellido", user?.firstSurname);
+        setSecondName(user?.secondName);
+        setValue("segundoNombre", user?.secondName);
+        setSecondSurname(user?.secondSurname);
+        setValue("segundoApellido", user?.secondSurname);
+        setValueDocument({
+          LGE_CODIGO: user?.documentType?.id,
+          LGE_ELEMENTO_DESCRIPCION: user?.documentType?.itemDescription,
+        });
+        setValueIdentification(user?.identification);
+        setValue("noDocumento", user?.identification);
+        setBirthDate(toLocaleDate(user?.birthdate));
+        //setValue("fechaNacimento", user?.birthdate);
+        setEmail(user?.email);
+        setValue("correoElectronico", user?.email);
+        setFirstContactNumber(user?.firstContactNumber);
+        setValue("noContacto1", user?.firstContactNumber);
+        setSecondContactNumber(user?.secondContactNumber);
+        setValue("noContacto2", user?.secondContactNumber);
+        setAddress(user?.address);
+        setValue("direccion", user?.address);
 
-          setValueTypeEntidad({
-            TEJ_CODIGO: user?.entityType?.tej_codigo,
-            TEJ_NOMBRE: user?.entityType?.tej_nombre,
-          });
-          seletDataPais({
-            LGE_CODIGO: user?.country?.id,
-            LGE_ELEMENTO_DESCRIPCION: user?.country?.itemDescription,
-          });
-          seletDepartamentos({
-            LGE_AGRUPADOR: user?.department?.grouper,
-            LGE_CAMPOS_ADICIONALES: user?.department?.additionalFields,
-            LGE_CODIGO: user?.departmentId,
-            LGE_ELEMENTO_CODIGO: user?.department?.itemCode,
-            LGE_ELEMENTO_DESCRIPCION: user?.department?.itemDescription,
-          });
-          setValueMunicipio({
-            LGE_AGRUPADOR: user?.municipality?.grouper,
-            LGE_CAMPOS_ADICIONALES: user?.municipality?.additionalFields,
-            LGE_CODIGO: user?.municipality?.id,
-            LGE_ELEMENTO_CODIGO: user?.municipality?.itemCode,
-            LGE_ELEMENTO_DESCRIPCION: user?.municipality?.itemDescription
-          });
-    
+        setValueTypeEntidad({
+          TEJ_CODIGO: user?.entityType?.tej_codigo,
+          TEJ_NOMBRE: user?.entityType?.tej_nombre,
+        });
+        selectCountry({
+          LGE_CODIGO: user?.country?.id,
+          LGE_ELEMENTO_DESCRIPCION: user?.country?.itemDescription,
+        });
+        selectDepartment({
+          LGE_AGRUPADOR: user?.department?.grouper,
+          LGE_CAMPOS_ADICIONALES: user?.department?.additionalFields,
+          LGE_CODIGO: user?.departmentId,
+          LGE_ELEMENTO_CODIGO: user?.department?.itemCode,
+          LGE_ELEMENTO_DESCRIPCION: user?.department?.itemDescription,
+        });
+        setValueMunicipio({
+          LGE_AGRUPADOR: user?.municipality?.grouper,
+          LGE_CAMPOS_ADICIONALES: user?.municipality?.additionalFields,
+          LGE_CODIGO: user?.municipality?.id,
+          LGE_ELEMENTO_CODIGO: user?.municipality?.itemCode,
+          LGE_ELEMENTO_DESCRIPCION: user?.municipality?.itemDescription,
+        });
       });
     }
   }, []);
@@ -306,7 +303,10 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     return birthdate;
   };
 
-  const onSubmit = async (data: FormPqrsdf) => {
+  const onSubmit = async () => {
+    const data = getValues();
+    console.log(data);
+
     const pqrsdf: IPqrsdf = {
       isPerson: isPerson,
       requestTypeId: data.tipoDeSolicitud["TSO_CODIGO"],
@@ -352,7 +352,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     setfile(null);
     showDependecia.current = "";
     showClasificacion.current = "";
-    
+
     const respFile = await pqrsdfService.upLoadFile(file);
     const resp = await pqrsdfService.createPqrsdf(pqrsdf);
 
@@ -362,7 +362,6 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
       reset();
     }
   };
-
 
   const getFormErrorMessage = (name) => {
     return errors[name] ? (
@@ -420,7 +419,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                     onChange={(e) =>
                       field.onChange(() => {
                         setValueTypeSolicitud(e.value);
-                        return e.value;
+                        setValue("tipoDeSolicitud", e.value);
                       })
                     }
                     focusInputRef={field.ref}
@@ -459,7 +458,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                       onChange={(e) =>
                         field.onChange(() => {
                           seleTipoDocument(e.value);
-                          return e.value;
+                          setValue("tipo", e.value);
                         })
                       }
                       focusInputRef={field.ref}
@@ -500,7 +499,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                         onChange={(e) =>
                           field.onChange(() => {
                             setValueIdentification(e.target.value);
-                            return e.target.value;
+                            setValue("noDocumento", e.target.value);
                           })
                         }
                         placeholder=""
@@ -541,7 +540,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                       onChange={(e) =>
                         field.onChange(() => {
                           setValueTypeEntidad(e.value);
-                          return e.value;
+                          setValue("tipoEntidad", e.value);
                         })
                       }
                       focusInputRef={field.ref}
@@ -584,7 +583,11 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                     id={field.name}
                     value={field.value}
                     className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                    onChange={(e) => field.onChange(e.target.value)}
+                    onChange={(e) =>
+                      field.onChange(() => {
+                        setValue("RazonSocial", e.target.value);
+                      })
+                    }
                     placeholder=""
                     width="100%"
                   />
@@ -622,7 +625,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                           onChange={(e) =>
                             field.onChange(() => {
                               setName(e.target.value);
-                              //return e.targe.value;
+                              setValue("primerNombre", e.target.value);
                             })
                           }
                           placeholder=""
@@ -656,7 +659,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                           onChange={(e) =>
                             field.onChange(() => {
                               setSecondName(e.target.value);
-                              //return e.targe.value;
+                              setValue("segundoNombre", e.target.value);
                             })
                           }
                           placeholder=""
@@ -691,7 +694,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                           onChange={(e) =>
                             field.onChange(() => {
                               setLastName(e.target.value);
-                              return e.target.value;
+                              setValue("primerApellido", e.target.value);
                             })
                           }
                           placeholder=""
@@ -723,6 +726,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                           onChange={(e) =>
                             field.onChange(() => {
                               setSecondSurname(e.target.value);
+                              setValue("segundoApellido", e.target.value);
                             })
                           }
                           placeholder=""
@@ -765,6 +769,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                             className={classNames({ "p-invalid ": fieldState.error }, "!h-10 pi pi-spin pi-cog")}
                             onChange={(e) => field.onChange(handleDateChange(e.value))}
                             dateFormat="dd/mm/yy"
+                            maxDate={new Date()}
                             style={{ width: "100%" }}
                             placeholder="DD / MM / AAA"
                           />
@@ -813,7 +818,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                           onChange={(e) =>
                             field.onChange(() => {
                               setFirstContactNumber(e.target.value);
-                              return e.target.value;
+                              setValue("noContacto1", e.target.value);
                             })
                           }
                           placeholder=""
@@ -846,7 +851,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                           onChange={(e) =>
                             field.onChange(() => {
                               setSecondContactNumber(e.target.value);
-                              return e.target.value;
+                              setValue("noContacto2", e.target.value);
                             })
                           }
                           placeholder=""
@@ -896,7 +901,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                       onChange={(e) =>
                         field.onChange(() => {
                           setEmail(e.target.value);
-                          return e.target.value;
+                          setValue("correoElectronico", e.target.value);
                         })
                       }
                       placeholder=""
@@ -932,7 +937,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                       onChange={(e) =>
                         field.onChange(() => {
                           setAddress(e.target.value);
-                          return e.target.value;
+                          setValue("direccion", e.target.value);
                         })
                       }
                       placeholder=""
@@ -964,7 +969,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                   id={field.name}
                   value={valuePais}
                   className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                  onChange={(e) => field.onChange(seletDataPais(e.value))}
+                  onChange={(e) => field.onChange(selectCountry(e.value))}
                   focusInputRef={field.ref}
                   optionLabel="LGE_ELEMENTO_DESCRIPCION"
                   options={paises.data}
@@ -995,7 +1000,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                       id={field.name}
                       value={valueDepartamento}
                       className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                      onChange={(e) => field.onChange(seletDepartamentos(e.value))}
+                      onChange={(e) => field.onChange(selectDepartment(e.value))}
                       focusInputRef={field.ref}
                       optionLabel="LGE_ELEMENTO_DESCRIPCION"
                       options={optionDepartamento.current}
@@ -1032,7 +1037,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                           id={field.name}
                           value={valueMunicipio}
                           className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                          onChange={(e) => field.onChange(seletMunicipios(e.value))}
+                          onChange={(e) => field.onChange(selectMunicipality(e.value))}
                           focusInputRef={field.ref}
                           optionLabel="LGE_ELEMENTO_DESCRIPCION"
                           options={optionMunicipios.current}
@@ -1069,7 +1074,12 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                   id={field.name}
                   value={valueMedioRespuesta}
                   className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                  onChange={(e) => field.onChange(seletMedioRespuesta(e.value))}
+                  onChange={(e) =>
+                    field.onChange(() => {
+                      selectResponseMedium(e.value);
+                      setValue("medioRespuesta", e.value);
+                    })
+                  }
                   focusInputRef={field.ref}
                   optionLabel="MRE_DESCRIPCION"
                   options={optionResponseMedium.data}
@@ -1099,7 +1109,12 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                     id={field.name}
                     value={program}
                     className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                    onChange={(e) => field.onChange(selePrograma(e.value))}
+                    onChange={(e) =>
+                      field.onChange(() => {
+                        selectProgram(e.value);
+                        setValue("programaSolicitud", e.value);
+                      })
+                    }
                     focusInputRef={field.ref}
                     optionLabel="PRG_DESCRIPCION"
                     options={optionPrograma.data}
@@ -1130,7 +1145,12 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                     id={field.name}
                     value={valueAsunto}
                     className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                    onChange={(e) => field.onChange(seletSolicitud(e.value))}
+                    onChange={(e) =>
+                      field.onChange(() => {
+                        selectRequestSubject(e.value);
+                        setValue("asuntoSolicitud", e.value);
+                      })
+                    }
                     focusInputRef={field.ref}
                     optionLabel="ASO_ASUNTO"
                     options={optionAsuntoSolicitud.data}
