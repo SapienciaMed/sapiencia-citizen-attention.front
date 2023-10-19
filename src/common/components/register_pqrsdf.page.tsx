@@ -12,9 +12,10 @@ import { IChannelAttetion, IChannelAttetionDetail } from "../interfaces/mastersT
 
 interface Props {
   isPerson?: boolean;
+  isPersonInternl?:boolean;
 }
 
-const Register_pqrsdf = ({ isPerson = false }: Props) => {
+const Register_pqrsdf = ({ isPerson = false, isPersonInternl=false }: Props) => {
 
   const [channels,setChannels] = useState<IChannelAttetion[]>([])
   const [channelsDetail,setChannelsDetal] = useState<IChannelAttetionDetail[]>([])
@@ -68,7 +69,9 @@ const Register_pqrsdf = ({ isPerson = false }: Props) => {
     <div className="container">
       <Card className="card card-body">
         <Card title="Registrar PQRSDF" className="card">
-          <div className="mb-8 flex flex-wrap">
+          {isPersonInternl?(
+          <>
+                      <div className="mb-8 flex flex-wrap">
             <div className="mr-4">
               <label className="font-label" style={{ color: "black" }}>
                 Canal de atención<span className="required">*</span>
@@ -105,12 +108,13 @@ const Register_pqrsdf = ({ isPerson = false }: Props) => {
 
               <div>
                 <label className="font-label" style={{ color: "black" }}>
-                  Elija ¿Cuál?
+                  Elija ¿Cuál?<span className="required">*</span>
                 </label>
                 <br />
                 <Controller
                   name="attention"
                   control={control}
+                  rules={{ required: "Campo obligatorio." }}
                   render={({ field, fieldState }) => (
                     <Dropdown
                       id={field.name}
@@ -133,6 +137,9 @@ const Register_pqrsdf = ({ isPerson = false }: Props) => {
 
             }
           </div>
+          </>):(<></>)
+
+          }
           <p style={{ fontSize: "15px" }} className="mb-4">
             SAPIENCIA adoptó el manual de atención a PQRSDF por resolución 212 de 2016, en virtud de este se establece
             lo siguiente:

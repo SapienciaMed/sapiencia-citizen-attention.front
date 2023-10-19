@@ -16,7 +16,6 @@ import { ConfirmDialog, ConfirmDialogOptions, confirmDialog } from "primereact/c
 import { Tree } from "primereact/tree";
 import "../../styles/workEntities-styles.scss";
 import { MessageComponent } from "./componentsEditWorkEntities/message.component";
-import { string } from "yup";
 
 interface User {
   email: string;

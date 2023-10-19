@@ -64,7 +64,7 @@ export const ModalEntityComponent = (prosp:Props) => {
         if(entityId !== undefined){
             
             getWorkEntity(entityId).then(({ data }) => {
-                console.log(data);
+              
                 
                 setIdEntity(data.id.toString());
                 setAssignedAffairsPrograms([...data.affairsPrograms]);
