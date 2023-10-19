@@ -117,6 +117,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
   const [firstContactNumber, setFirstContactNumber] = useState("");
   const [secondContactNumber, setSecondContactNumber] = useState("");
   const [address, setAddress] = useState("");
+  const [btnDisable, setBtnDisable] = useState("");
 
   const seleTipoDocument = (document: { LGE_CODIGO: number; LGE_ELEMENTO_DESCRIPCION: string }) => {
     setValueDocument(document);
@@ -241,8 +242,13 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
   };
   const { identification } = useParams();
 
+  console.log(btnDisable);
+  
+
   useEffect(() => {
+    
     if (identification) {
+      setBtnDisable('input-desabled')
       getUser(identification).then(({ data, operation }) => {
         const user = data;
 
@@ -294,8 +300,10 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
           LGE_ELEMENTO_DESCRIPCION: user?.municipality?.itemDescription,
         });
       });
+    }else{
+      setBtnDisable('')
     }
-  }, []);
+  }, [identification]);
 
   const handleDateChange = (date: any) => {
     const birthdate = `${date?.getFullYear()}-${date?.getMonth() + 1}-${date?.getDate()}`;
@@ -443,7 +451,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                       value={valueDocument}
                       disabled={isPerson}
                       optionLabel={"LGE_ELEMENTO_DESCRIPCION"}
-                      className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
+                      className={classNames({ "p-invalid": fieldState.error }, `${btnDisable} !h-10`)}
                       onChange={(e) =>
                         field.onChange(() => {
                           seleTipoDocument(e.value);
@@ -484,7 +492,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                         id={field.name}
                         value={field.value}
                         disabled={isPerson}
-                        className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
+                        className={classNames({ "p-invalid": fieldState.error },`${btnDisable} !h-10`)}
                         onChange={(e) =>
                           field.onChange(() => {
                             setValueIdentification(e.target.value);
