@@ -118,7 +118,7 @@ export const TableGenericComponent = (props:Props) => {
             <div className="flex flex-row items-center">
                 <div className="pl-8 mr-4">
                     <label className="mr-2 text-base ">Total de resultados</label>{" "}
-                    <span className="text-black bold big">{'3'}</span>
+                    <span className="text-black bold big">{data.length}</span>
                 </div>
                 <div className="">
                     <label className="mr-2 p-colorpicker">Registro por página</label>

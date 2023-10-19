@@ -155,7 +155,7 @@ const AttentionTocitizens = () => {
               <div className="flex flex-row">
                 <div className="flex flex-row mr-4">
                   <div className="mr-2">
-                    <label className="font-label">Tipos</label>
+                    <label className="font-label">Tipo</label>
                     <br />
                     <Controller
                       name="typeDocument"

@@ -21,6 +21,7 @@ import { IWorkEntity, IWorkEntityFilters } from "../interfaces/workEntity.interf
 import { IWorkEntityType } from "../interfaces/workEntityType.interface";
 import { IPagingData } from "../utils/api-response";
 import { emailPattern, inputMode } from "../utils/helpers";
+import { ModalEntityComponent } from "./genericComponent/modalEntity.component";
 function WorkEntitiesPage(): React.JSX.Element {
   const { authorization } = useContext(AppContext);
   const parentForm = useRef(null);
@@ -42,6 +43,9 @@ function WorkEntitiesPage(): React.JSX.Element {
     width: 0,
     left: 0,
   });
+
+  const [entityId, setEntityId] = useState<number>()
+  const [showModal, setShowModal] = useState<boolean>(false)
 
   const checkMobileScreen = useCheckMobileScreen();
 
@@ -382,10 +386,19 @@ function WorkEntitiesPage(): React.JSX.Element {
     ];
   };
 
+  const showEntity = (id:number)=>{
+    setShowModal(true)
+    setEntityId(id)
+  }
+
+  const showEntit = ()=>{
+    setShowModal(false)
+  }
+
   const editUser = (rowData: IWorkEntity) => {
     return (
-      <span>
-        <Tooltip className="m-1" target=".tooltip-see-attached-dt" autoHide={false} />
+      <span className="flex">
+        <Tooltip className="" target=".tooltip-see-attached-dt" autoHide={false} />
         {authorization?.allowedActions &&
           authorization?.allowedActions?.findIndex((i) => i == "ENTIDADES_TRABAJO_EDITAR") >= 0 && (
             <Link
@@ -414,6 +427,24 @@ function WorkEntitiesPage(): React.JSX.Element {
               </svg>
             </Link>
           )}
+
+             {authorization?.allowedActions &&
+              authorization?.allowedActions?.findIndex((i) => i == "ENTIDADES_TRABAJO_EDITAR") >= 0 && (
+                <Button
+                tooltip="Ver"
+                text
+                onClick={()=> showEntity(rowData?.id)}
+                >
+                  <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M1.13575 13.498C0.95475 13.193 0.95475 12.807 1.13575 12.502C3.04075 9.279 6.52075 6.5 10.0007 6.5C13.4807 6.5 16.9597 9.279 18.8647 12.501C19.0457 12.807 19.0457 13.194 18.8647 13.5C16.9597 16.721 13.4807 19.5 10.0007 19.5C6.52075 19.5 3.04075 16.721 1.13575 13.498Z" stroke="#058CC1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12.1218 10.879C13.2938 12.051 13.2938 13.95 12.1218 15.122C10.9498 16.294 9.05076 16.294 7.87876 15.122C6.70676 13.95 6.70676 12.051 7.87876 10.879C9.05076 9.707 10.9508 9.707 12.1218 10.879" stroke="#058CC1" stroke-width="1.4286" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M10.0007 1V3.5" stroke="#058CC1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M3.00073 3L4.68073 5" stroke="#058CC1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M17.0008 3L15.3208 5" stroke="#058CC1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+
+                </Button>
+          )}
       </span>
     );
   };
@@ -427,6 +458,12 @@ function WorkEntitiesPage(): React.JSX.Element {
   return (
     <div className="p-4 md:p-6 max-w-[1200px] mx-auto" ref={parentForm}>
       <ConfirmDialog id="messages"></ConfirmDialog>
+      <ModalEntityComponent
+        show={showModal}
+        exitModal={()=>{showEntit()}}
+        
+        entityId={entityId}
+      />
       <span className="text-3xl block md:hidden pb-5">Entidades de trabajo</span>
       <div className="p-card rounded-2xl md:rounded-4xl shadow-none border border-[#D9D9D9]">
         <div className="p-card-body !py-6 !px-6 md:!px-11">

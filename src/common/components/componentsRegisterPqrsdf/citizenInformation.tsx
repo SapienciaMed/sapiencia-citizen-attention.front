@@ -363,9 +363,6 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     }
   };
 
-  const upLoadFile = async (file) =>{
-    
-  }
 
   const getFormErrorMessage = (name) => {
     return errors[name] ? (
