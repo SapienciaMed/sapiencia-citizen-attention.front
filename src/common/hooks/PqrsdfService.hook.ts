@@ -7,7 +7,7 @@ import useCrudService from "./crud-service.hook";
 export function usePqrsdfService() {
   const baseURL: string = process.env.urlApiCitizenAttention;
   const listUrl: string = "/api/v1/pqrsdf";
-  const { get, post } = useCrudService(baseURL);
+  const { get, post, upload } = useCrudService(baseURL);
 
   async function getPqrsdfs(): Promise<ApiResponse<IPqrsdf[] | []>> {
     try {
@@ -68,6 +68,18 @@ export function usePqrsdfService() {
       return new ApiResponse({} as IPqrsdf, EResponseCodes.FAIL, "Error no controlado");
     }
   }
+  
+  async function upLoadFile(file) {
+    const formData = new FormData();
+    formData.append('archivo', file);
+    try {
+      const endpoint: string = `/upload`;
+      return await upload(`${listUrl}${endpoint}`,  formData );
+    } catch (error) {
+      return new ApiResponse({} as IPagingData<IPerson | null>, EResponseCodes.FAIL, "Error no controlado");
+    }
+  }
+
 
   return {
     getPqrsdfs,
@@ -76,5 +88,6 @@ export function usePqrsdfService() {
     getPeopleByFilters,
     getPersonByDocument,
     getPqrsdfByIdentificationAndFilingNumber,
+    upLoadFile
   };
 }

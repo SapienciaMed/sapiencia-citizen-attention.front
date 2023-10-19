@@ -36,8 +36,6 @@ interface Props {
 }
 
 export const CitizenInformation = ({ isPerson = false }: Props) => {
-  const workEntityService = useWorkEntityService();
-  const navigate = useNavigate();
 
   const optionSolicitudes = ApiDatatypoSolicitudes.read();
   const optionTypeDocument = ApiDatatypoDocument.read();
@@ -121,7 +119,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
   const [firstContactNumber, setFirstContactNumber] = useState("");
   const [secondContactNumber, setSecondContactNumber] = useState("");
   const [address, setAddress] = useState("");
-
+  
   const seleTipoDocument = (document: { LGE_CODIGO: number; LGE_ELEMENTO_DESCRIPCION: string }) => {
     setValueDocument(document);
 
@@ -354,7 +352,8 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     setfile(null);
     showDependecia.current = "";
     showClasificacion.current = "";
-
+    
+    const respFile = await pqrsdfService.upLoadFile(file);
     const resp = await pqrsdfService.createPqrsdf(pqrsdf);
 
     if (resp.operation["code"] == "OK") {
@@ -363,6 +362,10 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
       reset();
     }
   };
+
+  const upLoadFile = async (file) =>{
+    
+  }
 
   const getFormErrorMessage = (name) => {
     return errors[name] ? (
@@ -622,7 +625,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                           onChange={(e) =>
                             field.onChange(() => {
                               setName(e.target.value);
-                              return e.targe.value;
+                              //return e.targe.value;
                             })
                           }
                           placeholder=""
@@ -656,7 +659,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                           onChange={(e) =>
                             field.onChange(() => {
                               setSecondName(e.target.value);
-                              return e.targe.value;
+                              //return e.targe.value;
                             })
                           }
                           placeholder=""
