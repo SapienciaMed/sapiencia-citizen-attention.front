@@ -308,7 +308,6 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     console.log(data);
 
     const pqrsdf: IPqrsdf = {
-      isPerson: isPerson,
       requestTypeId: data.tipoDeSolicitud["TSO_CODIGO"],
       responseMediumId: data.medioRespuesta["MRE_CODIGO"],
       requestSubjectId: 1,
