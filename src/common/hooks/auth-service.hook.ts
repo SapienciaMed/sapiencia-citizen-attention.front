@@ -1,5 +1,6 @@
 import { EResponseCodes } from "../constants/api.enum";
-import { IAuthorization } from "../interfaces/auth.interfaces";
+import { IAuthorization,   IResponseSignIn,
+} from "../interfaces/auth.interfaces";
 import { ApiResponse } from "../utils/api-response";
 import useCrudService from "./crud-service.hook";
 
@@ -8,6 +9,19 @@ export function useAuthService() {
   const authUrl: string = "/api/v1/auth";
 
   const { get, post } = useCrudService( baseURL);
+
+  async function signIn(data: Object): Promise<ApiResponse<IResponseSignIn>> {
+    try {
+      const endpoint: string = "/signin";
+      return await post(`${authUrl}${endpoint}`, data);
+    } catch (error) {
+      return new ApiResponse(
+        {} as IResponseSignIn,
+        EResponseCodes.FAIL,
+        "Error no controlado"
+      );
+    }
+  }
 
   async function getAuthorization(
     token: string
@@ -25,6 +39,7 @@ export function useAuthService() {
   }
 
   return {
+    signIn,
     getAuthorization,
   };
 }
