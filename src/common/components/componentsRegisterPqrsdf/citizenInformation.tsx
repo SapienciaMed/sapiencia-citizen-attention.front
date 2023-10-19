@@ -303,10 +303,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     return birthdate;
   };
 
-  const onSubmit = async () => {
-    const data = getValues();
-    console.log(data);
-
+  const onSubmit = async (data: FormPqrsdf) => {    
     const pqrsdf: IPqrsdf = {
       requestTypeId: data.tipoDeSolicitud["TSO_CODIGO"],
       responseMediumId: data.medioRespuesta["MRE_CODIGO"],
@@ -405,7 +402,6 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
             name="tipoDeSolicitud"
             control={control}
             rules={{ required: "Campo obligatorio." }}
-            defaultValue={valueTypeSolicitud}
             render={({ field, fieldState }) => (
               <>
                 <Suspense fallback={<div>Cargando...</div>}>
@@ -413,14 +409,8 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                     id={field.value}
                     value={field.value}
                     optionLabel="TSO_DESCRIPTION"
-                    optionValue="TSO_CODIGO"
                     className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                    onChange={(e) =>
-                      field.onChange(() => {
-                        setValueTypeSolicitud(e.value);
-                        setValue("tipoDeSolicitud", e.value);
-                      })
-                    }
+                    onChange={field.onChange}
                     focusInputRef={field.ref}
                     options={optionSolicitudes.data}
                     placeholder="Seleccionar"
