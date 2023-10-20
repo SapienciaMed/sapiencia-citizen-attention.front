@@ -1,4 +1,12 @@
+export interface IRequestSignIn {
+  numberDocument: string;
+  password: string;
+}
 
+export interface IResponseSignIn {
+  authorization: IAuthorization;
+  token: string;
+}
 
 export interface IAuthorization {
   user: IAuthUser;
@@ -22,4 +30,6 @@ export interface IAuthUser {
   userCreate: string;
   dateCreate?: Date;
 }
+
+
 
