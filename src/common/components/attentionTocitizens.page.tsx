@@ -144,7 +144,7 @@ const AttentionTocitizens = () => {
 
   return (
     <>
-      <div className="p-8">
+      <div className="p-8 flex justify-center">
         <Card className="card-container">
           <Card title="Radicar PQRDSF" className="card-container mb-4">
             <form onSubmit={handleSubmit(onSubmit)}>
