@@ -65,7 +65,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     pais: "",
     departamento: "",
     municipio: "",
-    fechaNacimento: "",
+    fechaNacimento: null,
     politicaTratamiento: null,
     Descripcion: "",
     RazonSocial: "",
@@ -74,7 +74,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
 
   const {
     control,
-    formState: { errors, isValid,dirtyFields },
+    formState: { errors, isValid, dirtyFields },
     handleSubmit,
     getFieldState,
     setValue,
@@ -82,9 +82,9 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     resetField,
     getValues,
     watch,
-    register
+    register,
   } = useForm({ defaultValues, mode: "all" });
-  
+
   const optionDepartamento = useRef(null);
   const optionMunicipios = useRef(null);
   const showFieldPersons = useRef("");
@@ -163,7 +163,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
 
     return document;
   };
-  
+
   const selectCountry = (pais: { LGE_CODIGO: number; LGE_ELEMENTO_DESCRIPCION: string }) => {
     setValuePais(pais);
 
@@ -243,54 +243,52 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     return responseUser;
   };
 
-  useEffect(()=>{
-    if(isPerson){
-      setBtnDisable('input-desabled')
-      setValue("tipo",' ' ,{ shouldDirty: true });
-      setValue('noDocumento',' ' ,{ shouldDirty: true });
+  useEffect(() => {
+    if (isPerson) {
+      setBtnDisable("input-desabled");
+      setValue("tipo", " ", { shouldDirty: true });
+      setValue("noDocumento", " ", { shouldDirty: true });
     }
-
-  },[isPerson])
+  }, [isPerson]);
 
   const { identification } = useParams();
 
   useEffect(() => {
-    
     if (identification) {
-      setBtnDisable('input-desabled')
+      setBtnDisable("input-desabled");
       getUser(identification).then(({ data, operation }) => {
         const user = data;
 
-        setValue("tipo",'tipo' ,{ shouldDirty: true });
-        setValue("pais",'pais' ,{ shouldDirty: true });
-        setValue("departamento",'departamento' ,{ shouldDirty: true });
-        setValue("municipio",'municipio' ,{ shouldDirty: true });
-        setValue('fechaNacimento','fechaNacimento' ,{ shouldDirty: true });
+        setValue("tipo", "tipo", { shouldDirty: true });
+        setValue("pais", "pais", { shouldDirty: true });
+        setValue("departamento", "departamento", { shouldDirty: true });
+        setValue("municipio", "municipio", { shouldDirty: true });
+        setValue("fechaNacimento", "fechaNacimento", { shouldDirty: true });
 
         setName(user?.firstName);
-        setValue("primerNombre", user?.firstName,{ shouldDirty: true });
+        setValue("primerNombre", user?.firstName, { shouldDirty: true });
         setLastName(user?.firstSurname);
-        setValue("primerApellido", user?.firstSurname,{ shouldDirty: true });
+        setValue("primerApellido", user?.firstSurname, { shouldDirty: true });
         setSecondName(user?.secondName);
-        setValue("segundoNombre", user?.secondName,{ shouldDirty: true });
+        setValue("segundoNombre", user?.secondName, { shouldDirty: true });
         setSecondSurname(user?.secondSurname);
-        setValue("segundoApellido", user?.secondSurname,{ shouldDirty: true });
+        setValue("segundoApellido", user?.secondSurname, { shouldDirty: true });
         setValueDocument({
           LGE_CODIGO: user?.documentType?.id,
           LGE_ELEMENTO_DESCRIPCION: user?.documentType?.itemDescription,
         });
         setValueIdentification(user?.identification);
-        setValue("noDocumento", user?.identification,{ shouldDirty: true });
+        setValue("noDocumento", user?.identification, { shouldDirty: true });
         setBirthDate(toLocaleDate(user?.birthdate));
-        //setValue("fechaNacimento", user?.birthdate);
+        handleDateChange(toLocaleDate(user?.birthdate));
         setEmail(user?.email);
-        setValue("correoElectronico", user?.email,{ shouldDirty: true });
+        setValue("correoElectronico", user?.email, { shouldDirty: true });
         setFirstContactNumber(user?.firstContactNumber);
-        setValue("noContacto1", user?.firstContactNumber,{ shouldDirty: true });
+        setValue("noContacto1", user?.firstContactNumber, { shouldDirty: true });
         setSecondContactNumber(user?.secondContactNumber);
-        setValue("noContacto2", user?.secondContactNumber,{ shouldDirty: true });
+        setValue("noContacto2", user?.secondContactNumber, { shouldDirty: true });
         setAddress(user?.address);
-        setValue("direccion", user?.address,{ shouldDirty: true });
+        setValue("direccion", user?.address, { shouldDirty: true });
 
         setValueTypeEntidad({
           TEJ_CODIGO: user?.entityType?.tej_codigo,
@@ -315,18 +313,19 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
           LGE_ELEMENTO_DESCRIPCION: user?.municipality?.itemDescription,
         });
       });
-    }else{
-      setBtnDisable('')
+    } else {
+      setBtnDisable("");
     }
   }, [identification]);
 
   const handleDateChange = (date: any) => {
+    setValue("fechaNacimento", date);
     const birthdate = `${date?.getFullYear()}-${date?.getMonth() + 1}-${date?.getDate()}`;
     birthdateData.current = birthdate;
     return birthdate;
   };
 
-  const onSubmit = async (data: FormPqrsdf) => {    
+  const onSubmit = async (data: FormPqrsdf) => {
     const pqrsdf: IPqrsdf = {
       requestTypeId: data.tipoDeSolicitud["TSO_CODIGO"],
       responseMediumId: data.medioRespuesta["MRE_CODIGO"],
@@ -358,27 +357,38 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
       },
     };
 
-    setValueTypeSolicitud(null);
-    setValueDocument(null);
-    setValueTypeEntidad(null);
-    setValuePais(null);
-    setValueDepartamento(null);
-    setValueMunicipio(null);
-    setValueMedioRespuesta(null);
-    setValueAsunto(null);
-    setstatuscheckBox(null);
-    setprogram(null);
-    setfile(null);
-    showDependecia.current = "";
-    showClasificacion.current = "";
-    SetstatusSummit(false)
     const respFile = await pqrsdfService.upLoadFile(file);
     const resp = await pqrsdfService.createPqrsdf(pqrsdf);
 
     if (resp.operation["code"] == "OK") {
       radicado.current = resp.data.filingNumber;
       setVisibleMsg(true);
-      reset();
+      setValueTypeSolicitud(null);
+      setValueTypeEntidad(null);
+      setValueMedioRespuesta(null);
+      setValueAsunto(null);
+      setstatuscheckBox(null);
+      setprogram(null);
+      setfile(null);
+      showDependecia.current = "";
+      showClasificacion.current = "";
+      SetstatusSummit(false);
+      if (isPerson) {
+        resetField("tipoDeSolicitud");
+        resetField("politicaTratamiento");
+        resetField("medioRespuesta");
+        resetField("programaSolicitud");
+        resetField("asuntoSolicitud");
+        resetField("Descripcion");
+        resetField("RazonSocial");
+        resetField("archivo");
+      } else {
+        setValueDocument(null);
+        setValuePais(null);
+        setValueDepartamento(null);
+        setValueMunicipio(null);
+        reset();
+      }
     }
   };
 
@@ -390,10 +400,10 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     );
   };
 
-  useEffect(()=>{
-    SetstatusSummit(isValid)
-  },[isValid]);
-  
+  useEffect(() => {
+    SetstatusSummit(isValid);
+  }, [isValid]);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="form-container">
       <div className=" flex justify-content-center">
@@ -511,7 +521,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                         id={field.name}
                         value={field.value}
                         disabled={isPerson}
-                        className={classNames({ "p-invalid": fieldState.error },`${btnDisable} !h-10`)}
+                        className={classNames({ "p-invalid": fieldState.error }, `${btnDisable} !h-10`)}
                         onChange={(e) =>
                           field.onChange(() => {
                             setValueIdentification(e.target.value);
