@@ -250,101 +250,111 @@ export const ModalEntityComponent = (prosp:Props) => {
             onHide={exitModal}
             closeIcon={closeIcon}
             header={<h1>Detalle de la Entidad de trabajo</h1>}
+            className='dialog-movil-modal'
+            style={{width:'65em'}}
         >
             <Card className='card'>
                 <div>
-                    <div className='flex flex-wrap mb-4'>
-                        <div className='mr-4'>
-                            <label>Id Entidad</label>
-                            <br />
-                            <InputText 
-                                id="username" 
-                                value={idEntity}
-                                className='h-10 input-desabled'
-                                disabled 
-                                onChange={(e) => setValue(e.target.value)} />
+                    <div className='flex flex-wrap containe-modal mb-4'>
+                      <div className='flex flex-row col-100' >
+                        <div className='mr-4 col-30'>
+                              <label>Id Entidad</label>
+                              <br />
+                              <InputText 
+                                  id="username" 
+                                  value={idEntity}
+                                  className='h-10 input-desabled col-100'
+                                  disabled 
+                                  onChange={(e) => setValue(e.target.value)} />
                         </div>
-                        <div className='mr-4'>
+                        <div className='mr-4 col-60'>
                             <label>Tipo entidad</label>
                             <br />
                             <InputText 
                                 id="username" 
                                 value={typeEntity}
-                                className='h-10 input-desabled'
+                                className='h-10 input-desabled col-100'
                                 disabled 
                                 onChange={(e) => setValue(e.target.value)} />
                         </div>
-                        <div className='mr-4'>
+
+                      </div>
+                      <div className='mr-4 col-100'>
                             <label>Nombre entidad</label>
                             <br />
                             <InputText 
                                 id="username" 
                                 value={nameEntity}
-                                className='h-10 input-desabled'
+                                className='h-10 input-desabled col-100'
                                 disabled 
                                 onChange={(e) => setValue(e.target.value)} />
-                        </div>
+                      </div>
                     </div>
-                    <div className='flex flex-wrap mb-4'>
-                        <div className='mr-4'>
-                            <label>Doc. identidad</label>
-                            <br />
-                            <InputText 
-                                id="username" 
-                                value={documenUser}
-                                className='h-10 input-desabled'
-                                disabled 
-                                onChange={(e) => setValue(e.target.value)} />
+                    <div className='flex flex-wrap mb-4 containe-modal '>
+                      
+                        <div className='mr-4 col-100'>
+                              <label>Doc. identidad</label>
+                              <br />
+                              <InputText 
+                                  id="username" 
+                                  value={documenUser}
+                                  className='h-10 input-desabled col-100'
+                                  disabled 
+                                  onChange={(e) => setValue(e.target.value)} />
                         </div>
-                        <div className='mr-4'>
-                            <label>Nombres y Apellidos</label>
-                            <br />
-                            <InputText 
-                                id="username" 
-                                value={nameUser}
-                                className='h-10 input-desabled'
-                                disabled 
-                                onChange={(e) => setValue(e.target.value)} />
+                        <div className='flex flex-row name-movil'>
+                          <div className='mr-4'>
+                              <label>Nombres y Apellidos</label>
+                              <br />
+                              <InputText 
+                                  id="username" 
+                                  value={nameUser}
+                                  className='h-10 input-desabled col-100'
+                                  disabled 
+                                  onChange={(e) => setValue(e.target.value)} />
+                          </div>
+
+                          <div className='mr-4 '>
+                              <label>Correo electrónico</label>
+                              <br />
+                              <InputText 
+                                  id="username" 
+                                  value={email}
+                                  className='h-10 input-desabled col-100'
+                                  disabled 
+                                  onChange={(e) => setValue(e.target.value)} />
+                          </div>
                         </div>
-                        <div className='mr-4'>
-                            <label>Correo electrónico</label>
-                            <br />
-                            <InputText 
-                                id="username" 
-                                value={email}
-                                className='h-10 input-desabled'
-                                disabled 
-                                onChange={(e) => setValue(e.target.value)} />
-                        </div>
-                        <div className='mr-4'>
-                            <label>N° contacto 1</label>
-                            <br />
-                            <InputText 
-                                id="username" 
-                                value={consta1}
-                                className='h-10 input-desabled'
-                                disabled 
-                                onChange={(e) => setValue(e.target.value)} />
-                        </div>
-                    </div>
-                    <div className='flex flex-wrap'>
-                        <div className='mr-4'>
+                        
+                          <div className='mr-4 '>
+                              <label>N° contacto 1</label>
+                              <br />
+                              <InputText 
+                                  id="username" 
+                                  value={consta1}
+                                  className='h-10 input-desabled col-100'
+                                  disabled 
+                                  onChange={(e) => setValue(e.target.value)} />
+                          </div>
+                          <div className='mr-4 '>
                             <label>N° contacto 2</label>
                             <br />
                             <InputText 
                                 id="username" 
                                 value={consta2}
-                                className='h-10 input-desabled'
+                                className='h-10 input-desabled col-100'
                                 disabled 
                                 onChange={(e) => setValue(e.target.value)} />
-                        </div>
-                        <div className='mr-4'>
+                          </div>
+                   
+
+                        <div className='mr-4 col-100'>
                             <label>Estado</label>
                             <br />
                             <InputText 
                                 id="username" 
                                 value={checked?'Activo':'Inactivo'}
-                                className='h-10 input-desabled'
+                                className='h-10 input-desabled col-100'
                                 disabled 
                                 onChange={(e) => setValue(e.target.value)} />
                         </div>
