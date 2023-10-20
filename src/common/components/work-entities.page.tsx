@@ -429,7 +429,7 @@ function WorkEntitiesPage(): React.JSX.Element {
           )}
 
              {authorization?.allowedActions &&
-              authorization?.allowedActions?.findIndex((i) => i == "ENTIDADES_TRABAJO_EDITAR") >= 0 && (
+              authorization?.allowedActions?.findIndex((i) => i == "ENTIDADES_TRABAJO_VER_DETALLE") >= 0 && (
                 <Button
                 tooltip="Ver"
                 text
