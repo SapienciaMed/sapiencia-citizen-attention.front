@@ -374,16 +374,14 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
       showClasificacion.current = "";
       SetstatusSummit(false);
       if (isPerson) {
-        reset({
-          tipoDeSolicitud: "",
-          politicaTratamiento: null,
-          medioRespuesta: "",
-          programaSolicitud: "",
-          asuntoSolicitud: "",
-          Descripcion: "",
-          RazonSocial: "",
-          archivo: "",
-        });
+        resetField("tipoDeSolicitud");
+        resetField("politicaTratamiento");
+        resetField("medioRespuesta");
+        resetField("programaSolicitud");
+        resetField("asuntoSolicitud");
+        resetField("Descripcion");
+        resetField("RazonSocial");
+        resetField("archivo");
       } else {
         setValueDocument(null);
         setValuePais(null);
