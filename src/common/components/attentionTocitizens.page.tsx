@@ -335,7 +335,7 @@ const AttentionTocitizens = () => {
               nameBtn1="Radicar"
               nameBtn2="Cancelar"
               onClickBt2={() => setLoad(false)}
-              onClickBt1={()=>{navigate("/atencion-ciudadana/register-pqrsdf")}}
+              onClickBt1={()=>{navigate("/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf/radicar")}}
             />
           ) : (
             <></>

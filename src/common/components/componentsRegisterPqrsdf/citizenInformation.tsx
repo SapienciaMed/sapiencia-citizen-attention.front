@@ -74,7 +74,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
 
   const {
     control,
-    formState: { errors, isValid },
+    formState: { errors, isValid,dirtyFields },
     handleSubmit,
     getFieldState,
     setValue,
@@ -82,8 +82,9 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     resetField,
     getValues,
     watch,
+    register
   } = useForm({ defaultValues, mode: "all" });
-
+  
   const optionDepartamento = useRef(null);
   const optionMunicipios = useRef(null);
   const showFieldPersons = useRef("");
@@ -118,6 +119,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
   const [secondContactNumber, setSecondContactNumber] = useState("");
   const [address, setAddress] = useState("");
   const [btnDisable, setBtnDisable] = useState("");
+  const [statusSummit, SetstatusSummit] = useState<boolean>(false);
 
   const seleTipoDocument = (document: { LGE_CODIGO: number; LGE_ELEMENTO_DESCRIPCION: string }) => {
     setValueDocument(document);
@@ -161,7 +163,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
 
     return document;
   };
-
+  
   const selectCountry = (pais: { LGE_CODIGO: number; LGE_ELEMENTO_DESCRIPCION: string }) => {
     setValuePais(pais);
 
@@ -240,10 +242,17 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     const responseUser = pqrsdfService.getPersonByDocument(parseInt(identification));
     return responseUser;
   };
-  const { identification } = useParams();
 
-  console.log(btnDisable);
-  
+  useEffect(()=>{
+    if(isPerson){
+      setBtnDisable('input-desabled')
+      setValue("tipo",' ' ,{ shouldDirty: true });
+      setValue('noDocumento',' ' ,{ shouldDirty: true });
+    }
+
+  },[isPerson])
+
+  const { identification } = useParams();
 
   useEffect(() => {
     
@@ -252,30 +261,36 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
       getUser(identification).then(({ data, operation }) => {
         const user = data;
 
+        setValue("tipo",'tipo' ,{ shouldDirty: true });
+        setValue("pais",'pais' ,{ shouldDirty: true });
+        setValue("departamento",'departamento' ,{ shouldDirty: true });
+        setValue("municipio",'municipio' ,{ shouldDirty: true });
+        setValue('fechaNacimento','fechaNacimento' ,{ shouldDirty: true });
+
         setName(user?.firstName);
-        setValue("primerNombre", user?.firstName);
+        setValue("primerNombre", user?.firstName,{ shouldDirty: true });
         setLastName(user?.firstSurname);
-        setValue("primerApellido", user?.firstSurname);
+        setValue("primerApellido", user?.firstSurname,{ shouldDirty: true });
         setSecondName(user?.secondName);
-        setValue("segundoNombre", user?.secondName);
+        setValue("segundoNombre", user?.secondName,{ shouldDirty: true });
         setSecondSurname(user?.secondSurname);
-        setValue("segundoApellido", user?.secondSurname);
+        setValue("segundoApellido", user?.secondSurname,{ shouldDirty: true });
         setValueDocument({
           LGE_CODIGO: user?.documentType?.id,
           LGE_ELEMENTO_DESCRIPCION: user?.documentType?.itemDescription,
         });
         setValueIdentification(user?.identification);
-        setValue("noDocumento", user?.identification);
+        setValue("noDocumento", user?.identification,{ shouldDirty: true });
         setBirthDate(toLocaleDate(user?.birthdate));
         //setValue("fechaNacimento", user?.birthdate);
         setEmail(user?.email);
-        setValue("correoElectronico", user?.email);
+        setValue("correoElectronico", user?.email,{ shouldDirty: true });
         setFirstContactNumber(user?.firstContactNumber);
-        setValue("noContacto1", user?.firstContactNumber);
+        setValue("noContacto1", user?.firstContactNumber,{ shouldDirty: true });
         setSecondContactNumber(user?.secondContactNumber);
-        setValue("noContacto2", user?.secondContactNumber);
+        setValue("noContacto2", user?.secondContactNumber,{ shouldDirty: true });
         setAddress(user?.address);
-        setValue("direccion", user?.address);
+        setValue("direccion", user?.address,{ shouldDirty: true });
 
         setValueTypeEntidad({
           TEJ_CODIGO: user?.entityType?.tej_codigo,
@@ -356,7 +371,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     setfile(null);
     showDependecia.current = "";
     showClasificacion.current = "";
-
+    SetstatusSummit(false)
     const respFile = await pqrsdfService.upLoadFile(file);
     const resp = await pqrsdfService.createPqrsdf(pqrsdf);
 
@@ -375,6 +390,10 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     );
   };
 
+  useEffect(()=>{
+    SetstatusSummit(isValid)
+  },[isValid]);
+  
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="form-container">
       <div className=" flex justify-content-center">
@@ -617,7 +636,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                       <>
                         <InputTextComponent
                           id={field.name}
-                          value={field.value}
+                          value={name}
                           className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
                           onChange={(e) =>
                             field.onChange(() => {
@@ -1315,7 +1334,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
       </div>
 
       <div>
-        <Button disabled={!isValid} rounded label="Enviar solicitud" className="!px-10 !text-sm btn-sumit" />
+        <Button disabled={!statusSummit} rounded label="Enviar solicitud" className="!px-10 !text-sm btn-sumit" />
       </div>
     </form>
   );
