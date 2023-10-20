@@ -152,7 +152,7 @@ const AttentionTocitizens = () => {
                 <label className="text-xl">Buscar por</label>
               </div>
 
-              <div className="flex flex-row">
+              <div className="flex flex-row container-movil">
                 <div className="flex flex-row mr-4">
                   <div className="mr-2">
                     <label className="font-label">Tipo</label>
@@ -202,7 +202,7 @@ const AttentionTocitizens = () => {
                   </div>
                 </div>
 
-                <div className="mr-4">
+                <div className="mr-4 col-100">
                   <label>Nombres</label>
                   <br />
                   <Controller
@@ -215,7 +215,7 @@ const AttentionTocitizens = () => {
                           <InputText
                             id={field.name}
                             value={field.value}
-                            className={classNames({ "p-invalid": fieldState.error }, "h-10")}
+                            className={classNames({ "p-invalid": fieldState.error }, "h-10 col-100")}
                             onChange={(e) => field.onChange(e.target.value)}
                             keyfilter="alpha"
                           />
@@ -226,7 +226,7 @@ const AttentionTocitizens = () => {
                   />
                 </div>
 
-                <div>
+                <div className="col-100">
                   <label>Apellidos</label>
                   <br />
                   <Controller
@@ -239,7 +239,7 @@ const AttentionTocitizens = () => {
                           <InputText
                             id={field.name}
                             value={field.value}
-                            className={classNames({ "p-invalid": fieldState.error }, "h-10")}
+                            className={classNames({ "p-invalid": fieldState.error }, "h-10 col-100")}
                             onChange={(e) => field.onChange(e.target.value)}
                             keyfilter="alpha"
                           />
@@ -250,8 +250,8 @@ const AttentionTocitizens = () => {
                   />
                 </div>
               </div>
-              <div className="flex flex-row">
-                <div className="mr-4">
+              <div className="flex flex-row container-movil col-100">
+                <div className="mr-4 col-100">
                   <label>No. De contacto</label>
                   <br />
                   <Controller
@@ -264,7 +264,7 @@ const AttentionTocitizens = () => {
                           <InputText
                             id={field.name}
                             value={field.value}
-                            className={classNames({ "p-invalid": fieldState.error }, "h-10")}
+                            className={classNames({ "p-invalid": fieldState.error }, "h-10 col-100")}
                             onChange={(e) => field.onChange(e.target.value)}
                             keyfilter="num"
                             style={{ width: "390px" }}
@@ -277,7 +277,7 @@ const AttentionTocitizens = () => {
                   />
                 </div>
 
-                <div>
+                <div className="col-100">
                   <label>Correo electrónico</label>
                   <br />
                   <Controller
@@ -296,7 +296,7 @@ const AttentionTocitizens = () => {
                           <InputText
                             id={field.name}
                             value={field.value}
-                            className={classNames({ "p-invalid": fieldState.error }, "h-10")}
+                            className={classNames({ "p-invalid": fieldState.error }, "h-10 col-100")}
                             onChange={(e) => field.onChange(e.target.value)}
                           />
                         </span>

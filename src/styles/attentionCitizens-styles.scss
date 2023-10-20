@@ -13,3 +13,21 @@
     align-items: center;
     justify-content: center;
 }
+
+/*MOVIL*/
+@media only screen and (max-width: 768px) {
+    
+    .container-movil{
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .p-8{
+        padding: 0;
+    }
+
+    .col-100{
+        width: 100% !important;
+    }
+
+}
