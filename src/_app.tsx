@@ -61,7 +61,7 @@ function App() {
               />
               <Route 
                 path={"/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf"} 
-                element={<AttentionTocitizens />} 
+                element={<PrivateRoute element={<AttentionTocitizens />} allowedAction={"RADICAR_PQRSDF"}  />} 
               />
               <Route 
                 path={"/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf/radicar/:identification"} 
