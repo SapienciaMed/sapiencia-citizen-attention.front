@@ -398,7 +398,7 @@ function WorkEntitiesPage(): React.JSX.Element {
   const editUser = (rowData: IWorkEntity) => {
     return (
       <span className="flex">
-        <Tooltip className="" target=".tooltip-see-attached-dt" autoHide={false} />
+        <Tooltip className="" target=".tooltip-see-attached-dt"/>
         {authorization?.allowedActions &&
           authorization?.allowedActions?.findIndex((i) => i == "ENTIDADES_TRABAJO_EDITAR") >= 0 && (
             <Link
