@@ -65,7 +65,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     pais: "",
     departamento: "",
     municipio: "",
-    fechaNacimento: "",
+    fechaNacimento: null,
     politicaTratamiento: null,
     Descripcion: "",
     RazonSocial: "",
@@ -280,7 +280,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
         setValueIdentification(user?.identification);
         setValue("noDocumento", user?.identification, { shouldDirty: true });
         setBirthDate(toLocaleDate(user?.birthdate));
-        //setValue("fechaNacimento", user?.birthdate);
+        handleDateChange(toLocaleDate(user?.birthdate));
         setEmail(user?.email);
         setValue("correoElectronico", user?.email, { shouldDirty: true });
         setFirstContactNumber(user?.firstContactNumber);
@@ -319,6 +319,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
   }, [identification]);
 
   const handleDateChange = (date: any) => {
+    setValue("fechaNacimento", date);
     const birthdate = `${date?.getFullYear()}-${date?.getMonth() + 1}-${date?.getDate()}`;
     birthdateData.current = birthdate;
     return birthdate;
@@ -356,26 +357,22 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
       },
     };
 
-    setValueTypeSolicitud(null);
-    setValueDocument(null);
-    setValueTypeEntidad(null);
-    setValuePais(null);
-    setValueDepartamento(null);
-    setValueMunicipio(null);
-    setValueMedioRespuesta(null);
-    setValueAsunto(null);
-    setstatuscheckBox(null);
-    setprogram(null);
-    setfile(null);
-    showDependecia.current = "";
-    showClasificacion.current = "";
-    SetstatusSummit(false);
     const respFile = await pqrsdfService.upLoadFile(file);
     const resp = await pqrsdfService.createPqrsdf(pqrsdf);
 
     if (resp.operation["code"] == "OK") {
       radicado.current = resp.data.filingNumber;
       setVisibleMsg(true);
+      setValueTypeSolicitud(null);
+      setValueTypeEntidad(null);
+      setValueMedioRespuesta(null);
+      setValueAsunto(null);
+      setstatuscheckBox(null);
+      setprogram(null);
+      setfile(null);
+      showDependecia.current = "";
+      showClasificacion.current = "";
+      SetstatusSummit(false);
       if (isPerson) {
         reset({
           tipoDeSolicitud: "",
@@ -388,6 +385,10 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
           archivo: "",
         });
       } else {
+        setValueDocument(null);
+        setValuePais(null);
+        setValueDepartamento(null);
+        setValueMunicipio(null);
         reset();
       }
     }
