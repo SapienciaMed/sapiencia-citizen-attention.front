@@ -243,13 +243,6 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     return responseUser;
   };
 
-  useEffect(() => {
-    if (isPerson) {
-      setBtnDisable("input-desabled");
-      setValue("tipo", " ", { shouldDirty: true });
-      setValue("noDocumento", " ", { shouldDirty: true });
-    }
-  }, [isPerson]);
 
   const { identification } = useParams();
 
@@ -646,7 +639,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                       <>
                         <InputTextComponent
                           id={field.name}
-                          value={name}
+                          value={field.value}
                           className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
                           onChange={(e) =>
                             field.onChange(() => {
