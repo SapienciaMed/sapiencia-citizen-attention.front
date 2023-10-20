@@ -15,11 +15,18 @@ interface Props {
   isPersonInternl?:boolean;
 }
 
+interface Channel{
+  channels?: string,
+  attention?: string,
+  isValid?:boolean
+}
+
 const Register_pqrsdf = ({ isPerson = false, isPersonInternl=false }: Props) => {
 
   const [channels,setChannels] = useState<IChannelAttetion[]>([])
   const [channelsDetail,setChannelsDetal] = useState<IChannelAttetionDetail[]>([])
   const [seletchannels,setSeletChannels] = useState(null)
+  const [attention,setAttention] = useState(null)
 
   const masterTablesServices = mastersTablesServices();
 
@@ -46,15 +53,15 @@ const Register_pqrsdf = ({ isPerson = false, isPersonInternl=false }: Props) => 
     attention: ""
   };
   
-
   const {
     control,
     getValues,
-    formState: { errors },
+    formState: { errors, isValid },
     handleSubmit,
     reset,
   } = useForm({ defaultValues, mode: "all" });
-
+  
+  console.log(attention);
   
 
   const getFormErrorMessage = (name) => {
@@ -125,7 +132,10 @@ const Register_pqrsdf = ({ isPerson = false, isPersonInternl=false }: Props) => 
                       placeholder="Seleccionar"
                       options={channelsDetail}
                       focusInputRef={field.ref}
-                      onChange={(e) => field.onChange(e.value)}
+                      onChange={(e) => {
+                        field.onChange(e.value)
+                        setAttention(e.value)
+                      }}
                       className={classNames({ "p-invalid": fieldState.error }, "h-10")}
                       style={{ alignItems: "center", width: "15em" }}
                     />
@@ -150,7 +160,12 @@ const Register_pqrsdf = ({ isPerson = false, isPersonInternl=false }: Props) => 
         <br />
 
         <Card className="card">
-          <CitizenInformation isPerson={isPerson} />
+          <CitizenInformation 
+            isPerson={isPerson} channel={{ 
+              channels: getValues('channels'),
+              attention: attention,
+              isValid:isValid
+              }} />
         </Card>
       </Card>
     </div>

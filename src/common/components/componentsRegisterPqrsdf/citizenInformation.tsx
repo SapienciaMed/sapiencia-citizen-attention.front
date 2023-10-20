@@ -31,9 +31,20 @@ const ApiDataMunicipios = fetchData("/get-municipios/", "5");
 
 interface Props {
   isPerson?: boolean;
+  channel?:object;
 }
 
-export const CitizenInformation = ({ isPerson = false }: Props) => {
+interface IChannel{
+  channels?: string,
+  attention?: string,
+  isValid?:boolean
+}
+
+export const CitizenInformation = ({ isPerson = false, channel }: Props) => {
+
+  const channels = channel as IChannel;
+  console.log('chanel->>> ',channels.isValid);
+  
   const optionSolicitudes = ApiDatatypoSolicitudes.read();
   const optionTypeDocument = ApiDatatypoDocument.read();
   const optionLegalEntity = ApiDatalegalEntity.read();
@@ -119,7 +130,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
   const [secondContactNumber, setSecondContactNumber] = useState("");
   const [address, setAddress] = useState("");
   const [btnDisable, setBtnDisable] = useState("");
-  const [statusSummit, SetstatusSummit] = useState<boolean>(false);
+  const [statusSummit, SetstatusSummit] = useState<boolean>(true);
 
   const seleTipoDocument = (document: { LGE_CODIGO: number; LGE_ELEMENTO_DESCRIPCION: string }) => {
     setValueDocument(document);
@@ -163,6 +174,24 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
 
     return document;
   };
+
+  useEffect(()=>{
+
+    if(channels.isValid && isValid){
+      SetstatusSummit(false)
+    }else{
+      SetstatusSummit(true)
+    }
+  },[channels.isValid])
+
+  useEffect(()=>{
+
+    if(channels.isValid && isValid){
+      SetstatusSummit(false)
+    }else{
+      SetstatusSummit(true)
+    }
+  },[isValid])
 
   const selectCountry = (pais: { LGE_CODIGO: number; LGE_ELEMENTO_DESCRIPCION: string }) => {
     setValuePais(pais);
@@ -326,6 +355,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
       clasification: data.programaSolicitud["CLP_DESCRIPCION"],
       dependency: data.programaSolicitud["DEP_DESCRIPCION"],
       description: data["Descripcion"],
+      idCanalesAttencion: parseInt(channels.attention),
       person: {
         identification: data["noDocumento"],
         documentTypeId: data.tipo["LGE_CODIGO"],
@@ -349,7 +379,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
         isActive: true,
       },
     };
-
+    SetstatusSummit(true)
     const respFile = await pqrsdfService.upLoadFile(file);
     const resp = await pqrsdfService.createPqrsdf(pqrsdf);
 
@@ -392,10 +422,6 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
       <small className="p-error">&nbsp;</small>
     );
   };
-
-  useEffect(() => {
-    SetstatusSummit(isValid);
-  }, [isValid]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="form-container">
@@ -1337,7 +1363,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
       </div>
 
       <div>
-        <Button disabled={!statusSummit} rounded label="Enviar solicitud" className="!px-10 !text-sm btn-sumit" />
+        <Button disabled={statusSummit} rounded label="Enviar solicitud" className="!px-10 !text-sm btn-sumit" />
       </div>
     </form>
   );
