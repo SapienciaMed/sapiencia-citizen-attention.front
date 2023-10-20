@@ -1,5 +1,6 @@
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
+import { useNavigate } from "react-router-dom";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { fetchData } from "../../apis/fetchData";
@@ -32,6 +33,7 @@ const ApiDataMunicipios = fetchData("/get-municipios/", "5");
 interface Props {
   isPerson?: boolean;
   channel?:object;
+  resetChanel?: () => void;
 }
 
 interface IChannel{
@@ -40,11 +42,12 @@ interface IChannel{
   isValid?:boolean
 }
 
-export const CitizenInformation = ({ isPerson = false, channel }: Props) => {
+
+export const CitizenInformation = ({ isPerson = false, channel,resetChanel }: Props) => {
 
   const channels = channel as IChannel;
-  console.log('chanel->>> ',channels.isValid);
   
+  const navigate = useNavigate();
   const optionSolicitudes = ApiDatatypoSolicitudes.read();
   const optionTypeDocument = ApiDatatypoDocument.read();
   const optionLegalEntity = ApiDatalegalEntity.read();
@@ -396,7 +399,10 @@ export const CitizenInformation = ({ isPerson = false, channel }: Props) => {
       showDependecia.current = "";
       showClasificacion.current = "";
       SetstatusSummit(false);
+      setBirthDate(null)
+      resetChanel()
       if (isPerson) {
+        
         resetField("tipoDeSolicitud");
         resetField("politicaTratamiento");
         resetField("medioRespuesta");
@@ -442,7 +448,10 @@ export const CitizenInformation = ({ isPerson = false, channel }: Props) => {
           <Button
             className="mt-8"
             style={{ backgroundColor: "533893" }}
-            onClick={() => setVisibleMsg(false)}
+            onClick={() => {
+              setVisibleMsg(false),
+              navigate("/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf")
+            }}
             label="Cerrar"
             rounded
           />

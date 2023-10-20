@@ -15,12 +15,6 @@ interface Props {
   isPersonInternl?:boolean;
 }
 
-interface Channel{
-  channels?: string,
-  attention?: string,
-  isValid?:boolean
-}
-
 const Register_pqrsdf = ({ isPerson = false, isPersonInternl=false }: Props) => {
 
   const [channels,setChannels] = useState<IChannelAttetion[]>([])
@@ -58,6 +52,7 @@ const Register_pqrsdf = ({ isPerson = false, isPersonInternl=false }: Props) => 
     getValues,
     formState: { errors, isValid },
     handleSubmit,
+    resetField,
     reset,
   } = useForm({ defaultValues, mode: "all" });
   
@@ -108,7 +103,7 @@ const Register_pqrsdf = ({ isPerson = false, isPersonInternl=false }: Props) => 
                 )}
               />
               <br />
-              {getFormErrorMessage("city")}
+              {getFormErrorMessage("channels")}
             </div>
             {channelsDetail.length > 0?(
             <>
@@ -141,6 +136,8 @@ const Register_pqrsdf = ({ isPerson = false, isPersonInternl=false }: Props) => 
                     />
                   )}
                 />
+                <br />
+                {getFormErrorMessage("attention")}
               </div>
 
             </>):(<></>)
@@ -161,7 +158,12 @@ const Register_pqrsdf = ({ isPerson = false, isPersonInternl=false }: Props) => 
 
         <Card className="card">
           <CitizenInformation 
-            isPerson={isPerson} channel={{ 
+            isPerson={isPerson}
+            resetChanel={()=>{
+              resetField('attention')
+              resetField('channels')
+            }} 
+            channel={{ 
               channels: getValues('channels'),
               attention: attention,
               isValid:isValid
