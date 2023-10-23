@@ -71,7 +71,7 @@ export function usePqrsdfService() {
   
   async function upLoadFile(file) {
     const formData = new FormData();
-    formData.append('archivo', file);
+    formData.append('files', file);
     try {
       const endpoint: string = `/upload`;
       return await upload(`${listUrl}${endpoint}`,  formData );
