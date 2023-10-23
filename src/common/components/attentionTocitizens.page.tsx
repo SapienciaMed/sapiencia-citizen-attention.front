@@ -153,15 +153,15 @@ const AttentionTocitizens = () => {
     <>
       <div className="p-8 flex justify-center">
         <Card className="card-container">
-          <Card title="Radicar PQRDSF" className="card-container mb-4">
+          <Card title="Radicar PQRDSF" className="card-container-body mb-4">
             <form onSubmit={handleSubmit(onSubmit)}>
               <div style={{ marginBottom: "8px" }}>
                 <label className="text-xl">Buscar por</label>
               </div>
 
               <div className="flex flex-row container-movil">
-                <div className="flex flex-row mr-4">
-                  <div className="mr-2">
+                <div className="flex flex-row mr-4 col-1 col-100">
+                  <div className="mr-2 col-100">
                     <label className="font-label">Tipo</label>
                     <br />
                     <Controller
@@ -175,7 +175,7 @@ const AttentionTocitizens = () => {
                             onChange={(e) => setSelectDocumentType(e.value)}
                             optionLabel="LGE_ELEMENTO_DESCRIPCION" 
                             optionValue="LGE_CODIGO"
-                            className="h-10" 
+                            className="h-10 col-100" 
                             placeholder="Seleccionar" 
                             style={{ alignItems: "center" }} />
                         </>
@@ -184,7 +184,7 @@ const AttentionTocitizens = () => {
                     {getFormErrorMessage("tipo")}
                   </div>
 
-                  <div>
+                  <div className="col-100">
                     <label>No. documento</label>
                     <br />
                     <Controller
@@ -197,7 +197,7 @@ const AttentionTocitizens = () => {
                             <InputText
                               id={field.name}
                               value={field.value}
-                              className={classNames({ "p-invalid": fieldState.error }, "h-10")}
+                              className={classNames({ "p-invalid": fieldState.error }, "h-10 col-100")}
                               onChange={(e) => field.onChange(e.target.value)}
                               keyfilter="alphanum"
                             />
@@ -349,7 +349,7 @@ const AttentionTocitizens = () => {
           )}
 
           {user.length > 0 ? (
-            <Card className="card-container">
+            <Card className="card-container-body">
               <TableGenericComponent data={user} />
             </Card>
           ) : (

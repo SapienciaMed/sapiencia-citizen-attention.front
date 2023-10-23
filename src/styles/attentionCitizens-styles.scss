@@ -5,6 +5,13 @@
     max-width: 62em;
 }
 
+.card-container-body{
+    border-radius: 20px;
+    border: 1px solid #CACACA;
+    box-shadow: none;
+    max-width: 62em;
+}
+
 .p-datatable-thead{
     background-color: white !important;
 }
@@ -21,14 +28,31 @@
     .container-movil{
         display: flex;
         flex-wrap: wrap;
+        width: 100%;
+    }
+
+    .card-container{
+        border: 0;
+        width: 100%;
+    }
+
+    .card-container-body{
+        padding: 5px;
     }
 
     .p-8{
         padding: 0;
+        width: 30em !important;
     }
 
     .col-100{
         width: 100% !important;
+        margin: 0;
+    }
+
+    .col-1{
+        display: flex;
+        flex-direction: column;
     }
 
 }

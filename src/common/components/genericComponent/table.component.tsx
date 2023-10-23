@@ -6,6 +6,7 @@ import { Dropdown, DropdownChangeEvent } from "primereact/dropdown"
 import { Tooltip } from "primereact/tooltip";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
+import "../../../styles/table-movil-style.scss"
 
 
 interface User {
