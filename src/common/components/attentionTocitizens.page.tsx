@@ -73,7 +73,15 @@ const AttentionTocitizens = () => {
     statusButton.current = true;
   };
   
+ console.log(watch("names").length );
+ console.log(watch("identification").length );
+ console.log(watch("lastNames").length );
+ console.log(watch("email").length );
+ console.log(selectDocumentType );
+ console.log(watch("noContact").length );
+ console.log('->',statusButton.current );
  
+ useEffect(()=>{
   if (
     watch("names").length > 0 ||
     watch("identification").length > 0 ||
@@ -82,8 +90,15 @@ const AttentionTocitizens = () => {
     selectDocumentType !== null ||
     watch("noContact").length > 0
   ) {
-    statusButton.current = false;
-  }  
+    setLoadbuton(false)
+  }else{
+    setLoadbuton(true)
+    setUser([]); 
+  } 
+
+ },[ watch("names"), watch("identification"),watch("lastNames"),watch("email"),selectDocumentType,watch("noContact")])
+
+
 
   const getDocumentType = async ()=>{
     const docuementsTypes = await masterTablesServices.getDocuemntType()
@@ -144,7 +159,7 @@ const AttentionTocitizens = () => {
 
   return (
     <>
-      <div className="p-8">
+      <div className="p-8 flex justify-center">
         <Card className="card-container">
           <Card title="Radicar PQRDSF" className="card-container mb-4">
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -152,7 +167,7 @@ const AttentionTocitizens = () => {
                 <label className="text-xl">Buscar por</label>
               </div>
 
-              <div className="flex flex-row">
+              <div className="flex flex-row container-movil">
                 <div className="flex flex-row mr-4">
                   <div className="mr-2">
                     <label className="font-label">Tipo</label>
@@ -202,7 +217,7 @@ const AttentionTocitizens = () => {
                   </div>
                 </div>
 
-                <div className="mr-4">
+                <div className="mr-4 col-100">
                   <label>Nombres</label>
                   <br />
                   <Controller
@@ -215,7 +230,7 @@ const AttentionTocitizens = () => {
                           <InputText
                             id={field.name}
                             value={field.value}
-                            className={classNames({ "p-invalid": fieldState.error }, "h-10")}
+                            className={classNames({ "p-invalid": fieldState.error }, "h-10 col-100")}
                             onChange={(e) => field.onChange(e.target.value)}
                             keyfilter="alpha"
                           />
@@ -226,7 +241,7 @@ const AttentionTocitizens = () => {
                   />
                 </div>
 
-                <div>
+                <div className="col-100">
                   <label>Apellidos</label>
                   <br />
                   <Controller
@@ -239,7 +254,7 @@ const AttentionTocitizens = () => {
                           <InputText
                             id={field.name}
                             value={field.value}
-                            className={classNames({ "p-invalid": fieldState.error }, "h-10")}
+                            className={classNames({ "p-invalid": fieldState.error }, "h-10 col-100")}
                             onChange={(e) => field.onChange(e.target.value)}
                             keyfilter="alpha"
                           />
@@ -250,8 +265,8 @@ const AttentionTocitizens = () => {
                   />
                 </div>
               </div>
-              <div className="flex flex-row">
-                <div className="mr-4">
+              <div className="flex flex-row container-movil col-100">
+                <div className="mr-4 col-100">
                   <label>No. De contacto</label>
                   <br />
                   <Controller
@@ -264,7 +279,7 @@ const AttentionTocitizens = () => {
                           <InputText
                             id={field.name}
                             value={field.value}
-                            className={classNames({ "p-invalid": fieldState.error }, "h-10")}
+                            className={classNames({ "p-invalid": fieldState.error }, "h-10 col-100")}
                             onChange={(e) => field.onChange(e.target.value)}
                             keyfilter="num"
                             style={{ width: "390px" }}
@@ -277,7 +292,7 @@ const AttentionTocitizens = () => {
                   />
                 </div>
 
-                <div>
+                <div className="col-100">
                   <label>Correo electrónico</label>
                   <br />
                   <Controller
@@ -296,7 +311,7 @@ const AttentionTocitizens = () => {
                           <InputText
                             id={field.name}
                             value={field.value}
-                            className={classNames({ "p-invalid": fieldState.error }, "h-10")}
+                            className={classNames({ "p-invalid": fieldState.error }, "h-10 col-100")}
                             onChange={(e) => field.onChange(e.target.value)}
                           />
                         </span>
@@ -317,7 +332,7 @@ const AttentionTocitizens = () => {
                 <Button 
                   className="rounded-full !h-10" 
                   type="submit" 
-                  disabled={loadbuton || statusButton.current }
+                  disabled={loadbuton }
                   label="Buscar"
                   onClick={()=>{statusButton.current = true}}
                   >

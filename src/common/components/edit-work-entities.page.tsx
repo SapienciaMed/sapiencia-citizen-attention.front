@@ -1016,7 +1016,7 @@ const EditWorkEntitiesPage = () => {
           <>
             <MessageComponent
               twoBtn={false}
-              nameBtn1="Cancelar"
+              nameBtn1="Cerrar"
               onClickBt1={() => {setShowMsg(false)}}
               headerMsg={headerMsg}
               msg={msgResponse}

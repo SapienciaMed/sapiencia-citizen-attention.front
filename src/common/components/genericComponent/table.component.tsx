@@ -111,22 +111,23 @@ export const TableGenericComponent = (props:Props) => {
 
   return (
     <>
-        <div className="flex flex-row items-center justify-between mb-8">
+        <div className="flex flex-row items-center justify-between mb-8 ">
             <div className="col-1">
                 <label className="text-2xl">Resultados de búsqueda</label>
             </div>
-            <div className="flex flex-row items-center">
-                <div className="pl-8 mr-4">
-                    <label className="mr-2 text-base ">Total de resultados</label>{" "}
-                    <span className="text-black bold big">{data.length}</span>
+            <div className="flex flex-row items-center" style={{width:'32em'}}>
+                <div className="pl-8 mr-4 flex items-center">
+                    <label className="mr-2 text-base ">Total de resultados</label>
+                    <span className="text-black flex items-center bold big">{data.length}</span>
                 </div>
-                <div className="">
+                <div className="flex items-center">
                     <label className="mr-2 p-colorpicker">Registro por página</label>
                     <Dropdown
                         value={selectPage}
                         onChange={(e: DropdownChangeEvent) => setSelectPage(e.value)}
                         options={pageNumber}
                         optionLabel="page"
+                        className="h-10"
                     />
                 </div>
             </div>

@@ -1,5 +1,6 @@
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
+import { useNavigate } from "react-router-dom";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { fetchData } from "../../apis/fetchData";
@@ -31,9 +32,22 @@ const ApiDataMunicipios = fetchData("/get-municipios/", "5");
 
 interface Props {
   isPerson?: boolean;
+  channel?:object;
+  resetChanel?: () => void;
 }
 
-export const CitizenInformation = ({ isPerson = false }: Props) => {
+interface IChannel{
+  channels?: string,
+  attention?: string,
+  isValid?:boolean
+}
+
+
+export const CitizenInformation = ({ isPerson = false, channel,resetChanel }: Props) => {
+
+  const channels = channel as IChannel;
+  
+  const navigate = useNavigate();
   const optionSolicitudes = ApiDatatypoSolicitudes.read();
   const optionTypeDocument = ApiDatatypoDocument.read();
   const optionLegalEntity = ApiDatalegalEntity.read();
@@ -119,7 +133,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
   const [secondContactNumber, setSecondContactNumber] = useState("");
   const [address, setAddress] = useState("");
   const [btnDisable, setBtnDisable] = useState("");
-  const [statusSummit, SetstatusSummit] = useState<boolean>(false);
+  const [statusSummit, SetstatusSummit] = useState<boolean>(true);
 
   const seleTipoDocument = (document: { LGE_CODIGO: number; LGE_ELEMENTO_DESCRIPCION: string }) => {
     setValueDocument(document);
@@ -163,6 +177,24 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
 
     return document;
   };
+
+  useEffect(()=>{
+
+    if(channels.isValid && isValid){
+      SetstatusSummit(false)
+    }else{
+      SetstatusSummit(true)
+    }
+  },[channels.isValid])
+
+  useEffect(()=>{
+
+    if(channels.isValid && isValid){
+      SetstatusSummit(false)
+    }else{
+      SetstatusSummit(true)
+    }
+  },[isValid])
 
   const selectCountry = (pais: { LGE_CODIGO: number; LGE_ELEMENTO_DESCRIPCION: string }) => {
     setValuePais(pais);
@@ -243,13 +275,6 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     return responseUser;
   };
 
-  useEffect(() => {
-    if (isPerson) {
-      setBtnDisable("input-desabled");
-      setValue("tipo", " ", { shouldDirty: true });
-      setValue("noDocumento", " ", { shouldDirty: true });
-    }
-  }, [isPerson]);
 
   const { identification } = useParams();
 
@@ -333,6 +358,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
       clasification: data.programaSolicitud["CLP_DESCRIPCION"],
       dependency: data.programaSolicitud["DEP_DESCRIPCION"],
       description: data["Descripcion"],
+      idCanalesAttencion: parseInt(channels.attention),
       person: {
         identification: data["noDocumento"],
         documentTypeId: data.tipo["LGE_CODIGO"],
@@ -356,7 +382,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
         isActive: true,
       },
     };
-
+    SetstatusSummit(true)
     const respFile = await pqrsdfService.upLoadFile(file);
     const resp = await pqrsdfService.createPqrsdf(pqrsdf);
 
@@ -373,7 +399,10 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
       showDependecia.current = "";
       showClasificacion.current = "";
       SetstatusSummit(false);
+      setBirthDate(null)
+      resetChanel()
       if (isPerson) {
+        
         resetField("tipoDeSolicitud");
         resetField("politicaTratamiento");
         resetField("medioRespuesta");
@@ -400,10 +429,6 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
     );
   };
 
-  useEffect(() => {
-    SetstatusSummit(isValid);
-  }, [isValid]);
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="form-container">
       <div className=" flex justify-content-center">
@@ -423,7 +448,10 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
           <Button
             className="mt-8"
             style={{ backgroundColor: "533893" }}
-            onClick={() => setVisibleMsg(false)}
+            onClick={() => {
+              setVisibleMsg(false),
+              navigate("/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf")
+            }}
             label="Cerrar"
             rounded
           />
@@ -646,7 +674,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
                       <>
                         <InputTextComponent
                           id={field.name}
-                          value={name}
+                          value={field.value}
                           className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
                           onChange={(e) =>
                             field.onChange(() => {
@@ -1344,7 +1372,7 @@ export const CitizenInformation = ({ isPerson = false }: Props) => {
       </div>
 
       <div>
-        <Button disabled={!statusSummit} rounded label="Enviar solicitud" className="!px-10 !text-sm btn-sumit" />
+        <Button disabled={statusSummit} rounded label="Enviar solicitud" className="!px-10 !text-sm btn-sumit" />
       </div>
     </form>
   );

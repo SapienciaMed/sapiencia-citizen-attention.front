@@ -61,7 +61,7 @@ function App() {
               />
               <Route 
                 path={"/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf"} 
-                element={<AttentionTocitizens />} 
+                element={<PrivateRoute element={<AttentionTocitizens />} allowedAction={"RADICAR_PQRSDF"}  />} 
               />
               <Route 
                 path={"/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf/radicar/:identification"} 
@@ -69,7 +69,7 @@ function App() {
               />
                             <Route 
                 path={"/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf/radicar"} 
-                element={<Register_pqrsdf isPerson={true} isPersonInternl={true} />} 
+                element={<Register_pqrsdf isPerson={false} isPersonInternl={true} />} 
               />
               <Route 
                 path={"/atencion-ciudadana/presentar-pqrsdf/:identification"} 

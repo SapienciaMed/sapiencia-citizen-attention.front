@@ -20,6 +20,7 @@ const Register_pqrsdf = ({ isPerson = false, isPersonInternl=false }: Props) => 
   const [channels,setChannels] = useState<IChannelAttetion[]>([])
   const [channelsDetail,setChannelsDetal] = useState<IChannelAttetionDetail[]>([])
   const [seletchannels,setSeletChannels] = useState(null)
+  const [attention,setAttention] = useState(null)
 
   const masterTablesServices = mastersTablesServices();
 
@@ -46,15 +47,16 @@ const Register_pqrsdf = ({ isPerson = false, isPersonInternl=false }: Props) => 
     attention: ""
   };
   
-
   const {
     control,
     getValues,
-    formState: { errors },
+    formState: { errors, isValid },
     handleSubmit,
+    resetField,
     reset,
   } = useForm({ defaultValues, mode: "all" });
-
+  
+  console.log(attention);
   
 
   const getFormErrorMessage = (name) => {
@@ -101,7 +103,7 @@ const Register_pqrsdf = ({ isPerson = false, isPersonInternl=false }: Props) => 
                 )}
               />
               <br />
-              {getFormErrorMessage("city")}
+              {getFormErrorMessage("channels")}
             </div>
             {channelsDetail.length > 0?(
             <>
@@ -125,12 +127,17 @@ const Register_pqrsdf = ({ isPerson = false, isPersonInternl=false }: Props) => 
                       placeholder="Seleccionar"
                       options={channelsDetail}
                       focusInputRef={field.ref}
-                      onChange={(e) => field.onChange(e.value)}
+                      onChange={(e) => {
+                        field.onChange(e.value)
+                        setAttention(e.value)
+                      }}
                       className={classNames({ "p-invalid": fieldState.error }, "h-10")}
                       style={{ alignItems: "center", width: "15em" }}
                     />
                   )}
                 />
+                <br />
+                {getFormErrorMessage("attention")}
               </div>
 
             </>):(<></>)
@@ -150,7 +157,17 @@ const Register_pqrsdf = ({ isPerson = false, isPersonInternl=false }: Props) => 
         <br />
 
         <Card className="card">
-          <CitizenInformation isPerson={isPerson} />
+          <CitizenInformation 
+            isPerson={isPerson}
+            resetChanel={()=>{
+              resetField('attention')
+              resetField('channels')
+            }} 
+            channel={{ 
+              channels: getValues('channels'),
+              attention: attention,
+              isValid:isValid
+              }} />
         </Card>
       </Card>
     </div>
