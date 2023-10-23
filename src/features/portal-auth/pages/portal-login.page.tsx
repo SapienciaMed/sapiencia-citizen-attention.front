@@ -5,7 +5,6 @@ const PortalLoginPage = () => {
   return (
     <>
       <h1>Portal Ciudadanos</h1>
-      <h3>Login</h3>
       <PortalLoginContainer/>
     </>
   );
