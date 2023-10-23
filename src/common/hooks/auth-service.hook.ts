@@ -7,13 +7,15 @@ import useCrudService from "./crud-service.hook";
 export function useAuthService() {
   const baseURL: string = process.env.urlApiAuth;
   const authUrl: string = "/api/v1/auth";
+  const baseCitizenAttetionURL: string = process.env.urlApiCitizenAttention;
+  const externalAuthUrl: string = "/api/v1/auth";
 
   const { get, post } = useCrudService( baseURL);
 
   async function signIn(data: Object): Promise<ApiResponse<IResponseSignIn>> {
     try {
       const endpoint: string = "/signin";
-      return await post(`${authUrl}${endpoint}`, data);
+      return await post(`${externalAuthUrl}${endpoint}`, data);
     } catch (error) {
       return new ApiResponse(
         {} as IResponseSignIn,
@@ -38,8 +40,22 @@ export function useAuthService() {
     }
   }
 
+  async function externalSignIn(data: Object): Promise<ApiResponse<IResponseSignIn>> {
+    try {
+      const endpoint: string = "/signin";
+      return await post(`${authUrl}${endpoint}`, data);
+    } catch (error) {
+      return new ApiResponse(
+        {} as IResponseSignIn,
+        EResponseCodes.FAIL,
+        "Error no controlado"
+      );
+    }
+  }
+
   return {
     signIn,
+    externalSignIn,
     getAuthorization,
   };
 }

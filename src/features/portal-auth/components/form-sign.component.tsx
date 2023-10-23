@@ -29,7 +29,7 @@ interface IFailedSignIn {
 
 const FormSignIn = (): React.JSX.Element => {
     // Servicos
-    const { signIn } = useAuthService();
+    const { signIn, externalSignIn } = useAuthService();
     const navigate = useNavigate();
   
     const { setAuthorization } = useContext(AppContext);
