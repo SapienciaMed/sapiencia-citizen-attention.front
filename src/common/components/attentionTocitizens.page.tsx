@@ -73,7 +73,15 @@ const AttentionTocitizens = () => {
     statusButton.current = true;
   };
   
+ console.log(watch("names").length );
+ console.log(watch("identification").length );
+ console.log(watch("lastNames").length );
+ console.log(watch("email").length );
+ console.log(selectDocumentType );
+ console.log(watch("noContact").length );
+ console.log('->',statusButton.current );
  
+ useEffect(()=>{
   if (
     watch("names").length > 0 ||
     watch("identification").length > 0 ||
@@ -82,8 +90,15 @@ const AttentionTocitizens = () => {
     selectDocumentType !== null ||
     watch("noContact").length > 0
   ) {
-    statusButton.current = false;
-  }  
+    setLoadbuton(false)
+  }else{
+    setLoadbuton(true)
+    setUser([]); 
+  } 
+
+ },[ watch("names"), watch("identification"),watch("lastNames"),watch("email"),selectDocumentType,watch("noContact")])
+
+
 
   const getDocumentType = async ()=>{
     const docuementsTypes = await masterTablesServices.getDocuemntType()
@@ -317,7 +332,7 @@ const AttentionTocitizens = () => {
                 <Button 
                   className="rounded-full !h-10" 
                   type="submit" 
-                  disabled={loadbuton || statusButton.current }
+                  disabled={loadbuton }
                   label="Buscar"
                   onClick={()=>{statusButton.current = true}}
                   >
