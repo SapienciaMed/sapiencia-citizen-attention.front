@@ -636,7 +636,7 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
     setAssignedAffairsPrograms([...newAssignedAffairsPrograms]);
     setAssignedProgramsAux(assignedPrograms);
   };
-
+  
   return (
     <div className="p-4 md:p-6 max-w-[1200px] mx-auto" ref={parentForm}>
       <ConfirmDialog id="messages"></ConfirmDialog>

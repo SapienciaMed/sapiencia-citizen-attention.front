@@ -73,14 +73,6 @@ const AttentionTocitizens = () => {
     statusButton.current = true;
   };
   
- console.log(watch("names").length );
- console.log(watch("identification").length );
- console.log(watch("lastNames").length );
- console.log(watch("email").length );
- console.log(selectDocumentType );
- console.log(watch("noContact").length );
- console.log('->',statusButton.current );
- 
  useEffect(()=>{
   if (
     watch("names").length > 0 ||
