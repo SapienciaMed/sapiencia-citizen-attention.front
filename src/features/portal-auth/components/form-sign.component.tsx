@@ -54,22 +54,22 @@ const FormSignIn = (): React.JSX.Element => {
     const [isRememberData, setIsRememberData] = useState<boolean>(false);
   
     useEffect(() => {
-      if (errors.numberDocument?.message || errors.password?.message)
+      if (errors.identification?.message || errors.password?.message)
         setObjectSignInFailed({
           show: false,
           msg: "",
         });
-    }, [errors.numberDocument?.message, errors.password?.message]);
+    }, [errors.identification?.message, errors.password?.message]);
   
     // Metodo que hace la peticion al api
     const onSubmitSignIn = handleSubmit(
-      async (data: { numberDocument: string; password: string }) => {
+      async (data: { identification: string; password: string }) => {
         const credentials = {
-          numberDocument: data.numberDocument,
+          identification: data.identification,
           password: data.password,
         };
   
-        const { data: dataResponse, operation } = await signIn(data);
+        const { data: dataResponse, operation } = await externalSignIn(data);
   
         if (operation.code === EResponseCodes.OK) {
           isRememberData &&
@@ -80,7 +80,7 @@ const FormSignIn = (): React.JSX.Element => {
   
           localStorage.setItem("token", dataResponse.token);
           setAuthorization(dataResponse.authorization);
-          navigate("/core");
+          navigate("/atencion-ciudadana");
         } else {
           setObjectSignInFailed({
             show: true,
@@ -98,7 +98,7 @@ const FormSignIn = (): React.JSX.Element => {
       JSON.parse(credentialsSaved) && setIsRememberData(!isRememberData);
   
       if (JSON.parse(credentialsSaved)) {
-        setValue("numberDocument", JSON.parse(credentialsSaved).numberDocument);
+        setValue("identification", JSON.parse(credentialsSaved).identifcation);
         setValue("password", JSON.parse(credentialsSaved).password);
       }
     }, []);
@@ -108,7 +108,7 @@ const FormSignIn = (): React.JSX.Element => {
         objectSignInFailed.show &&
         objectSignInFailed.msg.includes("Usuario y")
       ) {
-        setValue("numberDocument", "");
+        setValue("identification", "");
       }
       if (
         objectSignInFailed.show &&
@@ -125,7 +125,7 @@ const FormSignIn = (): React.JSX.Element => {
         </label>
         <FormComponent className="form-signIn" action={onSubmitSignIn}>
           <InputComponent
-            idInput="numberDocument"
+            idInput="identification"
             className="input-basic"
             typeInput="text"
             register={register}

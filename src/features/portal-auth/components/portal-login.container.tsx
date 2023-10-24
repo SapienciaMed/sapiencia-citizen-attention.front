@@ -10,18 +10,11 @@ const PortalLoginContainerComponent = (): React.JSX.Element => {
   return <>
    <main className="container-grid_login">
       <article className="login-visualization">
-        <section className="login-container-aurora">
-          <img
-            className="img-mobil"
-            src={require("../../../public/images/icons-application/aurora-white-logo.svg")}
-            alt="aurora"
-          />
+        <section className="login-container-beneficiarios">
+     
           <span className="text-login huge">
             Bienvenid@ a{" "}
-            <img
-            src={require("../../../public/images/icons-application/aurora-white-logo.svg")}
-            alt="aurora"
-            />{" "}
+
           </span>
           <span className="text-login extra-large">
             Sistema de información Sapiencia
