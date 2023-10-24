@@ -1,0 +1,33 @@
+/*MOVIL*/
+@media only screen and (max-width: 768px) {
+    .header-movil{
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .col-100{
+        width: 100%;
+    }
+
+    .tittle-header-movil{
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .total{
+        margin-left: 0 !important;
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .p-paginator-bottom{
+        display: flex;
+        flex-direction: row !important;
+        justify-content: center !important;
+        align-items: center !important;
+        flex-wrap: nowrap;
+    }
+
+}

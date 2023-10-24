@@ -53,11 +53,14 @@ export const MessageComponent = (props:Props) => {
                   text
                   className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10"
                   onClick={onClickBt2}
-                  >{nameBtn2}</Button>
+                  label={nameBtn2}
+                  ></Button>
               </>):(<></>)}
                 <Button 
                   onClick={onClickBt1} 
-                  className="rounded-full !h-10">{nameBtn1}</Button>
+                  className="rounded-full !h-10"
+                  label={nameBtn1}
+                  ></Button>
             </div>
           </Dialog>
         </div>

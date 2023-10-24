@@ -1,18 +1,17 @@
 import moment from "moment-timezone";
 
-
-export type inputMode = 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search' | undefined
+export type inputMode = "none" | "text" | "tel" | "url" | "email" | "numeric" | "decimal" | "search" | undefined;
 
 const emailPattern = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
 
-const toLocaleDate = (date:string|Date, isMoment = false) : Date => {
+const toLocaleDate = (date: string | Date, isMoment = false): Date => {
   let parseDate = date;
   if (typeof date == "string") {
     date = date.length > 10 ? date.substring(0, 10) : date;
     let currentDate = date.split("-")?.map((part) => parseInt(part));
     parseDate = new Date(currentDate[0], currentDate[1] - 1, currentDate[2]);
-  }else{
-    parseDate = parseDate as Date
+  } else {
+    parseDate = parseDate as Date;
   }
 
   let localeDate = isMoment

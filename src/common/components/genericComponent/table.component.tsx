@@ -6,6 +6,7 @@ import { Dropdown, DropdownChangeEvent } from "primereact/dropdown"
 import { Tooltip } from "primereact/tooltip";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
+import "../../../styles/table-movil-style.scss"
 
 
 interface User {
@@ -111,28 +112,29 @@ export const TableGenericComponent = (props:Props) => {
 
   return (
     <>
-        <div className="flex flex-row items-center justify-between mb-8">
-            <div className="col-1">
+        <div className="flex flex-row items-center justify-between mb-8 header-movil">
+            <div className="col-1 col-100">
                 <label className="text-2xl">Resultados de búsqueda</label>
             </div>
-            <div className="flex flex-row items-center">
-                <div className="pl-8 mr-4">
-                    <label className="mr-2 text-base ">Total de resultados</label>{" "}
-                    <span className="text-black bold big">{'3'}</span>
+            <div className="flex flex-row items-center tittle-header-movil" style={{width:'32em'}}>
+                <div className=" mr-4 flex items-center total">
+                    <label className="mr-2 text-base total">Total de resultados</label>
+                    <span className="text-black flex items-center bold big">{data.length}</span>
                 </div>
-                <div className="">
+                <div className="flex items-center">
                     <label className="mr-2 p-colorpicker">Registro por página</label>
                     <Dropdown
                         value={selectPage}
                         onChange={(e: DropdownChangeEvent) => setSelectPage(e.value)}
                         options={pageNumber}
                         optionLabel="page"
+                        className="h-10"
                     />
                 </div>
             </div>
         </div>
 
-        <div className="overflow-hidden max-w-[calc(100vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] hidden md:block borderless reverse-striped">
+        <div className="overflow-hidden max-w-[calc(111vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] hidden md:block borderless reverse-striped">
             <DataTable
                 value={data}
                 paginator
@@ -144,7 +146,8 @@ export const TableGenericComponent = (props:Props) => {
                 scrollable
             >
                 <Column header="No."  style={{ textAlign: "center" }} headerStyle={{ width: '3rem' }} body={(data, options) => options.rowIndex + 1}></Column>
-                <Column style={{ textAlign: "center" }} field="identification" header="Doc. Identidad"></Column>
+                <Column style={{ textAlign: "center" }} headerStyle={{ width: '3rem' }} body={(data, options) => 'CC'}></Column>
+                <Column style={{ textAlign: "center" }} field={"identification"} header="Doc. Identidad"></Column>
                 <Column style={{ textAlign: "center" }} field="names" header="Nombre y apellidos"></Column>
                 <Column
                     style={{ textAlign: "center", justifyContent: "center" }}

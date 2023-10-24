@@ -16,7 +16,6 @@ import { ConfirmDialog, ConfirmDialogOptions, confirmDialog } from "primereact/c
 import { Tree } from "primereact/tree";
 import "../../styles/workEntities-styles.scss";
 import { MessageComponent } from "./componentsEditWorkEntities/message.component";
-import { string } from "yup";
 
 interface User {
   email: string;
@@ -84,6 +83,7 @@ const EditWorkEntitiesPage = () => {
   });
   const [hasSelectedPrograms, setHasSelectedPrograms] = useState(false);
   const [hasUnselectedPrograms, setHasUnselectedPrograms] = useState(false);
+  const [hasChangeSeleted, setHasChangeSeleted] = useState(false);
   const [showAssignPrograms, setShowAssignPrograms] = useState(false);
   const [assignedAffairsPrograms, setAssignedAffairsPrograms] = useState<IEntityAffairsProgram[]>([]);
   const [assignedPrograms, setAssignedPrograms] = useState<TreeNode[]>([]);
@@ -226,6 +226,7 @@ const EditWorkEntitiesPage = () => {
 
           
           setAssignedProgramsAux([...newAssignedPrograms]);
+          setAssignedPrograms([...newAssignedPrograms]);
 
           const selection = Object.assign(
             {},
@@ -397,6 +398,8 @@ const EditWorkEntitiesPage = () => {
     setAssignedPrograms([...newAssignePrograms]);
 
     updatePrograms(initPrograms);
+
+    setHasChangeSeleted(true);
   };
 
   const updatePrograms = (initPrograms, defaultSelectedProgram = null) => {
@@ -514,6 +517,7 @@ const EditWorkEntitiesPage = () => {
 
     setAssignedPrograms([...newUnassignePrograms]);
     setHasUnselectedPrograms(false);
+    setHasChangeSeleted(true);
   };
 
   const findNodesByKeys = (tree, keys) => {
@@ -624,7 +628,8 @@ const EditWorkEntitiesPage = () => {
       });
     });
     setAssignedAffairsPrograms([...newAssignedAffairsPrograms]);
-    setAssignedProgramsAux(assignedPrograms)
+    setAssignedProgramsAux([...assignedPrograms])
+    setHasChangeSeleted(false);
   };
 
   const acceptButton = (options, label = "Aceptar") => {
@@ -669,7 +674,7 @@ const EditWorkEntitiesPage = () => {
               assingPrograms();
             },
             null,
-            !assignedPrograms.length
+            !hasChangeSeleted
           )
         }
         message={
@@ -1011,7 +1016,7 @@ const EditWorkEntitiesPage = () => {
           <>
             <MessageComponent
               twoBtn={false}
-              nameBtn1="Cancelar"
+              nameBtn1="Cerrar"
               onClickBt1={() => {setShowMsg(false)}}
               headerMsg={headerMsg}
               msg={msgResponse}

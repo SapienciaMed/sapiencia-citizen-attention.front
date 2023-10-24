@@ -6,30 +6,58 @@ import "../../styles/register_pqrsdf.scss";
 import { Controller, useForm } from "react-hook-form";
 import { Dropdown } from "primereact/dropdown";
 import { classNames } from "primereact/utils";
+import { mastersTablesServices } from "../hooks/masterTables.hook";
+import { useEffect, useState } from "react";
+import { IChannelAttetion, IChannelAttetionDetail } from "../interfaces/mastersTables.interface";
 
 interface Props {
   isPerson?: boolean;
+  isPersonInternl?:boolean;
 }
 
-const Register_pqrsdf = ({ isPerson = false }: Props) => {
-  const cities = [
-    { name: "New York", code: "NY" },
-    { name: "Rome", code: "RM" },
-    { name: "London", code: "LDN" },
-    { name: "Istanbul", code: "IST" },
-    { name: "Paris", code: "PRS" },
-  ];
+const Register_pqrsdf = ({ isPerson = false, isPersonInternl=false }: Props) => {
 
-  const defaultValues = {
-    city: "",
+  const [channels,setChannels] = useState<IChannelAttetion[]>([])
+  const [channelsDetail,setChannelsDetal] = useState<IChannelAttetionDetail[]>([])
+  const [seletchannels,setSeletChannels] = useState(null)
+  const [attention,setAttention] = useState(null)
+
+  const masterTablesServices = mastersTablesServices();
+
+  const getattentionChannels =  async() =>{
+    const attentionChannel =  await masterTablesServices.getChannelAtencion()
+    return attentionChannel;
   };
 
+  const getattentionChannelsDetail =  async(id:number) =>{
+    const attentionChannelDetail =  await masterTablesServices.getChannelAtencionid(id)
+    return attentionChannelDetail;
+  };
+
+  useEffect(()=>{
+    getattentionChannels().then(({data})=>{ setChannels(data)} )
+  },[])
+
+  useEffect(()=>{
+    getattentionChannelsDetail(seletchannels).then(({data})=>{ setChannelsDetal(data) } )
+  },[seletchannels])
+
+  const defaultValues = {
+    channels: "",
+    attention: ""
+  };
+  
   const {
     control,
-    formState: { errors },
+    getValues,
+    formState: { errors, isValid },
     handleSubmit,
+    resetField,
     reset,
   } = useForm({ defaultValues, mode: "all" });
+  
+  console.log(attention);
+  
 
   const getFormErrorMessage = (name) => {
     return errors[name] ? (
@@ -43,14 +71,16 @@ const Register_pqrsdf = ({ isPerson = false }: Props) => {
     <div className="container">
       <Card className="card card-body">
         <Card title="Registrar PQRSDF" className="card">
-          <div className="mb-8 flex flex-wrap">
+          {isPersonInternl?(
+          <>
+                      <div className="mb-8 flex flex-wrap">
             <div className="mr-4">
               <label className="font-label" style={{ color: "black" }}>
                 Canal de atención<span className="required">*</span>
               </label>
               <br />
               <Controller
-                name="city"
+                name="channels"
                 control={control}
                 rules={{ required: "Campo obligatorio." }}
                 render={({ field, fieldState }) => (
@@ -58,44 +88,65 @@ const Register_pqrsdf = ({ isPerson = false }: Props) => {
                     id={field.name}
                     value={field.value}
                     showClear
-                    optionLabel="name"
+                    optionLabel="cna_canal"
+                    optionValue="cna_codigo"
                     placeholder="Seleccionar"
-                    options={cities}
+                    options={channels}
                     focusInputRef={field.ref}
-                    onChange={(e) => field.onChange(e.value)}
+                    onChange={(e) => {
+                      field.onChange(e.value) 
+                      setSeletChannels(e.value)
+                    }}
                     className={classNames({ "p-invalid": fieldState.error }, "h-10")}
                     style={{ alignItems: "center", width: "15em" }}
                   />
                 )}
               />
               <br />
-              {getFormErrorMessage("city")}
+              {getFormErrorMessage("channels")}
             </div>
-            <div>
-              <label className="font-label" style={{ color: "black" }}>
-                Elija ¿Cuál?
-              </label>
-              <br />
-              <Controller
-                name="city"
-                control={control}
-                render={({ field, fieldState }) => (
-                  <Dropdown
-                    id={field.name}
-                    value={field.value}
-                    showClear
-                    optionLabel="name"
-                    placeholder="Seleccionar"
-                    options={cities}
-                    focusInputRef={field.ref}
-                    onChange={(e) => field.onChange(e.value)}
-                    className={classNames({ "p-invalid": fieldState.error }, "h-10")}
-                    style={{ alignItems: "center", width: "15em" }}
-                  />
-                )}
-              />
-            </div>
+            {channelsDetail.length > 0?(
+            <>
+
+              <div>
+                <label className="font-label" style={{ color: "black" }}>
+                  Elija ¿Cuál?<span className="required">*</span>
+                </label>
+                <br />
+                <Controller
+                  name="attention"
+                  control={control}
+                  rules={{ required: "Campo obligatorio." }}
+                  render={({ field, fieldState }) => (
+                    <Dropdown
+                      id={field.name}
+                      value={field.value}
+                      showClear
+                      optionLabel="cad_nombre"
+                      optionValue="cad_codigo"
+                      placeholder="Seleccionar"
+                      options={channelsDetail}
+                      focusInputRef={field.ref}
+                      onChange={(e) => {
+                        field.onChange(e.value)
+                        setAttention(e.value)
+                      }}
+                      className={classNames({ "p-invalid": fieldState.error }, "h-10")}
+                      style={{ alignItems: "center", width: "15em" }}
+                    />
+                  )}
+                />
+                <br />
+                {getFormErrorMessage("attention")}
+              </div>
+
+            </>):(<></>)
+
+            }
           </div>
+          </>):(<></>)
+
+          }
           <p style={{ fontSize: "15px" }} className="mb-4">
             SAPIENCIA adoptó el manual de atención a PQRSDF por resolución 212 de 2016, en virtud de este se establece
             lo siguiente:
@@ -106,7 +157,17 @@ const Register_pqrsdf = ({ isPerson = false }: Props) => {
         <br />
 
         <Card className="card">
-          <CitizenInformation isPerson={isPerson} />
+          <CitizenInformation 
+            isPerson={isPerson}
+            resetChanel={()=>{
+              resetField('attention')
+              resetField('channels')
+            }} 
+            channel={{ 
+              channels: getValues('channels'),
+              attention: attention,
+              isValid:isValid
+              }} />
         </Card>
       </Card>
     </div>

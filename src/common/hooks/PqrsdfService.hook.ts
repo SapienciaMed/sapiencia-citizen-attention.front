@@ -1,13 +1,13 @@
 import { EResponseCodes } from "../constants/api.enum";
 import { IPerson, IPersonFilters } from "../interfaces/person.interfaces";
 import { IPqrsdf } from "../interfaces/pqrsdf.interfaces";
-import { ApiResponse } from "../utils/api-response";
+import { ApiResponse, IPagingData } from "../utils/api-response";
 import useCrudService from "./crud-service.hook";
 
 export function usePqrsdfService() {
   const baseURL: string = process.env.urlApiCitizenAttention;
   const listUrl: string = "/api/v1/pqrsdf";
-  const { get, post } = useCrudService(baseURL);
+  const { get, post, upload } = useCrudService(baseURL);
 
   async function getPqrsdfs(): Promise<ApiResponse<IPqrsdf[] | []>> {
     try {
@@ -51,12 +51,12 @@ export function usePqrsdfService() {
     }
   }
 
-  async function getPeopleByFilters(filters: IPersonFilters): Promise<ApiResponse<IPerson | null>> {
+  async function getPeopleByFilters(filters: IPersonFilters): Promise<ApiResponse<IPagingData<IPerson | null>>> {
     try {
       const endpoint: string = `/get-people-by-filters`;
-      return await post(`${listUrl}${endpoint}`, { filters });
+      return await post(`${listUrl}${endpoint}`,  filters );
     } catch (error) {
-      return new ApiResponse({} as IPerson, EResponseCodes.FAIL, "Error no controlado");
+      return new ApiResponse({} as IPagingData<IPerson | null>, EResponseCodes.FAIL, "Error no controlado");
     }
   }
 
@@ -68,6 +68,18 @@ export function usePqrsdfService() {
       return new ApiResponse({} as IPqrsdf, EResponseCodes.FAIL, "Error no controlado");
     }
   }
+  
+  async function upLoadFile(file) {
+    const formData = new FormData();
+    formData.append('files', file);
+    try {
+      const endpoint: string = `/upload`;
+      return await upload(`${listUrl}${endpoint}`,  formData );
+    } catch (error) {
+      return new ApiResponse({} as IPagingData<IPerson | null>, EResponseCodes.FAIL, "Error no controlado");
+    }
+  }
+
 
   return {
     getPqrsdfs,
@@ -76,5 +88,6 @@ export function usePqrsdfService() {
     getPeopleByFilters,
     getPersonByDocument,
     getPqrsdfByIdentificationAndFilingNumber,
+    upLoadFile
   };
 }

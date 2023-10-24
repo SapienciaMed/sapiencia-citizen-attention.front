@@ -5,6 +5,8 @@
 .input-desabled{
     background-color: #E9E9E9;
     opacity: 1.4 !important;
+    color:#292929;
+    font-style: normal;
 }
 
 .buton-fixe{
@@ -203,6 +205,33 @@
     .hidden {
         display: block;
     }
+
+    .dialog-movil-modal{
+        width: 100%;
+    }
+
+    .containe-modal{
+        display: flex;
+        flex-direction: column !important;
+    }
+
+    .col-30{
+        width: 36% !important;
+    }
+
+    .col-60{
+        width: 60% !important;
+        margin-right: 0px !important;
+    }
+
+    .name-movil{
+        display: flex;
+        flex-direction: row;
+        align-items: flex-end;
+    }
+
+
+
   }
 
 

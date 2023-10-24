@@ -3,14 +3,17 @@ import { Card } from "primereact/card";
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { classNames } from "primereact/utils";
-import { useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import "../../styles/attentionCitizens-styles.scss";
-import { useWorkEntityService } from "../hooks/WorkEntityService.hook";
+import { usePqrsdfService } from "../hooks/PqrsdfService.hook"
 import { TableGenericComponent } from "./genericComponent/table.component";
+import { mastersTablesServices } from "../hooks/masterTables.hook";
 
 import { IPersonFilters } from "../interfaces/person.interfaces";
+import { ItypeDocument } from "../interfaces/mastersTables.interface";
 import { MessageComponent } from "./componentsEditWorkEntities/message.component";
+import { useNavigate } from "react-router-dom";
 
 interface User {
   identification: string;
@@ -34,8 +37,15 @@ interface Payload {
 const AttentionTocitizens = () => {
   const [load, setLoad] = useState(false);
   const [user, setUser] = useState<object[]>([]);
+  const [selectDocumentType, setSelectDocumentType] = useState(null);
+  const [documentType, setDocumentType] = useState<ItypeDocument[]>([]);
+  const [loadbuton, setLoadbuton] = useState(false);
 
-  const workEntityService = useWorkEntityService();
+  const navigate = useNavigate();
+  const statusButton = useRef(true)
+
+  const pqrsdfService = usePqrsdfService();
+  const masterTablesServices = mastersTablesServices();
 
   const defaultValues = {
     typeDocument: "",
@@ -55,23 +65,44 @@ const AttentionTocitizens = () => {
   } = useForm({ defaultValues, mode: "all" });
 
   const resetForm = () => {
-    setLoad(false), reset();
+    setLoad(false), 
+    reset();
+    setLoadbuton(false)
     setUser([]);
+    setSelectDocumentType(null)
+    statusButton.current = true;
   };
-
-  let statusButon = true;
+  
+ useEffect(()=>{
   if (
     watch("names").length > 0 ||
     watch("identification").length > 0 ||
     watch("lastNames").length > 0 ||
-    watch("email").length > 0
+    watch("email").length > 0 ||
+    selectDocumentType !== null ||
+    watch("noContact").length > 0
   ) {
-    statusButon = false;
+    setLoadbuton(false)
+  }else{
+    setLoadbuton(true)
+    setUser([]); 
+  } 
+
+ },[ watch("names"), watch("identification"),watch("lastNames"),watch("email"),selectDocumentType,watch("noContact")])
+
+
+
+  const getDocumentType = async ()=>{
+    const docuementsTypes = await masterTablesServices.getDocuemntType()
+    return docuementsTypes
   }
 
-  const onSubmit = async (filter: Payload) => {
-    console.log("filter-> ", filter);
+  useEffect(()=>{
+    getDocumentType().then(({data})=>{ setDocumentType(data) });
+  },[])
 
+  const onSubmit = async (filter: Payload) => {
+    setLoadbuton(true)
     try {
       const { email, identification, lastNames, names, documentTypeId, contactNumber } = filter;
 
@@ -80,42 +111,35 @@ const AttentionTocitizens = () => {
         surname: lastNames,
         name: names,
         identification,
-        documentTypeId,
+        documentTypeId: selectDocumentType,
         contactNumber,
       };
 
-      console.log("payload-> ", payload);
-
-      const response = await workEntityService.getUserByFilters({
-        email,
-        identification: parseInt(identification),
-        names,
-        lastNames,
-      });
+      const response = await pqrsdfService.getPeopleByFilters(payload)
       const { data, operation } = response;
-      console.log("data-> ", data);
+      const { array } = data;
+      
       if (operation.code !== "OK") {
         setLoad(true);
         return;
       }
-
-      const usersData = data.map((user) => {
+  
+      const usersData = array.map((user) => {
         return {
-          identification: user?.numberDocument,
-          names: `${user?.names} ${user?.lastNames}`,
-          lastName: user?.lastNames,
-          email: user?.email,
-          noContact1: user?.numberContact1,
-          noContact2: user?.numberContact2,
-          userId: user?.id,
+          identification: `${user['identification']}`,
+          names: `${user['firstName']} ${user['firstSurname']}`,
+          lastName: user['secondName'],
+          email: user['email'],
+          noContact1: user['firstContactNumber'],
+          noContact2: user['secondContactNumber'],
+          userId: user['id'],
         };
-      });
+      })
       setLoad(false);
+      
       setUser(usersData);
     } catch (error) {}
   };
-
-  console.log("user-> ", user.length);
 
   const getFormErrorMessage = (name) => {
     return errors[name] ? (
@@ -127,32 +151,40 @@ const AttentionTocitizens = () => {
 
   return (
     <>
-      <div className="p-8">
+      <div className="p-8 flex justify-center">
         <Card className="card-container">
-          <Card title="Radicar PQRDSF" className="card-container mb-4">
+          <Card title="Radicar PQRDSF" className="card-container-body mb-4">
             <form onSubmit={handleSubmit(onSubmit)}>
               <div style={{ marginBottom: "8px" }}>
                 <label className="text-xl">Buscar por</label>
               </div>
 
-              <div className="flex flex-row">
-                <div className="flex flex-row mr-4">
-                  <div className="mr-2">
-                    <label className="font-label">Tipos</label>
+              <div className="flex flex-row container-movil">
+                <div className="flex flex-row mr-4 col-1 col-100">
+                  <div className="mr-2 col-100">
+                    <label className="font-label">Tipo</label>
                     <br />
                     <Controller
                       name="typeDocument"
                       control={control}
                       render={({ field, fieldState }) => (
                         <>
-                          <Dropdown className="h-10" placeholder="Seleccionar" style={{ alignItems: "center" }} />
+                          <Dropdown
+                            value={selectDocumentType}
+                            options={documentType}
+                            onChange={(e) => setSelectDocumentType(e.value)}
+                            optionLabel="LGE_ELEMENTO_DESCRIPCION" 
+                            optionValue="LGE_CODIGO"
+                            className="h-10 col-100" 
+                            placeholder="Seleccionar" 
+                            style={{ alignItems: "center" }} />
                         </>
                       )}
                     />
                     {getFormErrorMessage("tipo")}
                   </div>
 
-                  <div>
+                  <div className="col-100">
                     <label>No. documento</label>
                     <br />
                     <Controller
@@ -165,7 +197,7 @@ const AttentionTocitizens = () => {
                             <InputText
                               id={field.name}
                               value={field.value}
-                              className={classNames({ "p-invalid": fieldState.error }, "h-10")}
+                              className={classNames({ "p-invalid": fieldState.error }, "h-10 col-100")}
                               onChange={(e) => field.onChange(e.target.value)}
                               keyfilter="alphanum"
                             />
@@ -177,7 +209,7 @@ const AttentionTocitizens = () => {
                   </div>
                 </div>
 
-                <div className="mr-4">
+                <div className="mr-4 col-100">
                   <label>Nombres</label>
                   <br />
                   <Controller
@@ -190,7 +222,7 @@ const AttentionTocitizens = () => {
                           <InputText
                             id={field.name}
                             value={field.value}
-                            className={classNames({ "p-invalid": fieldState.error }, "h-10")}
+                            className={classNames({ "p-invalid": fieldState.error }, "h-10 col-100")}
                             onChange={(e) => field.onChange(e.target.value)}
                             keyfilter="alpha"
                           />
@@ -201,7 +233,7 @@ const AttentionTocitizens = () => {
                   />
                 </div>
 
-                <div>
+                <div className="col-100">
                   <label>Apellidos</label>
                   <br />
                   <Controller
@@ -214,7 +246,7 @@ const AttentionTocitizens = () => {
                           <InputText
                             id={field.name}
                             value={field.value}
-                            className={classNames({ "p-invalid": fieldState.error }, "h-10")}
+                            className={classNames({ "p-invalid": fieldState.error }, "h-10 col-100")}
                             onChange={(e) => field.onChange(e.target.value)}
                             keyfilter="alpha"
                           />
@@ -225,8 +257,8 @@ const AttentionTocitizens = () => {
                   />
                 </div>
               </div>
-              <div className="flex flex-row">
-                <div className="mr-4">
+              <div className="flex flex-row container-movil col-100">
+                <div className="mr-4 col-100">
                   <label>No. De contacto</label>
                   <br />
                   <Controller
@@ -239,9 +271,9 @@ const AttentionTocitizens = () => {
                           <InputText
                             id={field.name}
                             value={field.value}
-                            className={classNames({ "p-invalid": fieldState.error }, "h-10")}
+                            className={classNames({ "p-invalid": fieldState.error }, "h-10 col-100")}
                             onChange={(e) => field.onChange(e.target.value)}
-                            keyfilter="alpha"
+                            keyfilter="num"
                             style={{ width: "390px" }}
                           />
                         </span>
@@ -252,7 +284,7 @@ const AttentionTocitizens = () => {
                   />
                 </div>
 
-                <div>
+                <div className="col-100">
                   <label>Correo electrónico</label>
                   <br />
                   <Controller
@@ -271,7 +303,7 @@ const AttentionTocitizens = () => {
                           <InputText
                             id={field.name}
                             value={field.value}
-                            className={classNames({ "p-invalid": fieldState.error }, "h-10")}
+                            className={classNames({ "p-invalid": fieldState.error }, "h-10 col-100")}
                             onChange={(e) => field.onChange(e.target.value)}
                           />
                         </span>
@@ -289,8 +321,14 @@ const AttentionTocitizens = () => {
                   type="button"
                   label="Limpiar Campos"
                 ></Button>
-                <Button className="rounded-full !h-10" type="submit" disabled={load || statusButon}>
-                  Buscar
+                <Button 
+                  className="rounded-full !h-10" 
+                  type="submit" 
+                  disabled={loadbuton }
+                  label="Buscar"
+                  onClick={()=>{statusButton.current = true}}
+                  >
+              
                 </Button>
               </div>
             </form>
@@ -304,13 +342,14 @@ const AttentionTocitizens = () => {
               nameBtn1="Radicar"
               nameBtn2="Cancelar"
               onClickBt2={() => setLoad(false)}
+              onClickBt1={()=>{navigate("/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf/radicar")}}
             />
           ) : (
             <></>
           )}
 
           {user.length > 0 ? (
-            <Card className="card-container">
+            <Card className="card-container-body">
               <TableGenericComponent data={user} />
             </Card>
           ) : (
