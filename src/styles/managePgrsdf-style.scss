@@ -1,0 +1,97 @@
+.container-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+}
+
+.card-container {
+    border-radius: 20px;
+    border: 1px solid #CACACA;
+    box-shadow: none;
+    color: #000000;
+    min-width: 965px;
+}
+
+.punto1{
+    width: 24px;
+    height: 24px;
+    border-radius: 20px;
+    background-color: #E6B712;
+}
+
+.punto2{
+    width: 24px;
+    height: 24px;
+    border-radius: 20px;
+    background-color: #37BA17;
+}
+
+.punto3{
+    width: 24px;
+    height: 24px;
+    border-radius: 20px;
+    background-color: #FF3E00;
+}
+
+.punto4{
+    width: 24px;
+    height: 24px;
+    border-radius: 20px;
+    background-color: rgba(55, 207, 255, 1);
+}
+
+.p-card-content{
+    padding-top: 0 !important;
+}
+
+.zise-card{
+    width: 22%;
+}
+
+.box1{
+    background-color: #FFE27C;
+    border-radius: 20px;
+}
+
+.box2{
+    background-color: #AEFF7C;
+    border-radius: 20px;
+}
+
+.box3{
+    background-color: rgba(255, 61, 0, 0.5);
+    border-radius: 20px;
+}
+
+.box4{
+    background-color: rgba(55, 207, 255, 0.5);
+    border-radius: 20px;
+}
+
+.btn-t{
+    color: #6C757D;
+    width: 137px;
+    font-family: Rubik;
+    font-size: 19px;
+    font-weight: 500;
+    line-height: 23px;
+    letter-spacing: 0em;
+    text-align: center;
+}
+
+/*.btn-t:focus{
+    color: #533893;
+    border-bottom:solid 2px #533893;
+    font-family: Rubik;
+    font-size: 19px;
+    font-weight: 500;
+    line-height: 23px;
+    letter-spacing: 0em;
+    text-align: center;
+
+}*/
+
+.div-end{
+    border-bottom: solid 1px #DEE2E6 ;
+}
