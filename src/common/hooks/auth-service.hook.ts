@@ -11,11 +11,13 @@ export function useAuthService() {
   const externalAuthUrl: string = "/api/v1/auth";
 
   const { get, post } = useCrudService( baseURL);
+  const { post: postExternal } = useCrudService(baseCitizenAttetionURL);
 
   async function signIn(data: Object): Promise<ApiResponse<IResponseSignIn>> {
     try {
       const endpoint: string = "/signin";
-      return await post(`${externalAuthUrl}${endpoint}`, data);
+      return await post(`${authUrl}${endpoint}`, data);
+
     } catch (error) {
       return new ApiResponse(
         {} as IResponseSignIn,
@@ -43,7 +45,7 @@ export function useAuthService() {
   async function externalSignIn(data: Object): Promise<ApiResponse<IResponseSignIn>> {
     try {
       const endpoint: string = "/signin";
-      return await post(`${authUrl}${endpoint}`, data);
+      return await postExternal(`${externalAuthUrl}${endpoint}`, data);
     } catch (error) {
       return new ApiResponse(
         {} as IResponseSignIn,
