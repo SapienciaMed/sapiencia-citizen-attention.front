@@ -13,7 +13,8 @@ import WorkEntitiesPage from "./common/components/work-entities.page";
 import CreateWorkEntitiesPage from "./common/components/create-work-entities.page";
 import PrivateRoute from "./common/components/Guard/auth-private-guard";
 import PortalAuthRoutes from "./features/portal-auth/portal-auth.routes";
-
+import RequestSubjectTypesPage from "./common/components/request-subject-types";
+import CreateRequestSubjectTypesPage from "./common/components/create-request-subject-types.page";
 
 function App() {
   //const HomePage = lazy(() => import("./common/components/home.page"));
@@ -50,6 +51,14 @@ function App() {
                 element={<PrivateRoute element={<WorkEntitiesPage />} allowedAction={"ENTIDADES_TRABAJO_CONSULTAR"} />}
               />
               <Route
+                path={"/atencion-ciudadana/tipos-de-asuntos-de-solicitudes/"}
+                element={<RequestSubjectTypesPage />}
+              />
+              <Route
+                path={"/atencion-ciudadana/tipos-de-asuntos-de-solicitudes/crear"}
+                element={<CreateRequestSubjectTypesPage />}
+              />
+              <Route
                 path={"/atencion-ciudadana/entidades-trabajo/crear"}
                 element={
                   <PrivateRoute element={<CreateWorkEntitiesPage />} allowedAction={"ENTIDADES_TRABAJO_CREAR"} />
@@ -59,22 +68,27 @@ function App() {
                 path={"/atencion-ciudadana/entidades-trabajo/editar/:id"}
                 element={<PrivateRoute element={<EditWorkEntitiesPage />} allowedAction={"ENTIDADES_TRABAJO_EDITAR"} />}
               />
-              <Route 
-                path={"/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf"} 
-                element={<PrivateRoute element={<AttentionTocitizens />} allowedAction={"RADICAR_PQRSDF"}  />} 
+              <Route
+                path={"/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf"}
+                element={<PrivateRoute element={<AttentionTocitizens />} allowedAction={"RADICAR_PQRSDF"} />}
               />
-              <Route 
-                path={"/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf/radicar/:identification"} 
-                element={<PrivateRoute element={<Register_pqrsdf isPerson={true} isPersonInternl={true} />} allowedAction={"RADICAR_PQRSDF"}  />} 
-                //element={<Register_pqrsdf isPerson={true} isPersonInternl={true} />} 
+              <Route
+                path={"/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf/radicar/:identification"}
+                element={
+                  <PrivateRoute
+                    element={<Register_pqrsdf isPerson={true} isPersonInternl={true} />}
+                    allowedAction={"RADICAR_PQRSDF"}
+                  />
+                }
+                //element={<Register_pqrsdf isPerson={true} isPersonInternl={true} />}
               />
-              <Route 
+              <Route
                 path={"/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf/radicar"}
-                element={<Register_pqrsdf isPerson={false} isPersonInternl={true} />} 
+                element={<Register_pqrsdf isPerson={false} isPersonInternl={true} />}
               />
-              <Route 
-                path={"/atencion-ciudadana/presentar-pqrsdf/:identification"} 
-                element={<Register_pqrsdf isPerson={true} />} 
+              <Route
+                path={"/atencion-ciudadana/presentar-pqrsdf/:identification"}
+                element={<Register_pqrsdf isPerson={true} />}
               />
             </Routes>
           </Suspense>
