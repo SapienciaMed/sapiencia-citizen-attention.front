@@ -49,7 +49,7 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
 
   const {
     control,
-    formState: { errors },
+    formState: { errors, isValid },
     handleSubmit,
     getValues,
     reset,
@@ -144,12 +144,34 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
   };
 
   const onSave = async () => {
-    setLoading(true);
+    setLoading(true);    
+    
     try {
-      let payload = getValues() as IRequestSubjectType;      
+      let values = getValues();
+      let payload = values as IRequestSubjectType;   
+      payload.programs = values.programId.map((program:number)=>{
+        return {prg_codigo: program}
+      })
       const response = await requestSubjectTypeService.createRequestSubjectType(payload);
 
-      if (response.operation.code === EResponseCodes.OK) {        
+      if (response.operation.code === EResponseCodes.OK) {  
+        confirmDialog({
+          id: "messages",
+          className: "rounded-2xl",
+          headerClassName: "rounded-t-2xl",
+          contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
+          message: (
+            <div className="flex flex-wrap w-full items-center justify-center">
+              <div className="mx-auto text-primary text-3xl w-full text-center">Creación exitosa</div>
+              <div className="flex items-center justify-center text-center w-full mt-6 pt-0.5">
+              ¡Asunto creado exitosamente!
+              </div>
+            </div>
+          ),
+          closeIcon: closeIcon,
+          acceptLabel: "Cerrar",
+          footer: (options) => acceptButton(options),
+        });      
         resetForm();
       } else {
         confirmDialog({
@@ -159,7 +181,7 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
           contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
           message: (
             <div className="flex flex-wrap w-full items-center justify-center">
-              <div className="mx-auto text-primary text-3xl w-full text-center">Lo sentimos</div>
+              <div className="mx-auto text-primary text-3xl w-full text-center">{response.operation?.title ?? 'Lo sentimos'}</div>
               <div className="flex items-center justify-center text-center w-full mt-6 pt-0.5">
                 {response.operation.message}
               </div>
@@ -271,6 +293,7 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
         field: "name",
         formClass: "col-span-3 sm:col-span-1 md:col-span-3 lg:col-span-1",
         rules: {
+          required: 'El campo es obligatorio.', 
           maxLength: { value: 100, message: "No debe tener más de 100 caracteres." },
         },
       },
@@ -283,7 +306,7 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
         optionValue: "obs_codigo",
         options: requestObjects,
         rules: {
-          required: true,
+          required: 'El campo es obligatorio.',
         },
       },
       {
@@ -295,7 +318,7 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
         optionValue: "prg_codigo",
         options: programs,
         rules: {
-          required: true,
+          required: 'El campo es obligatorio.',
         },
       },
     ];
@@ -419,7 +442,7 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
                   severity="secondary"
                   className="!py-2 !text-base !font-sans !text-black"
                   disabled={loading}
-                  onClick={() => resetForm()}
+                  onClick={() => cancel()}
                 >
                   Cancelar
                 </Button>
@@ -429,7 +452,7 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
                   className="!px-4 !py-2 !text-base !font-sans"
                   type="submit"
                   // onClick={save}
-                  disabled={loading || !isFilled}
+                  disabled={loading || !isFilled || !isValid}
                 />
               </div>
             </form>

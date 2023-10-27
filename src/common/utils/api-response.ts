@@ -3,6 +3,7 @@ import { EResponseCodes } from "../constants/api.enum";
 interface IOperation {
   code: EResponseCodes;
   message?: string;
+  title?: string;
 }
 
 interface IDataPaging {
@@ -26,8 +27,8 @@ export class ApiResponse<T> {
   data: T;
   operation: IOperation;
 
-  constructor(data: T, code: EResponseCodes, message?: string) {
+  constructor(data: T, code: EResponseCodes, message?: string, title?: string) {
     this.data = data;
-    this.operation = { code, message };
+    this.operation = { code, message, title};
   }
 }
