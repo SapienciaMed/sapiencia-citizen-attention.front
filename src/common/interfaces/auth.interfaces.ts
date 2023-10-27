@@ -1,5 +1,5 @@
 export interface IRequestSignIn {
-  numberDocument: string;
+  identification: string;
   password: string;
 }
 

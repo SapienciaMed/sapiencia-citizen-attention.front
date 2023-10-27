@@ -26,6 +26,7 @@ function App() {
   const QueryPqrsdfPage = lazy(() => import("./common/components/query-pqrsdf.page"));
   const EditWorkEntitiesPage = lazy(() => import("./common/components/edit-work-entities.page"));
   const AttentionTocitizens = lazy(() => import("./common/components/attentionTocitizens.page"));
+  const ManagePqrsdf = lazy(()=> import("./common/components/manage-pqrsdf.page"))
   const { publish } = useAppCominicator();
 
   // Effect que cominica la aplicacion actual
@@ -89,6 +90,11 @@ function App() {
               <Route
                 path={"/atencion-ciudadana/presentar-pqrsdf/:identification"}
                 element={<Register_pqrsdf isPerson={true} />}
+              />
+
+              <Route 
+                path={"/atencion-ciudadana/gestionar-pqrsdf"} 
+                element={<ManagePqrsdf />} 
               />
             </Routes>
           </Suspense>
