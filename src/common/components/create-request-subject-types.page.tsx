@@ -327,11 +327,11 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
   return (
     <div className="p-4 md:p-6 max-w-[1200px] mx-auto" ref={parentForm}>
       <ConfirmDialog id="messages"></ConfirmDialog>
-      <span className="text-3xl block md:hidden pb-5">Tipos de asuntos</span>
+      <span className="text-3xl block md:hidden pb-5">Crear tipos de asuntos</span>
       <div className="p-card rounded-2xl md:rounded-4xl shadow-none border border-[#D9D9D9]">
         <div className="p-card-body !py-6 !px-6 md:!px-11">
           <div className="p-card-title flex justify-end md:justify-between">
-            <span className="text-3xl md:block hidden">Tipos de asuntos</span>            
+            <span className="text-3xl md:block hidden">Crear tipos de asuntos</span>            
           </div>
           <div className="p-card-content !pb-0 !pt-0 md:!pt-10">
             <p className="text-lg">Buscar por</p>
