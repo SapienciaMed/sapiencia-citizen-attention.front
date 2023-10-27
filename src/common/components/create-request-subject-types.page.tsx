@@ -331,38 +331,7 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
       <div className="p-card rounded-2xl md:rounded-4xl shadow-none border border-[#D9D9D9]">
         <div className="p-card-body !py-6 !px-6 md:!px-11">
           <div className="p-card-title flex justify-end md:justify-between">
-            <span className="text-3xl md:block hidden">Tipos de asuntos</span>
-            {authorization?.allowedActions &&
-              authorization?.allowedActions?.findIndex((i) => i == "ENTIDADES_TRABAJO_CREAR") >= 0 && (
-                <Link to="crear" className="my-auto text-base text-main flex items-center gap-x-2 cursor-pointer">
-                  <span>Crear</span>
-                  <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M8.00008 5.83331V11.1666"
-                      stroke="#533893"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M10.6666 8.50002H5.33325"
-                      stroke="#533893"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M8 14.5V14.5C4.686 14.5 2 11.814 2 8.5V8.5C2 5.186 4.686 2.5 8 2.5V2.5C11.314 2.5 14 5.186 14 8.5V8.5C14 11.814 11.314 14.5 8 14.5Z"
-                      stroke="#533893"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </Link>
-              )}
+            <span className="text-3xl md:block hidden">Tipos de asuntos</span>            
           </div>
           <div className="p-card-content !pb-0 !pt-0 md:!pt-10">
             <p className="text-lg">Buscar por</p>
