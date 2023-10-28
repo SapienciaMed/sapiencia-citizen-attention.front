@@ -7871,6 +7871,10 @@ video {
   bottom:0px
 }
 
+.bottom-1\/4{
+  bottom:25%
+}
+
 .right-1{
   right:0.25rem
 }
@@ -7899,16 +7903,16 @@ video {
   grid-column:span 1 / span 1
 }
 
+.col-span-3{
+  grid-column:span 3 / span 3
+}
+
 .col-span-full{
   grid-column:1 / -1
 }
 
 .m-0{
   margin:0px
-}
-
-.m-1{
-  margin:0.25rem
 }
 
 .m-2{
@@ -8033,6 +8037,10 @@ video {
   margin-top:auto
 }
 
+.mb-10{
+  margin-bottom:2.5rem
+}
+
 .block{
   display:block
 }
@@ -8081,8 +8089,8 @@ video {
   max-height:24rem
 }
 
-.max-h-\[350px\]{
-  max-height:350px
+.max-h-\[450px\]{
+  max-height:450px
 }
 
 .max-h-\[calc\(100vh-19rem\)\]{
@@ -8184,6 +8192,10 @@ video {
 
 .max-w-\[calc\(100vw-4\.6rem\)\]{
   max-width:calc(100vw - 4.6rem)
+}
+
+.max-w-\[calc\(111vw-4\.6rem\)\]{
+  max-width:calc(111vw - 4.6rem)
 }
 
 .max-w-full{
@@ -8357,6 +8369,12 @@ video {
 
 .overflow-y-auto{
   overflow-y:auto
+}
+
+.truncate{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap
 }
 
 .\!rounded{
@@ -8637,6 +8655,10 @@ video {
 
 .pl-8{
   padding-left:2rem
+}
+
+.pr-0{
+  padding-right:0px
 }
 
 .pr-3{
@@ -9012,7 +9034,7 @@ video {
   }
 }
 
-.p-dropdown.select-sm .p-inputtext {
+.p-dropdown.select-sm .p-inputtext, .p-multiselect.select-sm .p-multiselect-label{
   padding: 0.532rem 0.675rem;
 }
 
@@ -9170,6 +9192,10 @@ video {
 }
 
 @media (min-width: 640px){
+  .sm\:col-span-1{
+    grid-column:span 1 / span 1
+  }
+
   .sm\:w-\[148px\]{
     width:148px
   }
@@ -9194,6 +9220,10 @@ video {
 @media (min-width: 768px){
   .md\:top-\[calc\(100vh-91px\)\]{
     top:calc(100vh - 91px)
+  }
+
+  .md\:col-span-3{
+    grid-column:span 3 / span 3
   }
 
   .md\:mt-8{
@@ -9372,6 +9402,10 @@ video {
 }
 
 @media (min-width: 1024px){
+  .lg\:col-span-1{
+    grid-column:span 1 / span 1
+  }
+
   .lg\:col-span-2{
     grid-column:span 2 / span 2
   }
@@ -9398,6 +9432,11 @@ video {
 
   .lg\:grid-cols-5{
     grid-template-columns:repeat(5, minmax(0, 1fr))
+  }
+
+  .lg\:gap-x-11{
+    -moz-column-gap:2.75rem;
+         column-gap:2.75rem
   }
 
   .lg\:\!rounded-md{
