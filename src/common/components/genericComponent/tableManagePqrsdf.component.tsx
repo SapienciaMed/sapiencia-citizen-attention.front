@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Column } from "primereact/column"
-import { DataTable, DataTableSelectionChangeEvent } from "primereact/datatable"
+import { DataTable, DataTableSelectionChangeEvent } from "primereact/datatable";
+import { FilterMatchMode, FilterOperator } from 'primereact/api';
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown"
 import { Tooltip } from "primereact/tooltip";
 import { Button } from "primereact/button";
@@ -37,25 +38,53 @@ interface Props {
 export const TableManagePqrsdfComponent = (props:Props) => {
 
     const { statusReq, dataPqrsdf } = props;
+    const [customers, setCustomers] = useState(null);
+    const [filters, setFilters] = useState(null);
 
-    const [data, setData] = useState<Ipqrsdf[]>([{  radicado: "string",
-                                                    identification: "string",
-                                                    names: "string",
-                                                    lastName: "string",
-                                                    program: "string",
-                                                    asunto: "string",
-                                                    fechaRadicado:"string",
-                                                    estado: "string",
-                                                    fechaProrroga: "string",
-                                                    dias: "string",
-                                                    pqrsdfId:"string",}]);
+    const [globalFilterValue, setGlobalFilterValue] = useState('');
 
     const [selectPage, setSelectPage] = useState<PageNumber>({ page: 5 });
     
     const pageNumber: PageNumber[] = [{ page: 5 }, { page: 10 }, { page: 15 }, { page: 20 }];
 
+    useEffect(() => {
+      
+      setCustomers(getCustomers(dataPqrsdf));
+   
+      initFilters();
+  }, []);
+
+  const getCustomers = (data) => {
+    return [...(data || [])].map((d) => {
+        d.date = new Date(d.date);
+
+        return d;
+    });
+};
+
+    const initFilters = () => {
+      setFilters({
+          global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+          names: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+          program: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+          asunto: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+          estado: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+          radicado: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
+      });
+      setGlobalFilterValue('');
+  };
+
+  const onGlobalFilterChange = (e) => {
+    const value = e.target.value;
+    let _filters = { ...filters };
+
+    _filters['global'].value = value;
+
+    setFilters(_filters);
+    setGlobalFilterValue(value);
+};
+
     const accionesIcons = (user:DataTableSelectionChangeEvent<Ipqrsdf[]>) => {
-        
         return (
             <>
                 <div className="flex justify-center">
@@ -185,7 +214,8 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                 </i>
                 <InputText
                     className="h-10" 
-                    placeholder="Buscar" 
+                    placeholder="Buscar"
+                    value={globalFilterValue} onChange={onGlobalFilterChange} 
                 />
             </span>
        
@@ -218,6 +248,8 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                 selectionMode="single"
                 dataKey="id"
                 scrollable
+                filters={filters}
+                globalFilterFields={['names','program','asunto','estado','radicado']}
             >
                 <Column style={{ textAlign: "center" }} field="radicado" header="Radicado"></Column>
                 <Column style={{ textAlign: "center" }} headerStyle={{ width: '3rem' }} body={(data, options) => 'CC'}></Column>

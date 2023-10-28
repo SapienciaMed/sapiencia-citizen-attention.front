@@ -22,8 +22,7 @@ const ManagePqrsdf = () => {
       return{
         radicado: pqr['PQR_NRO_RADICADO'],
         identification: pqr['PER_NUMERO_DOCUMENTO'],
-        names: `${pqr['PER_PRIMER_NOMBRE']} ${pqr['PER_SEGUNDO_NOMBRE']}`,
-        lastName: `${pqr['PER_PRIMER_APELLIDO']} ${pqr['PER_SEGUNDO_APELLIDO']}`,
+        names: `${pqr['PER_PRIMER_NOMBRE']} ${pqr['PER_SEGUNDO_NOMBRE']} ${pqr['PER_PRIMER_APELLIDO']} ${pqr['PER_SEGUNDO_APELLIDO']}`,
         program: pqr['PRG_DESCRIPCION'],
         asunto: pqr['ASO_ASUNTO'],
         fechaRadicado: pqr['PQR_FECHA_CREACION'],
