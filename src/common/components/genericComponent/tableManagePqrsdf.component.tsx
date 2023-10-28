@@ -10,6 +10,7 @@ import { InputText } from "primereact/inputtext";
 import "../../../styles/table-movil-style.scss"
 
 
+
 interface Ipqrsdf {
     radicado: string;
     identification: string;
@@ -29,12 +30,13 @@ interface PageNumber {
   }
 
 interface Props {
-    statusReq: boolean
+    statusReq: boolean;
+    dataPqrsdf: object[];
 }
 
 export const TableManagePqrsdfComponent = (props:Props) => {
 
-    const { statusReq } = props;
+    const { statusReq, dataPqrsdf } = props;
 
     const [data, setData] = useState<Ipqrsdf[]>([{  radicado: "string",
                                                     identification: "string",
@@ -191,7 +193,7 @@ export const TableManagePqrsdfComponent = (props:Props) => {
             <div className="flex flex-row items-center tittle-header-movil" style={{width:'32em'}}>
                 <div className=" mr-4 flex items-center total">
                     <label className="mr-2 text-base total">Total de resultados</label>
-                    <span className="text-black flex items-center bold big">{5}</span>
+                    <span className="text-black flex items-center bold big">{dataPqrsdf.length}</span>
                 </div>
                 <div className="flex items-center">
                     <label className="mr-2 p-colorpicker">Registro por página</label>
@@ -208,7 +210,7 @@ export const TableManagePqrsdfComponent = (props:Props) => {
 
         <div className="overflow-hidden max-w-[calc(111vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] hidden md:block borderless reverse-striped">
             <DataTable
-                value={data}
+                value={dataPqrsdf}
                 paginator
                 paginatorTemplate={paginatorTemplate()}
                 rows={selectPage.page}

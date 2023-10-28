@@ -120,3 +120,25 @@ interface TypeEntidad {
   TEJ_CODIGO: number;
   TEJ_NOMBRE: string;
 }
+
+
+export interface IrequestPqrsdf {
+  userId?: number;
+  typeReques?: number;
+}
+
+export interface IpqrsdfByReques{
+    PQR_CODIGO?: number;
+    PQR_NRO_RADICADO?: number;
+    PQR_FECHA_CREACION?: string;
+    PER_NUMERO_DOCUMENTO?: string;
+    PER_PRIMER_NOMBRE?: string;
+    PER_SEGUNDO_NOMBRE?: string;
+    PER_PRIMER_APELLIDO?: string;
+    PER_SEGUNDO_APELLIDO?: string;
+    ASO_ASUNTO?: string;
+    LEP_ESTADO?: string;
+    OBS_TIPO_DIAS?: string;
+    OBS_TERMINO_DIAS?: number;
+    PRG_DESCRIPCION?: String;
+}

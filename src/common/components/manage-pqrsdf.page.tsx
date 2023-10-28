@@ -1,20 +1,51 @@
 import { useEffect, useState } from 'react';
 import { Card } from 'primereact/card';
 import { TableManagePqrsdfComponent } from './genericComponent/tableManagePqrsdf.component';
-
+import { usePqrsdfService } from '../hooks/PqrsdfService.hook';
+import { IrequestPqrsdf, IpqrsdfByReques } from '../interfaces/pqrsdf.interfaces';
 import "../../styles/managePgrsdf-style.scss";
+
 
 
 const ManagePqrsdf = () => {
 
+  const pqrsdfService = usePqrsdfService();
+
   const [statusRequest, setStatusRequest] = useState<boolean>(true)
+  const [pqrs, setPqrs] = useState<object[]>([]);
+
+  const getPqrsdf = async (param:IrequestPqrsdf)=>{
+    const resp = await pqrsdfService.getPqrsdfByRequest(param)
+    const { data } = resp;
+    
+    const pqrsdfData = data.map((pqr:IpqrsdfByReques)=>{
+      return{
+        radicado: pqr['PQR_NRO_RADICADO'],
+        identification: pqr['PER_NUMERO_DOCUMENTO'],
+        names: `${pqr['PER_PRIMER_NOMBRE']} ${pqr['PER_SEGUNDO_NOMBRE']}`,
+        lastName: `${pqr['PER_PRIMER_APELLIDO']} ${pqr['PER_SEGUNDO_APELLIDO']}`,
+        program: pqr['PRG_DESCRIPCION'],
+        asunto: pqr['ASO_ASUNTO'],
+        fechaRadicado: pqr['PQR_FECHA_CREACION'],
+        estado: pqr['LEP_ESTADO'],
+        fechaProrroga: "10/20/2023",
+        dias: "string",
+        pqrsdfId:pqr['PQR_CODIGO'],
+      }
+    });
+
+    setPqrs(pqrsdfData);
+
+  }
 
   function focusBtn(id:string) {
     const btn1 = document.getElementById("btn-1");
     const btn2 = document.getElementById("btn-2");
+    
 
     switch (id) {
       case 'btn-1':
+        getPqrsdf({typeReques:2})
         btn1.style.color = '#533893';
         btn1.style.borderBottom = 'solid 2px #533893'
         btn2.style.color = '#6C757D';
@@ -23,6 +54,7 @@ const ManagePqrsdf = () => {
         break;
       
       case 'btn-2':
+        getPqrsdf({typeReques:3})
         btn2.style.color = '#533893';
         btn2.style.borderBottom = 'solid 2px #533893'
         btn1.style.color = '#6C757D';
@@ -30,6 +62,7 @@ const ManagePqrsdf = () => {
         setStatusRequest(false)
         break;
       default:
+        getPqrsdf({typeReques:2})
         btn1.style.color = '#533893';
         btn1.style.borderBottom = 'solid 2px #533893'
         btn2.style.color = '#6C757D';
@@ -79,7 +112,10 @@ const ManagePqrsdf = () => {
                 <button className='btn-t btn-2' id='btn-2' onClick={()=>focusBtn('btn-2')}>Solicitudes cerradas</button>
               </div>
               <Card className='card-container mt-10'>
-                <TableManagePqrsdfComponent statusReq={statusRequest}/>
+                <TableManagePqrsdfComponent 
+                  statusReq={statusRequest}
+                  dataPqrsdf={pqrs}
+                />
               </Card>
             </Card>
         </div>

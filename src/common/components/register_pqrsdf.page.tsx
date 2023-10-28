@@ -56,9 +56,6 @@ const Register_pqrsdf = ({ isPerson = false, isPersonInternl=false }: Props) => 
     reset,
   } = useForm({ defaultValues, mode: "all" });
   
-  console.log(attention);
-  
-
   const getFormErrorMessage = (name) => {
     return errors[name] ? (
       <small className="p-error">{errors[name].message}</small>
