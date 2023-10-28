@@ -3,6 +3,8 @@ import { Card } from 'primereact/card';
 import { TableManagePqrsdfComponent } from './genericComponent/tableManagePqrsdf.component';
 import { usePqrsdfService } from '../hooks/PqrsdfService.hook';
 import { IrequestPqrsdf, IpqrsdfByReques } from '../interfaces/pqrsdf.interfaces';
+import moment from 'moment-timezone';
+import momentHoliday from 'moment-holiday';
 import "../../styles/managePgrsdf-style.scss";
 
 
@@ -14,7 +16,25 @@ const ManagePqrsdf = () => {
   const [statusRequest, setStatusRequest] = useState<boolean>(true)
   const [pqrs, setPqrs] = useState<object[]>([]);
 
-  const getPqrsdf = async (param:IrequestPqrsdf)=>{
+  const countDays = (initialDate: moment.MomentInput)=>{
+    const Dateformt = moment(initialDate).format('YYYY-MM-DD')
+    const fechaInicial = moment(Dateformt);
+    const fechaActual = moment();
+    let diasTranscurridos = 0;
+
+    while (fechaInicial.isBefore(fechaActual)) {
+      // Verifica si el día de la semana no es sábado (6) ni domingo (0)
+      if (fechaInicial.day() !== 6 && fechaInicial.day() !== 0) {
+        diasTranscurridos++;
+      }
+      fechaInicial.add(1, 'days');
+    }
+    
+    return diasTranscurridos    
+  }
+
+  const getPqrsdf = async (param:IrequestPqrsdf)=>{    
+
     const resp = await pqrsdfService.getPqrsdfByRequest(param)
     const { data } = resp;
     
@@ -25,10 +45,10 @@ const ManagePqrsdf = () => {
         names: `${pqr['PER_PRIMER_NOMBRE']} ${pqr['PER_SEGUNDO_NOMBRE']} ${pqr['PER_PRIMER_APELLIDO']} ${pqr['PER_SEGUNDO_APELLIDO']}`,
         program: pqr['PRG_DESCRIPCION'],
         asunto: pqr['ASO_ASUNTO'],
-        fechaRadicado: pqr['PQR_FECHA_CREACION'],
+        fechaRadicado: moment(pqr['PQR_FECHA_CREACION']).format('YYYY-MM-DD') ,
         estado: pqr['LEP_ESTADO'],
         fechaProrroga: "10/20/2023",
-        dias: "string",
+        dias: countDays(pqr['PQR_FECHA_CREACION']),
         pqrsdfId:pqr['PQR_CODIGO'],
       }
     });
