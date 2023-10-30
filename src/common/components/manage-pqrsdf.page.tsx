@@ -2,22 +2,30 @@ import { useEffect, useState } from 'react';
 import { Card } from 'primereact/card';
 import { TableManagePqrsdfComponent } from './genericComponent/tableManagePqrsdf.component';
 import { usePqrsdfService } from '../hooks/PqrsdfService.hook';
+import { useDaysParametrizationService } from '../hooks/daysParametrizationService.hook';
 import { IrequestPqrsdf, IpqrsdfByReques } from '../interfaces/pqrsdf.interfaces';
 import moment from 'moment-timezone';
-import momentHoliday from 'moment-holiday';
+
+import { IDaysParametrization } from '../interfaces/daysParametrization.interfaces';
+
 import "../../styles/managePgrsdf-style.scss";
 
+interface Detail {
+ 
+  detailDate:string
+}
 
 
 const ManagePqrsdf = () => {
 
   const pqrsdfService = usePqrsdfService();
+  const daysServices = useDaysParametrizationService()
 
   const [statusRequest, setStatusRequest] = useState<boolean>(true)
   const [pqrs, setPqrs] = useState<object[]>([]);
 
-  const countDays = (initialDate: moment.MomentInput)=>{
-    const diasFestivos = ['2023-10-30']
+  const countDays = (initialDate: moment.MomentInput, daysParametrization:any[])=>{
+    const diasFestivos = daysParametrization
     const Dateformt = moment(initialDate).format('YYYY-MM-DD')
     const fechaInicial = moment(Dateformt);
     const fechaActual = moment();
@@ -37,8 +45,31 @@ const ManagePqrsdf = () => {
     return diasTranscurridos    
   }
 
-  const getPqrsdf = async (param:IrequestPqrsdf)=>{    
+  const daysParametrization = async ()=>{
+    const { data } = await daysServices.getDaysParametrizations();
+    
+    const days = [];
+    
+    const daysParametrization = await data.map((values:IDaysParametrization)=>{
+      return{
+        daysParametrization:values['daysParametrizationDetails']
+      }
+    })
 
+    daysParametrization.forEach((values)=>{
+      values.daysParametrization.forEach((value:Detail)=>{
+        if(value){
+          days.push(value.detailDate)
+        }
+      })
+    })
+    
+    return days
+  }
+
+  const getPqrsdf = async (param:IrequestPqrsdf)=>{   
+    
+    const days = await daysParametrization()
     const resp = await pqrsdfService.getPqrsdfByRequest(param)
     const { data } = resp;
     
@@ -52,7 +83,7 @@ const ManagePqrsdf = () => {
         fechaRadicado: moment(pqr['PQR_FECHA_CREACION']).format('YYYY-MM-DD') ,
         estado: pqr['LEP_ESTADO'],
         fechaProrroga: "10/20/2023",
-        dias: countDays(pqr['PQR_FECHA_CREACION']),
+        dias: countDays(pqr['PQR_FECHA_CREACION'],days),
         pqrsdfId:pqr['PQR_CODIGO'],
       }
     });
