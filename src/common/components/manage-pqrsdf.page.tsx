@@ -17,6 +17,7 @@ const ManagePqrsdf = () => {
   const [pqrs, setPqrs] = useState<object[]>([]);
 
   const countDays = (initialDate: moment.MomentInput)=>{
+    const diasFestivos = ['2023-10-30']
     const Dateformt = moment(initialDate).format('YYYY-MM-DD')
     const fechaInicial = moment(Dateformt);
     const fechaActual = moment();
@@ -24,7 +25,10 @@ const ManagePqrsdf = () => {
 
     while (fechaInicial.isBefore(fechaActual)) {
       // Verifica si el día de la semana no es sábado (6) ni domingo (0)
-      if (fechaInicial.day() !== 6 && fechaInicial.day() !== 0) {
+      if (  fechaInicial.day() !== 6 && 
+            fechaInicial.day() !== 0 &&
+            !diasFestivos.some((festivo) => moment(festivo).isSame(fechaInicial, 'day'))
+          ) {
         diasTranscurridos++;
       }
       fechaInicial.add(1, 'days');
