@@ -220,7 +220,7 @@ export const TableManagePqrsdfComponent = (props:Props) => {
             </span>
        
             </div>
-            <div className="flex flex-row items-center tittle-header-movil" style={{width:'32em'}}>
+            <div className="flex flex-row items-center tittle-header-movil">
                 <div className=" mr-4 flex items-center total">
                     <label className="mr-2 text-base total">Total de resultados</label>
                     <span className="text-black flex items-center bold big">{dataPqrsdf.length}</span>

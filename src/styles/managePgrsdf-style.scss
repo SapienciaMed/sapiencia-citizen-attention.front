@@ -10,7 +10,6 @@
     border: 1px solid #CACACA;
     box-shadow: none;
     color: #000000;
-    min-width: 965px;
 }
 
 .punto1{
@@ -84,4 +83,89 @@
     border-bottom: solid 1px #DEE2E6 ;
 }
 
+
 //MOBIL
+@media only screen and (max-width: 768px) {
+
+    .container-div {
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+      
+    }
+
+
+    .card-mobil{
+        display: flex;
+        flex-direction: column;
+    }
+
+    .box1{
+        width: 100% !important;
+        height: 80px;
+        margin-bottom: 10px;
+        padding-left: 15px;
+        display: flex;
+        align-items: center; 
+    }
+    
+    .box2{
+        width: 100% !important;
+        height: 80px;
+        margin-bottom: 10px;
+        padding-left: 15px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .box3{
+        width: 100% !important;
+        height: 80px;
+        margin-bottom: 10px;
+        padding-left: 15px;
+        display: flex;
+        align-items: center;  
+    }
+    
+    .box4{
+        width: 100% !important;
+        height: 80px;
+        margin-bottom: 10px;
+        padding-left: 15px;
+        display: flex;
+        align-items: center;  
+    }
+
+    .box-mobil{
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: space-between;
+        align-items: center;
+        width: 340px;
+    }
+
+    .box-text{
+        margin: 0;
+    }
+
+    .punto1{
+        margin: 0;
+    }
+
+    .punto2{
+        margin: 0;
+    }
+
+    .punto3{
+        margin: 0;
+    }
+
+    .punto1{
+        margin: 0;
+    }
+
+    .p-paginator-pages{
+        width: 150px;
+    }
+
+}

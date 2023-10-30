@@ -133,32 +133,48 @@ const ManagePqrsdf = () => {
     <>
         <div className='container-div' >
             <Card title="Gestionar PQRDSF"  className='card-container'>
-              <div className='flex flex-row justify-between mt-10'>
+              <div className='flex flex-row justify-between mt-10 card-mobil'>
                 <Card className='zise-card box1'>
-                  <div className='flex justify-end'>
-                    <div className='punto1 mb-4'></div>
+                  <div className='box-mobil'>
+                    <div className='flex justify-end'>
+                      <div className='punto1 mb-4'></div>
+                    </div>
+                    <div>
+                      <p className='text-xl mb-4 box-text'>Solicitudes pendientes</p>
+                      <p className='text-sm'>por respuesta del área de permanencia</p>
+                    </div>
                   </div>
-                  <p className='text-xl mb-4'>Solicitudes pendientes</p>
-                  <p className='text-sm'>por respuesta del área de permanencia</p>
                 </Card>
                 <Card className='zise-card box2'>
-                  <div className='flex justify-end'>
-                    <div className='punto2 mb-4'></div>
+                  <div className='box-mobil'>
+                    <div className='flex justify-end'>
+                      <div className='punto2 mb-4'></div>
+                    </div>
+                      <div>
+                        <p className='text-xl mb-4 box-text'>Solicitudes con respuesta</p>
+                        <p className='text-sm'>por parte del área de permanencia</p>
+                      </div>
                   </div>
-                  <p className='text-xl mb-4'>Solicitudes con respuesta</p>
-                  <p className='text-sm'>por parte del área de permanencia</p>
                 </Card>
                 <Card className='zise-card box3'>
-                  <div className='flex justify-end'>
-                    <div className='punto3 mb-4'></div>
+                  <div className='box-mobil'>
+                    <div className='flex justify-end'>
+                      <div className='punto3 mb-4'></div>
+                    </div>
+                    <div>
+                      <p className='text-xl'>Solicitudes con prórroga</p>
+                    </div>
                   </div>
-                  <p className='text-xl'>Solicitudes con prórroga</p>
                 </Card>
                 <Card className='zise-card box4'>
-                  <div className='flex justify-end'>
-                    <div className='punto4 mb-4'></div>
-                  </div>              
-                  <p className='text-xl'>Solicitudes cerradas con petición de reapertura</p>
+                  <div className='box-mobil'>
+                    <div className='flex justify-end'>
+                      <div className='punto4 mb-4'></div>
+                    </div>              
+                    <div>
+                      <p className='text-xl'>Solicitudes cerradas con petición de reapertura</p>
+                    </div>
+                  </div>
                 </Card>
               </div>
               <div className='div-end mt-10 mb-10'>
