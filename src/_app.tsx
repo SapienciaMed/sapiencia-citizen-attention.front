@@ -93,9 +93,15 @@ function App() {
               />
 
               <Route 
-                path={"/atencion-ciudadana/gestionar-pqrsdf"} 
-                element={<ManagePqrsdf />} 
+                path={"/atencion-ciudadana/gestionar-pqrsdf"}
+                element={
+                  <PrivateRoute
+                    element={<ManagePqrsdf/>}
+                    allowedAction={"BANDEJA_PQRSDF"}
+                  />
+                }
               />
+
             </Routes>
           </Suspense>
         </Router>
