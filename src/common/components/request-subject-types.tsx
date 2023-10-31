@@ -7,8 +7,6 @@ import { classNames } from "primereact/utils";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { EResponseCodes } from "../constants/api.enum";
-// import { useRequestSubjectTypeService } from "../hooks/RequestSubjectTypeService.hook";
-// import { IRequestSubjectType } from "../interfaces/requestSubjectType.interfaces";
 import { Dropdown } from "primereact/dropdown";
 import { KeyFilterType } from "primereact/keyfilter";
 import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
@@ -280,10 +278,10 @@ function RequestSubjectTypesPage(): React.JSX.Element {
   const programsTemplate = (rowData: IRequestSubjectType) => {
     return (
       <div>
-        <Tooltip className="" target={"#tooltip-see-attached-dt-" + rowData.id}>
+        <Tooltip className="" target={"#tooltip-see-attached-dt-" + rowData.aso_codigo}>
           {rowData?.programs?.map((program) => program?.prg_clasificacion + "<br>")}
         </Tooltip>
-        <span id={"tooltip-see-attached-dt-" + rowData.id}></span>
+        <span id={"tooltip-see-attached-dt-" + rowData.aso_codigo}></span>
         {rowData?.programs[0]?.prg_descripcion + "<br>" + rowData?.programs[0]?.prg_descripcion}
       </div>
     );
@@ -447,7 +445,7 @@ function RequestSubjectTypesPage(): React.JSX.Element {
         {authorization?.allowedActions &&
           authorization?.allowedActions?.findIndex((i) => i == "ENTIDADES_TRABAJO_EDITAR") >= 0 && (
             <Link
-              to={"editar/" + rowData?.id}
+              to={"editar/" + rowData?.aso_codigo}
               className="hover:text-primary inline-flex mx-auto items-center justify-center tooltip-see-attached-dt"
               data-pr-tooltip="Editar"
               data-pr-position="right"
@@ -475,7 +473,7 @@ function RequestSubjectTypesPage(): React.JSX.Element {
 
         {authorization?.allowedActions &&
           authorization?.allowedActions?.findIndex((i) => i == "ENTIDADES_TRABAJO_VER_DETALLE") >= 0 && (
-            <Button tooltip="Ver" text style={{ width: "5em" }} onClick={() => showEntity(rowData?.id)}>
+            <Button tooltip="Ver" text style={{ width: "5em" }} onClick={() => showEntity(rowData?.aso_codigo)}>
               <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
                   fill-rule="evenodd"

@@ -9,15 +9,14 @@ import { EResponseCodes } from "../constants/api.enum";
 // import { useRequestSubjectTypeService } from "../hooks/RequestSubjectTypeService.hook";
 // import { IRequestSubjectType } from "../interfaces/requestSubjectType.interfaces";
 import { Dropdown } from "primereact/dropdown";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AppContext } from "../contexts/app.context";
 import { useRequestSubjectTypeService } from "../hooks/RequestSubjectTypeService.hook";
 import useCheckMobileScreen from "../hooks/isMobile.hook";
 import { IProgram } from "../interfaces/program.interfaces";
 import {
   IRequestObject,
-  IRequestSubjectType,
-  IRequestSubjectTypeFilters,
+  IRequestSubjectType
 } from "../interfaces/requestSubjectType.interfaces";
 import { IPagingData } from "../utils/api-response";
 
@@ -291,7 +290,7 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
     return [
       {
         name: "Nombre Asunto",
-        key: "name",
+        key: "aso_asunto",
         field: "name",
         formClass: "col-span-3 sm:col-span-1 md:col-span-3 lg:col-span-1",
         rules: {
