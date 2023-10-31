@@ -298,7 +298,7 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
         },
       },
       {
-        name: "Objecto",
+        name: "Objeto",
         type: "select",
         key: "requestObjectId",
         formClass: "col-span-3 sm:col-span-1 md:col-span-3 lg:col-span-1",
@@ -333,8 +333,7 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
           <div className="p-card-title flex justify-end md:justify-between">
             <span className="text-3xl md:block hidden">Crear tipos de asuntos</span>            
           </div>
-          <div className="p-card-content !pb-0 !pt-0 md:!pt-10">
-            <p className="text-lg">Buscar por</p>
+          <div className="p-card-content !pb-0 !pt-0 md:!pt-10">            
             <form
               onSubmit={handleSubmit(onSave)}
               onChange={checkIsFilled}

@@ -318,7 +318,7 @@ function RequestSubjectTypesPage(): React.JSX.Element {
         },
       },
       {
-        name: "Objecto",
+        name: "Objeto",
         type: "select",
         key: "requestObjectId",
         formClass: "w-full sm:w-[calc(50%-7px)] md:w-[260px] 1xl:ml-6",
