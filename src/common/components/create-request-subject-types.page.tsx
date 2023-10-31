@@ -72,7 +72,7 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
   const cancel = async () => {
     confirmDialog({
       id: "messages",
-      className: "!rounded-2xl",
+      className: "!rounded-2xl overflow-hidden",
       headerClassName: "!rounded-t-2xl",
       contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
       message: (
@@ -156,7 +156,7 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
       if (response.operation.code === EResponseCodes.OK) {
         confirmDialog({
           id: "messages",
-          className: "!rounded-2xl",
+          className: "!rounded-2xl overflow-hidden",
           headerClassName: "!rounded-t-2xl",
           contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
           message: (
@@ -175,7 +175,7 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
       } else {
         confirmDialog({
           id: "messages",
-          className: "!rounded-2xl",
+          className: "!rounded-2xl overflow-hidden",
           headerClassName: "!rounded-t-2xl",
           contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
           message: (

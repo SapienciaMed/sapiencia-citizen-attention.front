@@ -96,7 +96,7 @@ function WorkEntitiesPage(): React.JSX.Element {
         });
         confirmDialog({
           id: "messages",
-          className: "!rounded-2xl",
+          className: "!rounded-2xl overflow-hidden",
           headerClassName: "!rounded-t-2xl",
           contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
           message: (

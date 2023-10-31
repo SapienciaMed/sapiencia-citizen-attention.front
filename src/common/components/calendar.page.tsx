@@ -685,7 +685,7 @@ function CalendarPage(): React.JSX.Element {
     <div className="p-4 md:p-6 max-w-[1200px] mx-auto" ref={parentForm}>
       <ConfirmDialog id="messages"></ConfirmDialog>
       <ConfirmDialog
-        className="!rounded-2xl"
+        className="!rounded-2xl overflow-hidden"
         headerClassName="!rounded-t-2xl"
         contentClassName="md:w-[640px] max-w-full p-8 items-center justify-center"
         message={
