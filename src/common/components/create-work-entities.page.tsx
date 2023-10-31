@@ -160,8 +160,8 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
         setData([]);
         confirmDialog({
           id: "messages",
-          className: "rounded-2xl",
-          headerClassName: "rounded-t-2xl",
+          className: "!rounded-2xl",
+          headerClassName: "!rounded-t-2xl",
           contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
           message: (
             <div className="flex flex-wrap w-full items-center justify-center">
@@ -195,8 +195,8 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
         resetForm();
         confirmDialog({
           id: "messages",
-          className: "rounded-2xl",
-          headerClassName: "rounded-t-2xl",
+          className: "!rounded-2xl",
+          headerClassName: "!rounded-t-2xl",
           contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
           message: (
             <div className="flex flex-wrap w-full items-center justify-center">
@@ -211,8 +211,8 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
       } else {
         confirmDialog({
           id: "messages",
-          className: "rounded-2xl",
-          headerClassName: "rounded-t-2xl",
+          className: "!rounded-2xl",
+          headerClassName: "!rounded-t-2xl",
           contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
           message: (
             <div className="flex flex-wrap w-full items-center justify-center">
@@ -335,8 +335,8 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
   const cancel = () => {
     confirmDialog({
       id: "messages",
-      className: "rounded-2xl",
-      headerClassName: "rounded-t-2xl",
+      className: "!rounded-2xl",
+      headerClassName: "!rounded-t-2xl",
       contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
       message: (
         <div className="flex flex-wrap w-full items-center justify-center mx-auto">
@@ -611,8 +611,8 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
     setShowAssignPrograms(false);
     confirmDialog({
       id: "messages",
-      className: "rounded-2xl",
-      headerClassName: "rounded-t-2xl",
+      className: "!rounded-2xl",
+      headerClassName: "!rounded-t-2xl",
       contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
       message: (
         <div className="flex flex-wrap w-full items-center justify-center">
@@ -642,8 +642,8 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
       <ConfirmDialog id="messages"></ConfirmDialog>
       <ConfirmDialog
         id="assingProgramsModal"
-        className="rounded-2xl"
-        headerClassName="rounded-t-2xl"
+        className="!rounded-2xl"
+        headerClassName="!rounded-t-2xl"
         header={
           <div className="text-2xl w-full lg:hidden block">
             Asignación de Programas

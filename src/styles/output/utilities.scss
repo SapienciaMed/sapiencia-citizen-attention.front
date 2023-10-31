@@ -7957,6 +7957,10 @@ video {
   margin-bottom:0px
 }
 
+.mb-10{
+  margin-bottom:2.5rem
+}
+
 .mb-4{
   margin-bottom:1rem
 }
@@ -8035,10 +8039,6 @@ video {
 
 .mt-auto{
   margin-top:auto
-}
-
-.mb-10{
-  margin-bottom:2.5rem
 }
 
 .block{
@@ -8413,9 +8413,9 @@ video {
   border-radius:0px
 }
 
-.rounded-t-2xl{
-  border-top-left-radius:1rem;
-  border-top-right-radius:1rem
+.\!rounded-t-2xl{
+  border-top-left-radius:1rem !important;
+  border-top-right-radius:1rem !important
 }
 
 .\!border{

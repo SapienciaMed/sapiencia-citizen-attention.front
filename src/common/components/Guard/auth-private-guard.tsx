@@ -36,8 +36,8 @@ const PrivateRoute = ({ element, allowedAction }) => {
   } else {
     return (
       <ConfirmDialog
-        className="rounded-2xl"
-        headerClassName="rounded-t-2xl"
+        className="!rounded-2xl"
+        headerClassName="!rounded-t-2xl"
         visible={true}
         contentClassName="md:w-[640px] max-w-full mx-auto justify-center"
         message={
