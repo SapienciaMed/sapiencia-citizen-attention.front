@@ -1,18 +1,20 @@
 import { DateTime } from "luxon";
 import { IProgram } from "./program.interfaces";
 export interface IRequestSubjectType {
-  id?: number;
-  name?: string;
-  requestObjectId?: number;
-  isActive?: boolean;
+  aso_codigo?: number;
+  aso_asunto: string;
+  aso_activo?: boolean;
+  aso_orden?: number;
+  requestObjectId: number;
   requestObject?: IRequestObject;
   programs?: IProgram[];
   createdAt?: DateTime;
   updatedAt?: DateTime;
 }
 
-export interface IRequestSubjectTypeFilters {
-  name?: string;
+export interface IRequestSubjectTypeFilters{
+  aso_codigo?: number;
+  aso_asunto?: string;
   requestObjectId?: number;
   programs?: number[];
   page?: number;

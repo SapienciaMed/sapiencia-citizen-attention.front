@@ -7,8 +7,6 @@ import { classNames } from "primereact/utils";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { EResponseCodes } from "../constants/api.enum";
-// import { useRequestSubjectTypeService } from "../hooks/RequestSubjectTypeService.hook";
-// import { IRequestSubjectType } from "../interfaces/requestSubjectType.interfaces";
 import { Dropdown } from "primereact/dropdown";
 import { KeyFilterType } from "primereact/keyfilter";
 import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
@@ -101,8 +99,8 @@ function RequestSubjectTypesPage(): React.JSX.Element {
         });
         confirmDialog({
           id: "messages",
-          className: "rounded-2xl",
-          headerClassName: "rounded-t-2xl",
+          className: "!rounded-2xl overflow-hidden",
+          headerClassName: "!rounded-t-2xl",
           contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
           message: (
             <div className="flex flex-wrap w-full items-center justify-center">
@@ -280,11 +278,13 @@ function RequestSubjectTypesPage(): React.JSX.Element {
   const programsTemplate = (rowData: IRequestSubjectType) => {
     return (
       <div>
-        <Tooltip className="" target={"#tooltip-see-attached-dt-" + rowData.id}>
-          {rowData?.programs?.map((program) => program?.prg_clasificacion + "<br>")}
+        <Tooltip className="" target={"#tooltip-see-attached-dt-" + rowData.aso_codigo}>
+          {rowData?.programs?.map((program, index) => `${index > 0 ? ",\n" : ""}${program?.prg_descripcion}`)}
         </Tooltip>
-        <span id={"tooltip-see-attached-dt-" + rowData.id}></span>
-        {rowData?.programs[0]?.prg_descripcion + "<br>" + rowData?.programs[0]?.prg_descripcion}
+        <span id={"tooltip-see-attached-dt-" + rowData.aso_codigo}>
+          {rowData?.programs[0]?.prg_descripcion}
+          {rowData?.programs[1] ? "..." : ""}
+        </span>
       </div>
     );
   };
@@ -293,9 +293,9 @@ function RequestSubjectTypesPage(): React.JSX.Element {
     return [
       {
         name: "Id Tipo Asunto",
-        key: "id",
-        field: "id",
-        formClass: "w-full 2xs:w-[115px]",
+        key: "aso_codigo",
+        field: "aso_codigo",
+        formClass: "w-full 2xs:w-[115px] mx-auto sm:mx-0",
         rules: {
           required: false,
           maxLength: { value: 4, message: "No debe tener más de 4 caracteres." },
@@ -310,15 +310,23 @@ function RequestSubjectTypesPage(): React.JSX.Element {
       },
       {
         name: "Nombre Asunto",
-        key: "name",
-        field: "name",
+        key: "aso_asunto",
+        field: "aso_asunto",
         formClass: "w-full sm:w-[calc(50%-7px)] md:w-[260px] 1xl:ml-6",
         rules: {
           maxLength: { value: 100, message: "No debe tener más de 100 caracteres." },
         },
       },
       {
-        name: "Objecto",
+        name: "Días",
+        key: "termino_dias",
+        body: (rowData: IRequestSubjectType) => {
+          return rowData?.requestObject?.obs_termino_dias + " " + rowData?.requestObject?.obs_tipo_dias;
+        },
+        showForm: false,
+      },
+      {
+        name: "Objeto",
         type: "select",
         key: "requestObjectId",
         formClass: "w-full sm:w-[calc(50%-7px)] md:w-[260px] 1xl:ml-6",
@@ -341,85 +349,6 @@ function RequestSubjectTypesPage(): React.JSX.Element {
           return programsTemplate(rowData);
         },
       },
-      /*{
-        name: "Documento de identidad",
-        key: "identification",
-        formClass: "w-full sm:w-[calc(50%-7px)] md:w-[260px] 1xl:ml-auto",
-        rules: {
-          maxLength: { value: 15, message: "No debe tener más de 15 caracteres." },
-        },
-        body: (rowData: IRequestSubjectType) => {
-          return rowData?.user?.typeDocument + " " + rowData?.user?.numberDocument;
-        },
-      },
-      {
-        name: "Nombres",
-        key: "names",
-        formClass: "w-full sm:w-[calc(50%-7px)] md:w-[260px]",
-        showTable: false,
-        rules: {
-          maxLength: { value: 50, message: "No debe tener más de 50 caracteres." },
-        },
-        keyfilter: () => {
-          return /^[A-Za-z\s]*$/ as KeyFilterType;
-        },
-      },
-      {
-        name: "Apellidos",
-        key: "lastNames",
-        formClass: "w-full sm:w-[calc(50%-7px)] md:w-[260px] xl:mx-auto",
-        showTable: false,
-        rules: {
-          maxLength: { value: 50, message: "No debe tener más de 50 caracteres." },
-        },
-        keyfilter: () => {
-          return /^[A-Za-z\s]*$/ as KeyFilterType;
-        },
-      },
-      {
-        name: "Nombres y Apellidos",
-        key: "names",
-        body: (rowData: IRequestSubjectType) => {
-          return rowData?.user?.names + " " + rowData?.user?.lastNames;
-        },
-        showForm: false,
-      },
-      {
-        name: "Correo electrónico",
-        key: "email",
-        field: "user.email",
-        formClass: "w-full sm:w-[calc(50%-7px)] md:w-[260px]",
-        rules: {
-          maxLength: { value: 100, message: "No debe tener más de 100 caracteres." },
-          pattern: { value: emailPattern, message: "La dirección de correo electrónico es inválida." },
-        },
-        keyfilter: () => {
-          return "email" as KeyFilterType;
-        },
-        inputMode: (): inputMode => {
-          return "email";
-        },
-      },
-      {
-        name: "N° contacto 1",
-        key: "numberContact1",
-        field: "user.numberContact1",
-        showForm: false,
-      },
-      {
-        name: "N° contacto 2",
-        key: "numberContact2",
-        field: "user.numberContact2",
-        showForm: false,
-      },
-      {
-        name: "Estado",
-        key: "status",
-        body: (rowData: IRequestSubjectType) => {
-          return rowData?.status ? "Activo" : "Inactivo";
-        },
-        showForm: false,
-      }, */
       {
         name: "Acción",
         key: "name",
@@ -445,9 +374,9 @@ function RequestSubjectTypesPage(): React.JSX.Element {
       <span className="flex">
         <Tooltip className="" target=".tooltip-see-attached-dt" />
         {authorization?.allowedActions &&
-          authorization?.allowedActions?.findIndex((i) => i == "ENTIDADES_TRABAJO_EDITAR") >= 0 && (
+          authorization?.allowedActions?.findIndex((i) => i == "TIPO_DE_ASUNTO_EDITAR") >= 0 && (
             <Link
-              to={"editar/" + rowData?.id}
+              to={"editar/" + rowData?.aso_codigo}
               className="hover:text-primary inline-flex mx-auto items-center justify-center tooltip-see-attached-dt"
               data-pr-tooltip="Editar"
               data-pr-position="right"
@@ -472,51 +401,6 @@ function RequestSubjectTypesPage(): React.JSX.Element {
               </svg>
             </Link>
           )}
-
-        {authorization?.allowedActions &&
-          authorization?.allowedActions?.findIndex((i) => i == "ENTIDADES_TRABAJO_VER_DETALLE") >= 0 && (
-            <Button tooltip="Ver" text style={{ width: "5em" }} onClick={() => showEntity(rowData?.id)}>
-              <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M1.13575 13.498C0.95475 13.193 0.95475 12.807 1.13575 12.502C3.04075 9.279 6.52075 6.5 10.0007 6.5C13.4807 6.5 16.9597 9.279 18.8647 12.501C19.0457 12.807 19.0457 13.194 18.8647 13.5C16.9597 16.721 13.4807 19.5 10.0007 19.5C6.52075 19.5 3.04075 16.721 1.13575 13.498Z"
-                  stroke="#058CC1"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M12.1218 10.879C13.2938 12.051 13.2938 13.95 12.1218 15.122C10.9498 16.294 9.05076 16.294 7.87876 15.122C6.70676 13.95 6.70676 12.051 7.87876 10.879C9.05076 9.707 10.9508 9.707 12.1218 10.879"
-                  stroke="#058CC1"
-                  stroke-width="1.4286"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M10.0007 1V3.5"
-                  stroke="#058CC1"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M3.00073 3L4.68073 5"
-                  stroke="#058CC1"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M17.0008 3L15.3208 5"
-                  stroke="#058CC1"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            </Button>
-          )}
       </span>
     );
   };
@@ -539,11 +423,11 @@ function RequestSubjectTypesPage(): React.JSX.Element {
       />
       <span className="text-3xl block md:hidden pb-5">Tipos de asuntos</span>
       <div className="p-card rounded-2xl md:rounded-4xl shadow-none border border-[#D9D9D9]">
-        <div className="p-card-body !py-6 !px-6 md:!px-11">
-          <div className="p-card-title flex justify-end md:justify-between">
+        <div className="p-card-body !py-6 !px-6 md:!px-11 relative">
+          <div className="p-card-title flex justify-end md:justify-between sm:relative absolute right-6">
             <span className="text-3xl md:block hidden">Tipos de asuntos</span>
             {authorization?.allowedActions &&
-              authorization?.allowedActions?.findIndex((i) => i == "ENTIDADES_TRABAJO_CREAR") >= 0 && (
+              authorization?.allowedActions?.findIndex((i) => i == "TIPO_DE_ASUNTO_CREAR") >= 0 && (
                 <Link to="crear" className="my-auto text-base text-main flex items-center gap-x-2 cursor-pointer">
                   <span>Crear</span>
                   <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -579,7 +463,7 @@ function RequestSubjectTypesPage(): React.JSX.Element {
             <form
               onSubmit={handleSubmit(onSearch)}
               onChange={checkIsFilled}
-              className="flex flex-wrap gap-x-3.5 gap-y-6 w-full mt-10"
+              className="flex flex-wrap gap-x-3.5 gap-y-6 w-full sm:mt-10 mt-6"
             >
               {columns().map((column, index) => {
                 if (!column.hasOwnProperty("showForm") || column?.showForm) {

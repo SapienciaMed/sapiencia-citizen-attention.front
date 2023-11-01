@@ -9,15 +9,14 @@ import { EResponseCodes } from "../constants/api.enum";
 // import { useRequestSubjectTypeService } from "../hooks/RequestSubjectTypeService.hook";
 // import { IRequestSubjectType } from "../interfaces/requestSubjectType.interfaces";
 import { Dropdown } from "primereact/dropdown";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AppContext } from "../contexts/app.context";
 import { useRequestSubjectTypeService } from "../hooks/RequestSubjectTypeService.hook";
 import useCheckMobileScreen from "../hooks/isMobile.hook";
 import { IProgram } from "../interfaces/program.interfaces";
 import {
   IRequestObject,
-  IRequestSubjectType,
-  IRequestSubjectTypeFilters,
+  IRequestSubjectType
 } from "../interfaces/requestSubjectType.interfaces";
 import { IPagingData } from "../utils/api-response";
 
@@ -73,8 +72,8 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
   const cancel = async () => {
     confirmDialog({
       id: "messages",
-      className: "rounded-2xl",
-      headerClassName: "rounded-t-2xl",
+      className: "!rounded-2xl overflow-hidden",
+      headerClassName: "!rounded-t-2xl",
       contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
       message: (
         <div className="flex flex-wrap w-full items-center justify-center mx-auto">
@@ -94,7 +93,7 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
           "Aceptar",
           () => {
             resetForm();
-            navigate(-1);            
+            navigate(-1);
           },
           () => {
             options.accept();
@@ -144,44 +143,46 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
   };
 
   const onSave = async () => {
-    setLoading(true);    
-    
+    setLoading(true);
+
     try {
       let values = getValues();
-      let payload = values as IRequestSubjectType;   
-      payload.programs = values.programId.map((program:number)=>{
-        return {prg_codigo: program}
-      })
+      let payload = values as IRequestSubjectType;
+      payload.programs = values.programId.map((program: number) => {
+        return { prg_codigo: program };
+      });
       const response = await requestSubjectTypeService.createRequestSubjectType(payload);
 
-      if (response.operation.code === EResponseCodes.OK) {  
+      if (response.operation.code === EResponseCodes.OK) {
         confirmDialog({
           id: "messages",
-          className: "rounded-2xl",
-          headerClassName: "rounded-t-2xl",
+          className: "!rounded-2xl overflow-hidden",
+          headerClassName: "!rounded-t-2xl",
           contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
           message: (
             <div className="flex flex-wrap w-full items-center justify-center">
               <div className="mx-auto text-primary text-3xl w-full text-center">Creación exitosa</div>
               <div className="flex items-center justify-center text-center w-full mt-6 pt-0.5">
-              ¡Asunto creado exitosamente!
+                ¡Asunto creado exitosamente!
               </div>
             </div>
           ),
           closeIcon: closeIcon,
           acceptLabel: "Cerrar",
           footer: (options) => acceptButton(options),
-        });      
+        });
         resetForm();
       } else {
         confirmDialog({
           id: "messages",
-          className: "rounded-2xl",
-          headerClassName: "rounded-t-2xl",
+          className: "!rounded-2xl overflow-hidden",
+          headerClassName: "!rounded-t-2xl",
           contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
           message: (
             <div className="flex flex-wrap w-full items-center justify-center">
-              <div className="mx-auto text-primary text-3xl w-full text-center">{response.operation?.title ?? 'Lo sentimos'}</div>
+              <div className="mx-auto text-primary text-3xl w-full text-center">
+                {response.operation?.title ?? "Lo sentimos"}
+              </div>
               <div className="flex items-center justify-center text-center w-full mt-6 pt-0.5">
                 {response.operation.message}
               </div>
@@ -201,9 +202,9 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
 
   useEffect(() => {
     if (checkMobileScreen && !isMobile) {
-      setIsMobile(true);      
+      setIsMobile(true);
     } else if (!checkMobileScreen && isMobile) {
-      setIsMobile(false);      
+      setIsMobile(false);
     }
   }, [checkMobileScreen]);
 
@@ -289,16 +290,16 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
     return [
       {
         name: "Nombre Asunto",
-        key: "name",
+        key: "aso_asunto",
         field: "name",
         formClass: "col-span-3 sm:col-span-1 md:col-span-3 lg:col-span-1",
         rules: {
-          required: 'El campo es obligatorio.', 
+          required: "El campo es obligatorio.",
           maxLength: { value: 100, message: "No debe tener más de 100 caracteres." },
         },
       },
       {
-        name: "Objecto",
+        name: "Objeto",
         type: "select",
         key: "requestObjectId",
         formClass: "col-span-3 sm:col-span-1 md:col-span-3 lg:col-span-1",
@@ -306,7 +307,7 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
         optionValue: "obs_codigo",
         options: requestObjects,
         rules: {
-          required: 'El campo es obligatorio.',
+          required: "El campo es obligatorio.",
         },
       },
       {
@@ -318,7 +319,7 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
         optionValue: "prg_codigo",
         options: programs,
         rules: {
-          required: 'El campo es obligatorio.',
+          required: "El campo es obligatorio.",
         },
       },
     ];
@@ -331,14 +332,13 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
       <div className="p-card rounded-2xl md:rounded-4xl shadow-none border border-[#D9D9D9]">
         <div className="p-card-body !py-6 !px-6 md:!px-11">
           <div className="p-card-title flex justify-end md:justify-between">
-            <span className="text-3xl md:block hidden">Crear tipos de asuntos</span>            
+            <span className="text-3xl md:block hidden">Crear tipos de asuntos</span>
           </div>
-          <div className="p-card-content !pb-0 !pt-0 md:!pt-10">
-            <p className="text-lg">Buscar por</p>
+          <div className="p-card-content !pb-0 !pt-0 md:!pt-1">
             <form
               onSubmit={handleSubmit(onSave)}
               onChange={checkIsFilled}
-              className="grid grid-cols-3 lg:gap-x-11 gap-x-3.5 gap-y-6 w-full mt-10"
+              className="grid grid-cols-3 lg:gap-x-11 gap-x-3.5 gap-y-6 w-full sm:mt-10"
             >
               {columns().map((column, index) => {
                 return (
