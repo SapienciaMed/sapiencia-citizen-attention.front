@@ -338,7 +338,7 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
             <form
               onSubmit={handleSubmit(onSave)}
               onChange={checkIsFilled}
-              className="grid grid-cols-3 lg:gap-x-11 gap-x-3.5 gap-y-6 w-full mt-10"
+              className="grid grid-cols-3 lg:gap-x-11 gap-x-3.5 gap-y-6 w-full sm:mt-10"
             >
               {columns().map((column, index) => {
                 return (

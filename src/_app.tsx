@@ -26,7 +26,7 @@ function App() {
   const QueryPqrsdfPage = lazy(() => import("./common/components/query-pqrsdf.page"));
   const EditWorkEntitiesPage = lazy(() => import("./common/components/edit-work-entities.page"));
   const AttentionTocitizens = lazy(() => import("./common/components/attentionTocitizens.page"));
-  const ManagePqrsdf = lazy(()=> import("./common/components/manage-pqrsdf.page"))
+  const ManagePqrsdf = lazy(() => import("./common/components/manage-pqrsdf.page"));
   const { publish } = useAppCominicator();
 
   // Effect que cominica la aplicacion actual
@@ -53,11 +53,15 @@ function App() {
               />
               <Route
                 path={"/atencion-ciudadana/tipos-de-asuntos-de-solicitudes/"}
-                element={<RequestSubjectTypesPage />}
+                element={
+                  <PrivateRoute element={<RequestSubjectTypesPage />} allowedAction={"TIPO_DE_ASUNTO_CONSULTAR"} />
+                }
               />
               <Route
                 path={"/atencion-ciudadana/tipos-de-asuntos-de-solicitudes/crear"}
-                element={<CreateRequestSubjectTypesPage />}
+                element={
+                  <PrivateRoute element={<CreateRequestSubjectTypesPage />} allowedAction={"TIPO_DE_ASUNTO_CREAR"} />
+                }
               />
               <Route
                 path={"/atencion-ciudadana/entidades-trabajo/crear"}
@@ -91,17 +95,10 @@ function App() {
                 path={"/atencion-ciudadana/presentar-pqrsdf/:identification"}
                 element={<Register_pqrsdf isPerson={true} />}
               />
-
-              <Route 
+              <Route
                 path={"/atencion-ciudadana/gestionar-pqrsdf"}
-                element={
-                  <PrivateRoute
-                    element={<ManagePqrsdf/>}
-                    allowedAction={"BANDEJA_PQRSDF"}
-                  />
-                }
+                element={<PrivateRoute element={<ManagePqrsdf />} allowedAction={"BANDEJA_PQRSDF"} />}
               />
-
             </Routes>
           </Suspense>
         </Router>
