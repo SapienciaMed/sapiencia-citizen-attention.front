@@ -69,7 +69,10 @@ export const TableManagePqrsdfComponent = (props:Props) => {
           program: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
           asunto: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
           estado: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-          radicado: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
+          radicado: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }]  },
+          identification: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+          fechaRadicado: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+          dias: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
       });
       setGlobalFilterValue('');
   };
@@ -83,23 +86,24 @@ export const TableManagePqrsdfComponent = (props:Props) => {
     setFilters(_filters);
     setGlobalFilterValue(value);
 };
-
-    const accionesIcons = (user:DataTableSelectionChangeEvent<Ipqrsdf[]>) => {
+  
+    const prueba = ''
+    const accionesIcons = (pqrsdf:DataTableSelectionChangeEvent<Ipqrsdf[]>) => {
         return (
             <>
                 <div className="flex justify-center">
                     {statusReq?(
                     <>
-                        <div className="">
-                            <Link to={'radicar/'+ user.identification}>
+                        <div className=''>
+                            <Link to={'radicar/'+ pqrsdf.pqrsdfId}>
                                 <Tooltip target=".custom-target-icon" style={{borderRadius:'1px'}} />
                                 <i className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center"
-                                    data-pr-tooltip="Radicar"
+                                    data-pr-tooltip="Gestionar"
                                     data-pr-position="right"
                                 >
-                                    <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M11.5599 1H3C1.89543 1 1 1.89543 1 3V16.0938V19.125C1 20.2296 1.89543 21.125 3 21.125H6.27997M11.5599 1L15.9599 7.46875M11.5599 1V5.46875C11.5599 6.57332 12.4554 7.46875 13.5599 7.46875H15.9599M15.9599 7.46875V8.1875M9.02008 23.9727L10.9831 23.4383C11.3594 23.3358 11.6976 23.1256 11.956 22.8334L22.0203 11.4516C22.6024 10.7932 22.7811 9.78914 22.4516 8.97447C22.2358 8.44104 21.8606 8.12778 20.3028 8.15125C19.7766 8.15917 19.2844 8.40859 18.9358 8.80283L8.54169 20.5576C8.2184 20.9232 8.03996 21.3944 8.03996 21.8824V23.2238C8.03996 23.6525 8.38748 24 8.81618 24V24C8.88505 24 8.95362 23.9908 9.02008 23.9727Z" stroke="black" stroke-width="2"/>
-                                    </svg>
+                                  <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M11.5133 14.2083H1.375C0.896667 14.2083 0.5 13.8117 0.5 13.3333C0.5 12.855 0.896667 12.4583 1.375 12.4583H11.5133L9.50667 10.4517C9.16833 10.1133 9.16833 9.55332 9.50667 9.21499C9.845 8.87666 10.405 8.87666 10.7433 9.21499L14.2433 12.715C14.325 12.7967 14.3833 12.89 14.43 12.995C14.5233 13.205 14.5233 13.45 14.43 13.66C14.3833 13.765 14.325 13.8583 14.2433 13.94L10.7433 17.44C10.5683 17.615 10.3467 17.6967 10.125 17.6967C9.90333 17.6967 9.68167 17.615 9.50667 17.44C9.16833 17.1017 9.16833 16.5417 9.50667 16.2033L11.5133 14.1967V14.2083ZM21.5 8.08332V18C21.5 19.7733 20.065 21.2083 18.2917 21.2083H9.54167C7.76833 21.2083 6.33333 19.7733 6.33333 18V16.8333C6.33333 16.355 6.73 15.9583 7.20833 15.9583C7.68667 15.9583 8.08333 16.355 8.08333 16.8333V18C8.08333 18.805 8.73667 19.4583 9.54167 19.4583H18.2917C19.0967 19.4583 19.75 18.805 19.75 18V8.95832H14.2083C13.73 8.95832 13.3333 8.56166 13.3333 8.08332V2.54166H9.54167C8.73667 2.54166 8.08333 3.19499 8.08333 3.99999V9.83332C8.08333 10.3117 7.68667 10.7083 7.20833 10.7083C6.73 10.7083 6.33333 10.3117 6.33333 9.83332V3.99999C6.33333 2.22666 7.76833 0.791656 9.54167 0.791656H14.2083C14.4417 0.791656 14.6633 0.88499 14.8267 1.04832L21.2433 7.46499C21.4067 7.62832 21.5 7.84999 21.5 8.08332ZM15.0833 7.20832H18.5133L15.0833 3.77832V7.20832Z" fill="black"/>
+                                  </svg>
                                 </i>
 
                             </Link>
@@ -107,7 +111,7 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                     </>):(
                     <>
                         <div className="mr-4">
-                            <Link to={'radicar/'+ user.identification}>
+                            <Link to={'radicar/'+ pqrsdf.pqrsdfId}>
                                 <Tooltip target=".custom-target-icon" style={{borderRadius:'1px'}} />
                                 <i className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center"
                                     data-pr-tooltip="Ver detalle"
@@ -125,7 +129,7 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                             </Link>
                         </div>
                         <div>
-                            <Link to={'radicar/'+ user.identification}>
+                            <Link to={'radicar/'+ pqrsdf.pqrsdfId}>
                                 <Tooltip target=".custom-target-icon" style={{borderRadius:'1px'}} />
                                 <i className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center"
                                     data-pr-tooltip="Solicitar reabrir"
@@ -249,7 +253,7 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                 dataKey="id"
                 scrollable
                 filters={filters}
-                globalFilterFields={['names','program','asunto','estado','radicado']}
+                globalFilterFields={['names','program','asunto','estado','radicado', 'identification','fechaRadicado','dias']}
             >
                 <Column style={{ textAlign: "center" }} field="radicado" header="Radicado"></Column>
                 <Column style={{ textAlign: "center" }} headerStyle={{ width: '3rem' }} body={(data, options) => 'CC'}></Column>
@@ -262,14 +266,14 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                 ></Column>
                 <Column style={{ textAlign: "center" }} field="asunto" header="Asunto"></Column>
                 <Column style={{ textAlign: "center" }} field="fechaRadicado" header={<p style={{width:'124px'}}>Fecha Radicado</p>}></Column>
-                <Column style={{ textAlign: "center"}} field="estado" header="Estado"></Column>
-                <Column style={{ textAlign: "center"}} field="fechaProrroga" header={<p style={{width:'124px'}}>Fecha Prorroga</p>}></Column>
+                <Column style={{ textAlign: "center" }} field="estado" header="Estado"></Column>
+                <Column style={{ textAlign: "center"}} field="fechaProrroga" header={<p style={{width:'124px'}}>Fecha Prórroga</p>}></Column>
                 <Column style={{ textAlign: "center"}} field="dias" header="Días"></Column>
                 <Column
                     field="accion"
                     header="Acción"
                     body={accionesIcons}
-                    style={{ textAlign: "center" }}
+                    style={{ textAlign: "center"}}
                 ></Column>
             </DataTable>
     </div>
