@@ -7875,10 +7875,6 @@ video {
   bottom:25%
 }
 
-.right-0{
-  right:0px
-}
-
 .right-1{
   right:0.25rem
 }
@@ -8419,6 +8415,11 @@ video {
 
 .rounded-none{
   border-radius:0px
+}
+
+.rounded-t-2xl{
+  border-top-left-radius:1rem;
+  border-top-right-radius:1rem
 }
 
 .\!rounded-t-2xl{
@@ -9385,10 +9386,6 @@ video {
     padding-right:4rem !important
   }
 
-  .md\:\!pt-1{
-    padding-top:0.25rem !important
-  }
-
   .md\:\!pt-10{
     padding-top:2.5rem !important
   }
@@ -9419,6 +9416,10 @@ video {
 
   .md\:pt-5{
     padding-top:1.25rem
+  }
+
+  .md\:\!pt-1{
+    padding-top:0.25rem !important
   }
 
   .md\:text-left{
