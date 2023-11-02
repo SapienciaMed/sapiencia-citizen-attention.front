@@ -377,7 +377,7 @@ function RequestSubjectTypesPage(): React.JSX.Element {
           authorization?.allowedActions?.findIndex((i) => i == "TIPO_DE_ASUNTO_EDITAR") >= 0 && (
             <Link
               to={"editar/" + rowData?.aso_codigo}
-              className="hover:text-primary inline-flex mx-auto items-center justify-center tooltip-see-attached-dt"
+              className="hover:text-primary inline-flex sm:mr-auto sm:ml-auto ml:auto items-center justify-center tooltip-see-attached-dt "
               data-pr-tooltip="Editar"
               data-pr-position="right"
             >

@@ -403,7 +403,7 @@ function WorkEntitiesPage(): React.JSX.Element {
           authorization?.allowedActions?.findIndex((i) => i == "ENTIDADES_TRABAJO_EDITAR") >= 0 && (
             <Link
               to={"editar/" + rowData?.id}
-              className="hover:text-primary inline-flex mx-auto items-center justify-center tooltip-see-attached-dt"
+              className="hover:text-primary inline-flex sm:mr-auto sm:ml-auto ml:auto items-center justify-center tooltip-see-attached-dt "
               data-pr-tooltip="Editar"
               data-pr-position="right"
             >
