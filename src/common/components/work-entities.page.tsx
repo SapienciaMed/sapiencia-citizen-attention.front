@@ -616,7 +616,7 @@ function WorkEntitiesPage(): React.JSX.Element {
             <div className="p-card-body !py-6 !px-6 md:!px-11">
             <div className="p-card-title flex justify-between flex-wrap sm:flex-nowrap space-y-7 sm:space-y-0 items-center">
                 <span className="text-xl md:text-3xl">Resultados de búsqueda</span>
-                <div className="flex text-sm flex-wrap sm:flex-nowrap items-center gap-x-5 w-full">
+                <div className="flex text-sm flex-wrap sm:flex-nowrap items-center sm:justify-end gap-x-5 w-full">
                   <div className="flex items-center min-w-[150px] order-2 sm:order-1 mt-4 sm:mt-0 w-full sm:w-auto">
                     Total de resultados <span className="ml-auto sm:ml-2 text-primary">{data.meta.total}</span>
                   </div>
