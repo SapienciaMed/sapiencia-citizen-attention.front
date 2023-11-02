@@ -132,7 +132,7 @@ const ManagePqrsdf = () => {
   return (
     <>
         <div className='container-div' >
-            <Card title="Gestionar PQRDSF"  className='card-container'>
+            <Card title={<p className='text-3xl block pb-5'>Gestionar PQRDSF</p>}  className='card-container'>
               <div className='flex flex-row justify-between mt-10 card-mobil'>
                 <Card className='zise-card box1'>
                   <div className='box-mobil'>

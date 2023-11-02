@@ -4,26 +4,30 @@ import { Column } from "primereact/column"
 import { DataTable, DataTableSelectionChangeEvent } from "primereact/datatable";
 import { FilterMatchMode, FilterOperator } from 'primereact/api';
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown"
+import { InputTextarea } from "primereact/inputtextarea";
+import { Controller, useForm } from "react-hook-form";
 import { Tooltip } from "primereact/tooltip";
 import { Button } from "primereact/button";
 import { classNames } from "primereact/utils";
 import { InputText } from "primereact/inputtext";
+import { Dialog } from "primereact/dialog";
+import { Card } from "primereact/card";
 import "../../../styles/table-movil-style.scss"
 
 
 
 interface Ipqrsdf {
-    radicado: string;
-    identification: string;
-    names: string;
-    lastName: string;
-    program: string;
-    asunto: string;
-    fechaRadicado:string;
-    estado: string;
-    fechaProrroga: string;
-    dias: string;
-    pqrsdfId:string;
+    radicado?: string;
+    identification?: string;
+    names?: string;
+    lastName?: string;
+    program?: string;
+    asunto?: string;
+    fechaRadicado?:string;
+    estado?: string;
+    fechaProrroga?: string;
+    dias?: string;
+    pqrsdfId?:string;
 }
 
 interface PageNumber {
@@ -32,7 +36,7 @@ interface PageNumber {
 
 interface Props {
     statusReq: boolean;
-    dataPqrsdf: object[];
+    dataPqrsdf: Ipqrsdf[];
 }
 
 export const TableManagePqrsdfComponent = (props:Props) => {
@@ -40,12 +44,10 @@ export const TableManagePqrsdfComponent = (props:Props) => {
     const { statusReq, dataPqrsdf } = props;
     const [customers, setCustomers] = useState(null);
     const [filters, setFilters] = useState(null);
-
     const [globalFilterValue, setGlobalFilterValue] = useState('');
-
     const [selectPage, setSelectPage] = useState<PageNumber>({ page: 5 });
-    
     const pageNumber: PageNumber[] = [{ page: 5 }, { page: 10 }, { page: 15 }, { page: 20 }];
+    const [visible, setVisible] = useState<boolean>(false);
 
     useEffect(() => {
       
@@ -60,7 +62,27 @@ export const TableManagePqrsdfComponent = (props:Props) => {
 
         return d;
     });
-};
+  };
+
+  const defaultValues = {
+    justification: "",
+  };
+
+  const {
+    formState: { errors, isValid },
+    control,
+    handleSubmit,
+    watch,
+    reset,
+  } = useForm({ defaultValues, mode: "all" });
+
+  const getFormErrorMessage = (name) => {
+    return errors[name] ? (
+      <small className="p-error">{errors[name].message}</small>
+    ) : (
+      <small className="p-error">&nbsp;</small>
+    );
+  };
 
     const initFilters = () => {
       setFilters({
@@ -87,7 +109,6 @@ export const TableManagePqrsdfComponent = (props:Props) => {
     setGlobalFilterValue(value);
 };
   
-    const prueba = ''
     const accionesIcons = (pqrsdf:DataTableSelectionChangeEvent<Ipqrsdf[]>) => {
         return (
             <>
@@ -95,7 +116,7 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                     {statusReq?(
                     <>
                         <div className=''>
-                            <Link to={'radicar/'+ pqrsdf.pqrsdfId}>
+                            <Link to={''}>
                                 <Tooltip target=".custom-target-icon" style={{borderRadius:'1px'}} />
                                 <i className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center"
                                     data-pr-tooltip="Gestionar"
@@ -111,7 +132,7 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                     </>):(
                     <>
                         <div className="mr-4">
-                            <Link to={'radicar/'+ pqrsdf.pqrsdfId}>
+                            <Link to={''}>
                                 <Tooltip target=".custom-target-icon" style={{borderRadius:'1px'}} />
                                 <i className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center"
                                     data-pr-tooltip="Ver detalle"
@@ -129,7 +150,7 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                             </Link>
                         </div>
                         <div>
-                            <Link to={'radicar/'+ pqrsdf.pqrsdfId}>
+                            <Link to={''} onClick={()=>managetPqrsdf(pqrsdf.pqrsdfId)}>
                                 <Tooltip target=".custom-target-icon" style={{borderRadius:'1px'}} />
                                 <i className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center"
                                     data-pr-tooltip="Solicitar reabrir"
@@ -202,7 +223,85 @@ export const TableManagePqrsdfComponent = (props:Props) => {
             );
           },
         };
-    };    
+    }; 
+
+    const managetPqrsdf = (id:number)=>{
+      setVisible(true)
+      console.log(id);
+      
+    }
+    
+    const closeIcon = () => (
+      <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M1.43383 25C1.22383 25 1.04883 24.93 0.908828 24.79C0.768828 24.6267 0.698828 24.4517 0.698828 24.265C0.698828 24.195 0.710495 24.125 0.733828 24.055C0.757161 23.985 0.780495 23.915 0.803828 23.845L8.53883 12.505L1.32883 1.655C1.25883 1.515 1.22383 1.375 1.22383 1.235C1.22383 1.04833 1.29383 0.884999 1.43383 0.744999C1.57383 0.581665 1.74883 0.499998 1.95883 0.499998H6.26383C6.56716 0.499998 6.8005 0.581665 6.96383 0.744999C7.1505 0.908332 7.2905 1.06 7.38383 1.2L12.0738 8.165L16.7988 1.2C16.8922 1.06 17.0322 0.908332 17.2188 0.744999C17.4055 0.581665 17.6505 0.499998 17.9538 0.499998H22.0488C22.2355 0.499998 22.3988 0.581665 22.5388 0.744999C22.7022 0.884999 22.7838 1.04833 22.7838 1.235C22.7838 1.39833 22.7372 1.53833 22.6438 1.655L15.4338 12.47L23.2038 23.845C23.2505 23.915 23.2738 23.985 23.2738 24.055C23.2972 24.125 23.3088 24.195 23.3088 24.265C23.3088 24.4517 23.2388 24.6267 23.0988 24.79C22.9588 24.93 22.7838 25 22.5738 25H18.1288C17.8255 25 17.5805 24.9183 17.3938 24.755C17.2305 24.5917 17.1022 24.4517 17.0088 24.335L11.8988 16.985L6.82383 24.335C6.75383 24.4517 6.6255 24.5917 6.43883 24.755C6.27549 24.9183 6.0305 25 5.70383 25H1.43383Z"
+          fill="#533893"
+        />
+      </svg>
+    );
+
+
+    const columns = () => {
+      return [
+        {
+          header: "Radicado",
+          field: "radicado",
+          key: "pqr.radicado",
+        },
+        {
+          key: "pqr.cc",
+          body: (data, options) => 'CC'
+        },
+        {
+          header: ()=>{return(<p style={{width:'112px'}}>Doc. Identidad</p>)},
+          field: "identification",
+          key: "pqr.identification",
+        },
+        {
+          header: ()=>{return(<p style={{width:'146px'}}>Nombre y apellidos</p>)},
+          field: "names",
+          key: "pqr.names",
+        },
+        {
+          header: "Programa",
+          field: "program",
+          key: "pqr.program",
+        },
+        {
+          header: "Asunto",
+          field: "asunto",
+          key: "pqr.asunto",
+        },
+        {
+          header: ()=>{return(<p style={{width:'124px'}}>Fecha Radicado</p>)},
+          field: "fechaRadicado",
+          key: "pqr.fechaRadicado",
+        },
+        {
+          header: "Estado",
+          field: "estado",
+          key: "pqr.estado",
+        },
+        {
+          header: ()=>{return statusReq?(<p style={{width:'124px'}}>Fecha Prórroga</p>)
+            :(<p style={{width:'124px'}}>Fecha Cierre</p>)
+          },
+          field: "fechaProrroga",
+          key: "pqr.fechaProrroga",
+        },
+        {
+          header: "Días",
+          field: "dias",
+          key: "pqr.dias",
+        },
+        {
+          header: "Acción",
+          field: "accion",
+          key: "pqr.accion",
+          body: accionesIcons
+        },
+      ];
+    };
 
   return (
     <>
@@ -254,7 +353,18 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                 scrollable
                 filters={filters}
                 globalFilterFields={['names','program','asunto','estado','radicado', 'identification','fechaRadicado','dias']}
-            >
+            >{columns().map((column) => {
+                return (
+                  <Column
+                    key={column.key}
+                    header={column.header}
+                    field={column?.field}
+                    body={column?.body}
+                    style={{ textAlign: "center" }}
+                  ></Column>
+                );
+            })}
+              {/*
                 <Column style={{ textAlign: "center" }} field="radicado" header="Radicado"></Column>
                 <Column style={{ textAlign: "center" }} headerStyle={{ width: '3rem' }} body={(data, options) => 'CC'}></Column>
                 <Column style={{ textAlign: "center" }} field={"identification"} header={<p style={{width:'112px'}}>Doc. Identidad</p>}></Column>
@@ -274,9 +384,57 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                     header="Acción"
                     body={accionesIcons}
                     style={{ textAlign: "center"}}
-                ></Column>
+                ></Column>*/}
             </DataTable>
-    </div>
+      </div>
+      <Dialog
+         header={<h1>Solicitud de reabrir PQRSDF</h1>}
+         headerStyle={{ color: "black", display: "flex", flexDirection: "row" }}
+         visible={visible}
+         style={{ width: "42em" }}
+         onHide={() => setVisible(false)}
+         className="dialog-movil"
+         closeIcon={closeIcon}
+      >
+        <Card className="card-container">
+          <Controller
+            name="justification"
+            control={control}
+            rules={{
+              required: 'Campo obligatorio',
+              maxLength:{ value: 1000, message: "Solo se permiten 1000 caracteres"}
+            }}
+            render={({field, fieldState }) =>(
+              <>
+                <p className="text-xl">Justificación<span className="text-red-600">*</span></p>
+                <InputTextarea
+                  id={field.name}
+                  {...field}
+                  className={classNames({ 'p-invalid': fieldState.error },'text-mobil')}   
+                  rows={4} 
+                  cols={60} />
+              </>
+            )}
+          />
+          <div className="flex flex-row justify-between">
+            {getFormErrorMessage('justification')}
+            <span className="font-label">Max 1000 caracteres</span>
+          </div>
+          <div className="flex justify-center mt-8">
+            <Button
+              text
+              className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10"
+              label="Cancelar"
+            ></Button>
+            <Button 
+              className="rounded-full !h-10" 
+              label="Enviar"
+              disabled={!isValid}
+              >
+            </Button>
+          </div>
+        </Card>
+      </Dialog>
     </>
   )
 }
