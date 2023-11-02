@@ -131,10 +131,10 @@ function RequestSubjectTypesPage(): React.JSX.Element {
   useEffect(() => {
     if (checkMobileScreen && !isMobile) {
       setIsMobile(true);
-      setPerPage(1);
+      // setPerPage(1);
     } else if (!checkMobileScreen && isMobile) {
       setIsMobile(false);
-      setPerPage(10);
+      // setPerPage(10);
     }
   }, [checkMobileScreen]);
 
@@ -250,8 +250,9 @@ function RequestSubjectTypesPage(): React.JSX.Element {
       },
       PageLinks: (options) => {
         if (
-          (options.view.startPage === options.page && options.view.startPage !== 0) ||
-          (options.view.endPage === options.page && options.page + 1 !== options.totalPages)
+          !isMobile &&
+          ((options.view.startPage === options.page && options.view.startPage !== 0) ||
+            (options.view.endPage === options.page && options.page + 1 !== options.totalPages))
         ) {
           const className = classNames(options.className, { "p-disabled": true });
 
@@ -377,7 +378,7 @@ function RequestSubjectTypesPage(): React.JSX.Element {
           authorization?.allowedActions?.findIndex((i) => i == "TIPO_DE_ASUNTO_EDITAR") >= 0 && (
             <Link
               to={"editar/" + rowData?.aso_codigo}
-              className="hover:text-primary inline-flex mx-auto items-center justify-center tooltip-see-attached-dt"
+              className="hover:text-primary inline-flex sm:mr-auto sm:ml-auto ml:auto items-center justify-center tooltip-see-attached-dt "
               data-pr-tooltip="Editar"
               data-pr-position="right"
             >
@@ -532,7 +533,7 @@ function RequestSubjectTypesPage(): React.JSX.Element {
                   className="!px-4 !py-2 !text-base !font-sans"
                   type="submit"
                   // onClick={save}
-                  disabled={loading || !isFilled}
+                  disabled={loading}
                 />
               </div>
             </form>
@@ -543,15 +544,15 @@ function RequestSubjectTypesPage(): React.JSX.Element {
         <div className="relative pb-16 md:pb-28 z-0">
           <div className="relative p-card rounded-2xl md:rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
             <div className="p-card-body !py-6 !px-6 md:!px-11">
-              <div className="p-card-title justify-between flex items-center">
+              <div className="p-card-title flex justify-between flex-wrap sm:flex-nowrap space-y-7 sm:space-y-0 items-center">
                 <span className="text-xl md:text-3xl">Resultados de búsqueda</span>
-                <div className="flex text-sm items-center gap-x-5">
-                  <div className="min-w-[150px]">
-                    Total de resultados <span className="ml-2 text-primary">{data.meta.total}</span>
+                <div className="flex text-sm flex-wrap sm:flex-nowrap items-center sm:justify-end gap-x-5 w-full">
+                  <div className="flex items-center min-w-[150px] order-2 sm:order-1 mt-4 sm:mt-0 w-full sm:w-auto">
+                    Total de resultados <span className="ml-auto sm:ml-2 text-primary">{data.meta.total}</span>
                   </div>
-                  <div className="flex items-center min-w-[210px]">
+                  <div className="flex items-center min-w-[210px] order-1 sm:order-2 w-full sm:w-auto">
                     Registro por página
-                    <div className="ml-6">
+                    <div className="ml-auto sm:ml-6">
                       <Dropdown
                         id="per_page"
                         value={data.meta?.per_page ?? 3}
@@ -577,7 +578,7 @@ function RequestSubjectTypesPage(): React.JSX.Element {
                 </div>
               </div>
               <div className="p-card-content !pb-0 !pt-0 md:!pt-10 citizen-attention-paginator">
-                <div className="overflow-hidden mx-auto max-w-[calc(100vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] hidden md:block borderless reverse-striped">
+                <div className="overflow-hidden mx-auto max-w-[calc(100vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] block borderless reverse-striped">
                   <DataTable
                     value={data?.array ?? []}
                     loading={loading}
@@ -602,7 +603,7 @@ function RequestSubjectTypesPage(): React.JSX.Element {
                     })}
                   </DataTable>
                 </div>
-                <div className="p-5 p-card md:hidden block relative rounded-2xl md:rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
+                <div className="p-5 p-card hidden relative rounded-2xl md:rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
                   <div className="pb-5">
                     {columns().map((column, index) => {
                       if (!column.hasOwnProperty("showTable") || column?.showTable) {
