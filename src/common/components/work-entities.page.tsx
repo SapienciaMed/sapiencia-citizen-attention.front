@@ -44,8 +44,8 @@ function WorkEntitiesPage(): React.JSX.Element {
     left: 0,
   });
 
-  const [entityId, setEntityId] = useState<number>()
-  const [showModal, setShowModal] = useState<boolean>(false)
+  const [entityId, setEntityId] = useState<number>();
+  const [showModal, setShowModal] = useState<boolean>(false);
 
   const checkMobileScreen = useCheckMobileScreen();
 
@@ -386,19 +386,19 @@ function WorkEntitiesPage(): React.JSX.Element {
     ];
   };
 
-  const showEntity = (id:number)=>{
-    setShowModal(true)
-    setEntityId(id)
-  }
+  const showEntity = (id: number) => {
+    setShowModal(true);
+    setEntityId(id);
+  };
 
-  const showEntit = ()=>{
-    setShowModal(false)
-  }
+  const showEntit = () => {
+    setShowModal(false);
+  };
 
   const editUser = (rowData: IWorkEntity) => {
     return (
       <span className="flex">
-        <Tooltip className="" target=".tooltip-see-attached-dt"/>
+        <Tooltip className="" target=".tooltip-see-attached-dt" />
         {authorization?.allowedActions &&
           authorization?.allowedActions?.findIndex((i) => i == "ENTIDADES_TRABAJO_EDITAR") >= 0 && (
             <Link
@@ -428,23 +428,49 @@ function WorkEntitiesPage(): React.JSX.Element {
             </Link>
           )}
 
-             {authorization?.allowedActions &&
-              authorization?.allowedActions?.findIndex((i) => i == "ENTIDADES_TRABAJO_VER_DETALLE") >= 0 && (
-                <Button
-                tooltip="Ver"
-                text
-                style={{width:'5em'}}
-                onClick={()=> showEntity(rowData?.id)}
-                >
-                  <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M1.13575 13.498C0.95475 13.193 0.95475 12.807 1.13575 12.502C3.04075 9.279 6.52075 6.5 10.0007 6.5C13.4807 6.5 16.9597 9.279 18.8647 12.501C19.0457 12.807 19.0457 13.194 18.8647 13.5C16.9597 16.721 13.4807 19.5 10.0007 19.5C6.52075 19.5 3.04075 16.721 1.13575 13.498Z" stroke="#058CC1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M12.1218 10.879C13.2938 12.051 13.2938 13.95 12.1218 15.122C10.9498 16.294 9.05076 16.294 7.87876 15.122C6.70676 13.95 6.70676 12.051 7.87876 10.879C9.05076 9.707 10.9508 9.707 12.1218 10.879" stroke="#058CC1" stroke-width="1.4286" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M10.0007 1V3.5" stroke="#058CC1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M3.00073 3L4.68073 5" stroke="#058CC1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M17.0008 3L15.3208 5" stroke="#058CC1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-
-                </Button>
+        {authorization?.allowedActions &&
+          authorization?.allowedActions?.findIndex((i) => i == "ENTIDADES_TRABAJO_VER_DETALLE") >= 0 && (
+            <Button tooltip="Ver" text style={{ width: "5em" }} onClick={() => showEntity(rowData?.id)}>
+              <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M1.13575 13.498C0.95475 13.193 0.95475 12.807 1.13575 12.502C3.04075 9.279 6.52075 6.5 10.0007 6.5C13.4807 6.5 16.9597 9.279 18.8647 12.501C19.0457 12.807 19.0457 13.194 18.8647 13.5C16.9597 16.721 13.4807 19.5 10.0007 19.5C6.52075 19.5 3.04075 16.721 1.13575 13.498Z"
+                  stroke="#058CC1"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M12.1218 10.879C13.2938 12.051 13.2938 13.95 12.1218 15.122C10.9498 16.294 9.05076 16.294 7.87876 15.122C6.70676 13.95 6.70676 12.051 7.87876 10.879C9.05076 9.707 10.9508 9.707 12.1218 10.879"
+                  stroke="#058CC1"
+                  stroke-width="1.4286"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M10.0007 1V3.5"
+                  stroke="#058CC1"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M3.00073 3L4.68073 5"
+                  stroke="#058CC1"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M17.0008 3L15.3208 5"
+                  stroke="#058CC1"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </Button>
           )}
       </span>
     );
@@ -461,8 +487,9 @@ function WorkEntitiesPage(): React.JSX.Element {
       <ConfirmDialog id="messages"></ConfirmDialog>
       <ModalEntityComponent
         show={showModal}
-        exitModal={()=>{showEntit()}}
-        
+        exitModal={() => {
+          showEntit();
+        }}
         entityId={entityId}
       />
       <span className="text-3xl block md:hidden pb-5">Entidades de trabajo</span>
@@ -587,15 +614,15 @@ function WorkEntitiesPage(): React.JSX.Element {
         <div className="relative pb-16 md:pb-28 z-0">
           <div className="relative p-card rounded-2xl md:rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
             <div className="p-card-body !py-6 !px-6 md:!px-11">
-              <div className="p-card-title justify-between flex items-center">
+            <div className="p-card-title flex justify-between flex-wrap sm:flex-nowrap space-y-7 sm:space-y-0 items-center">
                 <span className="text-xl md:text-3xl">Resultados de búsqueda</span>
-                <div className="flex text-sm items-center gap-x-5">
-                  <div className="min-w-[150px]">
-                    Total de resultados <span className="ml-2 text-primary">{data.meta.total}</span>
+                <div className="flex text-sm flex-wrap sm:flex-nowrap items-center gap-x-5 w-full">
+                  <div className="flex items-center min-w-[150px] order-2 sm:order-1 mt-4 sm:mt-0 w-full sm:w-auto">
+                    Total de resultados <span className="ml-auto sm:ml-2 text-primary">{data.meta.total}</span>
                   </div>
-                  <div className="flex items-center min-w-[210px]">
+                  <div className="flex items-center min-w-[210px] order-1 sm:order-2 w-full sm:w-auto">
                     Registro por página
-                    <div className="ml-6">
+                    <div className="ml-auto sm:ml-6">
                       <Dropdown
                         id="per_page"
                         value={data.meta?.per_page ?? 3}

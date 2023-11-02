@@ -532,7 +532,7 @@ function RequestSubjectTypesPage(): React.JSX.Element {
                   className="!px-4 !py-2 !text-base !font-sans"
                   type="submit"
                   // onClick={save}
-                  disabled={loading || !isFilled}
+                  disabled={loading}
                 />
               </div>
             </form>
@@ -543,15 +543,15 @@ function RequestSubjectTypesPage(): React.JSX.Element {
         <div className="relative pb-16 md:pb-28 z-0">
           <div className="relative p-card rounded-2xl md:rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
             <div className="p-card-body !py-6 !px-6 md:!px-11">
-              <div className="p-card-title justify-between flex items-center">
+              <div className="p-card-title flex justify-between flex-wrap sm:flex-nowrap space-y-7 sm:space-y-0 items-center">
                 <span className="text-xl md:text-3xl">Resultados de búsqueda</span>
-                <div className="flex text-sm items-center gap-x-5">
-                  <div className="min-w-[150px]">
-                    Total de resultados <span className="ml-2 text-primary">{data.meta.total}</span>
+                <div className="flex text-sm flex-wrap sm:flex-nowrap items-center gap-x-5 w-full">
+                  <div className="flex items-center min-w-[150px] order-2 sm:order-1 mt-4 sm:mt-0 w-full sm:w-auto">
+                    Total de resultados <span className="ml-auto sm:ml-2 text-primary">{data.meta.total}</span>
                   </div>
-                  <div className="flex items-center min-w-[210px]">
+                  <div className="flex items-center min-w-[210px] order-1 sm:order-2 w-full sm:w-auto">
                     Registro por página
-                    <div className="ml-6">
+                    <div className="ml-auto sm:ml-6">
                       <Dropdown
                         id="per_page"
                         value={data.meta?.per_page ?? 3}
