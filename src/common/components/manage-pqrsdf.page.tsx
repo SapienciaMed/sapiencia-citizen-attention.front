@@ -47,6 +47,8 @@ const ManagePqrsdf = () => {
 
   const daysParametrization = async ()=>{
     const { data } = await daysServices.getDaysParametrizations();
+    const response = await daysServices.getDayTypes();
+    console.log(data);
     
     const days = [];
     
@@ -85,6 +87,7 @@ const ManagePqrsdf = () => {
         fechaProrroga: "10/20/2023",
         dias: countDays(pqr['PQR_FECHA_CREACION'],days),
         pqrsdfId:pqr['PQR_CODIGO'],
+        sbrEstado:pqr['SBR_ESTADO']
       }
     });
 

@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Column } from "primereact/column"
-import { DataTable, DataTableSelectionChangeEvent } from "primereact/datatable";
+import { Column, ColumnEvent } from "primereact/column"
+import { DataTable, DataTableRowEvent, DataTableSelectionChangeEvent } from "primereact/datatable";
 import { FilterMatchMode, FilterOperator } from 'primereact/api';
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown"
 import { InputTextarea } from "primereact/inputtextarea";
@@ -12,7 +12,10 @@ import { classNames } from "primereact/utils";
 import { InputText } from "primereact/inputtext";
 import { Dialog } from "primereact/dialog";
 import { Card } from "primereact/card";
+import { usePqrsdfService } from "../../hooks/PqrsdfService.hook";
 import "../../../styles/table-movil-style.scss"
+import { IpqrsdfByReques, IrequestReopen } from "../../interfaces/pqrsdf.interfaces";
+import { date } from "yup";
 
 
 
@@ -28,6 +31,7 @@ interface Ipqrsdf {
     fechaProrroga?: string;
     dias?: string;
     pqrsdfId?:string;
+    sbrEstado?: number
 }
 
 interface PageNumber {
@@ -41,6 +45,8 @@ interface Props {
 
 export const TableManagePqrsdfComponent = (props:Props) => {
 
+    const pqrsdfService = usePqrsdfService();
+
     const { statusReq, dataPqrsdf } = props;
     const [customers, setCustomers] = useState(null);
     const [filters, setFilters] = useState(null);
@@ -48,11 +54,12 @@ export const TableManagePqrsdfComponent = (props:Props) => {
     const [selectPage, setSelectPage] = useState<PageNumber>({ page: 5 });
     const pageNumber: PageNumber[] = [{ page: 5 }, { page: 10 }, { page: 15 }, { page: 20 }];
     const [visible, setVisible] = useState<boolean>(false);
+    const [iDdpqrsdf, setIDdpqrsdf] = useState<number>();
 
     useEffect(() => {
       
       setCustomers(getCustomers(dataPqrsdf));
-   
+      
       initFilters();
   }, []);
 
@@ -72,6 +79,7 @@ export const TableManagePqrsdfComponent = (props:Props) => {
     formState: { errors, isValid },
     control,
     handleSubmit,
+    setValue,
     watch,
     reset,
   } = useForm({ defaultValues, mode: "all" });
@@ -109,7 +117,9 @@ export const TableManagePqrsdfComponent = (props:Props) => {
     setGlobalFilterValue(value);
 };
   
-    const accionesIcons = (pqrsdf:DataTableSelectionChangeEvent<Ipqrsdf[]>) => {
+    const accionesIcons = (pqrsdf:DataTableSelectionChangeEvent<Ipqrsdf[]>) => {      
+       
+        
         return (
             <>
                 <div className="flex justify-center">
@@ -223,13 +233,31 @@ export const TableManagePqrsdfComponent = (props:Props) => {
             );
           },
         };
-    }; 
+    };
+    
+    const createReopen = async (justification:IrequestReopen)=>{
+      const resp = await pqrsdfService.createRequestReopen(justification);
+      return resp;
+    }
 
     const managetPqrsdf = (id:number)=>{
       setVisible(true)
-      console.log(id);
-      
+      setIDdpqrsdf(id)
     }
+    
+    const onSubmit = async (data:{justification:string}) => {
+    
+      const  justification:IrequestReopen = { justification: [ {
+        srb_justificacion:data['justification'],
+        sbr_estado: true
+        },
+        {pqrsdfId: iDdpqrsdf}]};
+
+        const resp = await createReopen(justification);
+        setVisible(false);
+     reset()
+    };
+
     
     const closeIcon = () => (
       <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -239,70 +267,7 @@ export const TableManagePqrsdfComponent = (props:Props) => {
         />
       </svg>
     );
-
-
-    const columns = () => {
-      return [
-        {
-          header: "Radicado",
-          field: "radicado",
-          key: "pqr.radicado",
-        },
-        {
-          key: "pqr.cc",
-          body: (data, options) => 'CC'
-        },
-        {
-          header: ()=>{return(<p style={{width:'112px'}}>Doc. Identidad</p>)},
-          field: "identification",
-          key: "pqr.identification",
-        },
-        {
-          header: ()=>{return(<p style={{width:'146px'}}>Nombre y apellidos</p>)},
-          field: "names",
-          key: "pqr.names",
-        },
-        {
-          header: "Programa",
-          field: "program",
-          key: "pqr.program",
-        },
-        {
-          header: "Asunto",
-          field: "asunto",
-          key: "pqr.asunto",
-        },
-        {
-          header: ()=>{return(<p style={{width:'124px'}}>Fecha Radicado</p>)},
-          field: "fechaRadicado",
-          key: "pqr.fechaRadicado",
-        },
-        {
-          header: "Estado",
-          field: "estado",
-          key: "pqr.estado",
-        },
-        {
-          header: ()=>{return statusReq?(<p style={{width:'124px'}}>Fecha Prórroga</p>)
-            :(<p style={{width:'124px'}}>Fecha Cierre</p>)
-          },
-          field: "fechaProrroga",
-          key: "pqr.fechaProrroga",
-        },
-        {
-          header: "Días",
-          field: "dias",
-          key: "pqr.dias",
-        },
-        {
-          header: "Acción",
-          field: "accion",
-          key: "pqr.accion",
-          body: accionesIcons
-        },
-      ];
-    };
-
+    
   return (
     <>
          <div className="flex flex-row items-center justify-between mb-8 header-movil">
@@ -353,18 +318,8 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                 scrollable
                 filters={filters}
                 globalFilterFields={['names','program','asunto','estado','radicado', 'identification','fechaRadicado','dias']}
-            >{columns().map((column) => {
-                return (
-                  <Column
-                    key={column.key}
-                    header={column.header}
-                    field={column?.field}
-                    body={column?.body}
-                    style={{ textAlign: "center" }}
-                  ></Column>
-                );
-            })}
-              {/*
+                rowClassName={(rowData) => rowData.sbrEstado === 1?'color-row':''}
+            >
                 <Column style={{ textAlign: "center" }} field="radicado" header="Radicado"></Column>
                 <Column style={{ textAlign: "center" }} headerStyle={{ width: '3rem' }} body={(data, options) => 'CC'}></Column>
                 <Column style={{ textAlign: "center" }} field={"identification"} header={<p style={{width:'112px'}}>Doc. Identidad</p>}></Column>
@@ -384,7 +339,7 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                     header="Acción"
                     body={accionesIcons}
                     style={{ textAlign: "center"}}
-                ></Column>*/}
+                ></Column>
             </DataTable>
       </div>
       <Dialog
@@ -397,42 +352,46 @@ export const TableManagePqrsdfComponent = (props:Props) => {
          closeIcon={closeIcon}
       >
         <Card className="card-container">
-          <Controller
-            name="justification"
-            control={control}
-            rules={{
-              required: 'Campo obligatorio',
-              maxLength:{ value: 1000, message: "Solo se permiten 1000 caracteres"}
-            }}
-            render={({field, fieldState }) =>(
-              <>
-                <p className="text-xl">Justificación<span className="text-red-600">*</span></p>
-                <InputTextarea
-                  id={field.name}
-                  {...field}
-                  className={classNames({ 'p-invalid': fieldState.error },'text-mobil')}   
-                  rows={4} 
-                  cols={60} />
-              </>
-            )}
-          />
-          <div className="flex flex-row justify-between">
-            {getFormErrorMessage('justification')}
-            <span className="font-label">Max 1000 caracteres</span>
-          </div>
-          <div className="flex justify-center mt-8">
-            <Button
-              text
-              className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10"
-              label="Cancelar"
-            ></Button>
-            <Button 
-              className="rounded-full !h-10" 
-              label="Enviar"
-              disabled={!isValid}
-              >
-            </Button>
-          </div>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Controller
+              name="justification"
+              control={control}
+              rules={{
+                required: 'Campo obligatorio',
+                maxLength:{ value: 1000, message: "Solo se permiten 1000 caracteres"}
+              }}
+              render={({field, fieldState }) =>(
+                <>
+                  <p className="text-xl">Justificación<span className="text-red-600">*</span></p>
+                  <InputTextarea
+                    id={field.name}
+                    {...field}
+                    className={classNames({ 'p-invalid': fieldState.error },'text-mobil')}   
+                    rows={4} 
+                    cols={60} />
+                </>
+              )}
+            />
+            <div className="flex flex-row justify-between">
+              {getFormErrorMessage('justification')}
+              <span className="font-label">Max 1000 caracteres</span>
+            </div>
+
+            <div className="flex justify-center mt-8">
+              <Button
+                text
+                className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10"
+                label="Cancelar"
+                onClick={()=>setVisible(false)}
+              ></Button>
+              <Button 
+                className="rounded-full !h-10" 
+                label="Enviar"
+                disabled={!isValid}
+                >
+              </Button>
+            </div>
+          </form>
         </Card>
       </Dialog>
     </>

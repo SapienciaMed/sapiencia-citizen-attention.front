@@ -140,5 +140,16 @@ export interface IpqrsdfByReques{
     LEP_ESTADO?: string;
     OBS_TIPO_DIAS?: string;
     OBS_TERMINO_DIAS?: number;
-    PRG_DESCRIPCION?: String;
+    PRG_DESCRIPCION?: string;
+    SBR_ESTADO?: string;
+}
+
+export interface IrequestReopen {
+  justification?: Justification[];
+}
+
+export interface Justification {
+  srb_justificacion?: string;
+  sbr_estado?:        boolean;
+  pqrsdfId?:          number;
 }

@@ -1,6 +1,6 @@
 import { EResponseCodes } from "../constants/api.enum";
 import { IPerson, IPersonFilters } from "../interfaces/person.interfaces";
-import { IPqrsdf, IpqrsdfByReques, IrequestPqrsdf } from "../interfaces/pqrsdf.interfaces";
+import { IPqrsdf, IpqrsdfByReques, IrequestPqrsdf, IrequestReopen } from "../interfaces/pqrsdf.interfaces";
 import { ApiResponse, IPagingData } from "../utils/api-response";
 import useCrudService from "./crud-service.hook";
 
@@ -90,6 +90,15 @@ export function usePqrsdfService() {
     }
   }
 
+  async function createRequestReopen(justification:IrequestReopen): Promise<ApiResponse<IrequestReopen>> {
+    try {
+      const endpoint: string = `/create-request-reopen`;
+      return await post(`${listUrl}${endpoint}`,  justification );
+    } catch (error) {
+      return new ApiResponse({} as IrequestReopen, EResponseCodes.FAIL, "Error no controlado");
+    }
+  }
+
 
   return {
     getPqrsdfs,
@@ -99,6 +108,7 @@ export function usePqrsdfService() {
     getPersonByDocument,
     getPqrsdfByIdentificationAndFilingNumber,
     upLoadFile,
-    getPqrsdfByRequest
+    getPqrsdfByRequest,
+    createRequestReopen
   };
 }
