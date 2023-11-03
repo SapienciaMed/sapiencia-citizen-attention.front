@@ -377,7 +377,9 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                     {...field}
                     className={classNames({ 'p-invalid': fieldState.error },'text-mobil')}   
                     rows={4} 
-                    cols={60} />
+                    cols={60}
+                    placeholder="Escribe aquí" 
+                    />
                 </>
               )}
             />
