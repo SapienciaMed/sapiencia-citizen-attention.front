@@ -135,7 +135,7 @@ const ManagePqrsdf = () => {
   return (
     <>
         <div className='container-div' >
-            <Card title={<p className='text-3xl block pb-5'>Gestionar PQRDSF</p>}  className='card-container'>
+            <Card title={<p className='text-3xl block pb-5'>Gestionar PQRDSF</p>}  className='card-container card-top'>
               <div className='flex flex-row justify-between mt-10 card-mobil'>
                 <Card className='zise-card box1'>
                   <div className='box-mobil'>
@@ -184,7 +184,7 @@ const ManagePqrsdf = () => {
                 <button className='btn-t btn-1' id='btn-1' onClick={()=>focusBtn('btn-1')}>Solicitudes en trámite</button>
                 <button className='btn-t btn-2' id='btn-2' onClick={()=>focusBtn('btn-2')}>Solicitudes cerradas</button>
               </div>
-              <Card className='card-container mt-10'>
+              <Card className='card-container mt-10 card-bottom'>
                 <TableManagePqrsdfComponent 
                   statusReq={statusRequest}
                   dataPqrsdf={pqrs}
