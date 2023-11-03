@@ -1,38 +1,28 @@
 import { Button } from "primereact/button";
 import { ConfirmDialog, ConfirmDialogOptions, confirmDialog } from "primereact/confirmdialog";
+import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { MultiSelect } from "primereact/multiselect";
 import { classNames } from "primereact/utils";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useNavigate, useParams } from "react-router-dom";
 import { EResponseCodes } from "../constants/api.enum";
-// import { useRequestSubjectTypeService } from "../hooks/RequestSubjectTypeService.hook";
-// import { IRequestSubjectType } from "../interfaces/requestSubjectType.interfaces";
-import { Dropdown } from "primereact/dropdown";
-import { useNavigate } from "react-router-dom";
-import { AppContext } from "../contexts/app.context";
 import { useRequestSubjectTypeService } from "../hooks/RequestSubjectTypeService.hook";
 import useCheckMobileScreen from "../hooks/isMobile.hook";
 import { IProgram } from "../interfaces/program.interfaces";
-import {
-  IRequestObject,
-  IRequestSubjectType
-} from "../interfaces/requestSubjectType.interfaces";
-import { IPagingData } from "../utils/api-response";
+import { IRequestObject, IRequestSubjectType } from "../interfaces/requestSubjectType.interfaces";
 
-function CreateRequestSubjectTypesPage(): React.JSX.Element {
-  const { authorization } = useContext(AppContext);
+interface Props {
+  isEdit?: boolean;
+}
+
+function FormRequestSubjectTypesPage({ isEdit = false }: Props): React.JSX.Element {
   const parentForm = useRef(null);
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<IPagingData<IRequestSubjectType>>({
-    array: [],
-    meta: {
-      total: 0,
-    },
-  });
-  const [requestObjects, setRequestSubjectTypeTypes] = useState<IRequestObject[]>([]);
+  const [requestSubjectTypeData, setRequestSubjectTypeData] = useState<IRequestSubjectType>();
+  const [requestObjects, setRequestObjects] = useState<IRequestObject[]>([]);
   const [programs, setPrograms] = useState<IProgram[]>([]);
-  const [showTable, setShowTable] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isFilled, setIsFilled] = useState(false);
   const [buttonWidth, setButtonWidth] = useState({
@@ -51,6 +41,8 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
     formState: { errors, isValid },
     handleSubmit,
     getValues,
+    setValue,
+    trigger,
     reset,
   } = useForm({ mode: "all" });
 
@@ -142,6 +134,8 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
     );
   };
 
+  const { id } = useParams();
+
   const onSave = async () => {
     setLoading(true);
 
@@ -151,7 +145,12 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
       payload.programs = values.programId.map((program: number) => {
         return { prg_codigo: program };
       });
-      const response = await requestSubjectTypeService.createRequestSubjectType(payload);
+      if (isEdit) {
+        payload.aso_codigo = parseInt(id);
+      }
+      const response = await (isEdit
+        ? requestSubjectTypeService.updateRequestSubjectType(payload)
+        : requestSubjectTypeService.createRequestSubjectType(payload));
 
       if (response.operation.code === EResponseCodes.OK) {
         confirmDialog({
@@ -161,9 +160,11 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
           contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
           message: (
             <div className="flex flex-wrap w-full items-center justify-center">
-              <div className="mx-auto text-primary text-3xl w-full text-center">Creación exitosa</div>
+              <div className="mx-auto text-primary text-3xl w-full text-center">
+                {isEdit ? "Actualización exitosa" : "Creación exitosa"}
+              </div>
               <div className="flex items-center justify-center text-center w-full mt-6 pt-0.5">
-                ¡Asunto creado exitosamente!
+                {isEdit ? "¡Asunto actualizado exitosamente!" : "¡Asunto creado exitosamente!"}
               </div>
             </div>
           ),
@@ -171,7 +172,9 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
           acceptLabel: "Cerrar",
           footer: (options) => acceptButton(options),
         });
-        resetForm();
+        if (!isEdit) {
+          resetForm();
+        }
       } else {
         confirmDialog({
           id: "messages",
@@ -194,7 +197,7 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
         });
       }
     } catch (error) {
-      console.error("Error al crear tipo de asunto:", error);
+      console.error("Error al " + (isEdit ? "editar" : "crear") + " tipo de asunto:", error);
     } finally {
       setLoading(false);
     }
@@ -243,7 +246,7 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
         const response = await requestSubjectTypeService.getRequestObjects();
 
         if (response.operation.code === EResponseCodes.OK) {
-          setRequestSubjectTypeTypes(response.data);
+          setRequestObjects(response.data);
         }
       } catch (error) {
         console.error("Error al obtener la lista de objectos de solicitud:", error);
@@ -267,12 +270,49 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
       }
     };
     fetchPrograms();
+    if (isEdit) {
+      const fetchRequestSubjectType = async (id: number) => {
+        setLoading(true);
+        try {
+          const response = await requestSubjectTypeService.getRequestSubjectTypeById(id);
+
+          if (response.operation.code === EResponseCodes.OK) {
+            setRequestSubjectTypeData(response.data);
+            let requestSubjectType = response.data;
+            setValue("aso_asunto", requestSubjectType.aso_asunto);
+            setValue("requestObjectId", requestSubjectType.requestObjectId);
+            setValue(
+              "programId",
+              requestSubjectType.programs.map((program) => {
+                return program.prg_codigo;
+              })
+            );
+          } else {
+            navigate(-1);
+          }
+        } catch (error) {
+          navigate(-1);
+          console.error("Error al obtener la lista de objectos de solicitud:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchRequestSubjectType(parseInt(id));
+      console.log(id);
+    }
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  useEffect(() => {
+    if (requestSubjectTypeData) {
+      checkIsFilled();
+      trigger();
+    }
+  }, [requestSubjectTypeData]);
 
   const resetForm = () => {
     const toResetArray = columns().map((column) => {
@@ -328,11 +368,11 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
   return (
     <div className="p-4 md:p-6 max-w-[1200px] mx-auto" ref={parentForm}>
       <ConfirmDialog id="messages"></ConfirmDialog>
-      <span className="text-3xl block md:hidden pb-5">Crear tipos de asuntos</span>
+      <span className="text-3xl block md:hidden pb-5">{isEdit ? "Editar" : "Crear"} tipos de asuntos</span>
       <div className="p-card rounded-2xl md:rounded-4xl shadow-none border border-[#D9D9D9]">
         <div className="p-card-body !py-6 !px-6 md:!px-11">
           <div className="p-card-title flex justify-end md:justify-between">
-            <span className="text-3xl md:block hidden">Crear tipos de asuntos</span>
+            <span className="text-3xl md:block hidden">{isEdit ? "Editar" : "Crear"} tipos de asuntos</span>
           </div>
           <div className="p-card-content !pb-0 !pt-0 md:!pt-1">
             <form
@@ -432,4 +472,4 @@ function CreateRequestSubjectTypesPage(): React.JSX.Element {
   );
 }
 
-export default CreateRequestSubjectTypesPage;
+export default FormRequestSubjectTypesPage;

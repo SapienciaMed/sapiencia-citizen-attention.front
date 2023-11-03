@@ -14,7 +14,7 @@ import CreateWorkEntitiesPage from "./common/components/create-work-entities.pag
 import PrivateRoute from "./common/components/Guard/auth-private-guard";
 import PortalAuthRoutes from "./features/portal-auth/portal-auth.routes";
 import RequestSubjectTypesPage from "./common/components/request-subject-types";
-import CreateRequestSubjectTypesPage from "./common/components/create-request-subject-types.page";
+import FormRequestSubjectTypesPage from "./common/components/form-request-subject-types.page";
 
 function App() {
   //const HomePage = lazy(() => import("./common/components/home.page"));
@@ -60,7 +60,13 @@ function App() {
               <Route
                 path={"/atencion-ciudadana/tipos-de-asuntos-de-solicitudes/crear"}
                 element={
-                  <PrivateRoute element={<CreateRequestSubjectTypesPage />} allowedAction={"TIPO_DE_ASUNTO_CREAR"} />
+                  <PrivateRoute element={<FormRequestSubjectTypesPage />} allowedAction={"TIPO_DE_ASUNTO_CREAR"} />
+                }
+              />
+              <Route
+                path={"/atencion-ciudadana/tipos-de-asuntos-de-solicitudes/editar/:id"}
+                element={
+                  <PrivateRoute element={<FormRequestSubjectTypesPage isEdit={true}/>} allowedAction={"TIPO_DE_ASUNTO_EDITAR"} />
                 }
               />
               <Route
