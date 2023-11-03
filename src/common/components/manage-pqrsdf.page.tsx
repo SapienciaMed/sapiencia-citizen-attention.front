@@ -11,8 +11,8 @@ import { IDaysParametrization } from '../interfaces/daysParametrization.interfac
 import "../../styles/managePgrsdf-style.scss";
 
 interface Detail {
- 
-  detailDate:string
+  detailDate?:string;
+  dayTypeId?:number;
 }
 
 
@@ -24,8 +24,8 @@ const ManagePqrsdf = () => {
   const [statusRequest, setStatusRequest] = useState<boolean>(true)
   const [pqrs, setPqrs] = useState<object[]>([]);
 
-  const countDays = (initialDate: moment.MomentInput, daysParametrization:any[])=>{
-    const diasFestivos = daysParametrization
+  /*const countDays = (initialDate: moment.MomentInput, holidays:string[])=>{
+    const diasFestivos = holidays
     const Dateformt = moment(initialDate).format('YYYY-MM-DD')
     const fechaInicial = moment(Dateformt);
     const fechaActual = moment();
@@ -43,35 +43,61 @@ const ManagePqrsdf = () => {
     }
     
     return diasTranscurridos    
+  }*/
+
+  const countDays = (initialDate: moment.MomentInput, holidays: string[], customWorkingDays: string[] = []) => {
+    const Dateformt = moment(initialDate).format('YYYY-MM-DD');
+    const fechaInicial = moment(Dateformt);
+    const fechaActual = moment();
+    let diasTranscurridos = 0;
+  
+    while (fechaInicial.isBefore(fechaActual)) {
+      // Verifica si el día de la semana no es sábado (6) ni domingo (0)
+      if (
+        fechaInicial.day() !== 6 &&
+        fechaInicial.day() !== 0 &&
+        !holidays.some((festivo) => moment(festivo).isSame(fechaInicial, 'day')) &&
+        !customWorkingDays.some((workingDay) => moment(workingDay).isSame(fechaInicial, 'day'))
+      ) {
+        diasTranscurridos++;
+      }
+      fechaInicial.add(1, 'days');
+    }
+  
+    return diasTranscurridos-1;
   }
 
   const daysParametrization = async ()=>{
     const { data } = await daysServices.getDaysParametrizations();
-    const response = await daysServices.getDayTypes();
-    console.log(data);
     
-    const days = [];
-    
+    const nonWorkingDays = [];
+    const businessDays = [];
     const daysParametrization = await data.map((values:IDaysParametrization)=>{
       return{
         daysParametrization:values['daysParametrizationDetails']
       }
     })
 
-    daysParametrization.forEach((values)=>{
+    daysParametrization.forEach((values)=>{      
       values.daysParametrization.forEach((value:Detail)=>{
         if(value){
-          days.push(value.detailDate)
+          if(value.dayTypeId===2 || value.dayTypeId===3){
+            nonWorkingDays.push(value.detailDate)
+          }
+          if(value.dayTypeId===1){
+            businessDays.push(value.detailDate)
+          }
         }
       })
     })
     
-    return days
+    return {nonWorkingDays,businessDays}
   }
 
   const getPqrsdf = async (param:IrequestPqrsdf)=>{   
     
-    const days = await daysParametrization()
+    const {nonWorkingDays,businessDays} = await daysParametrization()
+    
     const resp = await pqrsdfService.getPqrsdfByRequest(param)
     const { data } = resp;
     
@@ -85,7 +111,7 @@ const ManagePqrsdf = () => {
         fechaRadicado: moment(pqr['PQR_FECHA_CREACION']).format('YYYY-MM-DD') ,
         estado: pqr['LEP_ESTADO'],
         fechaProrroga: "10/20/2023",
-        dias: countDays(pqr['PQR_FECHA_CREACION'],days),
+        dias: countDays(pqr['PQR_FECHA_CREACION'],nonWorkingDays,businessDays),
         pqrsdfId:pqr['PQR_CODIGO'],
         sbrEstado:pqr['SBR_ESTADO']
       }
