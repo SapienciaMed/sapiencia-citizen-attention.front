@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { Column, ColumnEvent } from "primereact/column"
 import { DataTable, DataTableRowEvent, DataTableSelectionChangeEvent } from "primereact/datatable";
+import { AppContext } from "../../contexts/app.context"; 
 import { FilterMatchMode, FilterOperator } from 'primereact/api';
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown"
 import { InputTextarea } from "primereact/inputtextarea";
@@ -45,7 +46,7 @@ interface Props {
 }
 
 export const TableManagePqrsdfComponent = (props:Props) => {
-
+    const { authorization } = useContext(AppContext);
     const pqrsdfService = usePqrsdfService();
 
     const { statusReq, dataPqrsdf,  getPqrsdfClose } = props;
@@ -161,6 +162,8 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                             </Link>
                         </div>
                         <div>
+                        {authorization?.allowedActions &&
+                        authorization?.allowedActions?.findIndex((i) => i == "SOLICITAR_REABRIR") >= 0 && (
                             <Link to={''} onClick={()=>managetPqrsdf(pqrsdf.pqrsdfId)}>
                                 <Tooltip target=".custom-target-icon" style={{borderRadius:'1px'}} />
                                 <i className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center"
@@ -174,6 +177,7 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                                 </i>
 
                             </Link>
+                        )}
                         </div>
                     </>)}
                 </div>
