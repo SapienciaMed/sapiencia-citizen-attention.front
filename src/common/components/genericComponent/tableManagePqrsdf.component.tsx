@@ -41,13 +41,14 @@ interface PageNumber {
 interface Props {
     statusReq: boolean;
     dataPqrsdf: Ipqrsdf[];
+    getPqrsdfClose?: ()=>void
 }
 
 export const TableManagePqrsdfComponent = (props:Props) => {
 
     const pqrsdfService = usePqrsdfService();
 
-    const { statusReq, dataPqrsdf } = props;
+    const { statusReq, dataPqrsdf,  getPqrsdfClose } = props;
     const [customers, setCustomers] = useState(null);
     const [filters, setFilters] = useState(null);
     const [globalFilterValue, setGlobalFilterValue] = useState('');
@@ -254,7 +255,11 @@ export const TableManagePqrsdfComponent = (props:Props) => {
         {pqrsdfId: iDdpqrsdf}]};
 
         const resp = await createReopen(justification);
-        setVisible(false);
+        if(resp.data){
+          setVisible(false);
+          getPqrsdfClose()
+        }
+        
      reset()
     };
 

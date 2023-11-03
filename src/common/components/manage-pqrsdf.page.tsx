@@ -188,6 +188,7 @@ const ManagePqrsdf = () => {
                 <TableManagePqrsdfComponent 
                   statusReq={statusRequest}
                   dataPqrsdf={pqrs}
+                  getPqrsdfClose={()=>getPqrsdf({typeReques:3})}
                 />
               </Card>
             </Card>
