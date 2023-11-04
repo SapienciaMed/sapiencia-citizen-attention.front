@@ -108,7 +108,7 @@ const ManagePqrsdf = () => {
         names: `${pqr['PER_PRIMER_NOMBRE']} ${pqr['PER_SEGUNDO_NOMBRE']} ${pqr['PER_PRIMER_APELLIDO']} ${pqr['PER_SEGUNDO_APELLIDO']}`,
         program: pqr['PRG_DESCRIPCION'],
         asunto: pqr['ASO_ASUNTO'],
-        fechaRadicado: moment(pqr['PQR_FECHA_CREACION']).format('YYYY-MM-DD') ,
+        fechaRadicado: moment(pqr['PQR_FECHA_CREACION']).format('DD-MM-YYYY') ,
         estado: pqr['LEP_ESTADO'],
         fechaProrroga: "10/20/2023",
         dias: countDays(pqr['PQR_FECHA_CREACION'],nonWorkingDays,businessDays),
