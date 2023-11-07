@@ -45,6 +45,19 @@ const ManagePqrsdf = () => {
     return diasTranscurridos    
   }*/
 
+  function countDaysCalendar(fechaInicial) {
+    // Parsea la fecha inicial en el formato deseado
+    const fechaInicialMoment = moment(fechaInicial, 'YYYY-MM-DD');
+  
+    // Obtiene la fecha actual
+    const fechaActualMoment = moment();
+  
+    // Calcula la diferencia en días
+    const diasTranscurridos = fechaActualMoment.diff(fechaInicialMoment, 'days');
+  
+    return diasTranscurridos;
+  }
+
   const countDays = (initialDate: moment.MomentInput, holidays: string[], customWorkingDays: string[] = []) => {
     const Dateformt = moment(initialDate).format('YYYY-MM-DD');
     const fechaInicial = moment(Dateformt);
@@ -56,7 +69,6 @@ const ManagePqrsdf = () => {
       if (
         fechaInicial.day() !== 6 &&
         fechaInicial.day() !== 0 &&
-        !holidays.some((festivo) => moment(festivo).isSame(fechaInicial, 'day')) &&
         !customWorkingDays.some((workingDay) => moment(workingDay).isSame(fechaInicial, 'day'))
       ) {
         diasTranscurridos++;
@@ -97,7 +109,6 @@ const ManagePqrsdf = () => {
   const getPqrsdf = async (param:IrequestPqrsdf)=>{   
     
     const {nonWorkingDays,businessDays} = await daysParametrization()
-    
     const resp = await pqrsdfService.getPqrsdfByRequest(param)
     const { data } = resp;
     
@@ -111,7 +122,7 @@ const ManagePqrsdf = () => {
         fechaRadicado: moment(pqr['PQR_FECHA_CREACION']).format('DD-MM-YYYY') ,
         estado: pqr['LEP_ESTADO'],
         fechaProrroga: "10/20/2023",
-        dias: countDays(pqr['PQR_FECHA_CREACION'],nonWorkingDays,businessDays),
+        dias: pqr['OBS_TIPO_DIAS'] === 'Calendario'?countDaysCalendar(pqr['PQR_FECHA_CREACION']): countDays(pqr['PQR_FECHA_CREACION'],nonWorkingDays,businessDays),
         pqrsdfId:pqr['PQR_CODIGO'],
         sbrEstado:pqr['SBR_ESTADO']
       }
