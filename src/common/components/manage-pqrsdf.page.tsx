@@ -181,7 +181,7 @@ const ManagePqrsdf = () => {
         <div className='container-div' >
             <Card title={<p className='text-3xl block pb-5'>Gestionar PQRDSF</p>}  className='card-container card-top'>
               <div className='flex flex-row justify-between mt-10 card-mobil'>
-                <Card className='zise-card box1'>
+                <Card className='zise-card box1 shadow-none'>
                   <div className='box-mobil'>
                     <div className='flex justify-end'>
                       <div className='punto1 mb-4'></div>
@@ -192,7 +192,7 @@ const ManagePqrsdf = () => {
                     </div>
                   </div>
                 </Card>
-                <Card className='zise-card box2'>
+                <Card className='zise-card box2 shadow-none'>
                   <div className='box-mobil'>
                     <div className='flex justify-end'>
                       <div className='punto2 mb-4'></div>
@@ -203,7 +203,7 @@ const ManagePqrsdf = () => {
                       </div>
                   </div>
                 </Card>
-                <Card className='zise-card box3'>
+                <Card className='zise-card box3 shadow-none'>
                   <div className='box-mobil'>
                     <div className='flex justify-end'>
                       <div className='punto3 mb-4'></div>
@@ -213,7 +213,7 @@ const ManagePqrsdf = () => {
                     </div>
                   </div>
                 </Card>
-                <Card className='zise-card box4'>
+                <Card className='zise-card box4 shadow-none'>
                   <div className='box-mobil'>
                     <div className='flex justify-end'>
                       <div className='punto4 mb-4'></div>

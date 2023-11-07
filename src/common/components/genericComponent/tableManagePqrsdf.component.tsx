@@ -346,23 +346,25 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                 globalFilterFields={['names','program','asunto','estado','radicado', 'identification','fechaRadicado','dias']}
                 rowClassName={(rowData) => rowData.sbrEstado === 1?'color-row':''}
             >
-                <Column style={{ textAlign: "center" }} field="radicado" header="Radicado"></Column>
-                <Column style={{ textAlign: "center" }} headerStyle={{ width: '3rem' }} body={(data, options) => 'CC'}></Column>
-                <Column style={{ textAlign: "center" }} field={"identification"} header={<p style={{width:'112px'}}>Doc. Identidad</p>}></Column>
-                <Column style={{ textAlign: "center" }} field="names" header={<p style={{width:'146px'}}>Nombre y apellidos</p>}></Column>
+                <Column style={{ textAlign: "center" }} className="!font-sans" field="radicado" header="Radicado"></Column>
+                <Column style={{ textAlign: "center" }} className="!font-sans" headerStyle={{ width: '3rem' }} body={(data, options) => 'CC'}></Column>
+                <Column style={{ textAlign: "center" }} className="!font-sans" field={"identification"} header={<p style={{width:'112px'}}>Doc. Identidad</p>}></Column>
+                <Column style={{ textAlign: "center" }} className="!font-sans" field="names" header={<p style={{width:'146px'}}>Nombre y apellidos</p>}></Column>
                 <Column
                     style={{ textAlign: "center", justifyContent: "center" }}
+                    className="!font-sans"
                     field="program"
                     header="Programa"
                 ></Column>
-                <Column style={{ textAlign: "center" }} field="asunto" header="Asunto"></Column>
-                <Column style={{ textAlign: "center" }} field="fechaRadicado" header={<p style={{width:'124px'}}>Fecha Radicado</p>}></Column>
-                <Column style={{ textAlign: "center" }} field="estado" header="Estado"></Column>
-                <Column style={{ textAlign: "center"}} field="fechaProrroga" header={<p style={{width:'124px'}}>Fecha {tittle}</p>}></Column>
-                <Column style={{ textAlign: "center"}} field="dias" header="Días"></Column>
+                <Column style={{ textAlign: "center" }} className="!font-sans" field="asunto" header="Asunto"></Column>
+                <Column style={{ textAlign: "center" }} className="!font-sans" field="fechaRadicado" header={<p style={{width:'124px'}}>Fecha Radicado</p>}></Column>
+                <Column style={{ textAlign: "center" }} className="!font-sans" field="estado" header="Estado"></Column>
+                <Column style={{ textAlign: "center"}} className="!font-sans" field="fechaProrroga" header={<p style={{width:'124px'}}>Fecha {tittle}</p>}></Column>
+                <Column style={{ textAlign: "center"}} className="!font-sans" field="dias" header="Días"></Column>
                 <Column
                     field="accion"
                     header="Acción"
+                    className="!font-sans"
                     body={accionesIcons}
                     style={{ textAlign: "center"}}
                 ></Column>
