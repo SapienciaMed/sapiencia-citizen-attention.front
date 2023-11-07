@@ -24,7 +24,8 @@ const ManagePqrsdf = () => {
   const [statusRequest, setStatusRequest] = useState<boolean>(true)
   const [pqrs, setPqrs] = useState<object[]>([]);
 
-  /*const countDays = (initialDate: moment.MomentInput, holidays:string[])=>{
+  let weekends = []
+  const countDays = (initialDate: moment.MomentInput, holidays:string[])=>{
     const diasFestivos = holidays
     const Dateformt = moment(initialDate).format('YYYY-MM-DD')
     const fechaInicial = moment(Dateformt);
@@ -38,52 +39,59 @@ const ManagePqrsdf = () => {
             !diasFestivos.some((festivo) => moment(festivo).isSame(fechaInicial, 'day'))
           ) {
         diasTranscurridos++;
-      }
+        
+      } 
+
       fechaInicial.add(1, 'days');
     }
-    
-    return diasTranscurridos    
-  }*/
 
-  function countDaysCalendar(fechaInicial) {
-    // Parsea la fecha inicial en el formato deseado
+    weekends = compareDatesInRange(holidays,initialDate)
+    
+    weekends.forEach((dates)=>{
+      const Dateformt = moment(dates).format('YYYY-MM-DD')
+      let days = moment(Dateformt);
+      
+      if (  days.day() == 6 || days.day() == 0 ) {
+        diasTranscurridos++;
+      } 
+      
+    })
+    
+    return diasTranscurridos-1    
+  }
+
+  function compareDatesInRange(datesArray, startDate) {
+    // Convierte las fechas en objetos Moment
+    const momentStartDate = moment(startDate);
+    const momentEndDate = moment();
+  
+    // Filtra las fechas en el rango especificado
+    const datesInRange = datesArray.filter((date) => {
+      const momentDate = moment(date);
+      return momentDate.isBetween(momentStartDate, momentEndDate, null, "[]");
+    });
+  
+    return datesInRange;
+  }
+
+
+
+  function countDaysCalendar(fechaInicial: moment.MomentInput) {
     const fechaInicialMoment = moment(fechaInicial, 'YYYY-MM-DD');
   
-    // Obtiene la fecha actual
     const fechaActualMoment = moment();
   
-    // Calcula la diferencia en días
     const diasTranscurridos = fechaActualMoment.diff(fechaInicialMoment, 'days');
   
     return diasTranscurridos;
   }
 
-  const countDays = (initialDate: moment.MomentInput, holidays: string[], customWorkingDays: string[] = []) => {
-    const Dateformt = moment(initialDate).format('YYYY-MM-DD');
-    const fechaInicial = moment(Dateformt);
-    const fechaActual = moment();
-    let diasTranscurridos = 0;
-  
-    while (fechaInicial.isBefore(fechaActual)) {
-      // Verifica si el día de la semana no es sábado (6) ni domingo (0)
-      if (
-        fechaInicial.day() !== 6 &&
-        fechaInicial.day() !== 0 &&
-        !customWorkingDays.some((workingDay) => moment(workingDay).isSame(fechaInicial, 'day'))
-      ) {
-        diasTranscurridos++;
-      }
-      fechaInicial.add(1, 'days');
-    }
-  
-    return diasTranscurridos-1;
-  }
 
   const daysParametrization = async ()=>{
     const { data } = await daysServices.getDaysParametrizations();
     
-    const nonWorkingDays = [];
-    const businessDays = [];
+    const workingDays = [];
+ 
     const daysParametrization = await data.map((values:IDaysParametrization)=>{
       return{
         daysParametrization:values['daysParametrizationDetails']
@@ -93,22 +101,21 @@ const ManagePqrsdf = () => {
     daysParametrization.forEach((values)=>{      
       values.daysParametrization.forEach((value:Detail)=>{
         if(value){
-          if(value.dayTypeId===2 || value.dayTypeId===3){
-            nonWorkingDays.push(value.detailDate)
-          }
-          if(value.dayTypeId===1){
-            businessDays.push(value.detailDate)
-          }
+         
+          workingDays.push(value.detailDate)
+          
+  
         }
       })
     })
     
-    return {nonWorkingDays,businessDays}
+    return workingDays
   }
 
   const getPqrsdf = async (param:IrequestPqrsdf)=>{   
     
-    const {nonWorkingDays,businessDays} = await daysParametrization()
+    const workingDays = await daysParametrization();
+
     const resp = await pqrsdfService.getPqrsdfByRequest(param)
     const { data } = resp;
     
@@ -122,7 +129,7 @@ const ManagePqrsdf = () => {
         fechaRadicado: moment(pqr['PQR_FECHA_CREACION']).format('DD-MM-YYYY') ,
         estado: pqr['LEP_ESTADO'],
         fechaProrroga: "10/20/2023",
-        dias: pqr['OBS_TIPO_DIAS'] === 'Calendario'?countDaysCalendar(pqr['PQR_FECHA_CREACION']): countDays(pqr['PQR_FECHA_CREACION'],nonWorkingDays,businessDays),
+        dias: pqr['OBS_TIPO_DIAS'] === 'Calendario'?countDaysCalendar(pqr['PQR_FECHA_CREACION']): countDays(pqr['PQR_FECHA_CREACION'],workingDays),
         pqrsdfId:pqr['PQR_CODIGO'],
         sbrEstado:pqr['SBR_ESTADO']
       }

@@ -50,7 +50,6 @@ export const TableManagePqrsdfComponent = (props:Props) => {
     const pqrsdfService = usePqrsdfService();
 
     const { statusReq, dataPqrsdf,  getPqrsdfClose } = props;
-    console.log('-->', statusReq);
     
     const [customers, setCustomers] = useState(null);
     const [filters, setFilters] = useState(null);
