@@ -50,6 +50,8 @@ export const TableManagePqrsdfComponent = (props:Props) => {
     const pqrsdfService = usePqrsdfService();
 
     const { statusReq, dataPqrsdf,  getPqrsdfClose } = props;
+    console.log('-->', statusReq);
+    
     const [customers, setCustomers] = useState(null);
     const [filters, setFilters] = useState(null);
     const [globalFilterValue, setGlobalFilterValue] = useState('');
@@ -57,6 +59,8 @@ export const TableManagePqrsdfComponent = (props:Props) => {
     const pageNumber: PageNumber[] = [{ page: 5 }, { page: 10 }, { page: 15 }, { page: 20 }];
     const [visible, setVisible] = useState<boolean>(false);
     const [iDdpqrsdf, setIDdpqrsdf] = useState<number>();
+    const [nRadicado, setnRadicado] = useState<number>();
+    const [tittle, setTittle] = useState<string>();
 
     useEffect(() => {
       
@@ -64,6 +68,14 @@ export const TableManagePqrsdfComponent = (props:Props) => {
       
       initFilters();
   }, []);
+
+  useEffect(() => {
+      if(statusReq){
+        setTittle('Prórroga')
+      }else{
+        setTittle('Cierre')
+      }
+}, [statusReq]);
 
   const getCustomers = (data) => {
     return [...(data || [])].map((d) => {
@@ -164,7 +176,7 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                         <div>
                         {authorization?.allowedActions &&
                         authorization?.allowedActions?.findIndex((i) => i == "SOLICITAR_REABRIR") >= 0 && (
-                            <Link to={''} onClick={()=>managetPqrsdf(pqrsdf.pqrsdfId)}>
+                            <Link to={''} onClick={()=>managetPqrsdf(pqrsdf.pqrsdfId,pqrsdf.radicado)}>
                                 <Tooltip target=".custom-target-icon" style={{borderRadius:'1px'}} />
                                 <i className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center"
                                     data-pr-tooltip="Solicitar reabrir"
@@ -245,9 +257,10 @@ export const TableManagePqrsdfComponent = (props:Props) => {
       return resp;
     }
 
-    const managetPqrsdf = (id:number)=>{
-      setVisible(true)
-      setIDdpqrsdf(id)
+    const managetPqrsdf = (id:number,radicado:number)=>{
+      setVisible(true);
+      setIDdpqrsdf(id);
+      setnRadicado(radicado);
     }
     
     const onSubmit = async (data:{justification:string}) => {
@@ -256,7 +269,10 @@ export const TableManagePqrsdfComponent = (props:Props) => {
         srb_justificacion:data['justification'],
         sbr_estado: true
         },
-        {pqrsdfId: iDdpqrsdf}]};
+        {
+          pqrsdfId: iDdpqrsdf,
+          radicado: nRadicado
+        }]};
 
         const resp = await createReopen(justification);
         if(resp.data){
@@ -343,7 +359,7 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                 <Column style={{ textAlign: "center" }} field="asunto" header="Asunto"></Column>
                 <Column style={{ textAlign: "center" }} field="fechaRadicado" header={<p style={{width:'124px'}}>Fecha Radicado</p>}></Column>
                 <Column style={{ textAlign: "center" }} field="estado" header="Estado"></Column>
-                <Column style={{ textAlign: "center"}} field="fechaProrroga" header={<p style={{width:'124px'}}>Fecha Prórroga</p>}></Column>
+                <Column style={{ textAlign: "center"}} field="fechaProrroga" header={<p style={{width:'124px'}}>Fecha {tittle}</p>}></Column>
                 <Column style={{ textAlign: "center"}} field="dias" header="Días"></Column>
                 <Column
                     field="accion"

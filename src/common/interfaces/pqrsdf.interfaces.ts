@@ -152,4 +152,5 @@ export interface Justification {
   srb_justificacion?: string;
   sbr_estado?:        boolean;
   pqrsdfId?:          number;
+  radicado?:       number;
 }
