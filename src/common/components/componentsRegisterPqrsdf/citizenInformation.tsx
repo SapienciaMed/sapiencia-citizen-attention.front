@@ -384,7 +384,7 @@ export const CitizenInformation = ({ isPerson = false, channel,resetChanel }: Pr
     };
     SetstatusSummit(true)
     const respFile = await pqrsdfService.upLoadFile(file);
-    const resp = await pqrsdfService.createPqrsdf(pqrsdf);
+    const resp = await pqrsdfService.createPqrsdf(pqrsdf,file);
 
     if (resp.operation["code"] == "OK") {
       radicado.current = resp.data.filingNumber;

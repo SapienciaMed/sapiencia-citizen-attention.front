@@ -3,11 +3,13 @@ import { IPerson, IPersonFilters } from "../interfaces/person.interfaces";
 import { IPqrsdf, IpqrsdfByReques, IrequestPqrsdf, IrequestReopen } from "../interfaces/pqrsdf.interfaces";
 import { ApiResponse, IPagingData } from "../utils/api-response";
 import useCrudService from "./crud-service.hook";
+import formDataService from "./form-data.hook";
 
 export function usePqrsdfService() {
   const baseURL: string = process.env.urlApiCitizenAttention;
   const listUrl: string = "/api/v1/pqrsdf";
   const { get, post, upload } = useCrudService(baseURL);
+  const service = formDataService(baseURL);
 
   async function getPqrsdfs(): Promise<ApiResponse<IPqrsdf[] | []>> {
     try {
@@ -60,21 +62,24 @@ export function usePqrsdfService() {
     }
   }
 
-  async function createPqrsdf(pqrsdf: IPqrsdf): Promise<ApiResponse<IPqrsdf>> {
+  async function createPqrsdf(pqrsdf: IPqrsdf, file:string | Blob): Promise<ApiResponse<IPqrsdf>> {
+    const formData = new FormData();
+    formData.append('files', file)
+    formData.append('pqrsdf', JSON.stringify(pqrsdf))
     try {
       const endpoint: string = `/create/`;
-      return await post(`${listUrl}${endpoint}`, { pqrsdf });
+      return await service.post(`${listUrl}${endpoint}`, formData );
     } catch (error) {
       return new ApiResponse({} as IPqrsdf, EResponseCodes.FAIL, "Error no controlado");
     }
   }
   
-  async function upLoadFile(file) {
+  async function upLoadFile(file: string | Blob) {
     const formData = new FormData();
     formData.append('files', file);
     try {
       const endpoint: string = `/upload`;
-      return await upload(`${listUrl}${endpoint}`,  formData );
+      return await service.post(`${listUrl}${endpoint}`,  formData );
     } catch (error) {
       return new ApiResponse({} as IPagingData<IPerson | null>, EResponseCodes.FAIL, "Error no controlado");
     }
