@@ -16,11 +16,11 @@ interface Atributos {
 }
 
 export const UploadComponent = (props: Atributos) => {
-  const { id, dataArchivo, showModal } = props;
+  const { id, dataArchivo, showModal} = props;
   const fileGlobal = useRef(null)
 
   const [visible, setVisible] = useState(false);
-
+  const [fileValue, setFileValue]=useState<number>(0)
   const toast = useRef(null);
   const [totalSize, setTotalSize] = useState(0);
   const fileUploadRef = useRef(null);
@@ -67,8 +67,9 @@ export const UploadComponent = (props: Atributos) => {
   const headerTemplate = (options) => {    
     
     const { className, chooseButton, uploadButton, cancelButton } = options;
-    const value = totalSize / 10000;
+    const value = totalSize / 100000;
     const formatedValue = fileUploadRef && fileUploadRef.current ? fileUploadRef.current.formatSize(totalSize) : "0 B";
+    setFileValue(value)
 
     return (
       <div className={className} style={{ backgroundColor: "transparent", display: "flex", alignItems: "center" }}>
@@ -76,7 +77,7 @@ export const UploadComponent = (props: Atributos) => {
         {uploadButton}
         {cancelButton}
         <div className="flex align-items-center gap-3 ml-auto">
-          <span>{formatedValue} / 1 MB</span>
+          <span>{formatedValue} / 10 MB</span>
           <ProgressBar value={value} showValue={false} style={{ width: "10rem", height: "12px" }}></ProgressBar>
         </div>
       </div>
@@ -91,6 +92,11 @@ export const UploadComponent = (props: Atributos) => {
     if (extencion[extencion.length - 1] !== "pdf") {
       onTemplateRemove(file, props.onRemove);
       return;
+    }
+
+    if(fileValue > 100 ){
+      onTemplateRemove(file, props.onRemove);
+      clearFile();
     }
 
     if(fileGlobal.current){
@@ -201,7 +207,7 @@ export const UploadComponent = (props: Atributos) => {
         name="demo[]"
         multiple={false}
         accept=".pdf"
-        maxFileSize={1000000}
+        maxFileSize={10000000}
         onUpload={onTemplateUpload}
         onSelect={onTemplateSelect}
         onError={onTemplateClear}
