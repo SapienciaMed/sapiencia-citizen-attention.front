@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Card } from 'primereact/card';
-import { TableManagePqrsdfComponent } from './genericComponent/tableManagePqrsdf.component';
 import { usePqrsdfService } from '../hooks/PqrsdfService.hook';
 import { useDaysParametrizationService } from '../hooks/daysParametrizationService.hook';
+import { IDaysParametrization } from '../interfaces/daysParametrization.interfaces';
 import { IrequestPqrsdf, IpqrsdfByReques } from '../interfaces/pqrsdf.interfaces';
 import moment from 'moment-timezone';
-
-import { IDaysParametrization } from '../interfaces/daysParametrization.interfaces';
+import { ManagetPqrsdfComponent } from './genericComponent/managetPqrsdf.component';
+import { TableManagePqrsdfComponent } from './genericComponent/tableManagePqrsdf.component';
 
 import "../../styles/managePgrsdf-style.scss";
+
 
 interface Detail {
   detailDate?:string;
@@ -23,6 +24,9 @@ const ManagePqrsdf = () => {
 
   const [statusRequest, setStatusRequest] = useState<boolean>(true)
   const [pqrs, setPqrs] = useState<object[]>([]);
+  const [getPqrsdfId, setGetPqrsdfId] = useState<number>();
+  const [getManagetStatus, setManagetStatus] = useState<boolean>(false);  
+  
 
   let weekends = []
   const countDays = (initialDate: moment.MomentInput, holidays:string[])=>{
@@ -180,7 +184,8 @@ const ManagePqrsdf = () => {
     <>
         <div className='container-div' >
             <Card title={<p className='text-3xl block pb-5'>Gestionar PQRDSF</p>}  className='card-container card-top'>
-              <div className='flex flex-row justify-between mt-10 card-mobil'>
+              {/*getManagetStatus*/false?(<></>):( 
+                <div className='flex flex-row justify-between mt-10 card-mobil'>
                 <Card className='zise-card box1 shadow-none'>
                   <div className='box-mobil'>
                     <div className='flex justify-end'>
@@ -224,17 +229,27 @@ const ManagePqrsdf = () => {
                   </div>
                 </Card>
               </div>
+              )}
               <div className='div-end mt-10 mb-10'>
                 <button className='btn-t btn-1' id='btn-1' onClick={()=>focusBtn('btn-1')}>Solicitudes en trámite</button>
                 <button className='btn-t btn-2' id='btn-2' onClick={()=>focusBtn('btn-2')}>Solicitudes cerradas</button>
               </div>
-              <Card className='card-container mt-10 card-bottom'>
+              { /*getManagetStatus*/false?(  
+                <ManagetPqrsdfComponent/>      
+              ):(
+                <Card className='card-container mt-10 card-bottom'>
                 <TableManagePqrsdfComponent 
                   statusReq={statusRequest}
                   dataPqrsdf={pqrs}
                   getPqrsdfClose={()=>getPqrsdf({typeReques:3})}
+                  managetPqr={(e)=>{
+                    setGetPqrsdfId(e.pqrsdfId),
+                    setManagetStatus(e.managetStatus)
+                  }}
                 />
-              </Card>
+                </Card>
+              )}
+
             </Card>
         </div>
     </>

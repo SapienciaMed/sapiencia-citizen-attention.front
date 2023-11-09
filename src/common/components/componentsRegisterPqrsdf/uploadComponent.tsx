@@ -207,7 +207,6 @@ export const UploadComponent = (props: Atributos) => {
         name="demo[]"
         multiple={false}
         accept=".pdf"
-        maxFileSize={10000000}
         onUpload={onTemplateUpload}
         onSelect={onTemplateSelect}
         onError={onTemplateClear}

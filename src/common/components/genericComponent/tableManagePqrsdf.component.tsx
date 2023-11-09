@@ -15,8 +15,8 @@ import { Dialog } from "primereact/dialog";
 import { Card } from "primereact/card";
 import { usePqrsdfService } from "../../hooks/PqrsdfService.hook";
 import "../../../styles/table-movil-style.scss"
-import { IpqrsdfByReques, IrequestReopen } from "../../interfaces/pqrsdf.interfaces";
-import { date } from "yup";
+import { IrequestReopen } from "../../interfaces/pqrsdf.interfaces";
+
 
 
 
@@ -42,14 +42,15 @@ interface PageNumber {
 interface Props {
     statusReq: boolean;
     dataPqrsdf: Ipqrsdf[];
-    getPqrsdfClose?: ()=>void
+    getPqrsdfClose?: ()=>void;
+    managetPqr?: (data:{pqrsdfId:number,managetStatus:boolean})=>void;
 }
 
 export const TableManagePqrsdfComponent = (props:Props) => {
     const { authorization } = useContext(AppContext);
     const pqrsdfService = usePqrsdfService();
 
-    const { statusReq, dataPqrsdf,  getPqrsdfClose } = props;
+    const { statusReq, dataPqrsdf,  getPqrsdfClose, managetPqr } = props;
     
     const [customers, setCustomers] = useState(null);
     const [filters, setFilters] = useState(null);
@@ -139,7 +140,7 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                     {statusReq?(
                     <>
                         <div className=''>
-                            <Link to={''}>
+                            <Link to={''} onClick={()=>managetPqr({pqrsdfId:pqrsdf.pqrsdfId,managetStatus:true})}>
                                 <Tooltip target=".custom-target-icon" style={{borderRadius:'1px'}} />
                                 <i className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center"
                                     data-pr-tooltip="Gestionar"
