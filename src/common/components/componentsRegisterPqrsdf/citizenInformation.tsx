@@ -1327,7 +1327,7 @@ export const CitizenInformation = ({ isPerson = false, channel,resetChanel }: Pr
             ></path>
           </svg>
         </label>
-        {file != undefined ? <div className="flex items-center">
+        {file != undefined && file.name ? <div className="flex items-center">
           <div>
             <button 
               className="!text-base !text-red-500"

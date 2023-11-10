@@ -8,6 +8,7 @@ import { trashIcon } from "../icons/trash";
 import { clip } from "../icons/clip";
 import { imagesicon } from "../icons/images";
 import { fileIcon } from "../icons/file-icon";
+import { MessageComponent } from "../componentsEditWorkEntities/message.component"; 
 
 interface Atributos {
   id: string;
@@ -20,6 +21,7 @@ export const UploadComponent = (props: Atributos) => {
   const fileGlobal = useRef(null)
 
   const [visible, setVisible] = useState(false);
+  const [largeFile, setLargeFile] = useState(false);
   const [fileValue, setFileValue]=useState<number>(0)
   const toast = useRef(null);
   const [totalSize, setTotalSize] = useState(0);
@@ -96,6 +98,7 @@ export const UploadComponent = (props: Atributos) => {
 
     if(fileValue > 100 ){
       onTemplateRemove(file, props.onRemove);
+      setLargeFile(true)
       clearFile();
     }
 
@@ -197,6 +200,14 @@ export const UploadComponent = (props: Atributos) => {
 
   return (
     <div>
+      {largeFile?(<>
+        <MessageComponent 
+          headerMsg="Error" 
+          msg="El Tamaño del Archivo Supera el Límite Permitido" 
+          nameBtn1="Cerrar"
+          twoBtn={false} 
+          onClickBt1={()=>setLargeFile(false)}
+          /></>):(<></>)}
       <Tooltip target=".custom-choose-btn" content="Choose" position="bottom" />
       <Tooltip target=".custom-upload-btn" content="Upload" position="bottom" />
       <Tooltip target=".custom-cancel-btn" content="Clear" position="bottom" />
