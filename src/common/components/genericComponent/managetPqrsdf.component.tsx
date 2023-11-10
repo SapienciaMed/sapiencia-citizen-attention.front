@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
@@ -11,12 +12,51 @@ import { Column } from "primereact/column";
 import { InputTextarea } from "primereact/inputtextarea";
 import { UploadComponent } from "../componentsRegisterPqrsdf/uploadComponent";
 
+import { mastersTablesServices } from "../../hooks/masterTables.hook"
+import { Countrys, Departament, IMunicipality, ItypeRFequest, tej_nombre } from "../../interfaces/mastersTables.interface";
+
+interface MasterTable {
+
+}
+
 interface City {
     name: string;
     code: string;
 }
 
 export const ManagetPqrsdfComponent = () => {
+    const mastetablesServices = mastersTablesServices()
+
+    const [typeReques, setTypeRequest] = useState<ItypeRFequest[]>();
+    const [typelegalEntity, setTypelegalEntity] = useState<tej_nombre[]>();
+    const [countrys, setCountrys] = useState<Countrys[]>();
+    const [departamets, setDepartamet] = useState<Departament[]>();
+    const [municipalitys, setMunicipalitys] = useState<IMunicipality[]>();
+
+    const getDataMasterTables = async() =>{
+        const typeRequest = await mastetablesServices.getTypeRequest();
+        const typeLegalEntity = await mastetablesServices.getTypeLegalentity();
+        const coutry = await mastetablesServices.getCountrys();
+        const departament = await mastetablesServices.getDepartament();
+        const municipality = await mastetablesServices.getMunicipality();
+        return {
+            typeRequest,
+            typeLegalEntity,
+            coutry,
+            departament,
+            municipality
+        }   
+    }
+
+    useEffect(()=>{
+        getDataMasterTables().then(({typeRequest,typeLegalEntity,coutry,departament,municipality})=>{
+            setTypeRequest(typeRequest.data);
+            setTypelegalEntity(typeLegalEntity.data);
+            setCountrys(coutry.data);
+            setDepartamet(departament.data);
+            setMunicipalitys(municipality.data);
+        })
+    },[])
 
     const cities: City[] = [
         { name: 'New York', code: 'NY' },
@@ -29,10 +69,12 @@ export const ManagetPqrsdfComponent = () => {
     const defaultValues = {
         typeOfRequest: "",
         noDocument: "",
-        typeEntity:'',
+        typeLegalEntity:'',
+        nameCountry:'',
+        nameDepartament:'',
+        municipality:'',
         file:''
         //tipo: "",
-      
         //medioRespuesta: "",
        // programaSolicitud: "",
        // asuntoSolicitud: "",
@@ -66,10 +108,7 @@ export const ManagetPqrsdfComponent = () => {
         getValues,
         watch,
         register,
-      } = useForm({ defaultValues, mode: "all" });
-
-      console.log('->> ',isValid);
-      
+      } = useForm({ defaultValues, mode: "all" });      
 
     const getFormErrorMessage = (name) => {
         return errors[name] ? (
@@ -79,9 +118,22 @@ export const ManagetPqrsdfComponent = () => {
         );
       };
 
+      let today = new Date();
+      let month = today.getMonth();
+      let year = today.getFullYear();
+      let prevMonth = month === 0 ? 11 : month - 1;
+      let prevYear = prevMonth === 11 ? year - 1 : year;
+      let nextMonth = month === 11 ? 0 : month ;
+      let nextYear = nextMonth === 0 ? year + 1 : year;
+  
+      let maxDate = new Date();
+  
+      maxDate.setMonth(nextMonth);
+      maxDate.setFullYear(nextYear);
+
   return (
     <>
-    <div className="flex justify-between">
+    <div className="flex justify-between items-center">
         <div className="mr-4 div-30">
             <label>Tipo de solicitud<span className="text-red-600">*</span></label>
             <br />
@@ -90,17 +142,20 @@ export const ManagetPqrsdfComponent = () => {
                 control={control}
                 rules={{ required: 'Campo obligatorio.'}}
                 render={({ field, fieldState }) => (
+                    <>
                         <Dropdown
                             id={field.name}
                             value={field.value}
-                            optionLabel="name"
+                            optionLabel="tso_description"
                             placeholder="Seleccionar"
                             showClear 
-                            options={cities}
+                            options={typeReques}
                             focusInputRef={field.ref}
                             onChange={(e) => field.onChange(e.value)}
                             className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
                         />
+                        {getFormErrorMessage(field.name)}
+                    </>
                 )}
             />
         </div>
@@ -120,7 +175,8 @@ export const ManagetPqrsdfComponent = () => {
                             <InputText 
                                 id={field.name} 
                                 value={field.value} 
-                                className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center div-100')}
+                                disabled
+                                className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center div-100 input-desabled')}
                                 onChange={(e) => field.onChange(e.target.value)} />
                         </span>
                         {getFormErrorMessage(field.name)}
@@ -132,21 +188,24 @@ export const ManagetPqrsdfComponent = () => {
         <div className="div-30">
             <label>Tipo entidad<span className="text-red-600">*</span></label>
             <Controller
-                name="typeEntity"
+                name="typeLegalEntity"
                 control={control}
                 rules={{ required: 'Campo obligatorio.'}}
                 render={({ field, fieldState }) => (
+                    <>
                         <Dropdown
                             id={field.name}
                             value={field.value}
-                            optionLabel="name"
+                            optionLabel="tej_nombre"
                             placeholder="Seleccionar"
                             showClear 
-                            options={cities}
+                            options={typelegalEntity}
                             focusInputRef={field.ref}
                             onChange={(e) => field.onChange(e.value)}
                             className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
                         />
+                        {getFormErrorMessage(field.name)}
+                    </>
                 )}
             />
         </div>
@@ -289,7 +348,9 @@ export const ManagetPqrsdfComponent = () => {
                                         inputId={field.name} 
                                         value={field.value} 
                                         onChange={field.onChange} 
-                                        dateFormat="dd/mm/yy" 
+                                        dateFormat="dd/mm/yy"
+                                        placeholder='DD / MM / AAA'
+                                        maxDate={maxDate}  
                                         className={classNames({ 'p-invalid': fieldState.error },'h-10')} 
                                     />
                                     <svg width="19" height="19" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -403,11 +464,11 @@ export const ManagetPqrsdfComponent = () => {
                     />
                  </div>
             </div>
-            <div className="flex">
+            <div className="flex items-center">
                 <div className="mr-4 div-25">
                     <label>País</label>
                     <Controller
-                        name="noDocument"
+                        name="nameCountry"
                         control={control}
                         rules={{
                             required: 'Campo obligatorio.',
@@ -418,10 +479,10 @@ export const ManagetPqrsdfComponent = () => {
                                 <Dropdown
                                     id={field.name}
                                     value={field.value}
-                                    optionLabel="name"
+                                    optionLabel="LGE_ELEMENTO_DESCRIPCION"
                                     placeholder="Seleccionar"
                                     showClear 
-                                    options={cities}
+                                    options={countrys}
                                     focusInputRef={field.ref}
                                     onChange={(e) => field.onChange(e.value)}
                                     className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
@@ -434,7 +495,7 @@ export const ManagetPqrsdfComponent = () => {
                  <div className="mr-4 div-25">
                     <label>Departamento<span className="text-red-600">*</span></label>
                     <Controller
-                        name="noDocument"
+                        name="nameDepartament"
                         control={control}
                         rules={{
                             required: 'Campo obligatorio.',
@@ -445,10 +506,10 @@ export const ManagetPqrsdfComponent = () => {
                                 <Dropdown
                                     id={field.name}
                                     value={field.value}
-                                    optionLabel="name"
+                                    optionLabel="LGE_ELEMENTO_DESCRIPCION"
                                     placeholder="Seleccionar"
                                     showClear 
-                                    options={cities}
+                                    options={departamets}
                                     focusInputRef={field.ref}
                                     onChange={(e) => field.onChange(e.value)}
                                     className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
@@ -461,7 +522,7 @@ export const ManagetPqrsdfComponent = () => {
                  <div className="mr-4 div-25">
                     <label>Municipio</label>
                     <Controller
-                        name="noDocument"
+                        name="municipality"
                         control={control}
                         rules={{
                             required: 'Campo obligatorio.',
@@ -472,10 +533,10 @@ export const ManagetPqrsdfComponent = () => {
                                 <Dropdown
                                     id={field.name}
                                     value={field.value}
-                                    optionLabel="name"
+                                    optionLabel="LGE_ELEMENTO_DESCRIPCION"
                                     placeholder="Seleccionar"
                                     showClear 
-                                    options={cities}
+                                    options={municipalitys}
                                     focusInputRef={field.ref}
                                     onChange={(e) => field.onChange(e.value)}
                                     className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}

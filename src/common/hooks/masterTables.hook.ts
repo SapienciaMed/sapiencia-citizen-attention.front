@@ -1,5 +1,5 @@
 import { EResponseCodes } from "../constants/api.enum";
-import { IChannelAttetion, IChannelAttetionDetail, ItypeDocument } from "../interfaces/mastersTables.interface";
+import { Countrys, Departament, IChannelAttetion, IChannelAttetionDetail, IMunicipality, ItypeDocument, ItypeRFequest, tej_nombre } from "../interfaces/mastersTables.interface";
 import { ApiResponse } from "../utils/api-response";
 import useCrudService from "./crud-service.hook";
 
@@ -36,10 +36,60 @@ export function mastersTablesServices() {
       }
     };
 
+    async function getTypeRequest(): Promise<ApiResponse<ItypeRFequest[]>> {
+      try {
+        const endpoint: string = `/request-types`;
+        return await get(`${listUrl}${endpoint}`);
+      } catch (error) {
+        return new ApiResponse([], EResponseCodes.FAIL, "Error no controlado");
+      }
+    };
+
+    async function getTypeLegalentity(): Promise<ApiResponse<tej_nombre[]>> {
+      try {
+        const endpoint: string = `/get-type-legal-entity`;
+        return await get(`${listUrl}${endpoint}`);
+      } catch (error) {
+        return new ApiResponse([], EResponseCodes.FAIL, "Error no controlado");
+      }
+    };
+    
+    async function getCountrys(): Promise<ApiResponse<Countrys[]>> {
+      try {
+        const endpoint: string = `/get-paises`;
+        return await get(`${endpoint}`);
+      } catch (error) {
+        return new ApiResponse([], EResponseCodes.FAIL, "Error no controlado");
+      }
+    };
+
+    async function getDepartament(): Promise<ApiResponse<Departament[]>> {
+      try {
+        const endpoint: string = `/get-departamentos`;
+        return await get(`${endpoint}`);
+      } catch (error) {
+        return new ApiResponse([], EResponseCodes.FAIL, "Error no controlado");
+      }
+    };
+
+    async function getMunicipality(): Promise<ApiResponse<IMunicipality[]>> {
+      try {
+        const endpoint: string = `/get-municipios/5`;
+        return await get(`${endpoint}`);
+      } catch (error) {
+        return new ApiResponse([], EResponseCodes.FAIL, "Error no controlado");
+      }
+    };
+
     return{
         getDocuemntType,
         getChannelAtencion,
-        getChannelAtencionid
+        getChannelAtencionid,
+        getTypeRequest,
+        getTypeLegalentity,
+        getCountrys,
+        getDepartament,
+        getMunicipality
     }    
     
 }
