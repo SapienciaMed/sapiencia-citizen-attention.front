@@ -18,6 +18,7 @@ import { CnputTextareaComponent } from "./inputTextarea.component";
 import { ScrollPanelComponent } from "./scrollPanelComponent";
 import { TriStateCheckboxComponent } from "./triStateCheckboxComponent";
 import { UploadComponent } from "./uploadComponent";
+import { trashIcon } from "../icons/trash";
 
 const ApiDatatypoSolicitudes = fetchData("/get-type-solicituds");
 const ApiDatatypoDocument = fetchData("/get-type-docuement");
@@ -256,9 +257,29 @@ export const CitizenInformation = ({ isPerson = false, channel,resetChanel }: Pr
     return respuesta;
   };
 
+  const [fileaa, setFileaa] = useState(null);
+
+
+  const handleFileView = () => {
+    if (fileaa) {
+      const reader = new FileReader();
+
+      // Lee el contenido del archivo como un URL de datos
+      reader.onloadend = () => {
+        const fileDataUrl = reader.result;
+
+        // Abre una nueva ventana con el contenido del archivo
+        const newWindow = window.open();
+        newWindow.document.write(`<iframe width="100%" height="100%" src="${fileDataUrl}"></iframe>`);
+      };
+
+      reader.readAsDataURL(file);
+    }
+  };
+
   const getFile = (file: File) => {
     setfile(file);
-
+    setFileaa(file);
     return file;
   };
 
@@ -428,7 +449,7 @@ export const CitizenInformation = ({ isPerson = false, channel,resetChanel }: Pr
       <small className="p-error">&nbsp;</small>
     );
   };
-
+  
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="form-container">
       <div className=" flex justify-content-center">
@@ -1306,7 +1327,25 @@ export const CitizenInformation = ({ isPerson = false, channel,resetChanel }: Pr
             ></path>
           </svg>
         </label>
-        {file != undefined ? <label className="text-red-500">{file.name}</label> : <></>}
+        {file != undefined ? <div className="flex items-center">
+          <div>
+            <button 
+              className="!text-base !text-red-500"
+              onClick={()=>handleFileView()}
+            >
+              {file.name}
+            </button>
+          </div>
+          <div>
+          <Button icon={ trashIcon }
+            onClick={()=>setfile(null)} 
+            rounded 
+            text 
+            severity="danger" 
+            aria-label="Cancel" 
+          />
+          </div>
+        </div>: <></>}
 
         <Button label="Show" style={{ display: "none" }} name="modal" id="modal" onClick={() => setVisible(true)} />
         <Dialog
