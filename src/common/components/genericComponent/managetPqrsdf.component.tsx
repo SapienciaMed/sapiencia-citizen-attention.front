@@ -12,7 +12,8 @@ import { Column } from "primereact/column";
 import { InputTextarea } from "primereact/inputtextarea";
 import { UploadComponent } from "../componentsRegisterPqrsdf/uploadComponent";
 
-import { mastersTablesServices } from "../../hooks/masterTables.hook"
+import { mastersTablesServices } from "../../hooks/masterTables.hook";
+import { usePqrsdfService } from "../../hooks/PqrsdfService.hook";
 import { Countrys, Departament, IMunicipality, ItypeRFequest, tej_nombre } from "../../interfaces/mastersTables.interface";
 
 interface MasterTable {
@@ -25,13 +26,22 @@ interface City {
 }
 
 export const ManagetPqrsdfComponent = () => {
-    const mastetablesServices = mastersTablesServices()
+
+    const mastetablesServices = mastersTablesServices();
+    const pqrsdfService = usePqrsdfService();
 
     const [typeReques, setTypeRequest] = useState<ItypeRFequest[]>();
     const [typelegalEntity, setTypelegalEntity] = useState<tej_nombre[]>();
     const [countrys, setCountrys] = useState<Countrys[]>();
     const [departamets, setDepartamet] = useState<Departament[]>();
     const [municipalitys, setMunicipalitys] = useState<IMunicipality[]>();
+
+    const [requestType, setRequestType] = useState<{tso_codigo?:number,tso_description?:string}>()
+    const [entityDocuement, setEntityDocuement] = useState('')
+    const getInfoPqrsdf = async (id:number)=>{
+        const infoPqrsdf = pqrsdfService.getPqrsdfById(id);
+        return infoPqrsdf
+    }
 
     const getDataMasterTables = async() =>{
         const typeRequest = await mastetablesServices.getTypeRequest();
@@ -47,6 +57,24 @@ export const ManagetPqrsdfComponent = () => {
             municipality
         }   
     }
+
+
+    //pasar id de la pqr este es provicional
+    useEffect(()=>{
+        getInfoPqrsdf(73).then(({data})=>{
+            console.log(data);
+            
+            setRequestType({
+                tso_codigo: data['requestType']['tso_codigo'],
+                tso_description: data['requestType']['tso_description'],
+              });
+            setValue("typeOfRequest",{
+                tso_codigo: data['requestType']['tso_codigo'],
+                tso_description: data['requestType']['tso_description'],
+              },{ shouldDirty: true });
+            setEntityDocuement(`${data['person']['documentType']['itemCode']} ${data['person']['identification']}`);
+        })
+    },[])
 
     useEffect(()=>{
         getDataMasterTables().then(({typeRequest,typeLegalEntity,coutry,departament,municipality})=>{
@@ -67,35 +95,19 @@ export const ManagetPqrsdfComponent = () => {
     ];
 
     const defaultValues = {
-        typeOfRequest: "",
+        typeOfRequest: {
+            tso_codigo: null,
+            tso_description: '',
+          },
         noDocument: "",
         typeLegalEntity:'',
         nameCountry:'',
         nameDepartament:'',
         municipality:'',
         file:''
-        //tipo: "",
-        //medioRespuesta: "",
-       // programaSolicitud: "",
-       // asuntoSolicitud: "",
-   
-       // primerNombre: "",
-       // segundoNombre: "",
-       // primerApellido: "",
-       // segundoApellido: "",
-       // noContacto1: "",
-       // noContacto2: "",
-       // correoElectronico: "",
-       // direccion: "",
-       // pais: "",
-       // departamento: "",
-       // municipio: "",
-       // fechaNacimento: null,
-       // politicaTratamiento: null,
-        //Descripcion: "",
-        //RazonSocial: "",
-        //archivo: "",
       };
+
+
 
     const {
         control,
@@ -108,8 +120,8 @@ export const ManagetPqrsdfComponent = () => {
         getValues,
         watch,
         register,
-      } = useForm({ defaultValues, mode: "all" });      
-
+      } = useForm({ defaultValues, mode: "all" });  
+      
     const getFormErrorMessage = (name) => {
         return errors[name] ? (
           <small className="p-error">{errors[name].message}</small>
@@ -130,7 +142,7 @@ export const ManagetPqrsdfComponent = () => {
   
       maxDate.setMonth(nextMonth);
       maxDate.setFullYear(nextYear);
-
+      
   return (
     <>
     <div className="flex justify-between items-center">
@@ -145,13 +157,17 @@ export const ManagetPqrsdfComponent = () => {
                     <>
                         <Dropdown
                             id={field.name}
-                            value={field.value}
+                            value={requestType}
                             optionLabel="tso_description"
                             placeholder="Seleccionar"
                             showClear 
                             options={typeReques}
                             focusInputRef={field.ref}
-                            onChange={(e) => field.onChange(e.value)}
+                            onChange={(e) => field.onChange(()=>{
+                                console.log(e.value);
+                                setRequestType(e.value)
+                                setValue("typeOfRequest", e.value);
+                            })}
                             className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
                         />
                         {getFormErrorMessage(field.name)}
@@ -168,16 +184,19 @@ export const ManagetPqrsdfComponent = () => {
                 rules={{
                      required: 'Campo obligatorio.',
                      maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
-                     }}
+                }}
                 render={({ field, fieldState }) => (
                     <>
                         <span className="p-float-label">
                             <InputText 
                                 id={field.name} 
-                                value={field.value} 
+                                value={entityDocuement} 
                                 disabled
                                 className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center div-100 input-desabled')}
-                                onChange={(e) => field.onChange(e.target.value)} />
+                                onChange={(e) => field.onChange(()=>{
+                                    setEntityDocuement(e.target.value);
+                                    setValue('noDocument',e.target.value);
+                                })} />
                         </span>
                         {getFormErrorMessage(field.name)}
                     </>
