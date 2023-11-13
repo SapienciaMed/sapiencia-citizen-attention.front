@@ -27,6 +27,7 @@ function App() {
   const EditWorkEntitiesPage = lazy(() => import("./common/components/edit-work-entities.page"));
   const AttentionTocitizens = lazy(() => import("./common/components/attentionTocitizens.page"));
   const ManagePqrsdf = lazy(() => import("./common/components/manage-pqrsdf.page"));
+  const RegisterAttention = lazy(() => import("./common/components/register-attention.page"));
   const { publish } = useAppCominicator();
 
   // Effect que cominica la aplicacion actual
@@ -105,6 +106,7 @@ function App() {
                 path={"/atencion-ciudadana/gestionar-pqrsdf"}
                 element={<PrivateRoute element={<ManagePqrsdf />} allowedAction={"BANDEJA_PQRSDF"} />}
               />
+              <Route path={"/atencion-ciudadana/registrar-atencion"} element={<RegisterAttention />} />
             </Routes>
           </Suspense>
         </Router>
