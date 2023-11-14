@@ -21,6 +21,7 @@ export interface IPqrsdf {
   description: string;
   requestType?: IRequestType;
   person?: IPerson;
+  program?:IProgram;
   answer?: string;
   answerDate?: DateTime;
   responsible?: IWorkEntity;
@@ -31,7 +32,32 @@ export interface IPqrsdf {
   updatedAt?: DateTime;
 }
 
+export interface IProgram {
+  prg_codigo: number;
+  prg_descripcion: string,
+  prg_clasificacion: number;
+  prg_dependencia: number;
+  prg_activo: number;
+  prg_orden: number;
+  depDependencia: IdepDependencia;
+  clpClasificacionPrograma: IclpClasificacionPrograma
+}
 
+
+export interface IclpClasificacionPrograma {
+  clp_codigo: number;
+  clp_descripcion: string,
+  clp_programa: number;
+  clp_activo: number;
+  clp_orden: number;
+}
+
+export interface IdepDependencia  {
+  dep_codigo: 1;
+  dep_descripcion: string;
+  dep_activo: 1;
+  dep_orden: 1;
+}
 
 export interface FormPqrsdf {
   tipoDeSolicitud:     TipoDeSolicitud;

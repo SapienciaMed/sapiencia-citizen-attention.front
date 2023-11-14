@@ -17,7 +17,11 @@ import { UploadComponent } from "../componentsRegisterPqrsdf/uploadComponent";
 
 import { mastersTablesServices } from "../../hooks/masterTables.hook";
 import { usePqrsdfService } from "../../hooks/PqrsdfService.hook";
-import { Countrys, IMResponseMedium, Departament, IMunicipality, ItypeRFequest, IlegalEntityType } from "../../interfaces/mastersTables.interface";
+import { Countrys, IMResponseMedium, 
+         Departament, IMunicipality, 
+         ItypeRFequest, IlegalEntityType, 
+         IProgram, 
+         ISubjectRequest} from "../../interfaces/mastersTables.interface";
 
 
 interface City {
@@ -40,6 +44,8 @@ export const ManagetPqrsdfComponent = () => {
     const [departamets, setDepartamets] = useState<Departament[]>();
     const [municipalitys, setMunicipalitys] = useState<IMunicipality[]>();
     const [responsesMediuns,setResponsesMediuns] =useState<IMResponseMedium[]>();
+    const [programs,setPrograms] =useState<IProgram[]>();
+    const [subjectRequests,setSubjectRequests] =useState<ISubjectRequest[]>();
 
     const [requestType, setRequestType] = useState<{tso_codigo?:number,tso_description?:string}>();
     const [legalentityType, setLegalEntityType] = useState<IlegalEntityType>();
@@ -49,7 +55,9 @@ export const ManagetPqrsdfComponent = () => {
     const [country, setCountry] = useState<Countrys>();
     const [departamet, setDepartamet] = useState<Departament>();
     const [municipality, setMunicipality] = useState<IMunicipality>();
-    const [responsesMediun,setResponsesMediun] =useState<IMResponseMedium>();
+    const [responsesMediun, setResponsesMediun] =useState<IMResponseMedium>();
+    const [program, setProgram] =useState<IProgram>();
+    const [subjectRequest,setSubjectRequest] =useState<ISubjectRequest>();
     
     const getInfoPqrsdf = async (id:number)=>{
         const infoPqrsdf = pqrsdfService.getPqrsdfById(id);
@@ -63,13 +71,17 @@ export const ManagetPqrsdfComponent = () => {
         const arrayDepartament = await mastetablesServices.getDepartament();
         const arrayMunicipality = await mastetablesServices.getMunicipality();
         const arrayResposeMediun = await mastetablesServices.getResponseMediun();
+        const arrayPrograms = await mastetablesServices.getProgram();
+        const arraySubjectRequest = await mastetablesServices.getSbjectRequest();
         return {
             typeRequest,
             typeLegalEntity,
             ArrayCountry,
             arrayDepartament,
             arrayMunicipality,
-            arrayResposeMediun
+            arrayResposeMediun,
+            arrayPrograms,
+            arraySubjectRequest
         }   
     };
 
@@ -77,13 +89,16 @@ export const ManagetPqrsdfComponent = () => {
         getDataMasterTables().then(({
             typeRequest, typeLegalEntity,
             ArrayCountry, arrayDepartament,
-            arrayMunicipality, arrayResposeMediun})=>{
+            arrayMunicipality, arrayResposeMediun,
+            arrayPrograms, arraySubjectRequest})=>{
             setTypeRequest(typeRequest.data);
             setTypelegalEntity(typeLegalEntity.data);
             setCountrys(ArrayCountry.data);
             setDepartamets(arrayDepartament.data);
             setMunicipalitys(arrayMunicipality.data);
-            setResponsesMediuns(arrayResposeMediun.data)
+            setResponsesMediuns(arrayResposeMediun.data);        
+            setPrograms(arrayPrograms.data);
+            setSubjectRequests(arraySubjectRequest.data)
         })
     },[]);
 
@@ -116,6 +131,21 @@ export const ManagetPqrsdfComponent = () => {
             MRE_CODIGO:null,
             MRE_DESCRIPCION:"",
         },
+        program:{
+            PRG_CODIGO: null,
+            PRG_DESCRIPCION: "",
+            CLP_CODIGO: null,
+            CLP_DESCRIPCION: "",
+            DEP_CODIGO: null,
+            DEP_DESCRIPCION: ""
+        },
+        subjectRerquest:{
+            ASO_CODIGO: null,
+            ASO_ASUNTO: ""
+        },
+        classification:'',
+        dependence:'',
+        description:'',
         file:''
       };
 
@@ -210,6 +240,45 @@ export const ManagetPqrsdfComponent = () => {
                 MRE_CODIGO:data['responseMedium']['mre_codigo'],
                 MRE_DESCRIPCION:data['responseMedium']['mre_descripcion'],
             },{ shouldDirty: true });
+
+            const programData:IProgram = {
+                PRG_CODIGO: data['program']['prg_codigo'],
+                PRG_DESCRIPCION: data['program']['prg_descripcion'],
+                CLP_CODIGO: data['program']['clpClasificacionPrograma'][0]['clp_codigo'],
+                CLP_DESCRIPCION: data['program']['clpClasificacionPrograma'][0]['clp_descripcion'],
+                DEP_CODIGO: data['program']['depDependencia'][0]['dep_codigo'],
+                DEP_DESCRIPCION: data['program']['depDependencia'][0]['dep_descripcion']
+            };
+            setProgram({
+                PRG_CODIGO: programData.PRG_CODIGO,
+                PRG_DESCRIPCION: programData.PRG_DESCRIPCION,
+                CLP_CODIGO: programData.CLP_CODIGO,
+                CLP_DESCRIPCION: programData.CLP_DESCRIPCION,
+                DEP_CODIGO: programData.DEP_CODIGO,
+                DEP_DESCRIPCION: programData.DEP_DESCRIPCION
+            });
+            setValue('program',{
+                PRG_CODIGO: programData.PRG_CODIGO,
+                PRG_DESCRIPCION: programData.PRG_DESCRIPCION,
+                CLP_CODIGO: programData.CLP_CODIGO,
+                CLP_DESCRIPCION: programData.CLP_DESCRIPCION,
+                DEP_CODIGO: programData.DEP_CODIGO,
+                DEP_DESCRIPCION: programData.DEP_DESCRIPCION
+            },{ shouldDirty: true });
+            
+            setSubjectRequest({
+                ASO_CODIGO: data['requestSubject']['aso_codigo'],
+                ASO_ASUNTO: data['requestSubject']['aso_asunto']
+            });
+            setValue('subjectRerquest',{
+                ASO_CODIGO: data['requestSubject']['aso_codigo'],
+                ASO_ASUNTO: data['requestSubject']['aso_asunto']
+            },{ shouldDirty: true });
+
+            setValue('classification',programData.CLP_DESCRIPCION)
+            setValue('dependence',programData.DEP_DESCRIPCION)
+
+            setValue('description','sdasdsadsad')
         })
     },[]);
 
@@ -332,7 +401,7 @@ export const ManagetPqrsdfComponent = () => {
         </>)}
     </div>
 
-    <Accordion activeIndex={0} style={{width:'61em'}}>
+    <Accordion activeIndex={1} style={{width:'61em'}}>
         <AccordionTab  header="Información del ciudadano">
             <div className="flex">
                 {arrayTypeDocumentNit.includes(typeDocmuent)?(
@@ -739,9 +808,9 @@ export const ManagetPqrsdfComponent = () => {
         <AccordionTab header="Información de la solicitud">
             <div className="flex">
                 <div className="mr-4 div-50">
-                    <label>Programa al que aplica la solicitud</label>
+                    <label>Programa al que aplica la solicitud<span className="text-red-600">*</span></label>
                     <Controller
-                        name="noDocument"
+                        name="program"
                         control={control}
                         rules={{
                             required: 'Campo obligatorio.',
@@ -751,13 +820,18 @@ export const ManagetPqrsdfComponent = () => {
                             <>
                                 <Dropdown
                                     id={field.name}
-                                    value={field.value}
-                                    optionLabel="name"
+                                    value={program}
+                                    optionLabel="PRG_DESCRIPCION"
                                     placeholder="Seleccionar"
                                     showClear 
-                                    options={cities}
+                                    options={programs}
                                     focusInputRef={field.ref}
-                                    onChange={(e) => field.onChange(e.value)}
+                                    onChange={(e) => field.onChange(()=>{
+                                        setProgram(e.value)
+                                        setValue('program',e.value);
+                                        setValue('classification',e.value?.CLP_DESCRIPCION)
+                                        setValue('dependence',e.value?.DEP_DESCRIPCION)
+                                    })}
                                     className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
                                 />
                                 {getFormErrorMessage(field.name)}
@@ -768,7 +842,7 @@ export const ManagetPqrsdfComponent = () => {
                 <div className="mr-4 div-50">
                     <label>Asunto de la solicitud<span className="text-red-600">*</span></label>
                     <Controller
-                        name="noDocument"
+                        name="subjectRerquest"
                         control={control}
                         rules={{
                             required: 'Campo obligatorio.',
@@ -778,13 +852,16 @@ export const ManagetPqrsdfComponent = () => {
                             <>
                                 <Dropdown
                                     id={field.name}
-                                    value={field.value}
-                                    optionLabel="name"
+                                    value={subjectRequest}
+                                    optionLabel="ASO_ASUNTO"
                                     placeholder="Seleccionar"
                                     showClear 
-                                    options={cities}
+                                    options={subjectRequests}
                                     focusInputRef={field.ref}
-                                    onChange={(e) => field.onChange(e.value)}
+                                    onChange={(e) => field.onChange(()=>{
+                                        setSubjectRequest(e.value);
+                                        setValue('subjectRerquest',e.value)
+                                    })}
                                     className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
                                 />
                                 {getFormErrorMessage(field.name)}
@@ -795,44 +872,38 @@ export const ManagetPqrsdfComponent = () => {
             </div> 
             <div className="flex">
                  <div className="mr-4 div-50">
-                    <label>Clasificación <span className="text-red-600">*</span></label>
+                    <label>Clasificación</label>
                     <Controller
-                        name="noDocument"
+                        name="classification"
                         control={control}
-                        rules={{
-                            required: 'Campo obligatorio.',
-                            maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
-                            }}
-                            render={({ field, fieldState }) => (
-                            <>
-                                <InputText 
-                                    id={field.name} 
-                                    value={field.value} 
-                                    className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center div-100')}
-                                    onChange={(e) => field.onChange(e.target.value)} />
-                                {getFormErrorMessage(field.name)}
-                            </>
+                        render={({ field, fieldState }) => (
+                        <>
+                            <InputText 
+                                id={field.name} 
+                                value={field.value}
+                                disabled
+                                className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center div-100 input-desabled')}
+                                onChange={(e) => field.onChange(e.target.value)} />
+                            {getFormErrorMessage(field.name)}
+                        </>
                         )}
                     />
                  </div>
                  <div className="mr-4 div-50">
                     <label>Dependencia </label>
                     <Controller
-                        name="noDocument"
+                        name="dependence"
                         control={control}
-                        rules={{
-                            required: 'Campo obligatorio.',
-                            maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
-                            }}
-                            render={({ field, fieldState }) => (
-                            <>
-                                <InputText 
-                                id={field.name} 
-                                value={field.value} 
-                                className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center div-100')}
-                                onChange={(e) => field.onChange(e.target.value)} />
-                                {getFormErrorMessage(field.name)}
-                            </>
+                        render={({ field, fieldState }) => (
+                        <>
+                            <InputText 
+                            id={field.name} 
+                            value={field.value}
+                            disabled 
+                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center div-100 input-desabled')}
+                            onChange={(e) => field.onChange(e.target.value)} />
+                            {getFormErrorMessage(field.name)}
+                        </>
                         )}
                     />
                  </div>
@@ -842,26 +913,23 @@ export const ManagetPqrsdfComponent = () => {
                     <label>Descripción</label>
                     <br />
                     <Controller
-                        name="noDocument"
+                        name="description"
                         control={control}
-                        rules={{
-                            required: 'Campo obligatorio.',
-                            maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
-                            }}
-                            render={({ field, fieldState }) => (
-                            <>
+                        render={({ field, fieldState }) => (
+                        <>
                             <InputTextarea 
                                 id={field.name} 
                                 {...field} 
                                 rows={4} 
-                                cols={30} 
-                                className={classNames({ 'p-invalid': fieldState.error },'div-100')} 
+                                cols={30}
+                                disabled 
+                                className={classNames({ 'p-invalid': fieldState.error },'div-100 input-desabled')} 
                             />
-                                <div className="flex justify-between">
-                                    {getFormErrorMessage(field.name)}
-                                    <span className="font-label">Max 5000 caracteres</span>
-                                </div>
-                            </>
+                            <div className="flex justify-between">
+                                {getFormErrorMessage(field.name)}
+                                <span className="font-label">Max 5000 caracteres</span>
+                            </div>
+                        </>
                         )}
                     />
                 </div>

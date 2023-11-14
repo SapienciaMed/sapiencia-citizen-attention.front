@@ -46,3 +46,19 @@ export interface IMResponseMedium {
     MRE_CODIGO:number;
     MRE_DESCRIPCION:string;
 }
+
+export interface IProgram {
+    PRG_CODIGO: number;
+    PRG_DESCRIPCION: string;
+    CLP_CODIGO: number;
+    CLP_DESCRIPCION: string;
+    DEP_CODIGO: number;
+    DEP_DESCRIPCION: string;
+}
+
+
+export interface ISubjectRequest {
+    ASO_CODIGO: number;
+    ASO_ASUNTO: string;
+}
+

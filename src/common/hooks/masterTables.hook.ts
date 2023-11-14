@@ -1,13 +1,9 @@
 import { EResponseCodes } from "../constants/api.enum";
-import {  Countrys, 
-          Departament, 
-          IChannelAttetion, 
-          IChannelAttetionDetail, 
-          IMunicipality, 
-          ItypeDocument, 
-          ItypeRFequest, 
-          IlegalEntityType, 
-          IMResponseMedium } from "../interfaces/mastersTables.interface";
+import {  Countrys, Departament, 
+          IChannelAttetion, IChannelAttetionDetail, 
+          IMunicipality, ItypeDocument, 
+          ItypeRFequest, IlegalEntityType, 
+          IMResponseMedium, IProgram, ISubjectRequest } from "../interfaces/mastersTables.interface";
 import { ApiResponse } from "../utils/api-response";
 import useCrudService from "./crud-service.hook";
 
@@ -98,6 +94,24 @@ export function mastersTablesServices() {
       }
     };
 
+    async function getProgram(): Promise<ApiResponse<IProgram[]>> {
+      try {
+        const endpoint: string = `/get-Programs`;
+        return await get(`${endpoint}`);
+      } catch (error) {
+        return new ApiResponse([], EResponseCodes.FAIL, "Error no controlado");
+      }
+    };
+
+    async function getSbjectRequest(): Promise<ApiResponse<ISubjectRequest[]>> {
+      try {
+        const endpoint: string = `/get-solicitudes`;
+        return await get(`${endpoint}`);
+      } catch (error) {
+        return new ApiResponse([], EResponseCodes.FAIL, "Error no controlado");
+      }
+    };
+
     return{
         getDocuemntType,
         getChannelAtencion,
@@ -107,7 +121,9 @@ export function mastersTablesServices() {
         getCountrys,
         getDepartament,
         getMunicipality,
-        getResponseMediun
+        getResponseMediun,
+        getProgram,
+        getSbjectRequest
     }    
     
 }
