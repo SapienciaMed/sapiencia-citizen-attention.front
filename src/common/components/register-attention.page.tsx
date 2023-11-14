@@ -106,7 +106,7 @@ const RegisterAttention = () => {
                   <div>
                     <p className='text-sm'>BASE DE DATOS - CANAL TELEFÓNICO - PRESENCIAL - VIRTUAL
 El objetivo de este formulario es recopilar cada una de las llamadas, visitas o atenciones virtuales que ingresan a La Agencia de Educación Postsecundaria de Medellín - Sapiencia.</p>
-                    <div className="div-container flex m-auto width-50 div-movil-100 mt-4">
+                    <div className="div-container flex width-50 div-movil-100 mt-4">
                       <div className="row-1 width-50">
                         <label className="font-label">
                           Canal de atención<span className="required">*</span>
