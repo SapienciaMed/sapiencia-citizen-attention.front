@@ -17,7 +17,7 @@ import { UploadComponent } from "../componentsRegisterPqrsdf/uploadComponent";
 
 import { mastersTablesServices } from "../../hooks/masterTables.hook";
 import { usePqrsdfService } from "../../hooks/PqrsdfService.hook";
-import { Countrys, Departament, IMunicipality, ItypeRFequest, IlegalEntityType } from "../../interfaces/mastersTables.interface";
+import { Countrys, IMResponseMedium, Departament, IMunicipality, ItypeRFequest, IlegalEntityType } from "../../interfaces/mastersTables.interface";
 
 
 interface City {
@@ -39,6 +39,7 @@ export const ManagetPqrsdfComponent = () => {
     const [countrys, setCountrys] = useState<Countrys[]>();
     const [departamets, setDepartamets] = useState<Departament[]>();
     const [municipalitys, setMunicipalitys] = useState<IMunicipality[]>();
+    const [responsesMediuns,setResponsesMediuns] =useState<IMResponseMedium[]>();
 
     const [requestType, setRequestType] = useState<{tso_codigo?:number,tso_description?:string}>();
     const [legalentityType, setLegalEntityType] = useState<IlegalEntityType>();
@@ -48,6 +49,7 @@ export const ManagetPqrsdfComponent = () => {
     const [country, setCountry] = useState<Countrys>();
     const [departamet, setDepartamet] = useState<Departament>();
     const [municipality, setMunicipality] = useState<IMunicipality>();
+    const [responsesMediun,setResponsesMediun] =useState<IMResponseMedium>();
     
     const getInfoPqrsdf = async (id:number)=>{
         const infoPqrsdf = pqrsdfService.getPqrsdfById(id);
@@ -60,14 +62,30 @@ export const ManagetPqrsdfComponent = () => {
         const ArrayCountry = await mastetablesServices.getCountrys();
         const arrayDepartament = await mastetablesServices.getDepartament();
         const arrayMunicipality = await mastetablesServices.getMunicipality();
+        const arrayResposeMediun = await mastetablesServices.getResponseMediun();
         return {
             typeRequest,
             typeLegalEntity,
             ArrayCountry,
             arrayDepartament,
-            arrayMunicipality
+            arrayMunicipality,
+            arrayResposeMediun
         }   
-    }
+    };
+
+    useEffect(()=>{
+        getDataMasterTables().then(({
+            typeRequest, typeLegalEntity,
+            ArrayCountry, arrayDepartament,
+            arrayMunicipality, arrayResposeMediun})=>{
+            setTypeRequest(typeRequest.data);
+            setTypelegalEntity(typeLegalEntity.data);
+            setCountrys(ArrayCountry.data);
+            setDepartamets(arrayDepartament.data);
+            setMunicipalitys(arrayMunicipality.data);
+            setResponsesMediuns(arrayResposeMediun.data)
+        })
+    },[]);
 
     const defaultValues = {
         typeOfRequest: {tso_codigo: null,tso_description:''},
@@ -93,6 +111,10 @@ export const ManagetPqrsdfComponent = () => {
             LGE_CODIGO: null,
             LGE_ELEMENTO_CODIGO: "",
             LGE_ELEMENTO_DESCRIPCION: ""
+        },
+        responseMediun:{
+            MRE_CODIGO:null,
+            MRE_DESCRIPCION:"",
         },
         file:''
       };
@@ -173,24 +195,23 @@ export const ManagetPqrsdfComponent = () => {
                 LGE_CODIGO: data['person']['municipality']['id'],
                 LGE_ELEMENTO_CODIGO: data['person']['municipality']['itemCode'],
                 LGE_ELEMENTO_DESCRIPCION: data['person']['municipality']['itemDescription']
-            })
+            });
             setValue('municipality',{
                 LGE_CODIGO: data['person']['municipality']['id'],
                 LGE_ELEMENTO_CODIGO: data['person']['municipality']['itemCode'],
                 LGE_ELEMENTO_DESCRIPCION: data['person']['municipality']['itemDescription']
             },{ shouldDirty: true });
+
+            setResponsesMediun({
+                MRE_CODIGO:data['responseMedium']['mre_codigo'],
+                MRE_DESCRIPCION:data['responseMedium']['mre_descripcion'],
+            });
+            setValue('responseMediun',{
+                MRE_CODIGO:data['responseMedium']['mre_codigo'],
+                MRE_DESCRIPCION:data['responseMedium']['mre_descripcion'],
+            },{ shouldDirty: true });
         })
     },[]);
-
-    useEffect(()=>{
-        getDataMasterTables().then(({typeRequest,typeLegalEntity,ArrayCountry,arrayDepartament,arrayMunicipality})=>{
-            setTypeRequest(typeRequest.data);
-            setTypelegalEntity(typeLegalEntity.data);
-            setCountrys(ArrayCountry.data);
-            setDepartamets(arrayDepartament.data);
-            setMunicipalitys(arrayMunicipality.data);
-        })
-    },[])
 
     const cities: City[] = [
         { name: 'New York', code: 'NY' },
@@ -673,41 +694,46 @@ export const ManagetPqrsdfComponent = () => {
                         )}
                     />
                  </div>
-            </div> 
+            </div>
             <div className="flex justify-between items-center">
-                 <div className="mr-4 div-50">
-                    <label>Seleccione el medio por el cual quiere recibir la respuesta</label>
-                    <Controller
-                        name="noDocument"
-                        control={control}
-                        rules={{
-                            required: 'Campo obligatorio.',
-                            maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
+                {arrayTypeDocumentAnonimo.includes(typeDocmuent)?(<></>):(
+                <>
+                    <div className="mr-4 div-50">
+                        <label>Seleccione el medio por el cual quiere recibir la respuesta</label>
+                        <Controller
+                            name="responseMediun"
+                            control={control}
+                            rules={{
+                                required: 'Campo obligatorio.',
                             }}
-                        render={({ field, fieldState }) => (
-                            <>
-                                <Dropdown
-                                    id={field.name}
-                                    value={field.value}
-                                    optionLabel="name"
-                                    placeholder="Seleccionar"
-                                    showClear 
-                                    options={cities}
-                                    focusInputRef={field.ref}
-                                    onChange={(e) => field.onChange(e.value)}
-                                    className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
-                                />
-                                {getFormErrorMessage(field.name)}
-                            </>
-                        )}
-                    />
+                            render={({ field, fieldState }) => (
+                                <>
+                                    <Dropdown
+                                        id={field.name}
+                                        value={responsesMediun}
+                                        optionLabel="MRE_DESCRIPCION"
+                                        placeholder="Seleccionar"
+                                        showClear 
+                                        options={responsesMediuns}
+                                        focusInputRef={field.ref}
+                                        onChange={(e) => field.onChange(()=>{
+                                            setResponsesMediun(e.value);
+                                            setValue('responseMediun',e.value);
+                                        })}
+                                        className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                    />
+                                    {getFormErrorMessage(field.name)}
+                                </>
+                            )}
+                        />
                  </div>
-                 <div>
-                    <Button
-                        label="Actualizar"
-                        className="rounded-full"
-                    />
-                 </div>
+                </>)} 
+                <div>
+                <Button
+                    label="Actualizar"
+                    className="rounded-full"
+                />
+                </div>
             </div>          
         </AccordionTab>
         <AccordionTab header="Información de la solicitud">

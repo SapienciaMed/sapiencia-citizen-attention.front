@@ -1,5 +1,13 @@
 import { EResponseCodes } from "../constants/api.enum";
-import { Countrys, Departament, IChannelAttetion, IChannelAttetionDetail, IMunicipality, ItypeDocument, ItypeRFequest, IlegalEntityType } from "../interfaces/mastersTables.interface";
+import {  Countrys, 
+          Departament, 
+          IChannelAttetion, 
+          IChannelAttetionDetail, 
+          IMunicipality, 
+          ItypeDocument, 
+          ItypeRFequest, 
+          IlegalEntityType, 
+          IMResponseMedium } from "../interfaces/mastersTables.interface";
 import { ApiResponse } from "../utils/api-response";
 import useCrudService from "./crud-service.hook";
 
@@ -81,6 +89,15 @@ export function mastersTablesServices() {
       }
     };
 
+    async function getResponseMediun(): Promise<ApiResponse<IMResponseMedium[]>> {
+      try {
+        const endpoint: string = `/get-response-medium`;
+        return await get(`${endpoint}`);
+      } catch (error) {
+        return new ApiResponse([], EResponseCodes.FAIL, "Error no controlado");
+      }
+    };
+
     return{
         getDocuemntType,
         getChannelAtencion,
@@ -89,7 +106,8 @@ export function mastersTablesServices() {
         getTypeLegalentity,
         getCountrys,
         getDepartament,
-        getMunicipality
+        getMunicipality,
+        getResponseMediun
     }    
     
 }

@@ -41,3 +41,8 @@ export interface IMunicipality {
     LGE_ELEMENTO_CODIGO: string;
     LGE_ELEMENTO_DESCRIPCION: string;
 }
+
+export interface IMResponseMedium {
+    MRE_CODIGO:number;
+    MRE_DESCRIPCION:string;
+}
