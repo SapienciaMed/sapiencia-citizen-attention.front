@@ -1,5 +1,5 @@
 import { EResponseCodes } from "../constants/api.enum";
-import { Countrys, Departament, IChannelAttetion, IChannelAttetionDetail, IMunicipality, ItypeDocument, ItypeRFequest, tej_nombre } from "../interfaces/mastersTables.interface";
+import { Countrys, Departament, IChannelAttetion, IChannelAttetionDetail, IMunicipality, ItypeDocument, ItypeRFequest, IlegalEntityType } from "../interfaces/mastersTables.interface";
 import { ApiResponse } from "../utils/api-response";
 import useCrudService from "./crud-service.hook";
 
@@ -45,7 +45,7 @@ export function mastersTablesServices() {
       }
     };
 
-    async function getTypeLegalentity(): Promise<ApiResponse<tej_nombre[]>> {
+    async function getTypeLegalentity(): Promise<ApiResponse<IlegalEntityType[]>> {
       try {
         const endpoint: string = `/get-type-legal-entity`;
         return await get(`${listUrl}${endpoint}`);

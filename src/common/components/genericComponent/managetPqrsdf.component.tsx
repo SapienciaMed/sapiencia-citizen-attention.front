@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { Accordion, AccordionTab } from "primereact/accordion";
+import moment from 'moment-timezone';
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
+import { Nullable } from "primereact/ts-helpers";
+import { toLocaleDate } from "../../utils/helpers";
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { classNames } from "primereact/utils";
@@ -14,11 +17,8 @@ import { UploadComponent } from "../componentsRegisterPqrsdf/uploadComponent";
 
 import { mastersTablesServices } from "../../hooks/masterTables.hook";
 import { usePqrsdfService } from "../../hooks/PqrsdfService.hook";
-import { Countrys, Departament, IMunicipality, ItypeRFequest, tej_nombre } from "../../interfaces/mastersTables.interface";
+import { Countrys, Departament, IMunicipality, ItypeRFequest, IlegalEntityType } from "../../interfaces/mastersTables.interface";
 
-interface MasterTable {
-
-}
 
 interface City {
     name: string;
@@ -29,15 +29,26 @@ export const ManagetPqrsdfComponent = () => {
 
     const mastetablesServices = mastersTablesServices();
     const pqrsdfService = usePqrsdfService();
+    const arrayTypeDocumentNit = ['NIT'];
+    const arrayTypeDocumentAnonimo = ['Anónimo'];
+    const arrayTypeDocumentNitAndAnonymus = ['NIT','Anónimo'];
+    const arrayTypeDocument = ['Cedula de Ciudadania','Cedula de Extranjeria','Tarjeta de Identidad','NIT','Anónimo']
 
     const [typeReques, setTypeRequest] = useState<ItypeRFequest[]>();
-    const [typelegalEntity, setTypelegalEntity] = useState<tej_nombre[]>();
+    const [typelegalEntity, setTypelegalEntity] = useState<IlegalEntityType[]>();
     const [countrys, setCountrys] = useState<Countrys[]>();
-    const [departamets, setDepartamet] = useState<Departament[]>();
+    const [departamets, setDepartamets] = useState<Departament[]>();
     const [municipalitys, setMunicipalitys] = useState<IMunicipality[]>();
 
-    const [requestType, setRequestType] = useState<{tso_codigo?:number,tso_description?:string}>()
-    const [entityDocuement, setEntityDocuement] = useState('')
+    const [requestType, setRequestType] = useState<{tso_codigo?:number,tso_description?:string}>();
+    const [legalentityType, setLegalEntityType] = useState<IlegalEntityType>();
+    const [entityDocuement, setEntityDocuement] = useState('');
+    const [typeDocmuent, setTypeDocmuent] = useState('');
+    const [birthday, setBirthday] = useState<Nullable<Date>>(null);
+    const [country, setCountry] = useState<Countrys>();
+    const [departamet, setDepartamet] = useState<Departament>();
+    const [municipality, setMunicipality] = useState<IMunicipality>();
+    
     const getInfoPqrsdf = async (id:number)=>{
         const infoPqrsdf = pqrsdfService.getPqrsdfById(id);
         return infoPqrsdf
@@ -46,43 +57,138 @@ export const ManagetPqrsdfComponent = () => {
     const getDataMasterTables = async() =>{
         const typeRequest = await mastetablesServices.getTypeRequest();
         const typeLegalEntity = await mastetablesServices.getTypeLegalentity();
-        const coutry = await mastetablesServices.getCountrys();
-        const departament = await mastetablesServices.getDepartament();
-        const municipality = await mastetablesServices.getMunicipality();
+        const ArrayCountry = await mastetablesServices.getCountrys();
+        const arrayDepartament = await mastetablesServices.getDepartament();
+        const arrayMunicipality = await mastetablesServices.getMunicipality();
         return {
             typeRequest,
             typeLegalEntity,
-            coutry,
-            departament,
-            municipality
+            ArrayCountry,
+            arrayDepartament,
+            arrayMunicipality
         }   
     }
 
+    const defaultValues = {
+        typeOfRequest: {tso_codigo: null,tso_description:''},
+        noDocument: "",
+        typeLegalEntity:{tej_codigo: null,tej_nombre:''},
+        businessName:'',
+        firstName:'',
+        secondName:'',
+        lastName:'',
+        secondLastName:'',
+        brithdayDate:null,
+        firtContact:'',
+        secondContact:'',
+        email:'',
+        address:'',
+        country:{LGE_CODIGO:null, LGE_ELEMENTO_DESCRIPCION:''},
+        departament:{
+            LGE_CODIGO: null,
+            LGE_ELEMENTO_CODIGO: "",
+            LGE_ELEMENTO_DESCRIPCION: ""
+        },
+        municipality:{
+            LGE_CODIGO: null,
+            LGE_ELEMENTO_CODIGO: "",
+            LGE_ELEMENTO_DESCRIPCION: ""
+        },
+        file:''
+      };
 
-    //pasar id de la pqr este es provicional
+    const {
+    control,
+    formState: { errors, isValid, dirtyFields },
+    handleSubmit,
+    getFieldState,
+    setValue,
+    reset,
+    resetField,
+    getValues,
+    watch,
+    register,
+    } = useForm({ defaultValues, mode: "all" }); 
+    
+    const handleDateChange = (date: any) => {        
+        setValue("brithdayDate",toLocaleDate(date));
+        const birthdate = moment(date).format('DD-MM-YYYY');
+        return birthdate;
+      };
+
+    //pasar id de la pqr este es provicional id prueba 73 y 1
     useEffect(()=>{
-        getInfoPqrsdf(73).then(({data})=>{
+        getInfoPqrsdf(1).then(({data})=>{
             console.log(data);
-            
+            setTypeDocmuent(data['person']['documentType']['itemDescription'])
             setRequestType({
                 tso_codigo: data['requestType']['tso_codigo'],
                 tso_description: data['requestType']['tso_description'],
-              });
+            });
             setValue("typeOfRequest",{
                 tso_codigo: data['requestType']['tso_codigo'],
                 tso_description: data['requestType']['tso_description'],
-              },{ shouldDirty: true });
+            },{ shouldDirty: true });
             setEntityDocuement(`${data['person']['documentType']['itemCode']} ${data['person']['identification']}`);
+            setLegalEntityType({
+                tej_codigo: data['person']['entityTypeId'],
+                tej_nombre: data['person']['entityType']['tej_nombre'],
+              });
+            setValue('typeLegalEntity',{
+            tej_codigo: data['person']['entityTypeId'],
+            tej_nombre: data['person']['entityType']['tej_nombre'],
+            },{ shouldDirty: true });
+            setValue('firstName',data['person']['firstName'],{ shouldDirty: true });
+            setValue('secondName',data['person']['secondName']);
+            setValue('lastName',data['person']['firstSurname'],{ shouldDirty: true });
+            setValue('secondLastName',data['person']['secondSurname']);            
+            setBirthday(toLocaleDate(data['person']['birthdate']));
+            setValue('brithdayDate',toLocaleDate(data['person']['birthdate']),{ shouldDirty: true });
+            setValue('firtContact',data['person']['firstContactNumber'],{ shouldDirty: true });
+            setValue('secondContact',data['person']['secondContactNumber']);
+            setValue('email',data['person']['email'],{ shouldDirty: true });
+            setValue('address',data['person']['address'],{ shouldDirty: true });
+
+            setCountry({
+                LGE_CODIGO:data['person']['countryId'],
+                LGE_ELEMENTO_DESCRIPCION:data['person']['country']['itemDescription']
+            });
+            setValue('country',{
+                LGE_CODIGO:data['person']['countryId'],
+                LGE_ELEMENTO_DESCRIPCION:data['person']['country']['itemDescription']
+            },{ shouldDirty: true });
+
+            setDepartamet({
+                LGE_CODIGO: data['person']['department']['id'],
+                LGE_ELEMENTO_CODIGO: data['person']['department']['itemCode'],
+                LGE_ELEMENTO_DESCRIPCION: data['person']['department']['itemDescription']
+            })
+            setValue('departament',{
+                LGE_CODIGO: data['person']['department']['id'],
+                LGE_ELEMENTO_CODIGO: data['person']['department']['itemCode'],
+                LGE_ELEMENTO_DESCRIPCION: data['person']['department']['itemDescription']
+            },{ shouldDirty: true });
+
+            setMunicipality({
+                LGE_CODIGO: data['person']['municipality']['id'],
+                LGE_ELEMENTO_CODIGO: data['person']['municipality']['itemCode'],
+                LGE_ELEMENTO_DESCRIPCION: data['person']['municipality']['itemDescription']
+            })
+            setValue('municipality',{
+                LGE_CODIGO: data['person']['municipality']['id'],
+                LGE_ELEMENTO_CODIGO: data['person']['municipality']['itemCode'],
+                LGE_ELEMENTO_DESCRIPCION: data['person']['municipality']['itemDescription']
+            },{ shouldDirty: true });
         })
-    },[])
+    },[]);
 
     useEffect(()=>{
-        getDataMasterTables().then(({typeRequest,typeLegalEntity,coutry,departament,municipality})=>{
+        getDataMasterTables().then(({typeRequest,typeLegalEntity,ArrayCountry,arrayDepartament,arrayMunicipality})=>{
             setTypeRequest(typeRequest.data);
             setTypelegalEntity(typeLegalEntity.data);
-            setCountrys(coutry.data);
-            setDepartamet(departament.data);
-            setMunicipalitys(municipality.data);
+            setCountrys(ArrayCountry.data);
+            setDepartamets(arrayDepartament.data);
+            setMunicipalitys(arrayMunicipality.data);
         })
     },[])
 
@@ -93,34 +199,6 @@ export const ManagetPqrsdfComponent = () => {
         { name: 'Istanbul', code: 'IST' },
         { name: 'Paris', code: 'PRS' }
     ];
-
-    const defaultValues = {
-        typeOfRequest: {
-            tso_codigo: null,
-            tso_description: '',
-          },
-        noDocument: "",
-        typeLegalEntity:'',
-        nameCountry:'',
-        nameDepartament:'',
-        municipality:'',
-        file:''
-      };
-
-
-
-    const {
-        control,
-        formState: { errors, isValid, dirtyFields },
-        handleSubmit,
-        getFieldState,
-        setValue,
-        reset,
-        resetField,
-        getValues,
-        watch,
-        register,
-      } = useForm({ defaultValues, mode: "all" });  
       
     const getFormErrorMessage = (name) => {
         return errors[name] ? (
@@ -141,11 +219,11 @@ export const ManagetPqrsdfComponent = () => {
       let maxDate = new Date();
   
       maxDate.setMonth(nextMonth);
-      maxDate.setFullYear(nextYear);
+      maxDate.setFullYear(nextYear); 
       
   return (
     <>
-    <div className="flex justify-between items-center">
+    <div className="flex justify-start items-center">
         <div className="mr-4 div-30">
             <label>Tipo de solicitud<span className="text-red-600">*</span></label>
             <br />
@@ -181,10 +259,6 @@ export const ManagetPqrsdfComponent = () => {
             <Controller
                 name="noDocument"
                 control={control}
-                rules={{
-                     required: 'Campo obligatorio.',
-                     maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
-                }}
                 render={({ field, fieldState }) => (
                     <>
                         <span className="p-float-label">
@@ -203,170 +277,186 @@ export const ManagetPqrsdfComponent = () => {
                 )}
             />
         </div>
-    
-        <div className="div-30">
-            <label>Tipo entidad<span className="text-red-600">*</span></label>
-            <Controller
-                name="typeLegalEntity"
-                control={control}
-                rules={{ required: 'Campo obligatorio.'}}
-                render={({ field, fieldState }) => (
-                    <>
-                        <Dropdown
-                            id={field.name}
-                            value={field.value}
-                            optionLabel="tej_nombre"
-                            placeholder="Seleccionar"
-                            showClear 
-                            options={typelegalEntity}
-                            focusInputRef={field.ref}
-                            onChange={(e) => field.onChange(e.value)}
-                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
-                        />
-                        {getFormErrorMessage(field.name)}
-                    </>
-                )}
-            />
-        </div>
+        
+        {arrayTypeDocumentNit.includes(typeDocmuent)?(
+        <>
+            <div className="div-30">
+                <label>Tipo entidad<span className="text-red-600">*</span></label>
+                <Controller
+                    name="typeLegalEntity"
+                    control={control}
+                    rules={{ required: 'Campo obligatorio.'}}
+                    render={({ field, fieldState }) => (
+                        <>
+                            <Dropdown
+                                id={field.name}
+                                value={legalentityType}
+                                optionLabel="tej_nombre"
+                                placeholder="Seleccionar"
+                                showClear 
+                                options={typelegalEntity}
+                                focusInputRef={field.ref}
+                                onChange={(e) => field.onChange(()=>{
+                                    setLegalEntityType(e.value);
+                                    setValue('typeLegalEntity',e.value)
+                                })}
+                                className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                            />
+                            {getFormErrorMessage(field.name)}
+                        </>
+                    )}
+                />
+            </div>
+        </>):(<>
+        </>)}
     </div>
 
-    <Accordion style={{width:'61em'}}>
-        <AccordionTab header="Información del ciudadano">
+    <Accordion activeIndex={0} style={{width:'61em'}}>
+        <AccordionTab  header="Información del ciudadano">
             <div className="flex">
-                <div className="mr-4">
-                    <label>Razón socia<span className="text-red-600">*</span></label>
-                    <Controller
-                        name="noDocument"
-                        control={control}
-                        rules={{
-                            required: 'Campo obligatorio.',
-                            maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
+                {arrayTypeDocumentNit.includes(typeDocmuent)?(
+                <>
+                    <div className="mr-4">
+                        <label>Razón socia<span className="text-red-600">*</span></label>
+                        <Controller
+                            name="businessName"
+                            control={control}
+                            rules={{
+                                required: 'Campo obligatorio.',
+                                maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
+                                }}
+                            render={({ field, fieldState }) => (
+                                <>
+                                    <span className="p-float-label">
+                                        <InputText 
+                                            id={field.name} 
+                                            value={field.value} 
+                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                            onChange={(e) => field.onChange(e.target.value)} />
+                                    </span>
+                                    {getFormErrorMessage(field.name)}
+                                </>
+                            )}
+                        />
+                    </div>
+                </>):(<></>)}
+                {arrayTypeDocumentNitAndAnonymus.includes(typeDocmuent)?(<></>):(
+                <>
+                    <div className="mr-4">
+                        <label>Primer nombre<span className="text-red-600">*</span></label>
+                        <Controller
+                            name="firstName"
+                            control={control}
+                            rules={{
+                                required: 'Campo obligatorio.',
+                                maxLength: { value: 50, message: "Solo se permiten 50 caracteres" },
                             }}
-                        render={({ field, fieldState }) => (
-                            <>
-                                <span className="p-float-label">
-                                    <InputText 
-                                        id={field.name} 
-                                        value={field.value} 
-                                        className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
-                                        onChange={(e) => field.onChange(e.target.value)} />
-                                </span>
-                                {getFormErrorMessage(field.name)}
-                            </>
-                        )}
-                    />
-                 </div>
-                 <div className="mr-4">
-                    <label>Primer nombre<span className="text-red-600">*</span></label>
-                    <Controller
-                        name="noDocument"
-                        control={control}
-                        rules={{
-                            required: 'Campo obligatorio.',
-                            maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
-                            }}
-                        render={({ field, fieldState }) => (
-                            <>
-                                <span className="p-float-label">
-                                    <InputText 
-                                        id={field.name} 
-                                        value={field.value} 
-                                        className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
-                                        onChange={(e) => field.onChange(e.target.value)} />
-                                </span>
-                                {getFormErrorMessage(field.name)}
-                            </>
-                        )}
-                    />
-                 </div>
-                 <div className="mr-4">
-                    <label>Segundo nombre</label>
-                    <Controller
-                        name="noDocument"
-                        control={control}
-                        rules={{
-                            required: 'Campo obligatorio.',
-                            maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
-                            }}
-                        render={({ field, fieldState }) => (
-                            <>
-                                <span className="p-float-label">
-                                    <InputText 
-                                        id={field.name} 
-                                        value={field.value} 
-                                        className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
-                                        onChange={(e) => field.onChange(e.target.value)} />
-                                </span>
-                                {getFormErrorMessage(field.name)}
-                            </>
-                        )}
-                    />
-                 </div>
-                 <div className="mr-4">
-                    <label>Primer Apellido<span className="text-red-600">*</span></label>
-                    <Controller
-                        name="noDocument"
-                        control={control}
-                        rules={{
-                            required: 'Campo obligatorio.',
-                            maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
-                            }}
-                        render={({ field, fieldState }) => (
-                            <>
-                                <span className="p-float-label">
-                                    <InputText 
-                                        id={field.name} 
-                                        value={field.value} 
-                                        className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
-                                        onChange={(e) => field.onChange(e.target.value)} />
-                                </span>
-                                {getFormErrorMessage(field.name)}
-                            </>
-                        )}
-                    />
-                 </div>
-                 <div className="mr-4">
-                    <label>Segundo Apellido</label>
-                    <Controller
-                        name="noDocument"
-                        control={control}
-                        rules={{
-                            required: 'Campo obligatorio.',
-                            maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
-                            }}
-                        render={({ field, fieldState }) => (
-                            <>
-                                <span className="p-float-label">
-                                    <InputText 
-                                        id={field.name} 
-                                        value={field.value} 
-                                        className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
-                                        onChange={(e) => field.onChange(e.target.value)} />
-                                </span>
-                                {getFormErrorMessage(field.name)}
-                            </>
-                        )}
-                    />
-                 </div>
+                            render={({ field, fieldState }) => (
+                                <>
+                                    <span className="p-float-label">
+                                        <InputText 
+                                            id={field.name} 
+                                            value={field.value}
+                                            keyfilter={'alpha'}
+                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                            onChange={(e) => field.onChange(e.target.value)} />
+                                    </span>
+                                    {getFormErrorMessage(field.name)}
+                                </>
+                            )}
+                        />
+                    </div>
+                    <div className="mr-4">
+                        <label>Segundo nombre</label>
+                        <Controller
+                            name="secondName"
+                            control={control}
+                            rules={{
+                                maxLength: { value: 50, message: "Solo se permiten 50 caracteres" },
+                                }}
+                            render={({ field, fieldState }) => (
+                                <>
+                                    <span className="p-float-label">
+                                        <InputText 
+                                            id={field.name} 
+                                            value={field.value}
+                                            keyfilter={'alpha'} 
+                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                            onChange={(e) => field.onChange(e.target.value)} />
+                                    </span>
+                                    {getFormErrorMessage(field.name)}
+                                </>
+                            )}
+                        />
+                    </div>
+                    <div className="mr-4">
+                        <label>Primer Apellido<span className="text-red-600">*</span></label>
+                        <Controller
+                            name="lastName"
+                            control={control}
+                            rules={{
+                                required: 'Campo obligatorio.',
+                                maxLength: { value: 50, message: "Solo se permiten 50 caracteres" },
+                                }}
+                            render={({ field, fieldState }) => (
+                                <>
+                                    <span className="p-float-label">
+                                        <InputText 
+                                            id={field.name} 
+                                            value={field.value} 
+                                            keyfilter={'alpha'}
+                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                            onChange={(e) => field.onChange(e.target.value)} />
+                                    </span>
+                                    {getFormErrorMessage(field.name)}
+                                </>
+                            )}
+                        />
+                    </div>
+                    <div className="mr-4">
+                        <label>Segundo Apellido</label>
+                        <Controller
+                            name="secondLastName"
+                            control={control}
+                            rules={{
+                                maxLength: { value: 50, message: "Solo se permiten 50 caracteres" },
+                                }}
+                            render={({ field, fieldState }) => (
+                                <>
+                                    <span className="p-float-label">
+                                        <InputText 
+                                            id={field.name} 
+                                            value={field.value}
+                                            keyfilter={'alpha'} 
+                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                            onChange={(e) => field.onChange(e.target.value)} />
+                                    </span>
+                                    {getFormErrorMessage(field.name)}
+                                </>
+                            )}
+                        />
+                    </div>
+                </>)}
             </div>
             <div className="flex">
-                 <div className="mr-4">
-                    <label>Fecha de nacimiento<span className="text-red-600">*</span></label>
-                    <br />
-                    <Controller
-                        name="noDocument"
-                        control={control}
-                        rules={{
-                            required: 'Campo obligatorio.',
-                            maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
+                {arrayTypeDocumentNitAndAnonymus.includes(typeDocmuent)?(<></>):(
+                <>
+                    <div className="mr-4">
+                        <label>Fecha de nacimiento<span className="text-red-600">*</span></label>
+                        <br />
+                        <Controller
+                            name="brithdayDate"
+                            control={control}
+                            rules={{
+                                required: 'Campo obligatorio.',
                             }}
                             render={({ field, fieldState }) => (
                             <>
                                 <span className="p-input-icon-right">
                                     <Calendar 
                                         inputId={field.name} 
-                                        value={field.value} 
-                                        onChange={field.onChange} 
+                                        value={birthday} 
+                                        onChange={(e)=>field.onChange(handleDateChange(e.value))} 
                                         dateFormat="dd/mm/yy"
                                         placeholder='DD / MM / AAA'
                                         maxDate={maxDate}  
@@ -385,66 +475,77 @@ export const ManagetPqrsdfComponent = () => {
                                 <br />
                                 {getFormErrorMessage(field.name)}
                             </>
-                        )}
-                    />
-                 </div>
-                 <div className="mr-4">
-                    <label>Número de contacto 1</label>
-                    <Controller
-                        name="noDocument"
-                        control={control}
-                        rules={{
-                            required: 'Campo obligatorio.',
-                            maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
-                            }}
-                        render={({ field, fieldState }) => (
-                            <>
-                                <span className="p-float-label">
-                                    <InputText 
-                                        id={field.name} 
-                                        value={field.value} 
-                                        className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
-                                        onChange={(e) => field.onChange(e.target.value)} />
-                                </span>
-                                {getFormErrorMessage(field.name)}
-                            </>
-                        )}
-                    />
-                 </div>
-                 <div className="mr-4">
-                    <label>Número de contacto 2<span className="text-red-600">*</span></label>
-                    <Controller
-                        name="noDocument"
-                        control={control}
-                        rules={{
-                            required: 'Campo obligatorio.',
-                            maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
-                            }}
-                        render={({ field, fieldState }) => (
-                            <>
-                                <span className="p-float-label">
-                                    <InputText 
-                                        id={field.name} 
-                                        value={field.value} 
-                                        className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
-                                        onChange={(e) => field.onChange(e.target.value)} />
-                                </span>
-                                {getFormErrorMessage(field.name)}
-                            </>
-                        )}
-                    />
-                 </div>
-            </div> 
-            <div className="flex">
-                 <div className="mr-4 div-50">
+                            )}
+                        />
+                    </div>
+                </>)}
+                {arrayTypeDocumentAnonimo.includes(typeDocmuent)?(<></>):(
+                <>
+                    <div className="mr-4">
+                        <label>Número de contacto 1<span className="text-red-600">*</span></label>
+                        <Controller
+                            name="firtContact"
+                            control={control}
+                            rules={{
+                                required: 'Campo obligatorio.',
+                                maxLength: { value: 10, message: "Solo se permiten 10 caracteres" },
+                                }}
+                            render={({ field, fieldState }) => (
+                                <>
+                                    <span className="p-float-label">
+                                        <InputText 
+                                            id={field.name} 
+                                            value={field.value}
+                                            keyfilter={'num'} 
+                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                            onChange={(e) => field.onChange(e.target.value)} />
+                                    </span>
+                                    {getFormErrorMessage(field.name)}
+                                </>
+                            )}
+                        />
+                    </div>
+                    <div className="mr-4">
+                        <label>Número de contacto 2</label>
+                        <Controller
+                            name="secondContact"
+                            control={control}
+                            rules={{
+                                maxLength: { value: 10, message: "Solo se permiten 10 caracteres" },
+                                }}
+                            render={({ field, fieldState }) => (
+                                <>
+                                    <span className="p-float-label">
+                                        <InputText 
+                                            id={field.name} 
+                                            value={field.value}
+                                            keyfilter={'num'} 
+                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                            onChange={(e) => field.onChange(e.target.value)} />
+                                    </span>
+                                    {getFormErrorMessage(field.name)}
+                                </>
+                            )}
+                        />
+                    </div>
+                </>)}
+            </div>
+            {arrayTypeDocumentAnonimo.includes(typeDocmuent)?(<></>):(
+            <>
+                <div className="flex">
+                    <div className="mr-4 div-50">
                     <label>Correo electrónico<span className="text-red-600">*</span></label>
                     <Controller
-                        name="noDocument"
+                        name="email"
                         control={control}
                         rules={{
-                            required: 'Campo obligatorio.',
-                            maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
-                            }}
+                            required: "Este campo es obligatorio",
+                            maxLength: { value: 100, message: "Solo se permiten 100 caracteres" },
+                            pattern: {
+                                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                message: "Correo electrónico no válido",
+                            },
+                        }}
                         render={({ field, fieldState }) => (
                             <>
                                 <span className="p-float-label">
@@ -458,15 +559,15 @@ export const ManagetPqrsdfComponent = () => {
                             </>
                         )}
                     />
-                 </div>
-                 <div className="mr-4 div-50">
+                    </div>
+                    <div className="mr-4 div-50">
                     <label>Dirección</label>
                     <Controller
-                        name="noDocument"
+                        name="address"
                         control={control}
                         rules={{
                             required: 'Campo obligatorio.',
-                            maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
+                            maxLength: { value: 300, message: "Solo se permiten 300 caracteres" },
                             }}
                         render={({ field, fieldState }) => (
                             <>
@@ -481,29 +582,32 @@ export const ManagetPqrsdfComponent = () => {
                             </>
                         )}
                     />
-                 </div>
-            </div>
+                    </div>
+                </div>
+            </>)} 
             <div className="flex items-center">
                 <div className="mr-4 div-25">
-                    <label>País</label>
+                    <label>País<span className="text-red-600">*</span></label>
                     <Controller
-                        name="nameCountry"
+                        name="country"
                         control={control}
                         rules={{
                             required: 'Campo obligatorio.',
-                            maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
                             }}
                             render={({ field, fieldState }) => (
                             <>
                                 <Dropdown
                                     id={field.name}
-                                    value={field.value}
+                                    value={country}
                                     optionLabel="LGE_ELEMENTO_DESCRIPCION"
                                     placeholder="Seleccionar"
                                     showClear 
                                     options={countrys}
                                     focusInputRef={field.ref}
-                                    onChange={(e) => field.onChange(e.value)}
+                                    onChange={(e) => field.onChange(()=>{
+                                        setCountry(e.value);
+                                        setValue('country',e.value);
+                                    })}
                                     className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
                                 />
                                 {getFormErrorMessage(field.name)}
@@ -514,23 +618,25 @@ export const ManagetPqrsdfComponent = () => {
                  <div className="mr-4 div-25">
                     <label>Departamento<span className="text-red-600">*</span></label>
                     <Controller
-                        name="nameDepartament"
+                        name="departament"
                         control={control}
                         rules={{
                             required: 'Campo obligatorio.',
-                            maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
                             }}
                             render={({ field, fieldState }) => (
                             <>
                                 <Dropdown
                                     id={field.name}
-                                    value={field.value}
+                                    value={departamet}
                                     optionLabel="LGE_ELEMENTO_DESCRIPCION"
                                     placeholder="Seleccionar"
                                     showClear 
                                     options={departamets}
                                     focusInputRef={field.ref}
-                                    onChange={(e) => field.onChange(e.value)}
+                                    onChange={(e) => field.onChange(()=>{
+                                        setDepartamet(e.value);
+                                        setValue('departament',e.value);
+                                    })}
                                     className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
                                 />
                                 {getFormErrorMessage(field.name)}
@@ -539,25 +645,27 @@ export const ManagetPqrsdfComponent = () => {
                     />
                  </div>
                  <div className="mr-4 div-25">
-                    <label>Municipio</label>
+                    <label>Municipio<span className="text-red-600">*</span></label>
                     <Controller
                         name="municipality"
                         control={control}
                         rules={{
                             required: 'Campo obligatorio.',
-                            maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
                             }}
                             render={({ field, fieldState }) => (
                             <>
                                 <Dropdown
                                     id={field.name}
-                                    value={field.value}
+                                    value={municipality}
                                     optionLabel="LGE_ELEMENTO_DESCRIPCION"
                                     placeholder="Seleccionar"
                                     showClear 
                                     options={municipalitys}
                                     focusInputRef={field.ref}
-                                    onChange={(e) => field.onChange(e.value)}
+                                    onChange={(e) => field.onChange(()=>{
+                                        setMunicipality(e.value);
+                                        setValue('municipality',e.value)
+                                    })}
                                     className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
                                 />
                                 {getFormErrorMessage(field.name)}
