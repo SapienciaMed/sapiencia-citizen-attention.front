@@ -4,8 +4,6 @@ import { Controller, useForm } from "react-hook-form";
 import { DropDownComponent } from "./componentsRegisterPqrsdf/dropDownComponent";
 import { classNames } from "primereact/utils";
 
-
-
 const RegisterAttention = () => {
   const parentForm = useRef(null);
   const [buttonWidth, setButtonWidth] = useState({
@@ -179,6 +177,10 @@ El objetivo de este formulario es recopilar cada una de las llamadas, visitas o 
                 </div>
               </Card>
 
+              <Card className='zise-card box1 mt-4 md:rounded-4xl shadow-none border border-[#D9D9D9]'>
+                <Card title="Información del ciudadano" className="card-container-body mb-4">
+                </Card>
+              </Card>
       </div>
     </div>
   )
