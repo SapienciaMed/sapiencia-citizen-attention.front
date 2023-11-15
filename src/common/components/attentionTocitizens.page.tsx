@@ -14,6 +14,7 @@ import { IPersonFilters } from "../interfaces/person.interfaces";
 import { ItypeDocument } from "../interfaces/mastersTables.interface";
 import { MessageComponent } from "./componentsEditWorkEntities/message.component";
 import { useNavigate } from "react-router-dom";
+import useBreadCrumb from "../../common/hooks/bread-crumb.hook";
 
 interface User {
   identification: string;
@@ -63,6 +64,12 @@ const AttentionTocitizens = () => {
     watch,
     reset,
   } = useForm({ defaultValues, mode: "all" });
+  
+  useBreadCrumb({
+    isPrimaryPage: false,
+    name: "Radicar PQRDSF",
+    url: "atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf",
+  });  
 
   const resetForm = () => {
     setLoad(false), 

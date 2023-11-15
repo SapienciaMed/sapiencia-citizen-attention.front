@@ -16,6 +16,7 @@ import { IDayType } from "../interfaces/dayType.interfaces";
 import { IDaysParametrization } from "../interfaces/daysParametrization.interfaces";
 import { IDaysParametrizationDetail } from "../interfaces/daysParametrizationDetail.interfaces";
 import { allMonths, capitalize, toLocaleDate } from "../utils/helpers";
+import useBreadCrumb from "../../common/hooks/bread-crumb.hook";
 
 function CalendarPage(): React.JSX.Element {
   const parentForm = useRef(null);
@@ -43,6 +44,12 @@ function CalendarPage(): React.JSX.Element {
   const daysParametrizationService = useDaysParametrizationService();
   const [loading, setLoading] = useState(false);
 
+  useBreadCrumb({
+    isPrimaryPage: false,
+    name: "Calendario",
+    url: "atencion-ciudadana/calendario",
+  });
+  
   const save = async () => {
     setLoading(true);
     try {
