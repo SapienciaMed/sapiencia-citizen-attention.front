@@ -22,6 +22,7 @@ import { Countrys, IMResponseMedium,
          ItypeRFequest, IlegalEntityType, 
          IProgram, 
          ISubjectRequest} from "../../interfaces/mastersTables.interface";
+import { Link } from "react-router-dom";
 
 
 interface City {
@@ -58,10 +59,21 @@ export const ManagetPqrsdfComponent = () => {
     const [responsesMediun, setResponsesMediun] =useState<IMResponseMedium>();
     const [program, setProgram] =useState<IProgram>();
     const [subjectRequest,setSubjectRequest] =useState<ISubjectRequest>();
+    const [nameUrl,setNameUrl] =useState<string>();
+    const [namePath, setNamePath] = useState<string>();
     
     const getInfoPqrsdf = async (id:number)=>{
         const infoPqrsdf = pqrsdfService.getPqrsdfById(id);
         return infoPqrsdf
+    }
+
+    const splitUrl = (url:string)=>{
+        const split = url.split('/');
+        const urlSplit = split.slice(0, -1);
+        const nameFile = urlSplit.pop();
+        const namepath = `${urlSplit[0]}/${urlSplit[1]}/${nameFile}` 
+
+        return{nameFile,namepath}
     }
 
     const getDataMasterTables = async() =>{
@@ -278,7 +290,10 @@ export const ManagetPqrsdfComponent = () => {
             setValue('classification',programData.CLP_DESCRIPCION)
             setValue('dependence',programData.DEP_DESCRIPCION)
 
-            setValue('description','sdasdsadsad')
+            setValue('description',data['description'],{ shouldDirty: true });
+            const {nameFile,namepath} = splitUrl(data['file']['name']);
+            setNameUrl(namepath);
+            setNamePath(nameFile);
         })
     },[]);
 
@@ -940,71 +955,11 @@ export const ManagetPqrsdfComponent = () => {
                 <label
                 className="upload-label"
                 style={{ display: "flex", alignItems: "center" }}
-                htmlFor="modal"
-                onClick={() => {}}
                 >
-                    <span className="mr-2 text-red-600">Ver adjunto</span>
-                
-                    <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M8.00008 5.83331V11.1666"
-                            stroke="#533893"
-                            stroke-width="1.5"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                        >
-                        </path>
-                        <path
-                            d="M10.6666 8.50002H5.33325"
-                            stroke="#533893"
-                            stroke-width="1.5"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                        >
-                        </path>
-                        <path
-                            fill-rule="evenodd"
-                            clip-rule="evenodd"
-                            d="M8 14.5V14.5C4.686 14.5 2 11.814 2 8.5V8.5C2 5.186 4.686 2.5 8 2.5V2.5C11.314 2.5 14 5.186 14 8.5V8.5C14 11.814 11.314 14.5 8 14.5Z"
-                            stroke="#533893"
-                            stroke-width="1.5"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                        >
-                        </path>
-                    </svg>
+                    <Link to={`https://storage.cloud.google.com/${nameUrl}`} target="_blank">
+                        <span className="mr-2 text-red-600">{namePath}</span>
+                    </Link>
                 </label>
-                <Button label="Show" style={{ display: "none" }} name="modal" id="modal" onClick={() => {}} />
-                <Dialog
-                header="Si tienes más de un documento, se deben unir en un solo archivo para ser cargados"
-                className="text-center div-modal movil"
-                visible={false}
-                onHide={() => {}}
-                pt={{
-                    root: { style: { width: "35em" } },
-                }}
-                >
-                    <Controller
-                        name="file"
-                        control={control}
-                        render={({ field, fieldState }) => (
-                        <>
-                            <UploadComponent
-                            id={field.name}
-                            dataArchivo={(e: File) => field.onChange(e)}
-                            showModal={(e: boolean) => field.onChange(e)}
-                            />
-                        </>
-                        )}
-                    />
-                    <Button
-                        className="mt-8"
-                        style={{ backgroundColor: "533893" }}
-                        onClick={() => {}}
-                        label="Cancelar"
-                        rounded
-                    />
-                </Dialog>
             </div>   
         </AccordionTab>
         <AccordionTab header="Documentos de apoyo interno">
