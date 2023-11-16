@@ -639,6 +639,12 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
   };
 
   useBreadCrumb({
+    isPrimaryPage: true,
+    name: "Entidades de trabajo",
+    url: "/atencion-ciudadana/entidades-trabajo",
+  });
+
+  useBreadCrumb({
     isPrimaryPage: false,
     name: "Crear Entidad de trabajo",
     url: "/atencion-ciudadana/entidades-trabajo/crear",
