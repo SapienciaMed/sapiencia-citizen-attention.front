@@ -17,6 +17,7 @@ import { Tree } from "primereact/tree";
 import { TreeNode } from "primereact/treenode";
 import { IUser } from "../interfaces/user.interfaces";
 import { IWorkEntityType } from "../interfaces/workEntityType.interface";
+import useBreadCrumb from "../../common/hooks/bread-crumb.hook";
 
 interface Program {
   id: string;
@@ -636,7 +637,19 @@ function CreateWorkEntitiesPage(): React.JSX.Element {
     setAssignedAffairsPrograms([...newAssignedAffairsPrograms]);
     setAssignedProgramsAux(assignedPrograms);
   };
-  
+
+  useBreadCrumb({
+    isPrimaryPage: true,
+    name: "Entidades de trabajo",
+    url: "/atencion-ciudadana/entidades-trabajo",
+  });
+
+  useBreadCrumb({
+    isPrimaryPage: false,
+    name: "Crear Entidad de trabajo",
+    url: "/atencion-ciudadana/entidades-trabajo/crear",
+  });
+
   return (
     <div className="p-4 md:p-6 max-w-[1200px] mx-auto" ref={parentForm}>
       <ConfirmDialog id="messages"></ConfirmDialog>

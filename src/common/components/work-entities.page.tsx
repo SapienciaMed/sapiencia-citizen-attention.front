@@ -22,6 +22,8 @@ import { IWorkEntityType } from "../interfaces/workEntityType.interface";
 import { IPagingData } from "../utils/api-response";
 import { emailPattern, inputMode } from "../utils/helpers";
 import { ModalEntityComponent } from "./genericComponent/modalEntity.component";
+import useBreadCrumb from "../../common/hooks/bread-crumb.hook";
+
 function WorkEntitiesPage(): React.JSX.Element {
   const { authorization } = useContext(AppContext);
   const parentForm = useRef(null);
@@ -50,6 +52,12 @@ function WorkEntitiesPage(): React.JSX.Element {
   const checkMobileScreen = useCheckMobileScreen();
 
   const workEntityService = useWorkEntityService();
+
+  useBreadCrumb({
+    isPrimaryPage: true,
+    name: "Entidades de trabajo",
+    url: "/atencion-ciudadana/entidades-trabajo",
+  });
 
   const {
     control,

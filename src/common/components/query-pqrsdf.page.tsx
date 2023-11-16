@@ -10,6 +10,8 @@ import { EResponseCodes } from "../constants/api.enum";
 import { usePqrsdfService } from "../hooks/PqrsdfService.hook";
 import { IPqrsdf } from "../interfaces/pqrsdf.interfaces";
 import { Tooltip } from "primereact/tooltip";
+import useBreadCrumb from "../../common/hooks/bread-crumb.hook";
+
 function QueryPqrsdfPage(): React.JSX.Element {
   const parentForm = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -17,6 +19,12 @@ function QueryPqrsdfPage(): React.JSX.Element {
   const [showTable, setShowTable] = useState(false);
 
   const pqrsdfService = usePqrsdfService();
+
+  useBreadCrumb({
+    isPrimaryPage: true,
+    name: "Consultar PQRSDF",
+    url: "/atencion-ciudadana/consultar-pqrsdf",
+  });
 
   const {
     control,

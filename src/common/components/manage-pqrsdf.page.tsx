@@ -9,6 +9,7 @@ import { ManagetPqrsdfComponent } from './genericComponent/managetPqrsdf.compone
 import { TableManagePqrsdfComponent } from './genericComponent/tableManagePqrsdf.component';
 
 import "../../styles/managePgrsdf-style.scss";
+import useBreadCrumb from "../../common/hooks/bread-crumb.hook";
 
 
 interface Detail {
@@ -26,7 +27,12 @@ const ManagePqrsdf = () => {
   const [pqrs, setPqrs] = useState<object[]>([]);
   const [getPqrsdfId, setGetPqrsdfId] = useState<number>();
   const [getManagetStatus, setManagetStatus] = useState<boolean>(false);  
-  
+
+  useBreadCrumb({
+    isPrimaryPage: true,
+    name: "Gestionar PQRDSF",
+    url: "/atencion-ciudadana/gestionar-pqrsdf",
+  });
 
   let weekends = []
   const countDays = (initialDate: moment.MomentInput, holidays:string[])=>{

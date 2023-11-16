@@ -24,6 +24,8 @@ import {
 import { IPagingData } from "../utils/api-response";
 import { inputMode } from "../utils/helpers";
 import { ModalEntityComponent } from "./genericComponent/modalEntity.component";
+import useBreadCrumb from "../../common/hooks/bread-crumb.hook";
+
 function RequestSubjectTypesPage(): React.JSX.Element {
   const { authorization } = useContext(AppContext);
   const parentForm = useRef(null);
@@ -61,6 +63,12 @@ function RequestSubjectTypesPage(): React.JSX.Element {
     getValues,
     reset,
   } = useForm({ mode: "all" });
+
+  useBreadCrumb({
+    isPrimaryPage: true,
+    name: "Tipos de asuntos",
+    url: "/atencion-ciudadana/tipos-de-asuntos-de-solicitudes",
+  });
 
   const checkIsFilled = () => {
     const values = Object.values(getValues()).filter((val) => val != null && val != "" && val != undefined);

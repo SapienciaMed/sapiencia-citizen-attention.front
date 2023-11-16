@@ -9,6 +9,7 @@ import { classNames } from "primereact/utils";
 import { mastersTablesServices } from "../hooks/masterTables.hook";
 import { useEffect, useState } from "react";
 import { IChannelAttetion, IChannelAttetionDetail } from "../interfaces/mastersTables.interface";
+import useBreadCrumb from "../../common/hooks/bread-crumb.hook";
 
 interface Props {
   isPerson?: boolean;
@@ -23,6 +24,12 @@ const Register_pqrsdf = ({ isPerson = false, isPersonInternl=false }: Props) => 
   const [attention,setAttention] = useState(null)
 
   const masterTablesServices = mastersTablesServices();
+
+  useBreadCrumb({
+    isPrimaryPage: true,
+    name: "Registrar PQRSDF",
+    url: "/atencion-ciudadana/register-pqrsdf",
+  });
 
   const getattentionChannels =  async() =>{
     const attentionChannel =  await masterTablesServices.getChannelAtencion()

@@ -12,6 +12,7 @@ import { useRequestSubjectTypeService } from "../hooks/RequestSubjectTypeService
 import useCheckMobileScreen from "../hooks/isMobile.hook";
 import { IProgram } from "../interfaces/program.interfaces";
 import { IRequestObject, IRequestSubjectType } from "../interfaces/requestSubjectType.interfaces";
+import useBreadCrumb from "../../common/hooks/bread-crumb.hook";
 
 interface Props {
   isEdit?: boolean;
@@ -35,6 +36,18 @@ function FormRequestSubjectTypesPage({ isEdit = false }: Props): React.JSX.Eleme
   const checkMobileScreen = useCheckMobileScreen();
 
   const requestSubjectTypeService = useRequestSubjectTypeService();
+
+  useBreadCrumb({
+    isPrimaryPage: true,
+    name: "Tipos de asuntos",
+    url: "/atencion-ciudadana/tipos-de-asuntos-de-solicitudes",
+  });
+
+  useBreadCrumb({
+    isPrimaryPage: false,
+    name: isEdit ? "Editar" : "Crear" + ' Tipos de Asuntos',
+    url: "/atencion-ciudadana/tipos-de-asuntos-de-solicitudes/" + (isEdit ? "editar" : "crear"),
+  });
 
   const {
     control,
