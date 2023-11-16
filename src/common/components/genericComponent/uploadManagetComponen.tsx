@@ -9,18 +9,28 @@ import { clip } from '../icons/clip';
 import { iconUpload } from '../icons/upload';
 import { imagesicon } from '../icons/images';
 import { MessageComponent } from '../componentsEditWorkEntities/message.component';
+import { fileIcon } from '../icons/file-icon';
 
-export const UploadManagetComponen = () => {
+interface Props {
+    filesSupportDocument?:(data: []) => void;
+    filesRequestPqrdf?:(data:object) => void;
+    statusDialog?:(data:boolean) => void;
+}
 
-    let arrayFiles = []
+export const UploadManagetComponen = (props:Props) => {
+
+    const { filesRequestPqrdf, filesSupportDocument, statusDialog } = props;
 
     const [totalSize, setTotalSize] = useState(0);
     const fileUploadRef = useRef<FileUpload>(null);
     const [largeFile, setLargeFile] = useState(false);
+    const [visible, setVisible] = useState(false);
     const [fileValue, setFileValue]=useState<number>(0);
 
     const customUpload = (file) => {
-        //Aqui se cargar los archivos
+        filesSupportDocument(file.files);
+        filesRequestPqrdf(file.files);
+        setVisible(true)
       };
 
     const onTemplateSelect = (e) => { 
@@ -79,12 +89,18 @@ export const UploadManagetComponen = () => {
         return (
             <div className="flex align-items-center flex-wrap">
                 <div className="flex align-items-center" style={{ width: '40%' }}>
-                    <img alt={file.name} role="presentation" src={file.objectURL} width={100} />
+                    {file.objectURL!==undefined?(
+                        <>
+                            <img alt={file.name} role="presentation" src={file.objectURL} width={100} />
+                        </>):(
+                        <>
+                            <i>{fileIcon}</i>
+                        </>)}
                     <span className="flex flex-column text-left ml-3">
                         {file.name}
                     </span>
                 </div>
-                <Button type="button" icon="pi pi-times" className="p-button-outlined p-button-rounded p-button-danger ml-auto" onClick={() => onTemplateRemove(file, props.onRemove)} />
+                <Button type="button" icon={trashIcon} className="p-button-outlined p-button-rounded p-button-danger ml-auto" onClick={() => onTemplateRemove(file, props.onRemove)} />
             </div>
         );
     };
@@ -107,6 +123,16 @@ export const UploadManagetComponen = () => {
 
   return (
     <div>
+        {visible?
+        (<>
+            <MessageComponent
+                headerMsg='Archivos adjuntados'
+                msg='Archivos adjuntados exitosamente'
+                twoBtn={false}
+                nameBtn1='Cerrar'
+                onClickBt1={() => statusDialog(false)}
+            />
+        </>):(<></>)}
         {largeFile?(<>
             <MessageComponent 
             headerMsg="Error" 

@@ -16,6 +16,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 
 import { mastersTablesServices } from "../../hooks/masterTables.hook";
 import { usePqrsdfService } from "../../hooks/PqrsdfService.hook";
+import { useWorkEntityService } from "../../hooks/WorkEntityService.hook";
 import { Countrys, IMResponseMedium, 
          Departament, IMunicipality, 
          ItypeRFequest, IlegalEntityType, 
@@ -25,6 +26,7 @@ import { Link } from "react-router-dom";
 import { InputSwitch } from "primereact/inputswitch";
 import { Tooltip } from "primereact/tooltip";
 import { UploadManagetComponen } from "./uploadManagetComponen";
+import { IWorkEntity } from "../../interfaces/workEntity.interfaces";
 
 
 interface City {
@@ -36,10 +38,18 @@ interface PageNumber {
     page: number;
   }
 
+  interface InfoTable {
+     user:string; 
+     visibleBeneficiary?:boolean; 
+     accion?:string;
+     id?:number;
+  }
+
 export const ManagetPqrsdfComponent = () => {
 
     const mastetablesServices = mastersTablesServices();
     const pqrsdfService = usePqrsdfService();
+    const workEntityService = useWorkEntityService();
     const arrayTypeDocumentNit = ['NIT'];
     const arrayTypeDocumentAnonimo = ['Anónimo'];
     const arrayTypeDocumentNitAndAnonymus = ['NIT','Anónimo'];
@@ -55,11 +65,7 @@ export const ManagetPqrsdfComponent = () => {
     const [subjectRequests,setSubjectRequests] =useState<ISubjectRequest[]>();
     const [selectPage, setSelectPage] = useState<PageNumber>({ page: 5 });
     const pageNumber: PageNumber[] = [{ page: 5 }, { page: 10 }, { page: 15 }, { page: 20 }];
-    const [products, setProducts] = useState([ 
-        { user: 'Amy Elsner', visibleBeneficiary:false, accion: 'amyelsner.png' },
-        { user: 'Anna Fali', visibleBeneficiary:false, accion: 'annafali.png' },
-        { user: 'Asiya Javayant', visibleBeneficiary:false, accion: 'asiyajavayant.png' }
-    ]);
+    const [tableData, setTableData] = useState<InfoTable[]>([]);
 
     const [requestType, setRequestType] = useState<{tso_codigo?:number,tso_description?:string}>();
     const [legalentityType, setLegalEntityType] = useState<IlegalEntityType>();
@@ -76,6 +82,8 @@ export const ManagetPqrsdfComponent = () => {
     const [namePath, setNamePath] = useState<string>();
     const [filedNumber, setFiledNumber] = useState<number>();
     const [visibleDialog, setVisibleDialog] = useState(false);
+    const [nameUser, setNmaeUser] = useState<string>();
+    const [selectedFile, setSelectedFile] = useState<InfoTable>();
     
     const getInfoPqrsdf = async (id:number)=>{
         const infoPqrsdf = pqrsdfService.getPqrsdfById(id);
@@ -92,6 +100,7 @@ export const ManagetPqrsdfComponent = () => {
     }
 
     const getDataMasterTables = async() =>{
+        const credentials = JSON.parse(localStorage.getItem('credentials'));
         const typeRequest = await mastetablesServices.getTypeRequest();
         const typeLegalEntity = await mastetablesServices.getTypeLegalentity();
         const ArrayCountry = await mastetablesServices.getCountrys();
@@ -100,6 +109,7 @@ export const ManagetPqrsdfComponent = () => {
         const arrayResposeMediun = await mastetablesServices.getResponseMediun();
         const arrayPrograms = await mastetablesServices.getProgram();
         const arraySubjectRequest = await mastetablesServices.getSbjectRequest();
+        const userInfo = await workEntityService.getUserByFilters({identification:credentials.numberDocument})     
         return {
             typeRequest,
             typeLegalEntity,
@@ -108,7 +118,8 @@ export const ManagetPqrsdfComponent = () => {
             arrayMunicipality,
             arrayResposeMediun,
             arrayPrograms,
-            arraySubjectRequest
+            arraySubjectRequest,
+            userInfo
         }   
     };
 
@@ -117,7 +128,7 @@ export const ManagetPqrsdfComponent = () => {
             typeRequest, typeLegalEntity,
             ArrayCountry, arrayDepartament,
             arrayMunicipality, arrayResposeMediun,
-            arrayPrograms, arraySubjectRequest})=>{
+            arrayPrograms, arraySubjectRequest, userInfo})=>{
             setTypeRequest(typeRequest.data);
             setTypelegalEntity(typeLegalEntity.data);
             setCountrys(ArrayCountry.data);
@@ -125,7 +136,9 @@ export const ManagetPqrsdfComponent = () => {
             setMunicipalitys(arrayMunicipality.data);
             setResponsesMediuns(arrayResposeMediun.data);        
             setPrograms(arrayPrograms.data);
-            setSubjectRequests(arraySubjectRequest.data)
+            setSubjectRequests(arraySubjectRequest.data);
+            const FullName = `${userInfo.data[0].names} ${userInfo.data[0].lastNames}` 
+            setNmaeUser(FullName)
         })
     },[]);
 
@@ -360,12 +373,37 @@ export const ManagetPqrsdfComponent = () => {
         )
     }
 
-    const accionesIcons = ()=> {
+    const handleFileView = (fileDate) => {
+        
+          const reader = new FileReader();
+    
+          // Lee el contenido del archivo como un URL de datos
+          reader.onloadend = () => {
+            const fileDataUrl = reader.result;
+    
+            // Abre una nueva ventana con el contenido del archivo
+            const newWindow = window.open();
+            newWindow.document.write(`<iframe width="100%" height="100%" src="${fileDataUrl}"></iframe>`);
+          };
+    
+          reader.readAsDataURL(fileDate);
+        
+    };
+
+
+
+    const selectFileToDelete = (element) => {
+
+        let _data = tableData.filter((val) => val.id !== element.id);       
+        setTableData(_data);
+    };
+
+    const accionesIcons = (data)=> {   
         return(
             <>
             <div className="flex justify-center items-center">
                 <div className="mr-4">
-                    <Link to={''} >
+                    <Link to={''} onClick={()=>handleFileView(data.accion)}>
                         <Tooltip target=".custom-target-icon" style={{borderRadius:'1px'}} />
                         <i className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center"
                             data-pr-tooltip="Ver adjunto"
@@ -383,7 +421,7 @@ export const ManagetPqrsdfComponent = () => {
                     </Link>
                 </div>
                 <div className="ml-4">
-                    <Link to={''} >
+                    <Link to={''} onClick={()=>selectFileToDelete(data)}>
                         <Tooltip target=".custom-target-icon" style={{borderRadius:'1px'}} />
                         <i className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center"
                             data-pr-tooltip="Eliminar"
@@ -1117,7 +1155,24 @@ export const ManagetPqrsdfComponent = () => {
                             onHide={() => setVisibleDialog(false)}
                             closeIcon={closeIcon}
                         >
-                            <UploadManagetComponen/>
+                            <UploadManagetComponen
+                            filesSupportDocument={(e)=>{
+                                let cont = 0;
+                                const documents =  e.map((date)=>{
+                                    cont = cont+1
+                                    return{
+                                        user:nameUser,
+                                        visibleBeneficiary:false, 
+                                        accion:date,
+                                        id:cont
+                                    }
+                                })
+                                
+                                setTableData(documents)
+                            }}
+                            filesRequestPqrdf={(e)=>{}}
+                            statusDialog={(e)=>{setVisibleDialog(e)}}
+                            />
                         </Dialog>
                         <Button 
                             label="Adjuntar archivos"
@@ -1141,7 +1196,7 @@ export const ManagetPqrsdfComponent = () => {
             <div className="flex flex-row items-center tittle-header-movil">
                 <div className=" mr-4 flex items-center total">
                     <div><label className="mr-2 text-base total">Total de resultados</label></div>
-                    <div><span className="text-black flex items-center bold big">{products.length}</span></div>
+                    <div><span className="text-black flex items-center bold big">{tableData.length}</span></div>
                 </div>
                 <div className="flex items-center pagination-p">
                     <div><label className="mr-2 p-colorpicker">Registro por página</label></div>
@@ -1159,7 +1214,7 @@ export const ManagetPqrsdfComponent = () => {
         </div>
         <div className="overflow-hidden max-w-[calc(111vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] block md:block borderless reverse-striped">
             <DataTable
-                value={products}
+                value={tableData}
                 paginator
                 paginatorTemplate={paginatorTemplate()}
                 rows={selectPage.page}
@@ -1333,45 +1388,34 @@ export const ManagetPqrsdfComponent = () => {
                  </div>
             </div>
             <div className="">
-            <div className="">
-                <label
-                className="upload-label"
-                style={{ display: "flex", alignItems: "center" }}
-                htmlFor="modal"
-                onClick={() => {}}
-                >
-                    <span className="mr-2 text-red-600">Adjuntar archivo</span>
-                
-                    <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M8.00008 5.83331V11.1666"
-                            stroke="#533893"
-                            stroke-width="1.5"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                <div className="col-1 col-100 seeker">
+                    <div className="mr-2">
+                        <Dialog 
+                            visible={visibleDialog} 
+                            style={{ width: '50vw' }} 
+                            onHide={() => setVisibleDialog(false)}
+                            closeIcon={closeIcon}
                         >
-                        </path>
-                        <path
-                            d="M10.6666 8.50002H5.33325"
-                            stroke="#533893"
-                            stroke-width="1.5"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                        >
-                        </path>
-                        <path
-                            fill-rule="evenodd"
-                            clip-rule="evenodd"
-                            d="M8 14.5V14.5C4.686 14.5 2 11.814 2 8.5V8.5C2 5.186 4.686 2.5 8 2.5V2.5C11.314 2.5 14 5.186 14 8.5V8.5C14 11.814 11.314 14.5 8 14.5Z"
-                            stroke="#533893"
-                            stroke-width="1.5"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                        >
-                        </path>
-                    </svg>
-                </label>
-            </div> 
+                            <UploadManagetComponen
+                                
+                            />
+                        </Dialog>
+                        <Button 
+                            label="Adjuntar archivos"
+                            className="flex flex-row-reverse w-52"
+                            onClick={()=>setVisibleDialog(true)} 
+                            text 
+                            icon={<i className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center">
+                                    <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M7.99984 5.83334V11.1667" stroke="#533893" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M10.6668 8.49999H5.3335" stroke="#533893" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M8 14.5V14.5C4.686 14.5 2 11.814 2 8.5V8.5C2 5.186 4.686 2.5 8 2.5V2.5C11.314 2.5 14 5.186 14 8.5V8.5C14 11.814 11.314 14.5 8 14.5Z" stroke="#533893" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    </i>
+                                }
+                        />
+                    </div>
+                </div>
             </div>
     </AccordionTab>
 </Accordion>
