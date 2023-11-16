@@ -62,3 +62,7 @@ export interface ISubjectRequest {
     ASO_ASUNTO: string;
 }
 
+export interface IResposeType {
+    id:number;
+    description:string;
+}

@@ -21,12 +21,14 @@ import { Countrys, IMResponseMedium,
          Departament, IMunicipality, 
          ItypeRFequest, IlegalEntityType, 
          IProgram, 
-         ISubjectRequest} from "../../interfaces/mastersTables.interface";
+         ISubjectRequest,
+         IResposeType} from "../../interfaces/mastersTables.interface";
 import { Link } from "react-router-dom";
 import { InputSwitch } from "primereact/inputswitch";
 import { Tooltip } from "primereact/tooltip";
 import { UploadManagetComponen } from "./uploadManagetComponen";
 import { IWorkEntity } from "../../interfaces/workEntity.interfaces";
+import { IWorkEntityType } from "../../interfaces/workEntityType.interface";
 
 
 interface City {
@@ -53,6 +55,7 @@ export const ManagetPqrsdfComponent = () => {
     const arrayTypeDocumentNit = ['NIT'];
     const arrayTypeDocumentAnonimo = ['Anónimo'];
     const arrayTypeDocumentNitAndAnonymus = ['NIT','Anónimo'];
+    const arrayResponsesTypes = ['Trasladar a','Rechazar'];
     const arrayTypeDocument = ['Cedula de Ciudadania','Cedula de Extranjeria','Tarjeta de Identidad','NIT','Anónimo']
 
     const [typeReques, setTypeRequest] = useState<ItypeRFequest[]>();
@@ -63,6 +66,9 @@ export const ManagetPqrsdfComponent = () => {
     const [responsesMediuns,setResponsesMediuns] =useState<IMResponseMedium[]>();
     const [programs,setPrograms] =useState<IProgram[]>();
     const [subjectRequests,setSubjectRequests] =useState<ISubjectRequest[]>();
+    const [responseTypes,setResponsesTypes] =useState<IResposeType[]>();
+    const [workEntitys,setWorkEntitys] =useState<IWorkEntityType[]>();
+    const [arrayworkEntitys,setArrayWorkEntitys] =useState<IWorkEntityType[]>();
     const [selectPage, setSelectPage] = useState<PageNumber>({ page: 5 });
     const pageNumber: PageNumber[] = [{ page: 5 }, { page: 10 }, { page: 15 }, { page: 20 }];
     const [tableData, setTableData] = useState<InfoTable[]>([]);
@@ -83,7 +89,10 @@ export const ManagetPqrsdfComponent = () => {
     const [filedNumber, setFiledNumber] = useState<number>();
     const [visibleDialog, setVisibleDialog] = useState(false);
     const [nameUser, setNmaeUser] = useState<string>();
-    const [selectedFile, setSelectedFile] = useState<InfoTable>();
+    const [responseType,setResponsesType] =useState<IResposeType>();
+    const [workEntity,setWorkEntity] =useState<IWorkEntityType[]>();
+    const [disableIntput,setDisableIntput] =useState<boolean>(true);
+    const [styleDisableIntput,setStyleDisableIntput] =useState<string>('input-desabled');
     
     const getInfoPqrsdf = async (id:number)=>{
         const infoPqrsdf = pqrsdfService.getPqrsdfById(id);
@@ -109,7 +118,9 @@ export const ManagetPqrsdfComponent = () => {
         const arrayResposeMediun = await mastetablesServices.getResponseMediun();
         const arrayPrograms = await mastetablesServices.getProgram();
         const arraySubjectRequest = await mastetablesServices.getSbjectRequest();
-        const userInfo = await workEntityService.getUserByFilters({identification:credentials.numberDocument})     
+        const userInfo = await workEntityService.getUserByFilters({identification:credentials.numberDocument});
+        const arrayResponseType = await mastetablesServices.getResponseTypes();
+        const arrayWorkEntitys = await workEntityService.getWorkEntityTypes();    
         return {
             typeRequest,
             typeLegalEntity,
@@ -119,16 +130,25 @@ export const ManagetPqrsdfComponent = () => {
             arrayResposeMediun,
             arrayPrograms,
             arraySubjectRequest,
-            userInfo
+            userInfo,
+            arrayResponseType,
+            arrayWorkEntitys
         }   
     };
 
     useEffect(()=>{
         getDataMasterTables().then(({
-            typeRequest, typeLegalEntity,
-            ArrayCountry, arrayDepartament,
-            arrayMunicipality, arrayResposeMediun,
-            arrayPrograms, arraySubjectRequest, userInfo})=>{
+            typeRequest, 
+            typeLegalEntity,
+            ArrayCountry, 
+            arrayDepartament,
+            arrayMunicipality, 
+            arrayResposeMediun,
+            arrayPrograms, 
+            arraySubjectRequest, 
+            userInfo,
+            arrayResponseType,
+            arrayWorkEntitys})=>{
             setTypeRequest(typeRequest.data);
             setTypelegalEntity(typeLegalEntity.data);
             setCountrys(ArrayCountry.data);
@@ -138,9 +158,23 @@ export const ManagetPqrsdfComponent = () => {
             setPrograms(arrayPrograms.data);
             setSubjectRequests(arraySubjectRequest.data);
             const FullName = `${userInfo.data[0].names} ${userInfo.data[0].lastNames}` 
-            setNmaeUser(FullName)
+            setNmaeUser(FullName);      
+            setResponsesTypes(arrayResponseType.data);
+            setArrayWorkEntitys(arrayWorkEntitys.data);
         })
     },[]);
+
+    useEffect(()=>{
+        if(arrayResponsesTypes.includes(responseType?.description)){
+            setWorkEntitys(arrayworkEntitys);
+            setDisableIntput(false);
+            setStyleDisableIntput('');
+        }else{
+            setWorkEntitys([]);
+            setDisableIntput(true);
+            setStyleDisableIntput('input-desabled')
+        }
+    },[responseType])
 
     const defaultValues = {
         typeOfRequest: {tso_codigo: null,tso_description:''},
@@ -186,7 +220,17 @@ export const ManagetPqrsdfComponent = () => {
         classification:'',
         dependence:'',
         description:'',
-        file:''
+        file:'',
+        responseType:{
+            id:null,
+            description:""
+        },
+        workEntity:{
+            tet_codigo: null,
+            tet_descripcion: "",
+            tet_activo: true,
+            tet_orden: null,
+        }
       };
 
     const {
@@ -507,7 +551,6 @@ export const ManagetPqrsdfComponent = () => {
           />
         </svg>
       );
-    
       
   return (
     <>
@@ -599,7 +642,7 @@ export const ManagetPqrsdfComponent = () => {
         </>)}
     </div>
 
-    <Accordion activeIndex={2} style={{width:'61em'}}>
+    <Accordion activeIndex={3} style={{width:'61em'}}>
         <AccordionTab  header="Información del ciudadano">
             <div className="flex">
                 {arrayTypeDocumentNit.includes(typeDocmuent)?(
@@ -1251,51 +1294,56 @@ export const ManagetPqrsdfComponent = () => {
                 <div className="mr-4 div-30">
                     <label>Tipo de respuesta</label>
                     <Controller
-                        name="noDocument"
+                        name="responseType"
                         control={control}
                         rules={{
                             required: 'Campo obligatorio.',
-                            maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
-                            }}
-                            render={({ field, fieldState }) => (
-                            <>
-                                <Dropdown
-                                    id={field.name}
-                                    value={field.value}
-                                    optionLabel="name"
-                                    placeholder="Seleccionar"
-                                    showClear 
-                                    options={cities}
-                                    focusInputRef={field.ref}
-                                    onChange={(e) => field.onChange(e.value)}
-                                    className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
-                                />
-                                {getFormErrorMessage(field.name)}
-                            </>
+                        }}
+                        render={({ field, fieldState }) => (
+                        <>
+                            <Dropdown
+                                id={field.name}
+                                value={responseType}
+                                optionLabel="description"
+                                placeholder="Seleccionar"
+                                showClear 
+                                options={responseTypes}
+                                focusInputRef={field.ref}
+                                onChange={(e) => field.onChange(()=>{
+                                    setResponsesType(e.value);
+                                    setValue('responseType',e.value);
+                                })}
+                                className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                            />
+                            {getFormErrorMessage(field.name)}
+                        </>
                         )}
                     />
                  </div>
                  <div className="mr-4 div-30">
                     <label>Enviar a<span className="text-red-600">*</span></label>
                     <Controller
-                        name="noDocument"
+                        name="workEntity"
                         control={control}
                         rules={{
-                            required: 'Campo obligatorio.',
-                            maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
+                            required:{value:disableIntput,message:'Campo obligatorio.'},
                             }}
                             render={({ field, fieldState }) => (
                             <>
                                 <Dropdown
                                     id={field.name}
-                                    value={field.value}
-                                    optionLabel="name"
+                                    value={workEntity}
+                                    optionLabel="tet_descripcion"
                                     placeholder="Seleccionar"
                                     showClear 
-                                    options={cities}
+                                    disabled={disableIntput}
+                                    options={workEntitys}
                                     focusInputRef={field.ref}
-                                    onChange={(e) => field.onChange(e.value)}
-                                    className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                    onChange={(e) => field.onChange(()=>{
+                                        setWorkEntity(e.value);
+                                        setValue('workEntity',e.value)
+                                    })}
+                                    className={classNames({ 'p-invalid': fieldState.error }, `h-10 flex items-center ${styleDisableIntput}`)}
                                 />
                                 {getFormErrorMessage(field.name)}
                             </>
