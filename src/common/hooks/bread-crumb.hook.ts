@@ -37,7 +37,7 @@ function useBreadCrumb(data: IBreadCrumb): {
     setTimeout(() => {
       publish("add-bread-crumb", {
         ...data,
-        isPrimaryPage: true,
+        isPrimaryPage: false,
       });
     }, 100);
 

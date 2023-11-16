@@ -56,7 +56,7 @@ function WorkEntitiesPage(): React.JSX.Element {
   useBreadCrumb({
     isPrimaryPage: true,
     name: "Entidades de trabajo",
-    url: "atencion-ciudadana/entidades-trabajo",
+    url: "/atencion-ciudadana/entidades-trabajo",
   });
 
   const {

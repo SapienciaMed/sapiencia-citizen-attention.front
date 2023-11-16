@@ -31,7 +31,7 @@ const ManagePqrsdf = () => {
   useBreadCrumb({
     isPrimaryPage: true,
     name: "Gestionar PQRDSF",
-    url: "atencion-ciudadana/gestionar-pqrsdf",
+    url: "/atencion-ciudadana/gestionar-pqrsdf",
   });
 
   let weekends = []

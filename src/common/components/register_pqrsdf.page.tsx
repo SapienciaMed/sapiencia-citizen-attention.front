@@ -28,7 +28,7 @@ const Register_pqrsdf = ({ isPerson = false, isPersonInternl=false }: Props) => 
   useBreadCrumb({
     isPrimaryPage: true,
     name: "Registrar PQRSDF",
-    url: "atencion-ciudadana/register-pqrsdf",
+    url: "/atencion-ciudadana/register-pqrsdf",
   });
 
   const getattentionChannels =  async() =>{

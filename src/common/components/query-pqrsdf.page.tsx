@@ -23,7 +23,7 @@ function QueryPqrsdfPage(): React.JSX.Element {
   useBreadCrumb({
     isPrimaryPage: true,
     name: "Consultar PQRSDF",
-    url: "atencion-ciudadana/consultar-pqrsdf",
+    url: "/atencion-ciudadana/consultar-pqrsdf",
   });
 
   const {
