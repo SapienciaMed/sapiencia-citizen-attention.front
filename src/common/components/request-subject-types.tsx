@@ -65,7 +65,7 @@ function RequestSubjectTypesPage(): React.JSX.Element {
   } = useForm({ mode: "all" });
 
   useBreadCrumb({
-    isPrimaryPage: false,
+    isPrimaryPage: true,
     name: "Tipos de asuntos",
     url: "atencion-ciudadana/tipos-de-asuntos-de-solicitudes",
   });

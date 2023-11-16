@@ -29,7 +29,7 @@ const ManagePqrsdf = () => {
   const [getManagetStatus, setManagetStatus] = useState<boolean>(false);  
 
   useBreadCrumb({
-    isPrimaryPage: false,
+    isPrimaryPage: true,
     name: "Gestionar PQRDSF",
     url: "atencion-ciudadana/gestionar-pqrsdf",
   });

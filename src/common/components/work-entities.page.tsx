@@ -54,7 +54,7 @@ function WorkEntitiesPage(): React.JSX.Element {
   const workEntityService = useWorkEntityService();
 
   useBreadCrumb({
-    isPrimaryPage: false,
+    isPrimaryPage: true,
     name: "Entidades de trabajo",
     url: "atencion-ciudadana/entidades-trabajo",
   });

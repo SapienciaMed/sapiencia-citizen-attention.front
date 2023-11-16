@@ -66,7 +66,7 @@ const AttentionTocitizens = () => {
   } = useForm({ defaultValues, mode: "all" });
   
   useBreadCrumb({
-    isPrimaryPage: false,
+    isPrimaryPage: true,
     name: "Radicar PQRDSF",
     url: "atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf",
   });  

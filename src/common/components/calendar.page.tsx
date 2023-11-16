@@ -45,7 +45,7 @@ function CalendarPage(): React.JSX.Element {
   const [loading, setLoading] = useState(false);
 
   useBreadCrumb({
-    isPrimaryPage: false,
+    isPrimaryPage: true,
     name: "Calendario",
     url: "atencion-ciudadana/calendario",
   });

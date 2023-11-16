@@ -26,7 +26,7 @@ const Register_pqrsdf = ({ isPerson = false, isPersonInternl=false }: Props) => 
   const masterTablesServices = mastersTablesServices();
 
   useBreadCrumb({
-    isPrimaryPage: false,
+    isPrimaryPage: true,
     name: "Registrar PQRSDF",
     url: "atencion-ciudadana/register-pqrsdf",
   });
