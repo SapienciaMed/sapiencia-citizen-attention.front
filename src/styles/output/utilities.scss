@@ -8117,6 +8117,10 @@ video {
   width:3rem
 }
 
+.w-52{
+  width:13rem
+}
+
 .w-\[114px\]{
   width:114px
 }
@@ -8257,6 +8261,10 @@ video {
   flex-direction:row
 }
 
+.flex-row-reverse{
+  flex-direction:row-reverse
+}
+
 .flex-col{
   flex-direction:column
 }
@@ -8275,6 +8283,10 @@ video {
 
 .items-center{
   align-items:center
+}
+
+.justify-start{
+  justify-content:flex-start
 }
 
 .justify-end{
