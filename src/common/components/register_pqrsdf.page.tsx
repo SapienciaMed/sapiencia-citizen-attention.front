@@ -25,13 +25,21 @@ const Register_pqrsdf = ({ isPerson = false, isPersonInternl=false }: Props) => 
 
   const masterTablesServices = mastersTablesServices();
   const {identification} = useParams()
-  if (identification) {
+
+  if(isPerson == false && isPersonInternl == true){
+    useBreadCrumb({
+      isPrimaryPage: true,
+      name: "Registrar PQRSDF",
+      url: "/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf/radicar",
+    });
+  }
+  else if (identification) {
     useBreadCrumb({
       isPrimaryPage: true,
       name: "Registrar PQRSDF",
       url: "/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf/radicar/" + identification,
     });
-    }
+  }
   else {
     useBreadCrumb({
       isPrimaryPage: true,
@@ -39,7 +47,7 @@ const Register_pqrsdf = ({ isPerson = false, isPersonInternl=false }: Props) => 
       url: "/atencion-ciudadana/register-pqrsdf",
     });
   }
-  
+
   const getattentionChannels =  async() =>{
     const attentionChannel =  await masterTablesServices.getChannelAtencion()
     return attentionChannel;
