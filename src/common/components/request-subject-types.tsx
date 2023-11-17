@@ -68,7 +68,6 @@ function RequestSubjectTypesPage(): React.JSX.Element {
     isPrimaryPage: true,
     name: "Tipos de asuntos",
     url: "/atencion-ciudadana/tipos-de-asuntos-de-solicitudes",
-    useContext: true
   });
 
   const checkIsFilled = () => {
