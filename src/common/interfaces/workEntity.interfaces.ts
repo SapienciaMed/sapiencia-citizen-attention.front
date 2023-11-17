@@ -35,3 +35,8 @@ export interface IWorkEntityFilters {
   page?: number;
   perPage?: number;
 }
+
+export interface IUserManageEntity {
+    id: number;
+    fullName: string;
+}

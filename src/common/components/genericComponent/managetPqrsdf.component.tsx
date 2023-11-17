@@ -22,12 +22,13 @@ import { Countrys, IMResponseMedium,
          ItypeRFequest, IlegalEntityType, 
          IProgram, 
          ISubjectRequest,
-         IResposeType} from "../../interfaces/mastersTables.interface";
+         IResposeType,
+         IFactors} from "../../interfaces/mastersTables.interface";
 import { Link } from "react-router-dom";
 import { InputSwitch } from "primereact/inputswitch";
 import { Tooltip } from "primereact/tooltip";
 import { UploadManagetComponen } from "./uploadManagetComponen";
-import { IWorkEntity } from "../../interfaces/workEntity.interfaces";
+import { IUserManageEntity, IWorkEntity } from "../../interfaces/workEntity.interfaces";
 import { IWorkEntityType } from "../../interfaces/workEntityType.interface";
 
 
@@ -47,7 +48,13 @@ interface PageNumber {
      id?:number;
   }
 
-export const ManagetPqrsdfComponent = () => {
+  interface Props {
+    id:number;
+  }
+
+export const ManagetPqrsdfComponent = (props:Props) => {
+
+    const { id } = props
 
     const mastetablesServices = mastersTablesServices();
     const pqrsdfService = usePqrsdfService();
@@ -56,7 +63,6 @@ export const ManagetPqrsdfComponent = () => {
     const arrayTypeDocumentAnonimo = ['Anónimo'];
     const arrayTypeDocumentNitAndAnonymus = ['NIT','Anónimo'];
     const arrayResponsesTypes = ['Trasladar a','Rechazar'];
-    const arrayTypeDocument = ['Cedula de Ciudadania','Cedula de Extranjeria','Tarjeta de Identidad','NIT','Anónimo']
 
     const [typeReques, setTypeRequest] = useState<ItypeRFequest[]>();
     const [typelegalEntity, setTypelegalEntity] = useState<IlegalEntityType[]>();
@@ -69,6 +75,8 @@ export const ManagetPqrsdfComponent = () => {
     const [responseTypes,setResponsesTypes] =useState<IResposeType[]>();
     const [workEntitys,setWorkEntitys] =useState<IWorkEntityType[]>();
     const [arrayworkEntitys,setArrayWorkEntitys] =useState<IWorkEntityType[]>();
+    const [arrayUserManage,setArrayArrayUserManage] = useState<IUserManageEntity[]>();
+    const [arrayFactors,setArrayFactors] = useState<IFactors[]>();
     const [selectPage, setSelectPage] = useState<PageNumber>({ page: 5 });
     const pageNumber: PageNumber[] = [{ page: 5 }, { page: 10 }, { page: 15 }, { page: 20 }];
     const [tableData, setTableData] = useState<InfoTable[]>([]);
@@ -90,9 +98,12 @@ export const ManagetPqrsdfComponent = () => {
     const [visibleDialog, setVisibleDialog] = useState(false);
     const [nameUser, setNmaeUser] = useState<string>();
     const [responseType,setResponsesType] =useState<IResposeType>();
-    const [workEntity,setWorkEntity] =useState<IWorkEntityType[]>();
+    const [workEntity,setWorkEntity] =useState<IWorkEntityType>();
+    const [mangeWorkEntity,setManageWorkEntity] =useState<IUserManageEntity>();
     const [disableIntput,setDisableIntput] =useState<boolean>(true);
+    const [obligatoryField,setObligatoryField] =useState<boolean>(false);
     const [styleDisableIntput,setStyleDisableIntput] =useState<string>('input-desabled');
+    const [factors,setFactors] =useState<IFactors>();
     
     const getInfoPqrsdf = async (id:number)=>{
         const infoPqrsdf = pqrsdfService.getPqrsdfById(id);
@@ -108,6 +119,11 @@ export const ManagetPqrsdfComponent = () => {
         return{nameFile,namepath}
     }
 
+    const getManageEntity = async(id:number) =>{
+        const arrayUsers = await workEntityService.getEntityManagersByEntityTypeId(id);
+        return{ arrayUsers }
+    };
+
     const getDataMasterTables = async() =>{
         const credentials = JSON.parse(localStorage.getItem('credentials'));
         const typeRequest = await mastetablesServices.getTypeRequest();
@@ -120,7 +136,8 @@ export const ManagetPqrsdfComponent = () => {
         const arraySubjectRequest = await mastetablesServices.getSbjectRequest();
         const userInfo = await workEntityService.getUserByFilters({identification:credentials.numberDocument});
         const arrayResponseType = await mastetablesServices.getResponseTypes();
-        const arrayWorkEntitys = await workEntityService.getWorkEntityTypes();    
+        const arrayWorkEntitys = await workEntityService.getWorkEntityTypes();
+        const arraysFactors = await mastetablesServices.getFactors();   
         return {
             typeRequest,
             typeLegalEntity,
@@ -132,7 +149,8 @@ export const ManagetPqrsdfComponent = () => {
             arraySubjectRequest,
             userInfo,
             arrayResponseType,
-            arrayWorkEntitys
+            arrayWorkEntitys,
+            arraysFactors
         }   
     };
 
@@ -148,7 +166,8 @@ export const ManagetPqrsdfComponent = () => {
             arraySubjectRequest, 
             userInfo,
             arrayResponseType,
-            arrayWorkEntitys})=>{
+            arrayWorkEntitys,
+            arraysFactors})=>{
             setTypeRequest(typeRequest.data);
             setTypelegalEntity(typeLegalEntity.data);
             setCountrys(ArrayCountry.data);
@@ -161,17 +180,32 @@ export const ManagetPqrsdfComponent = () => {
             setNmaeUser(FullName);      
             setResponsesTypes(arrayResponseType.data);
             setArrayWorkEntitys(arrayWorkEntitys.data);
+            setArrayFactors(arraysFactors.data);
         })
     },[]);
+
+    useEffect(()=>{
+        
+        if(workEntity!== undefined){
+            getManageEntity(workEntity.tet_codigo).then(({arrayUsers})=>{
+                setArrayArrayUserManage(arrayUsers.data);
+            });
+        }
+        
+    },[workEntity])
 
     useEffect(()=>{
         if(arrayResponsesTypes.includes(responseType?.description)){
             setWorkEntitys(arrayworkEntitys);
             setDisableIntput(false);
+            setObligatoryField(true);
             setStyleDisableIntput('');
         }else{
             setWorkEntitys([]);
+            setArrayArrayUserManage([]);
+            setArrayFactors([]);
             setDisableIntput(true);
+            setObligatoryField(false);
             setStyleDisableIntput('input-desabled')
         }
     },[responseType])
@@ -230,6 +264,16 @@ export const ManagetPqrsdfComponent = () => {
             tet_descripcion: "",
             tet_activo: true,
             tet_orden: null,
+        },
+        responsible:{
+            id: null,
+            fullName: ""
+        },
+        factors:{
+            id: null,
+            name: "",
+            isActive: null,
+            order: null
         }
       };
 
@@ -252,10 +296,9 @@ export const ManagetPqrsdfComponent = () => {
         return birthdate;
       };
 
-    //pasar id de la pqr este es provicional id prueba 73 y 1
     useEffect(()=>{
-        getInfoPqrsdf(1).then(({data})=>{
-            console.log(data);
+        getInfoPqrsdf(id).then(({data})=>{
+            //console.log(data);
             setTypeDocmuent(data['person']['documentType']['itemDescription'])
             setRequestType({
                 tso_codigo: data['requestType']['tso_codigo'],
@@ -1326,7 +1369,7 @@ export const ManagetPqrsdfComponent = () => {
                         name="workEntity"
                         control={control}
                         rules={{
-                            required:{value:disableIntput,message:'Campo obligatorio.'},
+                            required:{value:obligatoryField,message:'Campo obligatorio.'},
                             }}
                             render={({ field, fieldState }) => (
                             <>
@@ -1340,6 +1383,8 @@ export const ManagetPqrsdfComponent = () => {
                                     options={workEntitys}
                                     focusInputRef={field.ref}
                                     onChange={(e) => field.onChange(()=>{
+                                        console.log(e.value);
+                                        
                                         setWorkEntity(e.value);
                                         setValue('workEntity',e.value)
                                     })}
@@ -1353,24 +1398,27 @@ export const ManagetPqrsdfComponent = () => {
                  <div className="mr-4 div-30">
                     <label>Responsable</label>
                     <Controller
-                        name="noDocument"
+                        name="responsible"
                         control={control}
                         rules={{
-                            required: 'Campo obligatorio.',
-                            maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
+                            required: {value:obligatoryField,message:'Campo obligatorio.'},
                             }}
                             render={({ field, fieldState }) => (
                             <>
                                 <Dropdown
                                     id={field.name}
-                                    value={field.value}
-                                    optionLabel="name"
+                                    value={mangeWorkEntity}
+                                    disabled={disableIntput}
+                                    optionLabel="fullName"
                                     placeholder="Seleccionar"
                                     showClear 
-                                    options={cities}
+                                    options={arrayUserManage}
                                     focusInputRef={field.ref}
-                                    onChange={(e) => field.onChange(e.value)}
-                                    className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                    onChange={(e) => field.onChange(()=>{
+                                        setManageWorkEntity(e.value);
+                                        setValue('responsible',e.value)
+                                    })}
+                                    className={classNames({ 'p-invalid': fieldState.error },`h-10 flex items-center ${styleDisableIntput}`)}
                                 />
                                 {getFormErrorMessage(field.name)}
                             </>
@@ -1382,24 +1430,28 @@ export const ManagetPqrsdfComponent = () => {
                  <div className="mr-4 div-30">
                     <label>Factor</label>
                     <Controller
-                        name="noDocument"
+                        name="factors"
                         control={control}
                         rules={{
-                            required: 'Campo obligatorio.',
+                            required: {value:obligatoryField,message:'Campo obligatorio.'},
                             maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
                             }}
                             render={({ field, fieldState }) => (
                             <>
                                 <Dropdown
                                     id={field.name}
-                                    value={field.value}
+                                    value={factors}
+                                    disabled={disableIntput}
                                     optionLabel="name"
                                     placeholder="Seleccionar"
                                     showClear 
-                                    options={cities}
+                                    options={arrayFactors}
                                     focusInputRef={field.ref}
-                                    onChange={(e) => field.onChange(e.value)}
-                                    className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                    onChange={(e) => field.onChange(()=>{
+                                        setFactors(e.value);
+                                        setValue('factors',e.value);
+                                    })}
+                                    className={classNames({ 'p-invalid': fieldState.error },`h-10 flex items-center ${styleDisableIntput}`)}
                                 />
                                 {getFormErrorMessage(field.name)}
                             </>

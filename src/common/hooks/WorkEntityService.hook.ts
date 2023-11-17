@@ -1,7 +1,7 @@
 import { EResponseCodes } from "../constants/api.enum";
 import { IProgram } from "../interfaces/program.interfaces";
 import { IUser } from "../interfaces/user.interfaces";
-import { IWorkEntity, IWorkEntityFilters } from "../interfaces/workEntity.interfaces";
+import { IUserManageEntity, IWorkEntity, IWorkEntityFilters } from "../interfaces/workEntity.interfaces";
 import { IWorkEntityType } from "../interfaces/workEntityType.interface";
 import { ApiResponse, IPagingData } from "../utils/api-response";
 import useCrudService from "./crud-service.hook";
@@ -83,6 +83,17 @@ export function useWorkEntityService() {
     }
   }
 
+  
+
+  async function getEntityManagersByEntityTypeId(id:number): Promise<ApiResponse<IUserManageEntity[]>> {
+    try {
+      const endpoint: string = `/get-Entitymanagers-by-entityType-id/${id}`;
+      return await get(`${listUrl}${endpoint}`);
+    } catch (error) {
+      return new ApiResponse([] , EResponseCodes.FAIL, "Error no controlado");
+    }
+  }
+
   return {
     createWorkEntity,
     getUserByFilters,
@@ -91,6 +102,7 @@ export function useWorkEntityService() {
     getWorkEntityTypes,
     getProgramsAffairs,
     getWorkEntityByFilters,
-    updateWorkEntity
+    updateWorkEntity,
+    getEntityManagersByEntityTypeId
   };
 }
