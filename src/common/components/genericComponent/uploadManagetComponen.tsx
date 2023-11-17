@@ -13,13 +13,13 @@ import { fileIcon } from '../icons/file-icon';
 
 interface Props {
     filesSupportDocument?:(data: []) => void;
-    filesRequestPqrdf?:(data:object) => void;
     statusDialog?:(data:boolean) => void;
+    multiple?:boolean;
 }
 
 export const UploadManagetComponen = (props:Props) => {
 
-    const { filesRequestPqrdf, filesSupportDocument, statusDialog } = props;
+    const { filesSupportDocument, statusDialog, multiple=true } = props;
 
     const [totalSize, setTotalSize] = useState(0);
     const fileUploadRef = useRef<FileUpload>(null);
@@ -29,7 +29,6 @@ export const UploadManagetComponen = (props:Props) => {
 
     const customUpload = (file) => {
         filesSupportDocument(file.files);
-        filesRequestPqrdf(file.files);
         setVisible(true)
       };
 
@@ -146,7 +145,7 @@ export const UploadManagetComponen = (props:Props) => {
         <Tooltip target=".custom-cancel-btn" content="Clear" position="bottom" />
 
         <FileUpload 
-            multiple 
+            multiple={multiple} 
             ref={fileUploadRef}
             accept="pdf,jpg" 
             onSelect={onTemplateSelect} 

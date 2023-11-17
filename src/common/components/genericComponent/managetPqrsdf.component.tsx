@@ -30,6 +30,8 @@ import { Tooltip } from "primereact/tooltip";
 import { UploadManagetComponen } from "./uploadManagetComponen";
 import { IUserManageEntity, IWorkEntity } from "../../interfaces/workEntity.interfaces";
 import { IWorkEntityType } from "../../interfaces/workEntityType.interface";
+import { trashIcon } from "../icons/trash";
+import { showIcon } from "../icons/show";
 
 
 interface City {
@@ -104,6 +106,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
     const [obligatoryField,setObligatoryField] =useState<boolean>(false);
     const [styleDisableIntput,setStyleDisableIntput] =useState<string>('input-desabled');
     const [factors,setFactors] =useState<IFactors>();
+    const [fileResponsePqrsdf, setFileResponsePqrsdf] = useState<object>(null);
     
     const getInfoPqrsdf = async (id:number)=>{
         const infoPqrsdf = pqrsdfService.getPqrsdfById(id);
@@ -274,7 +277,8 @@ export const ManagetPqrsdfComponent = (props:Props) => {
             name: "",
             isActive: null,
             order: null
-        }
+        },
+        observation:''
       };
 
     const {
@@ -297,7 +301,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
       };
 
     useEffect(()=>{
-        getInfoPqrsdf(id).then(({data})=>{
+        getInfoPqrsdf(1).then(({data})=>{
             //console.log(data);
             setTypeDocmuent(data['person']['documentType']['itemDescription'])
             setRequestType({
@@ -496,13 +500,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                             data-pr-tooltip="Ver adjunto"
                             data-pr-position="right"
                         >
-                            <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd" clip-rule="evenodd" d="M1.13477 13.498C0.953775 13.193 0.953775 12.807 1.13477 12.502C3.03972 9.279 6.51962 6.5 9.99952 6.5C13.4794 6.5 16.9583 9.279 18.8633 12.501C19.0443 12.807 19.0443 13.194 18.8633 13.5C16.9583 16.721 13.4794 19.5 9.99952 19.5C6.51962 19.5 3.03972 16.721 1.13477 13.498Z" stroke="#058CC1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M12.1204 10.879C13.2924 12.051 13.2924 13.95 12.1204 15.122C10.9484 16.294 9.04948 16.294 7.87751 15.122C6.70554 13.95 6.70554 12.051 7.87751 10.879C9.04948 9.707 10.9494 9.707 12.1204 10.879" stroke="#058CC1" stroke-width="1.4286" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M9.9995 1V3.5" stroke="#058CC1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M3 3L4.67995 5" stroke="#058CC1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M16.9993 3L15.3193 5" stroke="#058CC1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
+                            {showIcon}
                         </i>
 
                     </Link>
@@ -1253,10 +1251,8 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                         id:cont
                                     }
                                 })
-                                
                                 setTableData(documents)
                             }}
-                            filesRequestPqrdf={(e)=>{}}
                             statusDialog={(e)=>{setVisibleDialog(e)}}
                             />
                         </Dialog>
@@ -1335,7 +1331,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
         <AccordionTab header={`Respuesta PQRSDF ${filedNumber}`}>
             <div className="flex justify-between">
                 <div className="mr-4 div-30">
-                    <label>Tipo de respuesta</label>
+                    <label>Tipo de respuesta<span className="text-red-600">*</span></label>
                     <Controller
                         name="responseType"
                         control={control}
@@ -1428,7 +1424,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
             </div>
             <div className="flex">
                  <div className="mr-4 div-30">
-                    <label>Factor</label>
+                    <label>Factor<span className="text-red-600">*</span></label>
                     <Controller
                         name="factors"
                         control={control}
@@ -1461,13 +1457,13 @@ export const ManagetPqrsdfComponent = (props:Props) => {
             </div>
             <div className="flex">
                  <div className="mr-4 div-100">
-                    <label>Observación</label>
+                    <label>Observación<span className="text-red-600">*</span></label>
                     <Controller
-                        name="noDocument"
+                        name="observation"
                         control={control}
                         rules={{
                             required: 'Campo obligatorio.',
-                            maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
+                            maxLength: { value: 5000, message: "Solo se permiten 5000 caracteres" },
                             }}
                             render={({ field, fieldState }) => (
                             <>
@@ -1497,25 +1493,61 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                             closeIcon={closeIcon}
                         >
                             <UploadManagetComponen
-                                
+                                multiple={false}
+                                statusDialog={(e)=>{setVisibleDialog(e)}}
+                                filesSupportDocument={(e)=>{
+                                    const docuement = e.map((file)=>{
+                                        return{
+                                            file
+                                        }
+                                    })  
+                                    setFileResponsePqrsdf(docuement[0].file)
+                                }}
                             />
                         </Dialog>
-                        <Button 
-                            label="Adjuntar archivos"
-                            className="flex flex-row-reverse w-52"
-                            onClick={()=>setVisibleDialog(true)} 
-                            text 
-                            icon={<i className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center">
-                                    <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M7.99984 5.83334V11.1667" stroke="#533893" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path d="M10.6668 8.49999H5.3335" stroke="#533893" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M8 14.5V14.5C4.686 14.5 2 11.814 2 8.5V8.5C2 5.186 4.686 2.5 8 2.5V2.5C11.314 2.5 14 5.186 14 8.5V8.5C14 11.814 11.314 14.5 8 14.5Z" stroke="#533893" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                    </i>
-                                }
-                        />
+                        <div className="flex">
+                            <Button 
+                                label="Adjuntar archivos"
+                                className="flex flex-row-reverse w-52"
+                                onClick={()=>setVisibleDialog(true)} 
+                                text 
+                                icon={<i className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center">
+                                        <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M7.99984 5.83334V11.1667" stroke="#533893" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M10.6668 8.49999H5.3335" stroke="#533893" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M8 14.5V14.5C4.686 14.5 2 11.814 2 8.5V8.5C2 5.186 4.686 2.5 8 2.5V2.5C11.314 2.5 14 5.186 14 8.5V8.5C14 11.814 11.314 14.5 8 14.5Z" stroke="#533893" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        </i>
+                                    }
+                            />
+                            {fileResponsePqrsdf!==null?(
+                            <>
+                                <div>
+                                    <Button icon={showIcon} rounded text onClick={()=>handleFileView(fileResponsePqrsdf)} />
+                                </div>
+                                <div>
+                                    <Button icon={trashIcon} rounded text severity="danger" onClick={()=>setFileResponsePqrsdf(null)} />
+                                </div>
+                            </>):(<></>)
+                            }
+                        </div>
                     </div>
                 </div>
+            </div>
+            <div>
+            <div className="flex justify-end ">
+              <Button
+                text
+                className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10"
+                label="Cancelar"
+              ></Button>
+              <Button 
+                className="rounded-full !h-10" 
+                label="Enviar"
+                disabled={!isValid}
+                >
+              </Button>
+            </div>
             </div>
     </AccordionTab>
 </Accordion>

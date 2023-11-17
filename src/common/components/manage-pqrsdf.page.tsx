@@ -241,7 +241,7 @@ const ManagePqrsdf = () => {
                 <button className='btn-t btn-1' id='btn-1' onClick={()=>focusBtn('btn-1')}>Solicitudes en trámite</button>
                 <button className='btn-t btn-2' id='btn-2' onClick={()=>focusBtn('btn-2')}>Solicitudes cerradas</button>
               </div>
-              { getManagetStatus?(  
+              {getManagetStatus?(  
                 <ManagetPqrsdfComponent
                 id={getPqrsdfId}
                 />      
