@@ -28,6 +28,7 @@ function App() {
   const AttentionTocitizens = lazy(() => import("./common/components/attentionTocitizens.page"));
   const ManagePqrsdf = lazy(() => import("./common/components/manage-pqrsdf.page"));
   const RegisterAttention = lazy(() => import("./common/components/register-attention.page"));
+  const Login = lazy(() => import("./common/components/login.page"))
   const { publish } = useAppCominicator();
 
   // Effect que cominica la aplicacion actual
@@ -115,6 +116,7 @@ function App() {
         <Suspense fallback={<p>Loading...</p>}>
           <Routes>
             <Route path={"/atencion-ciudadana/consultar-pqrsdf"} element={<QueryPqrsdfPage />} />
+            <Route path={"/atencion-ciudadana/login"} element={<Login />} />
           </Routes>
         </Suspense>
       </Router>
