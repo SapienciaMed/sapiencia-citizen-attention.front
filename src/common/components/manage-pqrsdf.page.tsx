@@ -191,7 +191,7 @@ const ManagePqrsdf = () => {
     <>
         <div className='container-div' >
             <Card title={<p className='text-3xl block pb-5'>Gestionar PQRDSF</p>}  className='card-container card-top'>
-              {/*getManagetStatus*/ true?(<></>):( 
+              {getManagetStatus?(<></>):( 
                 <div className='flex flex-row justify-between mt-10 card-mobil'>
                 <Card className='zise-card box1 shadow-none'>
                   <div className='box-mobil'>
@@ -241,7 +241,7 @@ const ManagePqrsdf = () => {
                 <button className='btn-t btn-1' id='btn-1' onClick={()=>focusBtn('btn-1')}>Solicitudes en trámite</button>
                 <button className='btn-t btn-2' id='btn-2' onClick={()=>focusBtn('btn-2')}>Solicitudes cerradas</button>
               </div>
-              {/*getManagetStatus?*/true?(  
+              {getManagetStatus?(  
                 <ManagetPqrsdfComponent
                 id={getPqrsdfId}
                 />      
