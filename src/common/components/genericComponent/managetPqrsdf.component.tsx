@@ -301,7 +301,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
       };
 
     useEffect(()=>{
-        getInfoPqrsdf(1).then(({data})=>{
+        getInfoPqrsdf(id).then(({data})=>{
             //console.log(data);
             setTypeDocmuent(data['person']['documentType']['itemDescription'])
             setRequestType({
@@ -595,8 +595,8 @@ export const ManagetPqrsdfComponent = (props:Props) => {
       
   return (
     <>
-    <div className="flex justify-start items-center">
-        <div className="mr-4 div-30">
+    <div className="flex justify-start items-center div-manage-mobil">
+        <div className="mr-4 div-30 input-mobil-manage">
             <label>Tipo de solicitud<span className="text-red-600">*</span></label>
             <br />
             <Controller
@@ -626,7 +626,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
             />
         </div>
 
-        <div className="mr-4 div-30">
+        <div className="mr-4 div-30 input-mobil-manage">
             <label>Doc. Identidad</label>
             <Controller
                 name="noDocument"
@@ -652,7 +652,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
         
         {arrayTypeDocumentNit.includes(typeDocmuent)?(
         <>
-            <div className="div-30">
+            <div className="div-30 input-mobil-manage">
                 <label>Tipo entidad<span className="text-red-600">*</span></label>
                 <Controller
                     name="typeLegalEntity"
@@ -683,12 +683,12 @@ export const ManagetPqrsdfComponent = (props:Props) => {
         </>)}
     </div>
 
-    <Accordion activeIndex={3} style={{width:'61em'}}>
+    <Accordion style={{width:'61em'}} className="acordeon-manage">
         <AccordionTab  header="Información del ciudadano">
-            <div className="flex">
+            <div className="flex items-center div-manage-mobil input-mobil-manage-acordeon">
                 {arrayTypeDocumentNit.includes(typeDocmuent)?(
                 <>
-                    <div className="mr-4">
+                    <div className="mr-4 input-mobil-manage-acordeon">
                         <label>Razón socia<span className="text-red-600">*</span></label>
                         <Controller
                             name="businessName"
@@ -703,7 +703,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                         <InputText 
                                             id={field.name} 
                                             value={field.value} 
-                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
                                             onChange={(e) => field.onChange(e.target.value)} />
                                     </span>
                                     {getFormErrorMessage(field.name)}
@@ -714,7 +714,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                 </>):(<></>)}
                 {arrayTypeDocumentNitAndAnonymus.includes(typeDocmuent)?(<></>):(
                 <>
-                    <div className="mr-4">
+                    <div className="mr-4 input-mobil-manage-acordeon">
                         <label>Primer nombre<span className="text-red-600">*</span></label>
                         <Controller
                             name="firstName"
@@ -730,7 +730,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                             id={field.name} 
                                             value={field.value}
                                             keyfilter={'alpha'}
-                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
                                             onChange={(e) => field.onChange(e.target.value)} />
                                     </span>
                                     {getFormErrorMessage(field.name)}
@@ -738,7 +738,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                             )}
                         />
                     </div>
-                    <div className="mr-4">
+                    <div className="mr-4 input-mobil-manage-acordeon">
                         <label>Segundo nombre</label>
                         <Controller
                             name="secondName"
@@ -753,7 +753,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                             id={field.name} 
                                             value={field.value}
                                             keyfilter={'alpha'} 
-                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
                                             onChange={(e) => field.onChange(e.target.value)} />
                                     </span>
                                     {getFormErrorMessage(field.name)}
@@ -761,7 +761,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                             )}
                         />
                     </div>
-                    <div className="mr-4">
+                    <div className="mr-4 input-mobil-manage-acordeon">
                         <label>Primer Apellido<span className="text-red-600">*</span></label>
                         <Controller
                             name="lastName"
@@ -777,7 +777,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                             id={field.name} 
                                             value={field.value} 
                                             keyfilter={'alpha'}
-                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
                                             onChange={(e) => field.onChange(e.target.value)} />
                                     </span>
                                     {getFormErrorMessage(field.name)}
@@ -785,7 +785,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                             )}
                         />
                     </div>
-                    <div className="mr-4">
+                    <div className="mr-4 input-mobil-manage-acordeon">
                         <label>Segundo Apellido</label>
                         <Controller
                             name="secondLastName"
@@ -800,7 +800,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                             id={field.name} 
                                             value={field.value}
                                             keyfilter={'alpha'} 
-                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
                                             onChange={(e) => field.onChange(e.target.value)} />
                                     </span>
                                     {getFormErrorMessage(field.name)}
@@ -810,10 +810,10 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                     </div>
                 </>)}
             </div>
-            <div className="flex">
+            <div className="flex div-manage-mobil">
                 {arrayTypeDocumentNitAndAnonymus.includes(typeDocmuent)?(<></>):(
                 <>
-                    <div className="mr-4">
+                    <div className="mr-4 input-mobil-manage-acordeon">
                         <label>Fecha de nacimiento<span className="text-red-600">*</span></label>
                         <br />
                         <Controller
@@ -824,7 +824,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                             }}
                             render={({ field, fieldState }) => (
                             <>
-                                <span className="p-input-icon-right">
+                                <span className="p-input-icon-right input-mobil-manage-acordeon">
                                     <Calendar 
                                         inputId={field.name} 
                                         value={birthday} 
@@ -832,7 +832,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                         dateFormat="dd/mm/yy"
                                         placeholder='DD / MM / AAA'
                                         maxDate={maxDate}  
-                                        className={classNames({ 'p-invalid': fieldState.error },'h-10')} 
+                                        className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')} 
                                     />
                                     <svg width="19" height="19" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -853,7 +853,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                 </>)}
                 {arrayTypeDocumentAnonimo.includes(typeDocmuent)?(<></>):(
                 <>
-                    <div className="mr-4">
+                    <div className="mr-4 input-mobil-manage-acordeon">
                         <label>Número de contacto 1<span className="text-red-600">*</span></label>
                         <Controller
                             name="firtContact"
@@ -869,7 +869,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                             id={field.name} 
                                             value={field.value}
                                             keyfilter={'num'} 
-                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
                                             onChange={(e) => field.onChange(e.target.value)} />
                                     </span>
                                     {getFormErrorMessage(field.name)}
@@ -877,7 +877,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                             )}
                         />
                     </div>
-                    <div className="mr-4">
+                    <div className="mr-4 input-mobil-manage-acordeon">
                         <label>Número de contacto 2</label>
                         <Controller
                             name="secondContact"
@@ -892,7 +892,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                             id={field.name} 
                                             value={field.value}
                                             keyfilter={'num'} 
-                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
                                             onChange={(e) => field.onChange(e.target.value)} />
                                     </span>
                                     {getFormErrorMessage(field.name)}
@@ -904,61 +904,61 @@ export const ManagetPqrsdfComponent = (props:Props) => {
             </div>
             {arrayTypeDocumentAnonimo.includes(typeDocmuent)?(<></>):(
             <>
-                <div className="flex">
-                    <div className="mr-4 div-50">
-                    <label>Correo electrónico<span className="text-red-600">*</span></label>
-                    <Controller
-                        name="email"
-                        control={control}
-                        rules={{
-                            required: "Este campo es obligatorio",
-                            maxLength: { value: 100, message: "Solo se permiten 100 caracteres" },
-                            pattern: {
-                                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                message: "Correo electrónico no válido",
-                            },
-                        }}
-                        render={({ field, fieldState }) => (
-                            <>
-                                <span className="p-float-label">
-                                    <InputText 
-                                        id={field.name} 
-                                        value={field.value} 
-                                        className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center div-100')}
-                                        onChange={(e) => field.onChange(e.target.value)} />
-                                </span>
-                                {getFormErrorMessage(field.name)}
-                            </>
-                        )}
-                    />
-                    </div>
-                    <div className="mr-4 div-50">
-                    <label>Dirección</label>
-                    <Controller
-                        name="address"
-                        control={control}
-                        rules={{
-                            required: 'Campo obligatorio.',
-                            maxLength: { value: 300, message: "Solo se permiten 300 caracteres" },
+                <div className="flex div-manage-mobil">
+                    <div className="mr-4 div-50 input-mobil-manage-acordeon">
+                        <label>Correo electrónico<span className="text-red-600">*</span></label>
+                        <Controller
+                            name="email"
+                            control={control}
+                            rules={{
+                                required: "Este campo es obligatorio",
+                                maxLength: { value: 100, message: "Solo se permiten 100 caracteres" },
+                                pattern: {
+                                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                    message: "Correo electrónico no válido",
+                                },
                             }}
-                        render={({ field, fieldState }) => (
-                            <>
-                                <span className="p-float-label">
-                                    <InputText 
-                                        id={field.name} 
-                                        value={field.value} 
-                                        className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center div-100')}
-                                        onChange={(e) => field.onChange(e.target.value)} />
-                                </span>
-                                {getFormErrorMessage(field.name)}
-                            </>
-                        )}
-                    />
+                            render={({ field, fieldState }) => (
+                                <>
+                                    <span className="p-float-label">
+                                        <InputText 
+                                            id={field.name} 
+                                            value={field.value} 
+                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center div-100')}
+                                            onChange={(e) => field.onChange(e.target.value)} />
+                                    </span>
+                                    {getFormErrorMessage(field.name)}
+                                </>
+                            )}
+                        />
+                    </div>
+                    <div className="mr-4 div-50 input-mobil-manage-acordeon">
+                        <label>Dirección</label>
+                        <Controller
+                            name="address"
+                            control={control}
+                            rules={{
+                                required: 'Campo obligatorio.',
+                                maxLength: { value: 300, message: "Solo se permiten 300 caracteres" },
+                                }}
+                            render={({ field, fieldState }) => (
+                                <>
+                                    <span className="p-float-label">
+                                        <InputText 
+                                            id={field.name} 
+                                            value={field.value} 
+                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center div-100')}
+                                            onChange={(e) => field.onChange(e.target.value)} />
+                                    </span>
+                                    {getFormErrorMessage(field.name)}
+                                </>
+                            )}
+                        />
                     </div>
                 </div>
             </>)} 
-            <div className="flex items-center">
-                <div className="mr-4 div-25">
+            <div className="flex items-center div-manage-mobil">
+                <div className="mr-4 div-25 input-mobil-manage-acordeon">
                     <label>País<span className="text-red-600">*</span></label>
                     <Controller
                         name="country"
@@ -980,14 +980,14 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                         setCountry(e.value);
                                         setValue('country',e.value);
                                     })}
-                                    className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                    className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
                                 />
                                 {getFormErrorMessage(field.name)}
                             </>
                         )}
                     />
                  </div>
-                 <div className="mr-4 div-25">
+                 <div className="mr-4 div-25 input-mobil-manage-acordeon">
                     <label>Departamento<span className="text-red-600">*</span></label>
                     <Controller
                         name="departament"
@@ -1009,14 +1009,14 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                         setDepartamet(e.value);
                                         setValue('departament',e.value);
                                     })}
-                                    className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                    className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
                                 />
                                 {getFormErrorMessage(field.name)}
                             </>
                         )}
                     />
                  </div>
-                 <div className="mr-4 div-25">
+                 <div className="mr-4 div-25 input-mobil-manage-acordeon">
                     <label>Municipio<span className="text-red-600">*</span></label>
                     <Controller
                         name="municipality"
@@ -1038,7 +1038,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                         setMunicipality(e.value);
                                         setValue('municipality',e.value)
                                     })}
-                                    className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                    className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
                                 />
                                 {getFormErrorMessage(field.name)}
                             </>
@@ -1046,10 +1046,10 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                     />
                  </div>
             </div>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center div-manage-mobil">
                 {arrayTypeDocumentAnonimo.includes(typeDocmuent)?(<></>):(
                 <>
-                    <div className="mr-4 div-50">
+                    <div className="mr-4 div-50 input-mobil-manage-acordeon">
                         <label>Seleccione el medio por el cual quiere recibir la respuesta</label>
                         <Controller
                             name="responseMediun"
@@ -1071,7 +1071,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                             setResponsesMediun(e.value);
                                             setValue('responseMediun',e.value);
                                         })}
-                                        className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                        className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
                                     />
                                     {getFormErrorMessage(field.name)}
                                 </>
@@ -1087,9 +1087,9 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                 </div>
             </div>          
         </AccordionTab>
-        <AccordionTab header="Información de la solicitud">
-            <div className="flex">
-                <div className="mr-4 div-50">
+        <AccordionTab header="Información de la solicitud" className="">
+            <div className="flex div-manage-mobil">
+                <div className="mr-4 div-50 input-mobil-manage-acordeon">
                     <label>Programa al que aplica la solicitud<span className="text-red-600">*</span></label>
                     <Controller
                         name="program"
@@ -1114,14 +1114,14 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                         setValue('classification',e.value?.CLP_DESCRIPCION)
                                         setValue('dependence',e.value?.DEP_DESCRIPCION)
                                     })}
-                                    className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                    className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
                                 />
                                 {getFormErrorMessage(field.name)}
                             </>
                         )}
                     />
                 </div>
-                <div className="mr-4 div-50">
+                <div className="mr-4 div-50 input-mobil-manage-acordeon">
                     <label>Asunto de la solicitud<span className="text-red-600">*</span></label>
                     <Controller
                         name="subjectRerquest"
@@ -1144,7 +1144,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                         setSubjectRequest(e.value);
                                         setValue('subjectRerquest',e.value)
                                     })}
-                                    className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                    className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
                                 />
                                 {getFormErrorMessage(field.name)}
                             </>
@@ -1152,8 +1152,8 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                     />
                 </div>
             </div> 
-            <div className="flex">
-                 <div className="mr-4 div-50">
+            <div className="flex div-manage-mobil">
+                 <div className="mr-4 div-50 input-mobil-manage-acordeon">
                     <label>Clasificación</label>
                     <Controller
                         name="classification"
@@ -1171,7 +1171,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                         )}
                     />
                  </div>
-                 <div className="mr-4 div-50">
+                 <div className="mr-4 div-50 input-mobil-manage-acordeon">
                     <label>Dependencia </label>
                     <Controller
                         name="dependence"
@@ -1238,6 +1238,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                             style={{ width: '50vw' }} 
                             onHide={() => setVisibleDialog(false)}
                             closeIcon={closeIcon}
+                            className="dialog-manage"
                         >
                             <UploadManagetComponen
                             filesSupportDocument={(e)=>{
@@ -1329,8 +1330,8 @@ export const ManagetPqrsdfComponent = (props:Props) => {
       </div>
         </AccordionTab>
         <AccordionTab header={`Respuesta PQRSDF ${filedNumber}`}>
-            <div className="flex justify-between">
-                <div className="mr-4 div-30">
+            <div className="flex justify-between div-manage-mobil">
+                <div className="mr-4 div-30 input-mobil-manage-acordeon">
                     <label>Tipo de respuesta<span className="text-red-600">*</span></label>
                     <Controller
                         name="responseType"
@@ -1352,14 +1353,14 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                     setResponsesType(e.value);
                                     setValue('responseType',e.value);
                                 })}
-                                className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
                             />
                             {getFormErrorMessage(field.name)}
                         </>
                         )}
                     />
                  </div>
-                 <div className="mr-4 div-30">
+                 <div className="mr-4 div-30 input-mobil-manage-acordeon">
                     <label>Enviar a<span className="text-red-600">*</span></label>
                     <Controller
                         name="workEntity"
@@ -1384,14 +1385,14 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                         setWorkEntity(e.value);
                                         setValue('workEntity',e.value)
                                     })}
-                                    className={classNames({ 'p-invalid': fieldState.error }, `h-10 flex items-center ${styleDisableIntput}`)}
+                                    className={classNames({ 'p-invalid': fieldState.error }, `h-10 flex items-center input-mobil-manage-acordeon ${styleDisableIntput}`)}
                                 />
                                 {getFormErrorMessage(field.name)}
                             </>
                         )}
                     />
                  </div>
-                 <div className="mr-4 div-30">
+                 <div className="mr-4 div-30 input-mobil-manage-acordeon">
                     <label>Responsable</label>
                     <Controller
                         name="responsible"
@@ -1414,7 +1415,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                         setManageWorkEntity(e.value);
                                         setValue('responsible',e.value)
                                     })}
-                                    className={classNames({ 'p-invalid': fieldState.error },`h-10 flex items-center ${styleDisableIntput}`)}
+                                    className={classNames({ 'p-invalid': fieldState.error },`h-10 flex items-center input-mobil-manage-acordeon ${styleDisableIntput}`)}
                                 />
                                 {getFormErrorMessage(field.name)}
                             </>
@@ -1422,8 +1423,8 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                     />
                  </div>
             </div>
-            <div className="flex">
-                 <div className="mr-4 div-30">
+            <div className="flex div-manage-mobil">
+                 <div className="mr-4 div-30 input-mobil-manage-acordeon">
                     <label>Factor<span className="text-red-600">*</span></label>
                     <Controller
                         name="factors"
@@ -1447,7 +1448,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                         setFactors(e.value);
                                         setValue('factors',e.value);
                                     })}
-                                    className={classNames({ 'p-invalid': fieldState.error },`h-10 flex items-center ${styleDisableIntput}`)}
+                                    className={classNames({ 'p-invalid': fieldState.error },`h-10 flex items-center input-mobil-manage-acordeon ${styleDisableIntput}`)}
                                 />
                                 {getFormErrorMessage(field.name)}
                             </>
@@ -1456,7 +1457,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                  </div>
             </div>
             <div className="flex">
-                 <div className="mr-4 div-100">
+                 <div className="mr-4 div-100 input-mobil-manage-acordeon">
                     <label>Observación<span className="text-red-600">*</span></label>
                     <Controller
                         name="observation"
@@ -1491,6 +1492,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                             style={{ width: '50vw' }} 
                             onHide={() => setVisibleDialog(false)}
                             closeIcon={closeIcon}
+                            className="dialog-manage"
                         >
                             <UploadManagetComponen
                                 multiple={false}
@@ -1534,20 +1536,20 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                     </div>
                 </div>
             </div>
-            <div>
-            <div className="flex justify-end ">
-              <Button
-                text
-                className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10"
-                label="Cancelar"
-              ></Button>
-              <Button 
-                className="rounded-full !h-10" 
-                label="Enviar"
-                disabled={!isValid}
-                >
-              </Button>
-            </div>
+            <div className="">
+                <div className="flex justify-end div-manage-mobil">
+                <Button
+                    text
+                    className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10 button-manage"
+                    label="Cancelar"
+                ></Button>
+                <Button 
+                    className="rounded-full !h-10 button-manage" 
+                    label="Enviar"
+                    disabled={!isValid}
+                    >
+                </Button>
+                </div>
             </div>
     </AccordionTab>
 </Accordion>
