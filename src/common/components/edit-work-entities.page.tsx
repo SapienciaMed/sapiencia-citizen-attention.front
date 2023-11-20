@@ -16,6 +16,7 @@ import { ConfirmDialog, ConfirmDialogOptions, confirmDialog } from "primereact/c
 import { Tree } from "primereact/tree";
 import "../../styles/workEntities-styles.scss";
 import { MessageComponent } from "./componentsEditWorkEntities/message.component";
+import useBreadCrumb from "../../common/hooks/bread-crumb.hook";
 
 interface User {
   email: string;
@@ -94,7 +95,7 @@ const EditWorkEntitiesPage = () => {
   const [msgResponse, setMsgResponse] = useState<string>("");
   const [headerMsg, setHeaderMsg] = useState<string>("");
   const [showMsg, setShowMsg] = useState(false);
-
+  
   const changedUser = (data: User) => {
     setUserId(data.userId);
     setConsta1(data.numberContact1);
@@ -104,6 +105,7 @@ const EditWorkEntitiesPage = () => {
     setNameUser(data.name);
     setDocumenUser(data.numberDocument);
   };
+
 
   const cancelarChanges = () => {
     setCancelar(false);
@@ -128,6 +130,18 @@ const EditWorkEntitiesPage = () => {
   };
 
   const { id } = useParams();
+  
+  useBreadCrumb({
+    isPrimaryPage: true,
+    name: "Entidades de trabajo",
+    url: "/atencion-ciudadana/entidades-trabajo",
+  });
+
+  useBreadCrumb({
+    isPrimaryPage: false,
+    name: "Editar entidad de trabajo",
+    url: "/atencion-ciudadana/entidades-trabajo/editar/" + id,
+  });
 
   const getWorkEntity = async (id: string) => {
     const responseUser = await workEntityService.getWorkEntityById(parseInt(id));

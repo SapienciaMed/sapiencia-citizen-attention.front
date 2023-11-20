@@ -10,7 +10,7 @@ import { mastersTablesServices } from "../hooks/masterTables.hook";
 import { useEffect, useState } from "react";
 import { IChannelAttetion, IChannelAttetionDetail } from "../interfaces/mastersTables.interface";
 import useBreadCrumb from "../../common/hooks/bread-crumb.hook";
-
+import { useParams } from "react-router-dom";
 interface Props {
   isPerson?: boolean;
   isPersonInternl?:boolean;
@@ -24,12 +24,29 @@ const Register_pqrsdf = ({ isPerson = false, isPersonInternl=false }: Props) => 
   const [attention,setAttention] = useState(null)
 
   const masterTablesServices = mastersTablesServices();
+  const {identification} = useParams()
 
-  useBreadCrumb({
-    isPrimaryPage: true,
-    name: "Registrar PQRSDF",
-    url: "/atencion-ciudadana/register-pqrsdf",
-  });
+  if(isPerson == false && isPersonInternl == true){
+    useBreadCrumb({
+      isPrimaryPage: true,
+      name: "Registrar PQRSDF",
+      url: "/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf/radicar",
+    });
+  }
+  else if (identification) {
+    useBreadCrumb({
+      isPrimaryPage: true,
+      name: "Registrar PQRSDF",
+      url: "/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf/radicar/" + identification,
+    });
+  }
+  else {
+    useBreadCrumb({
+      isPrimaryPage: true,
+      name: "Registrar PQRSDF",
+      url: "/atencion-ciudadana/register-pqrsdf",
+    });
+  }
 
   const getattentionChannels =  async() =>{
     const attentionChannel =  await masterTablesServices.getChannelAtencion()

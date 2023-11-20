@@ -37,18 +37,6 @@ function FormRequestSubjectTypesPage({ isEdit = false }: Props): React.JSX.Eleme
 
   const requestSubjectTypeService = useRequestSubjectTypeService();
 
-  useBreadCrumb({
-    isPrimaryPage: true,
-    name: "Tipos de asuntos",
-    url: "/atencion-ciudadana/tipos-de-asuntos-de-solicitudes",
-  });
-
-  useBreadCrumb({
-    isPrimaryPage: false,
-    name: isEdit ? "Editar" : "Crear" + ' Tipos de Asuntos',
-    url: "/atencion-ciudadana/tipos-de-asuntos-de-solicitudes/" + (isEdit ? "editar" : "crear"),
-  });
-
   const {
     control,
     formState: { errors, isValid },
@@ -148,6 +136,18 @@ function FormRequestSubjectTypesPage({ isEdit = false }: Props): React.JSX.Eleme
   };
 
   const { id } = useParams();
+
+  useBreadCrumb({
+    isPrimaryPage: true,
+    name: "Tipos de asuntos",
+    url: "/atencion-ciudadana/tipos-de-asuntos-de-solicitudes",
+  });
+
+  useBreadCrumb({
+    isPrimaryPage: false,
+    name: isEdit ? "Editar" : "Crear" + ' tipos de Asuntos',
+    url: "/atencion-ciudadana/tipos-de-asuntos-de-solicitudes/" + (isEdit ? "editar/" + id: "crear"),
+  });
 
   const onSave = async () => {
     setLoading(true);
