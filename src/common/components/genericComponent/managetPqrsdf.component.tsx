@@ -28,7 +28,7 @@ import { Link } from "react-router-dom";
 import { InputSwitch } from "primereact/inputswitch";
 import { Tooltip } from "primereact/tooltip";
 import { UploadManagetComponen } from "./uploadManagetComponen";
-import { IUserManageEntity, IWorkEntity } from "../../interfaces/workEntity.interfaces";
+import { IUserManageEntity } from "../../interfaces/workEntity.interfaces";
 import { IWorkEntityType } from "../../interfaces/workEntityType.interface";
 import { trashIcon } from "../icons/trash";
 import { showIcon } from "../icons/show";
@@ -53,11 +53,12 @@ interface PageNumber {
 
   interface Props {
     id:number;
+    getManagetStatus?: (value: boolean)=> void;
   }
 
 export const ManagetPqrsdfComponent = (props:Props) => {
-
-    const { id } = props
+    
+    const { id, getManagetStatus } = props;
 
     const mastetablesServices = mastersTablesServices();
     const pqrsdfService = usePqrsdfService();
@@ -109,7 +110,8 @@ export const ManagetPqrsdfComponent = (props:Props) => {
     const [styleDisableIntput,setStyleDisableIntput] =useState<string>('input-desabled');
     const [factors,setFactors] =useState<IFactors>();
     const [fileResponsePqrsdf, setFileResponsePqrsdf] = useState<object>(null);
-    const [statusSend, setStatusSend] = useState<boolean>(false)
+    const [statusSend, setStatusSend] = useState<boolean>(false);
+    const [cancelAction, setCancelAction] = useState<boolean>(false);
     
     const getInfoPqrsdf = async (id:number)=>{
         const infoPqrsdf = pqrsdfService.getPqrsdfById(id);
@@ -304,7 +306,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
       };
 
     useEffect(()=>{
-        getInfoPqrsdf(1).then(({data})=>{
+        getInfoPqrsdf(id).then(({data})=>{
             //console.log(data);
             setTypeDocmuent(data['person']['documentType']['itemDescription'])
             setRequestType({
@@ -1546,6 +1548,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                         text
                         className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10 button-manage"
                         label="Cancelar"
+                        onClick={()=>setCancelAction(true)}
                     ></Button>
                     <Button 
                         className="rounded-full !h-10 button-manage" 
@@ -1574,6 +1577,18 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                         />
                     ):(<></>)}
                 </>):(<></>)}
+        </>):(<></>)}
+        {cancelAction?(
+        <>
+            <MessageComponent 
+                headerMsg="Desea cancelar la acción"
+                msg="no se guardarán los datos"
+                twoBtn={true}
+                nameBtn1="Aceptar"
+                nameBtn2="Cancelar"
+                onClickBt1={()=>getManagetStatus(false)}
+                onClickBt2={()=>setCancelAction(false)}
+            />
         </>):(<></>)}
     </>
   )
