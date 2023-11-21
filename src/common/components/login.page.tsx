@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 
 import logoAlcaldiaMedellin from "../../public/images/logo-alcaldia-black.png";
 import logoSapiencia from "../../public/images/logo-sapiencia.png";
+import whiteLogo from "../../public/images/icons-aplication/aurora-white-logo.svg"
 
 import { EDirection } from "../../common/constants/input.enum";
 import { EResponseCodes } from "../../common/constants/api.enum";
@@ -40,13 +41,13 @@ function LoginPage(): React.JSX.Element {
         <section className="login-container-aurora">
           <img
             className="img-mobil"
-            // src={require("../../public/images/icons-aplication/aurora-white-logo.svg")}
+            // src={whiteLogo}
             alt="aurora"
           />
           <span className="text-login huge">
             Bienvenid@ a{" "}
             <img
-              // src={require("../../public/images/icons-aplication/aurora-white-logo.svg")}
+              // src={whiteLogo}
               alt="aurora"
             />{" "}
           </span>
@@ -76,12 +77,12 @@ function LoginPage(): React.JSX.Element {
 
 const FormSignIn = (): React.JSX.Element => {
   // Servicos
-  const { signIn } = useAuthService();
+  const { benefactorSignIn } = useAuthService();
   const navigate = useNavigate();
 
   const { setAuthorization } = useContext(AppContext);
   const resolver = useYupValidationResolver(loginValidator);
-  const credentialsSaved = localStorage.getItem("credentials");
+  const credentialsSaved = localStorage.getItem("Bcredentials");
 
   const {
     handleSubmit,
@@ -116,14 +117,14 @@ const FormSignIn = (): React.JSX.Element => {
         password: data.password,
       };
 
-      const { data: dataResponse, operation } = await signIn(data);
+      const { data: dataResponse, operation } = await benefactorSignIn(data);
 
       if (operation.code === EResponseCodes.OK) {
         isRememberData &&
-          localStorage.setItem("credentials", JSON.stringify(credentials));
+          localStorage.setItem("Bcredentials", JSON.stringify(credentials));
         JSON.parse(credentialsSaved) &&
           !isRememberData &&
-          localStorage.removeItem("credentials");
+          localStorage.removeItem("Bcredentials");
 
         localStorage.setItem("token", dataResponse.token);
         setAuthorization(dataResponse.authorization);
@@ -221,7 +222,7 @@ const FormSignIn = (): React.JSX.Element => {
             className="button-login big"
             value="Ingresar"
             type="submit"
-            disabled={!formState.isValid}
+            disabled={false}
           />
           <div className="recovery-password">
             <p className="text-primary medium not-margin-padding">
@@ -229,7 +230,7 @@ const FormSignIn = (): React.JSX.Element => {
             </p>
             <Link
               className="a-main medium weight-500"
-              to={"../aurora/recuperar-clave"}
+              to={"../recuperar-clave"}
             >
               Recupérala AQUÍ
             </Link>

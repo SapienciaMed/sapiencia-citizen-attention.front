@@ -27,6 +27,20 @@ export function useAuthService() {
     }
   }
 
+  async function benefactorSignIn(data: Object): Promise<ApiResponse<IResponseSignIn>> {
+    try {
+      const endpoint: string = "/signin";
+      return await post(`${authUrl}${endpoint}`, data);
+
+    } catch (error) {
+      return new ApiResponse(
+        {} as IResponseSignIn,
+        EResponseCodes.FAIL,
+        "Error no controlado"
+      );
+    }
+  }
+
   async function getAuthorization(
     token: string
   ): Promise<ApiResponse<IAuthorization>> {
@@ -57,6 +71,7 @@ export function useAuthService() {
 
   return {
     signIn,
+    benefactorSignIn,
     externalSignIn,
     getAuthorization,
   };
