@@ -32,6 +32,7 @@ import { IUserManageEntity, IWorkEntity } from "../../interfaces/workEntity.inte
 import { IWorkEntityType } from "../../interfaces/workEntityType.interface";
 import { trashIcon } from "../icons/trash";
 import { showIcon } from "../icons/show";
+import { MessageComponent } from "../componentsEditWorkEntities/message.component";
 
 
 interface City {
@@ -65,6 +66,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
     const arrayTypeDocumentAnonimo = ['Anónimo'];
     const arrayTypeDocumentNitAndAnonymus = ['NIT','Anónimo'];
     const arrayResponsesTypes = ['Trasladar a','Rechazar'];
+    const arrayResponseType = ['Trasladar a','Solicitar prórroga','Cerrar con respuesta','Trasladar por competencia'];
 
     const [typeReques, setTypeRequest] = useState<ItypeRFequest[]>();
     const [typelegalEntity, setTypelegalEntity] = useState<IlegalEntityType[]>();
@@ -107,6 +109,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
     const [styleDisableIntput,setStyleDisableIntput] =useState<string>('input-desabled');
     const [factors,setFactors] =useState<IFactors>();
     const [fileResponsePqrsdf, setFileResponsePqrsdf] = useState<object>(null);
+    const [statusSend, setStatusSend] = useState<boolean>(false)
     
     const getInfoPqrsdf = async (id:number)=>{
         const infoPqrsdf = pqrsdfService.getPqrsdfById(id);
@@ -301,7 +304,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
       };
 
     useEffect(()=>{
-        getInfoPqrsdf(id).then(({data})=>{
+        getInfoPqrsdf(1).then(({data})=>{
             //console.log(data);
             setTypeDocmuent(data['person']['documentType']['itemDescription'])
             setRequestType({
@@ -595,82 +598,28 @@ export const ManagetPqrsdfComponent = (props:Props) => {
       
   return (
     <>
-    <div className="flex justify-start items-center div-manage-mobil">
-        <div className="mr-4 div-30 input-mobil-manage">
-            <label>Tipo de solicitud<span className="text-red-600">*</span></label>
-            <br />
-            <Controller
-                name="typeOfRequest"
-                control={control}
-                rules={{ required: 'Campo obligatorio.'}}
-                render={({ field, fieldState }) => (
-                    <>
-                        <Dropdown
-                            id={field.name}
-                            value={requestType}
-                            optionLabel="tso_description"
-                            placeholder="Seleccionar"
-                            showClear 
-                            options={typeReques}
-                            focusInputRef={field.ref}
-                            onChange={(e) => field.onChange(()=>{
-                                console.log(e.value);
-                                setRequestType(e.value)
-                                setValue("typeOfRequest", e.value);
-                            })}
-                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
-                        />
-                        {getFormErrorMessage(field.name)}
-                    </>
-                )}
-            />
-        </div>
-
-        <div className="mr-4 div-30 input-mobil-manage">
-            <label>Doc. Identidad</label>
-            <Controller
-                name="noDocument"
-                control={control}
-                render={({ field, fieldState }) => (
-                    <>
-                        <span className="p-float-label">
-                            <InputText 
-                                id={field.name} 
-                                value={entityDocuement} 
-                                disabled
-                                className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center div-100 input-desabled')}
-                                onChange={(e) => field.onChange(()=>{
-                                    setEntityDocuement(e.target.value);
-                                    setValue('noDocument',e.target.value);
-                                })} />
-                        </span>
-                        {getFormErrorMessage(field.name)}
-                    </>
-                )}
-            />
-        </div>
-        
-        {arrayTypeDocumentNit.includes(typeDocmuent)?(
-        <>
-            <div className="div-30 input-mobil-manage">
-                <label>Tipo entidad<span className="text-red-600">*</span></label>
+        <div className="flex justify-start items-center div-manage-mobil">
+            <div className="mr-4 div-30 input-mobil-manage">
+                <label>Tipo de solicitud<span className="text-red-600">*</span></label>
+                <br />
                 <Controller
-                    name="typeLegalEntity"
+                    name="typeOfRequest"
                     control={control}
                     rules={{ required: 'Campo obligatorio.'}}
                     render={({ field, fieldState }) => (
                         <>
                             <Dropdown
                                 id={field.name}
-                                value={legalentityType}
-                                optionLabel="tej_nombre"
+                                value={requestType}
+                                optionLabel="tso_description"
                                 placeholder="Seleccionar"
                                 showClear 
-                                options={typelegalEntity}
+                                options={typeReques}
                                 focusInputRef={field.ref}
                                 onChange={(e) => field.onChange(()=>{
-                                    setLegalEntityType(e.value);
-                                    setValue('typeLegalEntity',e.value)
+                                    console.log(e.value);
+                                    setRequestType(e.value)
+                                    setValue("typeOfRequest", e.value);
                                 })}
                                 className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
                             />
@@ -679,397 +628,360 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                     )}
                 />
             </div>
-        </>):(<>
-        </>)}
-    </div>
 
-    <Accordion style={{width:'61em'}} className="acordeon-manage">
-        <AccordionTab  header="Información del ciudadano">
-            <div className="flex items-center div-manage-mobil input-mobil-manage-acordeon">
-                {arrayTypeDocumentNit.includes(typeDocmuent)?(
-                <>
-                    <div className="mr-4 input-mobil-manage-acordeon">
-                        <label>Razón socia<span className="text-red-600">*</span></label>
-                        <Controller
-                            name="businessName"
-                            control={control}
-                            rules={{
-                                required: 'Campo obligatorio.',
-                                maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
-                                }}
-                            render={({ field, fieldState }) => (
-                                <>
-                                    <span className="p-float-label">
-                                        <InputText 
-                                            id={field.name} 
-                                            value={field.value} 
-                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
-                                            onChange={(e) => field.onChange(e.target.value)} />
-                                    </span>
-                                    {getFormErrorMessage(field.name)}
-                                </>
-                            )}
-                        />
-                    </div>
-                </>):(<></>)}
-                {arrayTypeDocumentNitAndAnonymus.includes(typeDocmuent)?(<></>):(
-                <>
-                    <div className="mr-4 input-mobil-manage-acordeon">
-                        <label>Primer nombre<span className="text-red-600">*</span></label>
-                        <Controller
-                            name="firstName"
-                            control={control}
-                            rules={{
-                                required: 'Campo obligatorio.',
-                                maxLength: { value: 50, message: "Solo se permiten 50 caracteres" },
-                            }}
-                            render={({ field, fieldState }) => (
-                                <>
-                                    <span className="p-float-label">
-                                        <InputText 
-                                            id={field.name} 
-                                            value={field.value}
-                                            keyfilter={'alpha'}
-                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
-                                            onChange={(e) => field.onChange(e.target.value)} />
-                                    </span>
-                                    {getFormErrorMessage(field.name)}
-                                </>
-                            )}
-                        />
-                    </div>
-                    <div className="mr-4 input-mobil-manage-acordeon">
-                        <label>Segundo nombre</label>
-                        <Controller
-                            name="secondName"
-                            control={control}
-                            rules={{
-                                maxLength: { value: 50, message: "Solo se permiten 50 caracteres" },
-                                }}
-                            render={({ field, fieldState }) => (
-                                <>
-                                    <span className="p-float-label">
-                                        <InputText 
-                                            id={field.name} 
-                                            value={field.value}
-                                            keyfilter={'alpha'} 
-                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
-                                            onChange={(e) => field.onChange(e.target.value)} />
-                                    </span>
-                                    {getFormErrorMessage(field.name)}
-                                </>
-                            )}
-                        />
-                    </div>
-                    <div className="mr-4 input-mobil-manage-acordeon">
-                        <label>Primer Apellido<span className="text-red-600">*</span></label>
-                        <Controller
-                            name="lastName"
-                            control={control}
-                            rules={{
-                                required: 'Campo obligatorio.',
-                                maxLength: { value: 50, message: "Solo se permiten 50 caracteres" },
-                                }}
-                            render={({ field, fieldState }) => (
-                                <>
-                                    <span className="p-float-label">
-                                        <InputText 
-                                            id={field.name} 
-                                            value={field.value} 
-                                            keyfilter={'alpha'}
-                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
-                                            onChange={(e) => field.onChange(e.target.value)} />
-                                    </span>
-                                    {getFormErrorMessage(field.name)}
-                                </>
-                            )}
-                        />
-                    </div>
-                    <div className="mr-4 input-mobil-manage-acordeon">
-                        <label>Segundo Apellido</label>
-                        <Controller
-                            name="secondLastName"
-                            control={control}
-                            rules={{
-                                maxLength: { value: 50, message: "Solo se permiten 50 caracteres" },
-                                }}
-                            render={({ field, fieldState }) => (
-                                <>
-                                    <span className="p-float-label">
-                                        <InputText 
-                                            id={field.name} 
-                                            value={field.value}
-                                            keyfilter={'alpha'} 
-                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
-                                            onChange={(e) => field.onChange(e.target.value)} />
-                                    </span>
-                                    {getFormErrorMessage(field.name)}
-                                </>
-                            )}
-                        />
-                    </div>
-                </>)}
+            <div className="mr-4 div-30 input-mobil-manage">
+                <label>Doc. Identidad</label>
+                <Controller
+                    name="noDocument"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                        <>
+                            <span className="p-float-label">
+                                <InputText 
+                                    id={field.name} 
+                                    value={entityDocuement} 
+                                    disabled
+                                    className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center div-100 input-desabled')}
+                                    onChange={(e) => field.onChange(()=>{
+                                        setEntityDocuement(e.target.value);
+                                        setValue('noDocument',e.target.value);
+                                    })} />
+                            </span>
+                            {getFormErrorMessage(field.name)}
+                        </>
+                    )}
+                />
             </div>
-            <div className="flex div-manage-mobil">
-                {arrayTypeDocumentNitAndAnonymus.includes(typeDocmuent)?(<></>):(
-                <>
-                    <div className="mr-4 input-mobil-manage-acordeon">
-                        <label>Fecha de nacimiento<span className="text-red-600">*</span></label>
-                        <br />
-                        <Controller
-                            name="brithdayDate"
-                            control={control}
-                            rules={{
-                                required: 'Campo obligatorio.',
-                            }}
-                            render={({ field, fieldState }) => (
-                            <>
-                                <span className="p-input-icon-right input-mobil-manage-acordeon">
-                                    <Calendar 
-                                        inputId={field.name} 
-                                        value={birthday} 
-                                        onChange={(e)=>field.onChange(handleDateChange(e.value))} 
-                                        dateFormat="dd/mm/yy"
-                                        placeholder='DD / MM / AAA'
-                                        maxDate={maxDate}  
-                                        className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')} 
-                                    />
-                                    <svg width="19" height="19" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                    d="M10.6667 1.3335V4.00016M5.33333 1.3335V4.00016M2 6.00016H14M12.6667 2.66683H3.33333C2.59667 2.66683 2 3.2635 2 4.00016V12.6668C2 13.4035 2.59667 14.0002 3.33333 14.0002H12.6667C13.4033 14.0002 14 13.4035 14 12.6668V4.00016C14 3.2635 13.4033 2.66683 12.6667 2.66683ZM4.67533 8.48616C4.58333 8.48616 4.50867 8.56083 4.50933 8.65283C4.50933 8.74483 4.584 8.8195 4.676 8.8195C4.768 8.8195 4.84267 8.74483 4.84267 8.65283C4.84267 8.56083 4.768 8.48616 4.67533 8.48616ZM8.00867 8.48616C7.91667 8.48616 7.842 8.56083 7.84267 8.65283C7.84267 8.74483 7.91733 8.8195 8.00933 8.8195C8.10133 8.8195 8.176 8.74483 8.176 8.65283C8.176 8.56083 8.10133 8.48616 8.00867 8.48616ZM11.342 8.48616C11.25 8.48616 11.1753 8.56083 11.176 8.65283C11.176 8.74483 11.2507 8.8195 11.3427 8.8195C11.4347 8.8195 11.5093 8.74483 11.5093 8.65283C11.5093 8.56083 11.4347 8.48616 11.342 8.48616ZM4.67533 11.1528C4.58333 11.1528 4.50867 11.2275 4.50933 11.3195C4.50933 11.4115 4.584 11.4862 4.676 11.4862C4.768 11.4862 4.84267 11.4115 4.84267 11.3195C4.84267 11.2275 4.768 11.1528 4.67533 11.1528ZM8.00867 11.1528C7.91667 11.1528 7.842 11.2275 7.84267 11.3195C7.84267 11.4115 7.91733 11.4862 8.00933 11.4862C8.10133 11.4862 8.176 11.4115 8.176 11.3195C8.176 11.2275 8.10133 11.1528 8.00867 11.1528Z"
-                                    stroke="#533893"
-                                    stroke-width="1.5"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    />
-                                </svg>
-                                </span>
-                                <br />
-                                {getFormErrorMessage(field.name)}
-                            </>
-                            )}
-                        />
-                    </div>
-                </>)}
-                {arrayTypeDocumentAnonimo.includes(typeDocmuent)?(<></>):(
-                <>
-                    <div className="mr-4 input-mobil-manage-acordeon">
-                        <label>Número de contacto 1<span className="text-red-600">*</span></label>
-                        <Controller
-                            name="firtContact"
-                            control={control}
-                            rules={{
-                                required: 'Campo obligatorio.',
-                                maxLength: { value: 10, message: "Solo se permiten 10 caracteres" },
-                                }}
-                            render={({ field, fieldState }) => (
-                                <>
-                                    <span className="p-float-label">
-                                        <InputText 
-                                            id={field.name} 
-                                            value={field.value}
-                                            keyfilter={'num'} 
-                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
-                                            onChange={(e) => field.onChange(e.target.value)} />
-                                    </span>
-                                    {getFormErrorMessage(field.name)}
-                                </>
-                            )}
-                        />
-                    </div>
-                    <div className="mr-4 input-mobil-manage-acordeon">
-                        <label>Número de contacto 2</label>
-                        <Controller
-                            name="secondContact"
-                            control={control}
-                            rules={{
-                                maxLength: { value: 10, message: "Solo se permiten 10 caracteres" },
-                                }}
-                            render={({ field, fieldState }) => (
-                                <>
-                                    <span className="p-float-label">
-                                        <InputText 
-                                            id={field.name} 
-                                            value={field.value}
-                                            keyfilter={'num'} 
-                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
-                                            onChange={(e) => field.onChange(e.target.value)} />
-                                    </span>
-                                    {getFormErrorMessage(field.name)}
-                                </>
-                            )}
-                        />
-                    </div>
-                </>)}
-            </div>
-            {arrayTypeDocumentAnonimo.includes(typeDocmuent)?(<></>):(
+            
+            {arrayTypeDocumentNit.includes(typeDocmuent)?(
             <>
-                <div className="flex div-manage-mobil">
-                    <div className="mr-4 div-50 input-mobil-manage-acordeon">
-                        <label>Correo electrónico<span className="text-red-600">*</span></label>
-                        <Controller
-                            name="email"
-                            control={control}
-                            rules={{
-                                required: "Este campo es obligatorio",
-                                maxLength: { value: 100, message: "Solo se permiten 100 caracteres" },
-                                pattern: {
-                                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                    message: "Correo electrónico no válido",
-                                },
-                            }}
-                            render={({ field, fieldState }) => (
-                                <>
-                                    <span className="p-float-label">
-                                        <InputText 
-                                            id={field.name} 
-                                            value={field.value} 
-                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center div-100')}
-                                            onChange={(e) => field.onChange(e.target.value)} />
-                                    </span>
-                                    {getFormErrorMessage(field.name)}
-                                </>
-                            )}
-                        />
-                    </div>
-                    <div className="mr-4 div-50 input-mobil-manage-acordeon">
-                        <label>Dirección</label>
-                        <Controller
-                            name="address"
-                            control={control}
-                            rules={{
-                                required: 'Campo obligatorio.',
-                                maxLength: { value: 300, message: "Solo se permiten 300 caracteres" },
-                                }}
-                            render={({ field, fieldState }) => (
-                                <>
-                                    <span className="p-float-label">
-                                        <InputText 
-                                            id={field.name} 
-                                            value={field.value} 
-                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center div-100')}
-                                            onChange={(e) => field.onChange(e.target.value)} />
-                                    </span>
-                                    {getFormErrorMessage(field.name)}
-                                </>
-                            )}
-                        />
-                    </div>
+                <div className="div-30 input-mobil-manage">
+                    <label>Tipo entidad<span className="text-red-600">*</span></label>
+                    <Controller
+                        name="typeLegalEntity"
+                        control={control}
+                        rules={{ required: 'Campo obligatorio.'}}
+                        render={({ field, fieldState }) => (
+                            <>
+                                <Dropdown
+                                    id={field.name}
+                                    value={legalentityType}
+                                    optionLabel="tej_nombre"
+                                    placeholder="Seleccionar"
+                                    showClear 
+                                    options={typelegalEntity}
+                                    focusInputRef={field.ref}
+                                    onChange={(e) => field.onChange(()=>{
+                                        setLegalEntityType(e.value);
+                                        setValue('typeLegalEntity',e.value)
+                                    })}
+                                    className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center')}
+                                />
+                                {getFormErrorMessage(field.name)}
+                            </>
+                        )}
+                    />
                 </div>
-            </>)} 
-            <div className="flex items-center div-manage-mobil">
-                <div className="mr-4 div-25 input-mobil-manage-acordeon">
-                    <label>País<span className="text-red-600">*</span></label>
-                    <Controller
-                        name="country"
-                        control={control}
-                        rules={{
-                            required: 'Campo obligatorio.',
-                            }}
-                            render={({ field, fieldState }) => (
-                            <>
-                                <Dropdown
-                                    id={field.name}
-                                    value={country}
-                                    optionLabel="LGE_ELEMENTO_DESCRIPCION"
-                                    placeholder="Seleccionar"
-                                    showClear 
-                                    options={countrys}
-                                    focusInputRef={field.ref}
-                                    onChange={(e) => field.onChange(()=>{
-                                        setCountry(e.value);
-                                        setValue('country',e.value);
-                                    })}
-                                    className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
-                                />
-                                {getFormErrorMessage(field.name)}
-                            </>
-                        )}
-                    />
-                 </div>
-                 <div className="mr-4 div-25 input-mobil-manage-acordeon">
-                    <label>Departamento<span className="text-red-600">*</span></label>
-                    <Controller
-                        name="departament"
-                        control={control}
-                        rules={{
-                            required: 'Campo obligatorio.',
-                            }}
-                            render={({ field, fieldState }) => (
-                            <>
-                                <Dropdown
-                                    id={field.name}
-                                    value={departamet}
-                                    optionLabel="LGE_ELEMENTO_DESCRIPCION"
-                                    placeholder="Seleccionar"
-                                    showClear 
-                                    options={departamets}
-                                    focusInputRef={field.ref}
-                                    onChange={(e) => field.onChange(()=>{
-                                        setDepartamet(e.value);
-                                        setValue('departament',e.value);
-                                    })}
-                                    className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
-                                />
-                                {getFormErrorMessage(field.name)}
-                            </>
-                        )}
-                    />
-                 </div>
-                 <div className="mr-4 div-25 input-mobil-manage-acordeon">
-                    <label>Municipio<span className="text-red-600">*</span></label>
-                    <Controller
-                        name="municipality"
-                        control={control}
-                        rules={{
-                            required: 'Campo obligatorio.',
-                            }}
-                            render={({ field, fieldState }) => (
-                            <>
-                                <Dropdown
-                                    id={field.name}
-                                    value={municipality}
-                                    optionLabel="LGE_ELEMENTO_DESCRIPCION"
-                                    placeholder="Seleccionar"
-                                    showClear 
-                                    options={municipalitys}
-                                    focusInputRef={field.ref}
-                                    onChange={(e) => field.onChange(()=>{
-                                        setMunicipality(e.value);
-                                        setValue('municipality',e.value)
-                                    })}
-                                    className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
-                                />
-                                {getFormErrorMessage(field.name)}
-                            </>
-                        )}
-                    />
-                 </div>
-            </div>
-            <div className="flex justify-between items-center div-manage-mobil">
+            </>):(<>
+            </>)}
+        </div>
+
+        <Accordion style={{width:'61em'}} className="acordeon-manage">
+            <AccordionTab  header="Información del ciudadano">
+                <div className="flex items-center div-manage-mobil input-mobil-manage-acordeon">
+                    {arrayTypeDocumentNit.includes(typeDocmuent)?(
+                    <>
+                        <div className="mr-4 input-mobil-manage-acordeon">
+                            <label>Razón socia<span className="text-red-600">*</span></label>
+                            <Controller
+                                name="businessName"
+                                control={control}
+                                rules={{
+                                    required: 'Campo obligatorio.',
+                                    maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
+                                    }}
+                                render={({ field, fieldState }) => (
+                                    <>
+                                        <span className="p-float-label">
+                                            <InputText 
+                                                id={field.name} 
+                                                value={field.value} 
+                                                className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
+                                                onChange={(e) => field.onChange(e.target.value)} />
+                                        </span>
+                                        {getFormErrorMessage(field.name)}
+                                    </>
+                                )}
+                            />
+                        </div>
+                    </>):(<></>)}
+                    {arrayTypeDocumentNitAndAnonymus.includes(typeDocmuent)?(<></>):(
+                    <>
+                        <div className="mr-4 input-mobil-manage-acordeon">
+                            <label>Primer nombre<span className="text-red-600">*</span></label>
+                            <Controller
+                                name="firstName"
+                                control={control}
+                                rules={{
+                                    required: 'Campo obligatorio.',
+                                    maxLength: { value: 50, message: "Solo se permiten 50 caracteres" },
+                                }}
+                                render={({ field, fieldState }) => (
+                                    <>
+                                        <span className="p-float-label">
+                                            <InputText 
+                                                id={field.name} 
+                                                value={field.value}
+                                                keyfilter={'alpha'}
+                                                className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
+                                                onChange={(e) => field.onChange(e.target.value)} />
+                                        </span>
+                                        {getFormErrorMessage(field.name)}
+                                    </>
+                                )}
+                            />
+                        </div>
+                        <div className="mr-4 input-mobil-manage-acordeon">
+                            <label>Segundo nombre</label>
+                            <Controller
+                                name="secondName"
+                                control={control}
+                                rules={{
+                                    maxLength: { value: 50, message: "Solo se permiten 50 caracteres" },
+                                    }}
+                                render={({ field, fieldState }) => (
+                                    <>
+                                        <span className="p-float-label">
+                                            <InputText 
+                                                id={field.name} 
+                                                value={field.value}
+                                                keyfilter={'alpha'} 
+                                                className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
+                                                onChange={(e) => field.onChange(e.target.value)} />
+                                        </span>
+                                        {getFormErrorMessage(field.name)}
+                                    </>
+                                )}
+                            />
+                        </div>
+                        <div className="mr-4 input-mobil-manage-acordeon">
+                            <label>Primer Apellido<span className="text-red-600">*</span></label>
+                            <Controller
+                                name="lastName"
+                                control={control}
+                                rules={{
+                                    required: 'Campo obligatorio.',
+                                    maxLength: { value: 50, message: "Solo se permiten 50 caracteres" },
+                                    }}
+                                render={({ field, fieldState }) => (
+                                    <>
+                                        <span className="p-float-label">
+                                            <InputText 
+                                                id={field.name} 
+                                                value={field.value} 
+                                                keyfilter={'alpha'}
+                                                className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
+                                                onChange={(e) => field.onChange(e.target.value)} />
+                                        </span>
+                                        {getFormErrorMessage(field.name)}
+                                    </>
+                                )}
+                            />
+                        </div>
+                        <div className="mr-4 input-mobil-manage-acordeon">
+                            <label>Segundo Apellido</label>
+                            <Controller
+                                name="secondLastName"
+                                control={control}
+                                rules={{
+                                    maxLength: { value: 50, message: "Solo se permiten 50 caracteres" },
+                                    }}
+                                render={({ field, fieldState }) => (
+                                    <>
+                                        <span className="p-float-label">
+                                            <InputText 
+                                                id={field.name} 
+                                                value={field.value}
+                                                keyfilter={'alpha'} 
+                                                className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
+                                                onChange={(e) => field.onChange(e.target.value)} />
+                                        </span>
+                                        {getFormErrorMessage(field.name)}
+                                    </>
+                                )}
+                            />
+                        </div>
+                    </>)}
+                </div>
+                <div className="flex div-manage-mobil">
+                    {arrayTypeDocumentNitAndAnonymus.includes(typeDocmuent)?(<></>):(
+                    <>
+                        <div className="mr-4 input-mobil-manage-acordeon">
+                            <label>Fecha de nacimiento<span className="text-red-600">*</span></label>
+                            <br />
+                            <Controller
+                                name="brithdayDate"
+                                control={control}
+                                rules={{
+                                    required: 'Campo obligatorio.',
+                                }}
+                                render={({ field, fieldState }) => (
+                                <>
+                                    <span className="p-input-icon-right input-mobil-manage-acordeon">
+                                        <Calendar 
+                                            inputId={field.name} 
+                                            value={birthday} 
+                                            onChange={(e)=>field.onChange(handleDateChange(e.value))} 
+                                            dateFormat="dd/mm/yy"
+                                            placeholder='DD / MM / AAA'
+                                            maxDate={maxDate}  
+                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')} 
+                                        />
+                                        <svg width="19" height="19" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                        d="M10.6667 1.3335V4.00016M5.33333 1.3335V4.00016M2 6.00016H14M12.6667 2.66683H3.33333C2.59667 2.66683 2 3.2635 2 4.00016V12.6668C2 13.4035 2.59667 14.0002 3.33333 14.0002H12.6667C13.4033 14.0002 14 13.4035 14 12.6668V4.00016C14 3.2635 13.4033 2.66683 12.6667 2.66683ZM4.67533 8.48616C4.58333 8.48616 4.50867 8.56083 4.50933 8.65283C4.50933 8.74483 4.584 8.8195 4.676 8.8195C4.768 8.8195 4.84267 8.74483 4.84267 8.65283C4.84267 8.56083 4.768 8.48616 4.67533 8.48616ZM8.00867 8.48616C7.91667 8.48616 7.842 8.56083 7.84267 8.65283C7.84267 8.74483 7.91733 8.8195 8.00933 8.8195C8.10133 8.8195 8.176 8.74483 8.176 8.65283C8.176 8.56083 8.10133 8.48616 8.00867 8.48616ZM11.342 8.48616C11.25 8.48616 11.1753 8.56083 11.176 8.65283C11.176 8.74483 11.2507 8.8195 11.3427 8.8195C11.4347 8.8195 11.5093 8.74483 11.5093 8.65283C11.5093 8.56083 11.4347 8.48616 11.342 8.48616ZM4.67533 11.1528C4.58333 11.1528 4.50867 11.2275 4.50933 11.3195C4.50933 11.4115 4.584 11.4862 4.676 11.4862C4.768 11.4862 4.84267 11.4115 4.84267 11.3195C4.84267 11.2275 4.768 11.1528 4.67533 11.1528ZM8.00867 11.1528C7.91667 11.1528 7.842 11.2275 7.84267 11.3195C7.84267 11.4115 7.91733 11.4862 8.00933 11.4862C8.10133 11.4862 8.176 11.4115 8.176 11.3195C8.176 11.2275 8.10133 11.1528 8.00867 11.1528Z"
+                                        stroke="#533893"
+                                        stroke-width="1.5"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        />
+                                    </svg>
+                                    </span>
+                                    <br />
+                                    {getFormErrorMessage(field.name)}
+                                </>
+                                )}
+                            />
+                        </div>
+                    </>)}
+                    {arrayTypeDocumentAnonimo.includes(typeDocmuent)?(<></>):(
+                    <>
+                        <div className="mr-4 input-mobil-manage-acordeon">
+                            <label>Número de contacto 1<span className="text-red-600">*</span></label>
+                            <Controller
+                                name="firtContact"
+                                control={control}
+                                rules={{
+                                    required: 'Campo obligatorio.',
+                                    maxLength: { value: 10, message: "Solo se permiten 10 caracteres" },
+                                    }}
+                                render={({ field, fieldState }) => (
+                                    <>
+                                        <span className="p-float-label">
+                                            <InputText 
+                                                id={field.name} 
+                                                value={field.value}
+                                                keyfilter={'num'} 
+                                                className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
+                                                onChange={(e) => field.onChange(e.target.value)} />
+                                        </span>
+                                        {getFormErrorMessage(field.name)}
+                                    </>
+                                )}
+                            />
+                        </div>
+                        <div className="mr-4 input-mobil-manage-acordeon">
+                            <label>Número de contacto 2</label>
+                            <Controller
+                                name="secondContact"
+                                control={control}
+                                rules={{
+                                    maxLength: { value: 10, message: "Solo se permiten 10 caracteres" },
+                                    }}
+                                render={({ field, fieldState }) => (
+                                    <>
+                                        <span className="p-float-label">
+                                            <InputText 
+                                                id={field.name} 
+                                                value={field.value}
+                                                keyfilter={'num'} 
+                                                className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
+                                                onChange={(e) => field.onChange(e.target.value)} />
+                                        </span>
+                                        {getFormErrorMessage(field.name)}
+                                    </>
+                                )}
+                            />
+                        </div>
+                    </>)}
+                </div>
                 {arrayTypeDocumentAnonimo.includes(typeDocmuent)?(<></>):(
                 <>
-                    <div className="mr-4 div-50 input-mobil-manage-acordeon">
-                        <label>Seleccione el medio por el cual quiere recibir la respuesta</label>
+                    <div className="flex div-manage-mobil">
+                        <div className="mr-4 div-50 input-mobil-manage-acordeon">
+                            <label>Correo electrónico<span className="text-red-600">*</span></label>
+                            <Controller
+                                name="email"
+                                control={control}
+                                rules={{
+                                    required: "Este campo es obligatorio",
+                                    maxLength: { value: 100, message: "Solo se permiten 100 caracteres" },
+                                    pattern: {
+                                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                        message: "Correo electrónico no válido",
+                                    },
+                                }}
+                                render={({ field, fieldState }) => (
+                                    <>
+                                        <span className="p-float-label">
+                                            <InputText 
+                                                id={field.name} 
+                                                value={field.value} 
+                                                className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center div-100')}
+                                                onChange={(e) => field.onChange(e.target.value)} />
+                                        </span>
+                                        {getFormErrorMessage(field.name)}
+                                    </>
+                                )}
+                            />
+                        </div>
+                        <div className="mr-4 div-50 input-mobil-manage-acordeon">
+                            <label>Dirección</label>
+                            <Controller
+                                name="address"
+                                control={control}
+                                rules={{
+                                    required: 'Campo obligatorio.',
+                                    maxLength: { value: 300, message: "Solo se permiten 300 caracteres" },
+                                    }}
+                                render={({ field, fieldState }) => (
+                                    <>
+                                        <span className="p-float-label">
+                                            <InputText 
+                                                id={field.name} 
+                                                value={field.value} 
+                                                className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center div-100')}
+                                                onChange={(e) => field.onChange(e.target.value)} />
+                                        </span>
+                                        {getFormErrorMessage(field.name)}
+                                    </>
+                                )}
+                            />
+                        </div>
+                    </div>
+                </>)} 
+                <div className="flex items-center div-manage-mobil">
+                    <div className="mr-4 div-25 input-mobil-manage-acordeon">
+                        <label>País<span className="text-red-600">*</span></label>
                         <Controller
-                            name="responseMediun"
+                            name="country"
                             control={control}
                             rules={{
                                 required: 'Campo obligatorio.',
-                            }}
-                            render={({ field, fieldState }) => (
+                                }}
+                                render={({ field, fieldState }) => (
                                 <>
                                     <Dropdown
                                         id={field.name}
-                                        value={responsesMediun}
-                                        optionLabel="MRE_DESCRIPCION"
+                                        value={country}
+                                        optionLabel="LGE_ELEMENTO_DESCRIPCION"
                                         placeholder="Seleccionar"
                                         showClear 
-                                        options={responsesMediuns}
+                                        options={countrys}
                                         focusInputRef={field.ref}
                                         onChange={(e) => field.onChange(()=>{
-                                            setResponsesMediun(e.value);
-                                            setValue('responseMediun',e.value);
+                                            setCountry(e.value);
+                                            setValue('country',e.value);
                                         })}
                                         className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
                                     />
@@ -1077,437 +989,277 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                 </>
                             )}
                         />
-                 </div>
-                </>)} 
-                <div>
-                <Button
-                    label="Actualizar"
-                    className="rounded-full"
-                />
-                </div>
-            </div>          
-        </AccordionTab>
-        <AccordionTab header="Información de la solicitud" className="">
-            <div className="flex div-manage-mobil">
-                <div className="mr-4 div-50 input-mobil-manage-acordeon">
-                    <label>Programa al que aplica la solicitud<span className="text-red-600">*</span></label>
-                    <Controller
-                        name="program"
-                        control={control}
-                        rules={{
-                            required: 'Campo obligatorio.',
-                            maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
-                            }}
-                            render={({ field, fieldState }) => (
-                            <>
-                                <Dropdown
-                                    id={field.name}
-                                    value={program}
-                                    optionLabel="PRG_DESCRIPCION"
-                                    placeholder="Seleccionar"
-                                    showClear 
-                                    options={programs}
-                                    focusInputRef={field.ref}
-                                    onChange={(e) => field.onChange(()=>{
-                                        setProgram(e.value)
-                                        setValue('program',e.value);
-                                        setValue('classification',e.value?.CLP_DESCRIPCION)
-                                        setValue('dependence',e.value?.DEP_DESCRIPCION)
-                                    })}
-                                    className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
-                                />
-                                {getFormErrorMessage(field.name)}
-                            </>
-                        )}
-                    />
-                </div>
-                <div className="mr-4 div-50 input-mobil-manage-acordeon">
-                    <label>Asunto de la solicitud<span className="text-red-600">*</span></label>
-                    <Controller
-                        name="subjectRerquest"
-                        control={control}
-                        rules={{
-                            required: 'Campo obligatorio.',
-                            maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
-                            }}
-                            render={({ field, fieldState }) => (
-                            <>
-                                <Dropdown
-                                    id={field.name}
-                                    value={subjectRequest}
-                                    optionLabel="ASO_ASUNTO"
-                                    placeholder="Seleccionar"
-                                    showClear 
-                                    options={subjectRequests}
-                                    focusInputRef={field.ref}
-                                    onChange={(e) => field.onChange(()=>{
-                                        setSubjectRequest(e.value);
-                                        setValue('subjectRerquest',e.value)
-                                    })}
-                                    className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
-                                />
-                                {getFormErrorMessage(field.name)}
-                            </>
-                        )}
-                    />
-                </div>
-            </div> 
-            <div className="flex div-manage-mobil">
-                 <div className="mr-4 div-50 input-mobil-manage-acordeon">
-                    <label>Clasificación</label>
-                    <Controller
-                        name="classification"
-                        control={control}
-                        render={({ field, fieldState }) => (
-                        <>
-                            <InputText 
-                                id={field.name} 
-                                value={field.value}
-                                disabled
-                                className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center div-100 input-desabled')}
-                                onChange={(e) => field.onChange(e.target.value)} />
-                            {getFormErrorMessage(field.name)}
-                        </>
-                        )}
-                    />
-                 </div>
-                 <div className="mr-4 div-50 input-mobil-manage-acordeon">
-                    <label>Dependencia </label>
-                    <Controller
-                        name="dependence"
-                        control={control}
-                        render={({ field, fieldState }) => (
-                        <>
-                            <InputText 
-                            id={field.name} 
-                            value={field.value}
-                            disabled 
-                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center div-100 input-desabled')}
-                            onChange={(e) => field.onChange(e.target.value)} />
-                            {getFormErrorMessage(field.name)}
-                        </>
-                        )}
-                    />
-                 </div>
-            </div>
-            <div className="flex">
-                <div className="mr-4 div-100">
-                    <label>Descripción</label>
-                    <br />
-                    <Controller
-                        name="description"
-                        control={control}
-                        render={({ field, fieldState }) => (
-                        <>
-                            <InputTextarea 
-                                id={field.name} 
-                                {...field} 
-                                rows={4} 
-                                cols={30}
-                                disabled 
-                                className={classNames({ 'p-invalid': fieldState.error },'div-100 input-desabled')} 
-                            />
-                            <div className="flex justify-between">
-                                {getFormErrorMessage(field.name)}
-                                <span className="font-label">Max 5000 caracteres</span>
-                            </div>
-                        </>
-                        )}
-                    />
-                </div>
-            </div>
-            <div className="">
-                <label className="font-label">Archivos o documentos que soportan la solicitud</label>
-                <br />
-                <label
-                className="upload-label"
-                style={{ display: "flex", alignItems: "center" }}
-                >
-                    <Link to={`https://storage.cloud.google.com/${nameUrl}`} target="_blank">
-                        <span className="mr-2 text-red-600">{namePath}</span>
-                    </Link>
-                </label>
-            </div>   
-        </AccordionTab>
-        <AccordionTab header="Documentos de apoyo interno">
-        <div className="flex flex-row items-center justify-between mb-8 header-movil">
-            <div className="col-1 col-100 seeker">
-                    <div className="mr-2">
-                        <Dialog 
-                            visible={visibleDialog} 
-                            style={{ width: '50vw' }} 
-                            onHide={() => setVisibleDialog(false)}
-                            closeIcon={closeIcon}
-                            className="dialog-manage"
-                        >
-                            <UploadManagetComponen
-                            filesSupportDocument={(e)=>{
-                                let cont = 0;
-                                const documents =  e.map((date)=>{
-                                    cont = cont+1
-                                    return{
-                                        user:nameUser,
-                                        visibleBeneficiary:false, 
-                                        accion:date,
-                                        id:cont
-                                    }
-                                })
-                                setTableData(documents)
-                            }}
-                            statusDialog={(e)=>{setVisibleDialog(e)}}
-                            />
-                        </Dialog>
-                        <Button 
-                            label="Adjuntar archivos"
-                            className="flex flex-row-reverse w-52"
-                            onClick={()=>setVisibleDialog(true)} 
-                            text 
-                            icon={<i className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center">
-                                    <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M7.99984 5.83334V11.1667" stroke="#533893" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path d="M10.6668 8.49999H5.3335" stroke="#533893" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M8 14.5V14.5C4.686 14.5 2 11.814 2 8.5V8.5C2 5.186 4.686 2.5 8 2.5V2.5C11.314 2.5 14 5.186 14 8.5V8.5C14 11.814 11.314 14.5 8 14.5Z" stroke="#533893" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                    </i>
-                                }
+                    </div>
+                    <div className="mr-4 div-25 input-mobil-manage-acordeon">
+                        <label>Departamento<span className="text-red-600">*</span></label>
+                        <Controller
+                            name="departament"
+                            control={control}
+                            rules={{
+                                required: 'Campo obligatorio.',
+                                }}
+                                render={({ field, fieldState }) => (
+                                <>
+                                    <Dropdown
+                                        id={field.name}
+                                        value={departamet}
+                                        optionLabel="LGE_ELEMENTO_DESCRIPCION"
+                                        placeholder="Seleccionar"
+                                        showClear 
+                                        options={departamets}
+                                        focusInputRef={field.ref}
+                                        onChange={(e) => field.onChange(()=>{
+                                            setDepartamet(e.value);
+                                            setValue('departament',e.value);
+                                        })}
+                                        className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
+                                    />
+                                    {getFormErrorMessage(field.name)}
+                                </>
+                            )}
                         />
                     </div>
-                <div>
-
+                    <div className="mr-4 div-25 input-mobil-manage-acordeon">
+                        <label>Municipio<span className="text-red-600">*</span></label>
+                        <Controller
+                            name="municipality"
+                            control={control}
+                            rules={{
+                                required: 'Campo obligatorio.',
+                                }}
+                                render={({ field, fieldState }) => (
+                                <>
+                                    <Dropdown
+                                        id={field.name}
+                                        value={municipality}
+                                        optionLabel="LGE_ELEMENTO_DESCRIPCION"
+                                        placeholder="Seleccionar"
+                                        showClear 
+                                        options={municipalitys}
+                                        focusInputRef={field.ref}
+                                        onChange={(e) => field.onChange(()=>{
+                                            setMunicipality(e.value);
+                                            setValue('municipality',e.value)
+                                        })}
+                                        className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
+                                    />
+                                    {getFormErrorMessage(field.name)}
+                                </>
+                            )}
+                        />
+                    </div>
                 </div>
-            </div>
-            <div className="flex flex-row items-center tittle-header-movil">
-                <div className=" mr-4 flex items-center total">
-                    <div><label className="mr-2 text-base total">Total de resultados</label></div>
-                    <div><span className="text-black flex items-center bold big">{tableData.length}</span></div>
-                </div>
-                <div className="flex items-center pagination-p">
-                    <div><label className="mr-2 p-colorpicker">Registro por página</label></div>
-                   <div>
-                      <Dropdown
-                          value={selectPage}
-                          onChange={(e: DropdownChangeEvent) => setSelectPage(e.value)}
-                          options={pageNumber}
-                          optionLabel="page"
-                          className="h-10"
-                      />
-                   </div>
-                </div>
-            </div>
-        </div>
-        <div className="overflow-hidden max-w-[calc(111vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] block md:block borderless reverse-striped">
-            <DataTable
-                value={tableData}
-                paginator
-                paginatorTemplate={paginatorTemplate()}
-                rows={selectPage.page}
-                stripedRows
-                selectionMode="single"
-                dataKey="id"
-                scrollable
-            >
-                <Column 
-                    style={{ textAlign: "center" }} 
-                    className="!font-sans" field="user" 
-                    header="Usuario ">
-                </Column>
-                <Column 
-                    style={{ textAlign: "center" }}
-                    className="!font-sans" 
-                    field="visibleBeneficiary" 
-                    header={<p style={{width:'112px'}}>Visible para beneficiario</p>}
-                    body={suwitchBeneficiary}
-                    >
-                </Column>
-                <Column
-                    field="accion"
-                    header="Acción"
-                    className="!font-sans"
-                    style={{ textAlign: "center"}}
-                    body={accionesIcons}
-                ></Column>
-            </DataTable>
-      </div>
-        </AccordionTab>
-        <AccordionTab header={`Respuesta PQRSDF ${filedNumber}`}>
-            <div className="flex justify-between div-manage-mobil">
-                <div className="mr-4 div-30 input-mobil-manage-acordeon">
-                    <label>Tipo de respuesta<span className="text-red-600">*</span></label>
-                    <Controller
-                        name="responseType"
-                        control={control}
-                        rules={{
-                            required: 'Campo obligatorio.',
-                        }}
-                        render={({ field, fieldState }) => (
-                        <>
-                            <Dropdown
-                                id={field.name}
-                                value={responseType}
-                                optionLabel="description"
-                                placeholder="Seleccionar"
-                                showClear 
-                                options={responseTypes}
-                                focusInputRef={field.ref}
-                                onChange={(e) => field.onChange(()=>{
-                                    setResponsesType(e.value);
-                                    setValue('responseType',e.value);
-                                })}
-                                className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
+                <div className="flex justify-between items-center div-manage-mobil">
+                    {arrayTypeDocumentAnonimo.includes(typeDocmuent)?(<></>):(
+                    <>
+                        <div className="mr-4 div-50 input-mobil-manage-acordeon">
+                            <label>Seleccione el medio por el cual quiere recibir la respuesta</label>
+                            <Controller
+                                name="responseMediun"
+                                control={control}
+                                rules={{
+                                    required: 'Campo obligatorio.',
+                                }}
+                                render={({ field, fieldState }) => (
+                                    <>
+                                        <Dropdown
+                                            id={field.name}
+                                            value={responsesMediun}
+                                            optionLabel="MRE_DESCRIPCION"
+                                            placeholder="Seleccionar"
+                                            showClear 
+                                            options={responsesMediuns}
+                                            focusInputRef={field.ref}
+                                            onChange={(e) => field.onChange(()=>{
+                                                setResponsesMediun(e.value);
+                                                setValue('responseMediun',e.value);
+                                            })}
+                                            className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
+                                        />
+                                        {getFormErrorMessage(field.name)}
+                                    </>
+                                )}
                             />
-                            {getFormErrorMessage(field.name)}
-                        </>
-                        )}
+                    </div>
+                    </>)} 
+                    <div>
+                    <Button
+                        label="Actualizar"
+                        className="rounded-full"
                     />
-                 </div>
-                 <div className="mr-4 div-30 input-mobil-manage-acordeon">
-                    <label>Enviar a<span className="text-red-600">*</span></label>
-                    <Controller
-                        name="workEntity"
-                        control={control}
-                        rules={{
-                            required:{value:obligatoryField,message:'Campo obligatorio.'},
-                            }}
+                    </div>
+                </div>          
+            </AccordionTab>
+            <AccordionTab header="Información de la solicitud" className="">
+                <div className="flex div-manage-mobil">
+                    <div className="mr-4 div-50 input-mobil-manage-acordeon">
+                        <label>Programa al que aplica la solicitud<span className="text-red-600">*</span></label>
+                        <Controller
+                            name="program"
+                            control={control}
+                            rules={{
+                                required: 'Campo obligatorio.',
+                                maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
+                                }}
+                                render={({ field, fieldState }) => (
+                                <>
+                                    <Dropdown
+                                        id={field.name}
+                                        value={program}
+                                        optionLabel="PRG_DESCRIPCION"
+                                        placeholder="Seleccionar"
+                                        showClear 
+                                        options={programs}
+                                        focusInputRef={field.ref}
+                                        onChange={(e) => field.onChange(()=>{
+                                            setProgram(e.value)
+                                            setValue('program',e.value);
+                                            setValue('classification',e.value?.CLP_DESCRIPCION)
+                                            setValue('dependence',e.value?.DEP_DESCRIPCION)
+                                        })}
+                                        className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
+                                    />
+                                    {getFormErrorMessage(field.name)}
+                                </>
+                            )}
+                        />
+                    </div>
+                    <div className="mr-4 div-50 input-mobil-manage-acordeon">
+                        <label>Asunto de la solicitud<span className="text-red-600">*</span></label>
+                        <Controller
+                            name="subjectRerquest"
+                            control={control}
+                            rules={{
+                                required: 'Campo obligatorio.',
+                                maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
+                                }}
+                                render={({ field, fieldState }) => (
+                                <>
+                                    <Dropdown
+                                        id={field.name}
+                                        value={subjectRequest}
+                                        optionLabel="ASO_ASUNTO"
+                                        placeholder="Seleccionar"
+                                        showClear 
+                                        options={subjectRequests}
+                                        focusInputRef={field.ref}
+                                        onChange={(e) => field.onChange(()=>{
+                                            setSubjectRequest(e.value);
+                                            setValue('subjectRerquest',e.value)
+                                        })}
+                                        className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
+                                    />
+                                    {getFormErrorMessage(field.name)}
+                                </>
+                            )}
+                        />
+                    </div>
+                </div> 
+                <div className="flex div-manage-mobil">
+                    <div className="mr-4 div-50 input-mobil-manage-acordeon">
+                        <label>Clasificación</label>
+                        <Controller
+                            name="classification"
+                            control={control}
                             render={({ field, fieldState }) => (
                             <>
-                                <Dropdown
-                                    id={field.name}
-                                    value={workEntity}
-                                    optionLabel="tet_descripcion"
-                                    placeholder="Seleccionar"
-                                    showClear 
-                                    disabled={disableIntput}
-                                    options={workEntitys}
-                                    focusInputRef={field.ref}
-                                    onChange={(e) => field.onChange(()=>{
-                                        console.log(e.value);
-                                        
-                                        setWorkEntity(e.value);
-                                        setValue('workEntity',e.value)
-                                    })}
-                                    className={classNames({ 'p-invalid': fieldState.error }, `h-10 flex items-center input-mobil-manage-acordeon ${styleDisableIntput}`)}
-                                />
+                                <InputText 
+                                    id={field.name} 
+                                    value={field.value}
+                                    disabled
+                                    className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center div-100 input-desabled')}
+                                    onChange={(e) => field.onChange(e.target.value)} />
                                 {getFormErrorMessage(field.name)}
                             </>
-                        )}
-                    />
-                 </div>
-                 <div className="mr-4 div-30 input-mobil-manage-acordeon">
-                    <label>Responsable</label>
-                    <Controller
-                        name="responsible"
-                        control={control}
-                        rules={{
-                            required: {value:obligatoryField,message:'Campo obligatorio.'},
-                            }}
+                            )}
+                        />
+                    </div>
+                    <div className="mr-4 div-50 input-mobil-manage-acordeon">
+                        <label>Dependencia </label>
+                        <Controller
+                            name="dependence"
+                            control={control}
                             render={({ field, fieldState }) => (
                             <>
-                                <Dropdown
-                                    id={field.name}
-                                    value={mangeWorkEntity}
-                                    disabled={disableIntput}
-                                    optionLabel="fullName"
-                                    placeholder="Seleccionar"
-                                    showClear 
-                                    options={arrayUserManage}
-                                    focusInputRef={field.ref}
-                                    onChange={(e) => field.onChange(()=>{
-                                        setManageWorkEntity(e.value);
-                                        setValue('responsible',e.value)
-                                    })}
-                                    className={classNames({ 'p-invalid': fieldState.error },`h-10 flex items-center input-mobil-manage-acordeon ${styleDisableIntput}`)}
-                                />
+                                <InputText 
+                                id={field.name} 
+                                value={field.value}
+                                disabled 
+                                className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center div-100 input-desabled')}
+                                onChange={(e) => field.onChange(e.target.value)} />
                                 {getFormErrorMessage(field.name)}
                             </>
-                        )}
-                    />
-                 </div>
-            </div>
-            <div className="flex div-manage-mobil">
-                 <div className="mr-4 div-30 input-mobil-manage-acordeon">
-                    <label>Factor<span className="text-red-600">*</span></label>
-                    <Controller
-                        name="factors"
-                        control={control}
-                        rules={{
-                            required: {value:obligatoryField,message:'Campo obligatorio.'},
-                            maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
-                            }}
-                            render={({ field, fieldState }) => (
-                            <>
-                                <Dropdown
-                                    id={field.name}
-                                    value={factors}
-                                    disabled={disableIntput}
-                                    optionLabel="name"
-                                    placeholder="Seleccionar"
-                                    showClear 
-                                    options={arrayFactors}
-                                    focusInputRef={field.ref}
-                                    onChange={(e) => field.onChange(()=>{
-                                        setFactors(e.value);
-                                        setValue('factors',e.value);
-                                    })}
-                                    className={classNames({ 'p-invalid': fieldState.error },`h-10 flex items-center input-mobil-manage-acordeon ${styleDisableIntput}`)}
-                                />
-                                {getFormErrorMessage(field.name)}
-                            </>
-                        )}
-                    />
-                 </div>
-            </div>
-            <div className="flex">
-                 <div className="mr-4 div-100 input-mobil-manage-acordeon">
-                    <label>Observación<span className="text-red-600">*</span></label>
-                    <Controller
-                        name="observation"
-                        control={control}
-                        rules={{
-                            required: 'Campo obligatorio.',
-                            maxLength: { value: 5000, message: "Solo se permiten 5000 caracteres" },
-                            }}
+                            )}
+                        />
+                    </div>
+                </div>
+                <div className="flex">
+                    <div className="mr-4 div-100">
+                        <label>Descripción</label>
+                        <br />
+                        <Controller
+                            name="description"
+                            control={control}
                             render={({ field, fieldState }) => (
                             <>
                                 <InputTextarea 
                                     id={field.name} 
                                     {...field} 
                                     rows={4} 
-                                    cols={30} 
-                                    className={classNames({ 'p-invalid': fieldState.error },'div-100')} 
+                                    cols={30}
+                                    disabled 
+                                    className={classNames({ 'p-invalid': fieldState.error },'div-100 input-desabled')} 
                                 />
                                 <div className="flex justify-between">
                                     {getFormErrorMessage(field.name)}
                                     <span className="font-label">Max 5000 caracteres</span>
                                 </div>
                             </>
-                        )}
-                    />
-                 </div>
-            </div>
-            <div className="">
+                            )}
+                        />
+                    </div>
+                </div>
+                <div className="">
+                    <label className="font-label">Archivos o documentos que soportan la solicitud</label>
+                    <br />
+                    <label
+                    className="upload-label"
+                    style={{ display: "flex", alignItems: "center" }}
+                    >
+                        <Link to={`https://storage.cloud.google.com/${nameUrl}`} target="_blank">
+                            <span className="mr-2 text-red-600">{namePath}</span>
+                        </Link>
+                    </label>
+                </div>   
+            </AccordionTab>
+            <AccordionTab header="Documentos de apoyo interno">
+            <div className="flex flex-row items-center justify-between mb-8 header-movil">
                 <div className="col-1 col-100 seeker">
-                    <div className="mr-2">
-                        <Dialog 
-                            visible={visibleDialog} 
-                            style={{ width: '50vw' }} 
-                            onHide={() => setVisibleDialog(false)}
-                            closeIcon={closeIcon}
-                            className="dialog-manage"
-                        >
-                            <UploadManagetComponen
-                                multiple={false}
-                                statusDialog={(e)=>{setVisibleDialog(e)}}
+                        <div className="mr-2">
+                            <Dialog 
+                                visible={visibleDialog} 
+                                style={{ width: '50vw' }} 
+                                onHide={() => setVisibleDialog(false)}
+                                closeIcon={closeIcon}
+                                className="dialog-manage"
+                            >
+                                <UploadManagetComponen
                                 filesSupportDocument={(e)=>{
-                                    const docuement = e.map((file)=>{
+                                    let cont = 0;
+                                    const documents =  e.map((date)=>{
+                                        cont = cont+1
                                         return{
-                                            file
+                                            user:nameUser,
+                                            visibleBeneficiary:false, 
+                                            accion:date,
+                                            id:cont
                                         }
-                                    })  
-                                    setFileResponsePqrsdf(docuement[0].file)
+                                    })
+                                    setTableData(documents)
                                 }}
-                            />
-                        </Dialog>
-                        <div className="flex">
+                                statusDialog={(e)=>{setVisibleDialog(e)}}
+                                />
+                            </Dialog>
                             <Button 
                                 label="Adjuntar archivos"
                                 className="flex flex-row-reverse w-52"
@@ -1522,38 +1274,307 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                         </i>
                                     }
                             />
-                            {fileResponsePqrsdf!==null?(
-                            <>
-                                <div>
-                                    <Button icon={showIcon} rounded text onClick={()=>handleFileView(fileResponsePqrsdf)} />
-                                </div>
-                                <div>
-                                    <Button icon={trashIcon} rounded text severity="danger" onClick={()=>setFileResponsePqrsdf(null)} />
-                                </div>
-                            </>):(<></>)
-                            }
                         </div>
+                    <div>
+
+                    </div>
+                </div>
+                <div className="flex flex-row items-center tittle-header-movil">
+                    <div className=" mr-4 flex items-center total">
+                        <div><label className="mr-2 text-base total">Total de resultados</label></div>
+                        <div><span className="text-black flex items-center bold big">{tableData.length}</span></div>
+                    </div>
+                    <div className="flex items-center pagination-p">
+                        <div><label className="mr-2 p-colorpicker">Registro por página</label></div>
+                    <div>
+                        <Dropdown
+                            value={selectPage}
+                            onChange={(e: DropdownChangeEvent) => setSelectPage(e.value)}
+                            options={pageNumber}
+                            optionLabel="page"
+                            className="h-10"
+                        />
+                    </div>
                     </div>
                 </div>
             </div>
-            <div className="">
-                <div className="flex justify-end div-manage-mobil">
-                <Button
-                    text
-                    className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10 button-manage"
-                    label="Cancelar"
-                ></Button>
-                <Button 
-                    className="rounded-full !h-10 button-manage" 
-                    label="Enviar"
-                    disabled={!isValid}
-                    >
-                </Button>
+            <div className="overflow-hidden max-w-[calc(111vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] block md:block borderless reverse-striped">
+                <DataTable
+                    value={tableData}
+                    paginator
+                    paginatorTemplate={paginatorTemplate()}
+                    rows={selectPage.page}
+                    stripedRows
+                    selectionMode="single"
+                    dataKey="id"
+                    scrollable
+                >
+                    <Column 
+                        style={{ textAlign: "center" }} 
+                        className="!font-sans" field="user" 
+                        header="Usuario ">
+                    </Column>
+                    <Column 
+                        style={{ textAlign: "center" }}
+                        className="!font-sans" 
+                        field="visibleBeneficiary" 
+                        header={<p style={{width:'112px'}}>Visible para beneficiario</p>}
+                        body={suwitchBeneficiary}
+                        >
+                    </Column>
+                    <Column
+                        field="accion"
+                        header="Acción"
+                        className="!font-sans"
+                        style={{ textAlign: "center"}}
+                        body={accionesIcons}
+                    ></Column>
+                </DataTable>
+        </div>
+            </AccordionTab>
+            <AccordionTab header={`Respuesta PQRSDF ${filedNumber}`}>
+                <div className="flex justify-between div-manage-mobil">
+                    <div className="mr-4 div-30 input-mobil-manage-acordeon">
+                        <label>Tipo de respuesta<span className="text-red-600">*</span></label>
+                        <Controller
+                            name="responseType"
+                            control={control}
+                            rules={{
+                                required: 'Campo obligatorio.',
+                            }}
+                            render={({ field, fieldState }) => (
+                            <>
+                                <Dropdown
+                                    id={field.name}
+                                    value={responseType}
+                                    optionLabel="description"
+                                    placeholder="Seleccionar"
+                                    showClear 
+                                    options={responseTypes}
+                                    focusInputRef={field.ref}
+                                    onChange={(e) => field.onChange(()=>{
+                                        setResponsesType(e.value);
+                                        setValue('responseType',e.value);
+                                    })}
+                                    className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
+                                />
+                                {getFormErrorMessage(field.name)}
+                            </>
+                            )}
+                        />
+                    </div>
+                    <div className="mr-4 div-30 input-mobil-manage-acordeon">
+                        <label>Enviar a {obligatoryField?(<span className="text-red-600">*</span>):(<></>)}</label>
+                        <Controller
+                            name="workEntity"
+                            control={control}
+                            rules={{
+                                required:{value:obligatoryField,message:'Campo obligatorio.'},
+                                }}
+                                render={({ field, fieldState }) => (
+                                <>
+                                    <Dropdown
+                                        id={field.name}
+                                        value={workEntity}
+                                        optionLabel="tet_descripcion"
+                                        placeholder="Seleccionar"
+                                        showClear 
+                                        disabled={disableIntput}
+                                        options={workEntitys}
+                                        focusInputRef={field.ref}
+                                        onChange={(e) => field.onChange(()=>{
+                                            console.log(e.value);
+                                            
+                                            setWorkEntity(e.value);
+                                            setValue('workEntity',e.value)
+                                        })}
+                                        className={classNames({ 'p-invalid': fieldState.error }, `h-10 flex items-center input-mobil-manage-acordeon ${styleDisableIntput}`)}
+                                    />
+                                    {getFormErrorMessage(field.name)}
+                                </>
+                            )}
+                        />
+                    </div>
+                    <div className="mr-4 div-30 input-mobil-manage-acordeon">
+                        <label>Responsable</label>
+                        <Controller
+                            name="responsible"
+                            control={control}
+                            rules={{
+                                required: {value:obligatoryField,message:'Campo obligatorio.'},
+                                }}
+                                render={({ field, fieldState }) => (
+                                <>
+                                    <Dropdown
+                                        id={field.name}
+                                        value={mangeWorkEntity}
+                                        disabled={disableIntput}
+                                        optionLabel="fullName"
+                                        placeholder="Seleccionar"
+                                        showClear 
+                                        options={arrayUserManage}
+                                        focusInputRef={field.ref}
+                                        onChange={(e) => field.onChange(()=>{
+                                            setManageWorkEntity(e.value);
+                                            setValue('responsible',e.value)
+                                        })}
+                                        className={classNames({ 'p-invalid': fieldState.error },`h-10 flex items-center input-mobil-manage-acordeon ${styleDisableIntput}`)}
+                                    />
+                                    {getFormErrorMessage(field.name)}
+                                </>
+                            )}
+                        />
+                    </div>
                 </div>
-            </div>
-    </AccordionTab>
-</Accordion>
-
+                <div className="flex div-manage-mobil">
+                    <div className="mr-4 div-30 input-mobil-manage-acordeon">
+                        <label>Factor{obligatoryField?(<span className="text-red-600">*</span>):(<></>)}</label>
+                        <Controller
+                            name="factors"
+                            control={control}
+                            rules={{
+                                required: {value:obligatoryField,message:'Campo obligatorio.'},
+                                maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
+                                }}
+                                render={({ field, fieldState }) => (
+                                <>
+                                    <Dropdown
+                                        id={field.name}
+                                        value={factors}
+                                        disabled={disableIntput}
+                                        optionLabel="name"
+                                        placeholder="Seleccionar"
+                                        showClear 
+                                        options={arrayFactors}
+                                        focusInputRef={field.ref}
+                                        onChange={(e) => field.onChange(()=>{
+                                            setFactors(e.value);
+                                            setValue('factors',e.value);
+                                        })}
+                                        className={classNames({ 'p-invalid': fieldState.error },`h-10 flex items-center input-mobil-manage-acordeon ${styleDisableIntput}`)}
+                                    />
+                                    {getFormErrorMessage(field.name)}
+                                </>
+                            )}
+                        />
+                    </div>
+                </div>
+                <div className="flex">
+                    <div className="mr-4 div-100 input-mobil-manage-acordeon">
+                        <label>Observación<span className="text-red-600">*</span></label>
+                        <Controller
+                            name="observation"
+                            control={control}
+                            rules={{
+                                required: 'Campo obligatorio.',
+                                maxLength: { value: 5000, message: "Solo se permiten 5000 caracteres" },
+                                }}
+                                render={({ field, fieldState }) => (
+                                <>
+                                    <InputTextarea 
+                                        id={field.name} 
+                                        {...field} 
+                                        rows={4} 
+                                        cols={30} 
+                                        className={classNames({ 'p-invalid': fieldState.error },'div-100')}
+                                        placeholder="Escriba Aquí" 
+                                    />
+                                    <div className="flex justify-between">
+                                        {getFormErrorMessage(field.name)}
+                                        <span className="font-label">Max 5000 caracteres</span>
+                                    </div>
+                                </>
+                            )}
+                        />
+                    </div>
+                </div>
+                <div className="">
+                    <div className="col-1 col-100 seeker">
+                        <div className="mr-2">
+                            <Dialog 
+                                visible={visibleDialog} 
+                                style={{ width: '50vw' }} 
+                                onHide={() => setVisibleDialog(false)}
+                                closeIcon={closeIcon}
+                                className="dialog-manage"
+                            >
+                                <UploadManagetComponen
+                                    multiple={false}
+                                    statusDialog={(e)=>{setVisibleDialog(e)}}
+                                    filesSupportDocument={(e)=>{
+                                        const docuement = e.map((file)=>{
+                                            return{
+                                                file
+                                            }
+                                        })  
+                                        setFileResponsePqrsdf(docuement[0].file)
+                                    }}
+                                />
+                            </Dialog>
+                            <div className="flex">
+                                <Button 
+                                    label="Adjuntar archivos"
+                                    className="flex flex-row-reverse w-52"
+                                    onClick={()=>setVisibleDialog(true)} 
+                                    text 
+                                    icon={<i className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center">
+                                            <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M7.99984 5.83334V11.1667" stroke="#533893" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M10.6668 8.49999H5.3335" stroke="#533893" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M8 14.5V14.5C4.686 14.5 2 11.814 2 8.5V8.5C2 5.186 4.686 2.5 8 2.5V2.5C11.314 2.5 14 5.186 14 8.5V8.5C14 11.814 11.314 14.5 8 14.5Z" stroke="#533893" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                            </i>
+                                        }
+                                />
+                                {fileResponsePqrsdf!==null?(
+                                <>
+                                    <div>
+                                        <Button icon={showIcon} rounded text onClick={()=>handleFileView(fileResponsePqrsdf)} />
+                                    </div>
+                                    <div>
+                                        <Button icon={trashIcon} rounded text severity="danger" onClick={()=>setFileResponsePqrsdf(null)} />
+                                    </div>
+                                </>):(<></>)
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="">
+                    <div className="flex justify-end div-manage-mobil">
+                    <Button
+                        text
+                        className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10 button-manage"
+                        label="Cancelar"
+                    ></Button>
+                    <Button 
+                        className="rounded-full !h-10 button-manage" 
+                        label="Enviar"
+                        disabled={!isValid}
+                        onClick={()=>setStatusSend(true)}
+                        >
+                    </Button>
+                    </div>
+                </div>
+            </AccordionTab>
+        </Accordion>
+        {statusSend?(
+        <>
+            {fileResponsePqrsdf === null?(
+                <>
+                    {arrayResponseType.includes(responseType?.description)?(
+                        <MessageComponent 
+                            headerMsg="No adjuntó ningún archivo"
+                            msg="¿Desea continuar de todas formas?"
+                            twoBtn={true}
+                            nameBtn1="Aceptar"
+                            nameBtn2="Cancelar"
+                            onClickBt1={()=>{}}
+                            onClickBt2={()=>setStatusSend(false)}
+                        />
+                    ):(<></>)}
+                </>):(<></>)}
+        </>):(<></>)}
     </>
   )
 }

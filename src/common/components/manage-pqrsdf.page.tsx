@@ -26,7 +26,8 @@ const ManagePqrsdf = () => {
   const [statusRequest, setStatusRequest] = useState<boolean>(true)
   const [pqrs, setPqrs] = useState<object[]>([]);
   const [getPqrsdfId, setGetPqrsdfId] = useState<number>();
-  const [getManagetStatus, setManagetStatus] = useState<boolean>(false);  
+  const [getManagetStatus, setManagetStatus] = useState<boolean>(false);
+  const [tittle, getTittle] = useState<String>('Gestionar PQRDSF')  
   
   useBreadCrumb({
     isPrimaryPage: true,
@@ -187,10 +188,20 @@ const ManagePqrsdf = () => {
     focusBtn('btn-1')
   },[])
 
+  useEffect(()=>{
+
+    if(getManagetStatus){
+      getTittle('Gestionar solicitudes')
+    }else{
+      getTittle('Gestionar PQRDSF')
+    }
+
+  },[getManagetStatus])
+
   return (
     <>
         <div className='container-div' >
-            <Card title={<p className='text-3xl block pb-5'>Gestionar PQRDSF</p>}  className='card-container card-top'>
+            <Card title={<p className='text-3xl block pb-5'>{tittle}</p>}  className='card-container card-top'>
               {getManagetStatus?(<></>):( 
                 <div className='flex flex-row justify-between mt-10 card-mobil'>
                 <Card className='zise-card box1 shadow-none'>
