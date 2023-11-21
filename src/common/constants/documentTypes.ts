@@ -1,5 +1,7 @@
 export enum EDocumentTypes {
-  OK = "OK",
-  WARN = "WARN",
-  FAIL = "FAIL",
+  CC = 1,
+  CE = 2,
+  TI = 3,
+  NIT = 781,
+  AN = 829,
 }

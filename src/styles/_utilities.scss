@@ -4,6 +4,13 @@
 @tailwind components;
 @tailwind utilities;
 
+.p-disabled,.p-component:disabled{
+    opacity:1;
+    background-color: #E9E9E9;
+    color: #000000;
+    border-color: #E2E2E2;
+}
+
 .p-card {
     @apply text-black;
 }
@@ -206,6 +213,11 @@
 
 .p-dropdown.select-sm .p-inputtext, .p-multiselect.select-sm .p-multiselect-label{
     padding: 0.532rem 0.675rem;
+    padding-right: 1px;
+}
+
+.p-dropdown .p-dropdown-trigger{
+    width: 2rem;
 }
 
 .p-dropdown.select-xs {

@@ -5,7 +5,7 @@ export interface IRequestSubjectType {
   aso_asunto: string;
   aso_activo?: boolean;
   aso_orden?: number;
-  requestObjectId: number;
+  requestObjectId?: number;
   requestObject?: IRequestObject;
   programs?: IProgram[];
   createdAt?: DateTime;
