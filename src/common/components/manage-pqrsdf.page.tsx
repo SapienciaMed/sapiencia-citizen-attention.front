@@ -28,7 +28,8 @@ const ManagePqrsdf = () => {
   const [getPqrsdfId, setGetPqrsdfId] = useState<number>();
   const [getManagetStatus, setManagetStatus] = useState<boolean>(false);
   const [tittle, getTittle] = useState<String>('Gestionar PQRDSF');
-  const [showManage, setshowManage] = useState<boolean>(false)  ;  
+  const [showManage, setshowManage] = useState<boolean>(false)  ; 
+  const [tittleButton, setTittleButton] = useState<string>('Solicitudes en trámite'); 
   
   useBreadCrumb({
     isPrimaryPage: true,
@@ -192,10 +193,12 @@ const ManagePqrsdf = () => {
   useEffect(()=>{
 
     if(getManagetStatus){
-      getTittle('Gestionar solicitudes')
+      getTittle('Gestionar PQRDSF');
+      setTittleButton('Gestionar solicitudes')
       setshowManage(true)
     }else{
-      getTittle('Gestionar PQRDSF')
+      getTittle('Gestionar PQRDSF');
+      setTittleButton('Solicitudes en trámite')
       setshowManage(false)
     }
 
@@ -252,7 +255,7 @@ const ManagePqrsdf = () => {
               </div>
               )}
               <div className='div-end mt-10 mb-10'>
-                <button className='btn-t btn-1' id='btn-1' onClick={()=>focusBtn('btn-1')}>Solicitudes en trámite</button>
+                <button className='btn-t btn-1' id='btn-1' onClick={()=>focusBtn('btn-1')}>{tittleButton}</button>
                 <button className='btn-t btn-2' id='btn-2' onClick={()=>focusBtn('btn-2')}>Solicitudes cerradas</button>
               </div>
               {showManage?(  
