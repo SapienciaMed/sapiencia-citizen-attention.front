@@ -1,5 +1,9 @@
 import { EResponseCodes } from "../constants/api.enum";
-import { Countrys, Departament, IChannelAttetion, IChannelAttetionDetail, IMunicipality, ItypeDocument, ItypeRFequest, tej_nombre } from "../interfaces/mastersTables.interface";
+import {  Countrys, Departament, 
+          IChannelAttetion, IChannelAttetionDetail, 
+          IMunicipality, ItypeDocument, 
+          ItypeRFequest, IlegalEntityType, 
+          IMResponseMedium, IProgram, ISubjectRequest, IResposeType, IFactors } from "../interfaces/mastersTables.interface";
 import { ApiResponse } from "../utils/api-response";
 import useCrudService from "./crud-service.hook";
 
@@ -45,7 +49,7 @@ export function mastersTablesServices() {
       }
     };
 
-    async function getTypeLegalentity(): Promise<ApiResponse<tej_nombre[]>> {
+    async function getTypeLegalentity(): Promise<ApiResponse<IlegalEntityType[]>> {
       try {
         const endpoint: string = `/get-type-legal-entity`;
         return await get(`${listUrl}${endpoint}`);
@@ -81,6 +85,51 @@ export function mastersTablesServices() {
       }
     };
 
+    async function getResponseMediun(): Promise<ApiResponse<IMResponseMedium[]>> {
+      try {
+        const endpoint: string = `/get-response-medium`;
+        return await get(`${endpoint}`);
+      } catch (error) {
+        return new ApiResponse([], EResponseCodes.FAIL, "Error no controlado");
+      }
+    };
+
+    async function getProgram(): Promise<ApiResponse<IProgram[]>> {
+      try {
+        const endpoint: string = `/get-Programs`;
+        return await get(`${endpoint}`);
+      } catch (error) {
+        return new ApiResponse([], EResponseCodes.FAIL, "Error no controlado");
+      }
+    };
+
+    async function getSbjectRequest(): Promise<ApiResponse<ISubjectRequest[]>> {
+      try {
+        const endpoint: string = `/get-solicitudes`;
+        return await get(`${endpoint}`);
+      } catch (error) {
+        return new ApiResponse([], EResponseCodes.FAIL, "Error no controlado");
+      }
+    };
+
+    async function getResponseTypes(): Promise<ApiResponse<IResposeType[]>> {
+      try {
+        const endpoint: string = `/get-Response-type`;
+        return await get(`${listUrl}${endpoint}`);
+      } catch (error) {
+        return new ApiResponse([], EResponseCodes.FAIL, "Error no controlado");
+      }
+    };
+
+    async function getFactors(): Promise<ApiResponse<IFactors[]>> {
+      try {
+        const endpoint: string = `/get-factors`;
+        return await get(`${listUrl}${endpoint}`);
+      } catch (error) {
+        return new ApiResponse([], EResponseCodes.FAIL, "Error no controlado");
+      }
+    };
+
     return{
         getDocuemntType,
         getChannelAtencion,
@@ -89,7 +138,12 @@ export function mastersTablesServices() {
         getTypeLegalentity,
         getCountrys,
         getDepartament,
-        getMunicipality
+        getMunicipality,
+        getResponseMediun,
+        getProgram,
+        getSbjectRequest,
+        getResponseTypes,
+        getFactors
     }    
     
 }

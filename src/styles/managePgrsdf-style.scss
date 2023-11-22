@@ -211,4 +211,33 @@
     .text-mobil{
         width: 100%;
     }
+
+    .acordeon-manage{
+        width: 22em !important;
+    }
+
+    .div-manage-mobil{
+        display: flex !important;
+        flex-wrap: wrap !important;
+    }
+
+    .input-mobil-manage{
+        width: 100%;
+    }
+
+    .input-mobil-manage-acordeon{
+        width: 100%;
+        margin: 0;
+    }
+
+    .dialog-manage{
+        width: 95vw !important;
+    }
+
+    .button-manage{
+        width: 100%;
+        margin: 0;
+        margin-bottom: 8px;
+    }
+
 }

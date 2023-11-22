@@ -20,9 +20,9 @@ export interface ItypeRFequest {
     TSO_ORDEN :number;
 }
 
-export interface tej_nombre {
-    tej_codigo: number,
-    tej_nombre: string
+export interface IlegalEntityType {
+    tej_codigo?: number;
+    tej_nombre?: string;
 }
 
 export interface Countrys {
@@ -33,11 +33,43 @@ export interface Countrys {
 export interface Departament {
     LGE_CODIGO: number;
     LGE_ELEMENTO_CODIGO: string;
-    LGE_ELEMENTO_DESCRIPCION: string
+    LGE_ELEMENTO_DESCRIPCION: string ;
 }
 
 export interface IMunicipality {
     LGE_CODIGO: number;
     LGE_ELEMENTO_CODIGO: string;
-    LGE_ELEMENTO_DESCRIPCION: string
+    LGE_ELEMENTO_DESCRIPCION: string;
+}
+
+export interface IMResponseMedium {
+    MRE_CODIGO:number;
+    MRE_DESCRIPCION:string;
+}
+
+export interface IProgram {
+    PRG_CODIGO: number;
+    PRG_DESCRIPCION: string;
+    CLP_CODIGO: number;
+    CLP_DESCRIPCION: string;
+    DEP_CODIGO: number;
+    DEP_DESCRIPCION: string;
+}
+
+
+export interface ISubjectRequest {
+    ASO_CODIGO: number;
+    ASO_ASUNTO: string;
+}
+
+export interface IResposeType {
+    id:number;
+    description:string;
+}
+
+export interface IFactors {
+    id: number;
+    name: string;
+    isActive: number;
+    order: number;
 }

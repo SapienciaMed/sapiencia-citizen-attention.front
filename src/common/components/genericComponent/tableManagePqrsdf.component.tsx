@@ -20,6 +20,7 @@ import { IrequestReopen } from "../../interfaces/pqrsdf.interfaces";
 
 
 
+
 interface Ipqrsdf {
     radicado?: string;
     identification?: string;
@@ -139,7 +140,9 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                 <div className="flex justify-center">
                     {statusReq?(
                     <>
-                        <div className=''>
+                        <div>
+                        {authorization?.allowedActions &&
+                        authorization?.allowedActions?.findIndex((i) => i == "GESTIONAR_PQRSDF") >= 0 && (
                             <Link to={''} onClick={()=>managetPqr({pqrsdfId:pqrsdf.pqrsdfId,managetStatus:true})}>
                                 <Tooltip target=".custom-target-icon" style={{borderRadius:'1px'}} />
                                 <i className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center"
@@ -152,6 +155,7 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                                 </i>
 
                             </Link>
+                            )}
                         </div>
                     </>):(
                     <>

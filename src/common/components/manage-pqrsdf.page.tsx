@@ -26,8 +26,11 @@ const ManagePqrsdf = () => {
   const [statusRequest, setStatusRequest] = useState<boolean>(true)
   const [pqrs, setPqrs] = useState<object[]>([]);
   const [getPqrsdfId, setGetPqrsdfId] = useState<number>();
-  const [getManagetStatus, setManagetStatus] = useState<boolean>(false);  
-
+  const [getManagetStatus, setManagetStatus] = useState<boolean>(false);
+  const [tittle, getTittle] = useState<String>('Gestionar PQRDSF');
+  const [showManage, setshowManage] = useState<boolean>(false)  ; 
+  const [tittleButton, setTittleButton] = useState<string>('Solicitudes en trámite'); 
+  
   useBreadCrumb({
     isPrimaryPage: true,
     name: "Gestionar PQRDSF",
@@ -121,6 +124,7 @@ const ManagePqrsdf = () => {
     
     return workingDays
   }
+  
 
   const getPqrsdf = async (param:IrequestPqrsdf)=>{   
     
@@ -186,11 +190,25 @@ const ManagePqrsdf = () => {
     focusBtn('btn-1')
   },[])
 
+  useEffect(()=>{
+
+    if(getManagetStatus){
+      getTittle('Gestionar PQRDSF');
+      setTittleButton('Gestionar solicitudes')
+      setshowManage(true)
+    }else{
+      getTittle('Gestionar PQRDSF');
+      setTittleButton('Solicitudes en trámite')
+      setshowManage(false)
+    }
+
+  },[getManagetStatus])
+  
   return (
     <>
         <div className='container-div' >
-            <Card title={<p className='text-3xl block pb-5'>Gestionar PQRDSF</p>}  className='card-container card-top'>
-              {/*getManagetStatus*/false?(<></>):( 
+            <Card title={<p className='text-3xl block pb-5'>{tittle}</p>}  className='card-container card-top'>
+              {showManage?(<></>):( 
                 <div className='flex flex-row justify-between mt-10 card-mobil'>
                 <Card className='zise-card box1 shadow-none'>
                   <div className='box-mobil'>
@@ -237,11 +255,14 @@ const ManagePqrsdf = () => {
               </div>
               )}
               <div className='div-end mt-10 mb-10'>
-                <button className='btn-t btn-1' id='btn-1' onClick={()=>focusBtn('btn-1')}>Solicitudes en trámite</button>
+                <button className='btn-t btn-1' id='btn-1' onClick={()=>focusBtn('btn-1')}>{tittleButton}</button>
                 <button className='btn-t btn-2' id='btn-2' onClick={()=>focusBtn('btn-2')}>Solicitudes cerradas</button>
               </div>
-              { /*getManagetStatus*/false?(  
-                <ManagetPqrsdfComponent/>      
+              {showManage?(  
+                <ManagetPqrsdfComponent
+                id={getPqrsdfId}
+                getManagetStatus={(e)=>{setManagetStatus(e)}}
+                />      
               ):(
                 <Card className='card-container mt-10 card-bottom'>
                 <TableManagePqrsdfComponent 
