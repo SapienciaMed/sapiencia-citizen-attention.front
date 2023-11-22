@@ -658,7 +658,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
             {arrayTypeDocumentNit.includes(typeDocmuent)?(
             <>
                 <div className="div-30 input-mobil-manage">
-                    <label>Tipo entidad<span className="text-red-600">*</span></label>
+                    <label>Tipo entidad<span className="text-red-600 ml-1">*</span></label>
                     <Controller
                         name="typeLegalEntity"
                         control={control}
@@ -694,7 +694,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                     {arrayTypeDocumentNit.includes(typeDocmuent)?(
                     <>
                         <div className="mr-4 input-mobil-manage-acordeon">
-                            <label>Razón socia<span className="text-red-600">*</span></label>
+                            <label>Razón socia<span className="text-red-600 ml-1">*</span></label>
                             <Controller
                                 name="businessName"
                                 control={control}
@@ -720,7 +720,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                     {arrayTypeDocumentNitAndAnonymus.includes(typeDocmuent)?(<></>):(
                     <>
                         <div className="mr-4 input-mobil-manage-acordeon">
-                            <label>Primer nombre<span className="text-red-600">*</span></label>
+                            <label>Primer nombre<span className="text-red-600 ml-1">*</span></label>
                             <Controller
                                 name="firstName"
                                 control={control}
@@ -767,7 +767,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                             />
                         </div>
                         <div className="mr-4 input-mobil-manage-acordeon">
-                            <label>Primer Apellido<span className="text-red-600">*</span></label>
+                            <label>Primer Apellido<span className="text-red-600 ml-1">*</span></label>
                             <Controller
                                 name="lastName"
                                 control={control}
@@ -819,7 +819,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                     {arrayTypeDocumentNitAndAnonymus.includes(typeDocmuent)?(<></>):(
                     <>
                         <div className="mr-4 input-mobil-manage-acordeon">
-                            <label>Fecha de nacimiento<span className="text-red-600">*</span></label>
+                            <label>Fecha de nacimiento<span className="text-red-600 ml-1">*</span></label>
                             <br />
                             <Controller
                                 name="brithdayDate"
@@ -859,7 +859,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                     {arrayTypeDocumentAnonimo.includes(typeDocmuent)?(<></>):(
                     <>
                         <div className="mr-4 input-mobil-manage-acordeon">
-                            <label>Número de contacto 1<span className="text-red-600">*</span></label>
+                            <label>Número de contacto 1<span className="text-red-600 ml-1">*</span></label>
                             <Controller
                                 name="firtContact"
                                 control={control}
@@ -911,7 +911,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                 <>
                     <div className="flex div-manage-mobil">
                         <div className="mr-4 div-50 input-mobil-manage-acordeon">
-                            <label>Correo electrónico<span className="text-red-600">*</span></label>
+                            <label>Correo electrónico<span className="text-red-600 ml-1">*</span></label>
                             <Controller
                                 name="email"
                                 control={control}
@@ -964,7 +964,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                 </>)} 
                 <div className="flex items-center div-manage-mobil">
                     <div className="mr-4 div-25 input-mobil-manage-acordeon">
-                        <label>País<span className="text-red-600">*</span></label>
+                        <label>País<span className="text-red-600 ml-1">*</span></label>
                         <Controller
                             name="country"
                             control={control}
@@ -993,7 +993,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                         />
                     </div>
                     <div className="mr-4 div-25 input-mobil-manage-acordeon">
-                        <label>Departamento<span className="text-red-600">*</span></label>
+                        <label>Departamento<span className="text-red-600 ml-1">*</span></label>
                         <Controller
                             name="departament"
                             control={control}
@@ -1022,7 +1022,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                         />
                     </div>
                     <div className="mr-4 div-25 input-mobil-manage-acordeon">
-                        <label>Municipio<span className="text-red-600">*</span></label>
+                        <label>Municipio<span className="text-red-600 ml-1">*</span></label>
                         <Controller
                             name="municipality"
                             control={control}
@@ -1095,7 +1095,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
             <AccordionTab header="Información de la solicitud" className="">
                 <div className="flex div-manage-mobil">
                     <div className="mr-4 div-50 input-mobil-manage-acordeon">
-                        <label>Programa al que aplica la solicitud<span className="text-red-600">*</span></label>
+                        <label>Programa al que aplica la solicitud<span className="text-red-600 ml-1">*</span></label>
                         <Controller
                             name="program"
                             control={control}
@@ -1127,7 +1127,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                         />
                     </div>
                     <div className="mr-4 div-50 input-mobil-manage-acordeon">
-                        <label>Asunto de la solicitud<span className="text-red-600">*</span></label>
+                        <label>Asunto de la solicitud<span className="text-red-600 ml-1">*</span></label>
                         <Controller
                             name="subjectRerquest"
                             control={control}
@@ -1337,7 +1337,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
             <AccordionTab header={`Respuesta PQRSDF ${filedNumber}`}>
                 <div className="flex justify-between div-manage-mobil">
                     <div className="mr-4 div-30 input-mobil-manage-acordeon">
-                        <label>Tipo de respuesta<span className="text-red-600">*</span></label>
+                        <label>Tipo de respuesta<span className="text-red-600 ml-1">*</span></label>
                         <Controller
                             name="responseType"
                             control={control}
@@ -1366,7 +1366,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                         />
                     </div>
                     <div className="mr-4 div-30 input-mobil-manage-acordeon">
-                        <label>Enviar a {obligatoryField?(<span className="text-red-600">*</span>):(<></>)}</label>
+                        <label>Enviar a {obligatoryField?(<span className="text-red-600 ml-1">*</span>):(<></>)}</label>
                         <Controller
                             name="workEntity"
                             control={control}
@@ -1430,7 +1430,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                 </div>
                 <div className="flex div-manage-mobil">
                     <div className="mr-4 div-30 input-mobil-manage-acordeon">
-                        <label>Factor{obligatoryField?(<span className="text-red-600">*</span>):(<></>)}</label>
+                        <label>Factor{obligatoryField?(<span className="text-red-600 ml-1">*</span>):(<></>)}</label>
                         <Controller
                             name="factors"
                             control={control}
@@ -1463,7 +1463,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                 </div>
                 <div className="flex">
                     <div className="mr-4 div-100 input-mobil-manage-acordeon">
-                        <label>Observación<span className="text-red-600">*</span></label>
+                        <label>Observación<span className="text-red-600 ml-1">*</span></label>
                         <Controller
                             name="observation"
                             control={control}
