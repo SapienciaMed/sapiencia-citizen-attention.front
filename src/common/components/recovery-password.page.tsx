@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import logoAlcaldiaMedellin from "../../../public/images/logo-alcaldia-black.png";
-import logoSapiencia from "../../../public/images/logo-sapiencia.png";
+import logoAlcaldiaMedellin from "../../public/images/logo-alcaldia-black.png";
+import logoSapiencia from "../../public/images/logo-sapiencia.png";
 import { EDirection } from "../../common/constants/input.enum";
 import { IRequestRecoveryPassword } from "../../common/interfaces/auth.interfaces";
 import useYupValidationResolver from "../../common/hooks/form-validator.hook";
@@ -75,7 +75,7 @@ const FormRecoveryPassword = (): React.JSX.Element => {
         title: "Recuperar contraseña",
         description: "Enviamos a tu correo electrónico las instrucciones para recuperar tu contraseña",
         show: true,
-        okTitle: "Aceptar",
+        // okTitle: "Aceptar",
         onOk: () => {
           setMessage({});
           navigate("../aurora/ingreso");
@@ -87,7 +87,7 @@ const FormRecoveryPassword = (): React.JSX.Element => {
         title: "¡Ocurrio un error!",
         description: operation.message,
         show: true,
-        okTitle: "Aceptar",
+        // okTitle: "Aceptar",
         onOk: () => {
           setMessage({});
         },
@@ -108,11 +108,11 @@ const FormRecoveryPassword = (): React.JSX.Element => {
           className="input-basic-login"
           typeInput="text"
           register={register}          
-          label={
-            <>
-              Documento de identidad <span>*</span>
-            </>
-          }
+          // label={
+          //   <>
+          //     Documento de identidad <span>*</span>
+          //   </>
+          // }
           classNameLabel="text-black big"
           direction={EDirection.column}
           errors={errors}
@@ -123,11 +123,11 @@ const FormRecoveryPassword = (): React.JSX.Element => {
           className="input-basic-login"
           typeInput="text"
           register={register}
-          label={
-            <>
-              Correo electrónico <span>*</span>
-            </>
-          }
+          // label={
+          //   <>
+          //     Correo electrónico <span>*</span>
+          //   </>
+          // }
           classNameLabel="text-black big"
           direction={EDirection.column}
           errors={errors}
@@ -145,7 +145,7 @@ const FooterRecoveryPasssword = (): React.JSX.Element => {
   return (
     <div className="content-footer_recoveryPassword">
       <div className="container-buttons">
-        <span className="text-center" onClick={() => navigate("../aurora/ingreso")}>
+        <span className="text-center" onClick={() => navigate("../portal/ingreso")}>
           Cancelar
         </span>
         <ButtonComponent

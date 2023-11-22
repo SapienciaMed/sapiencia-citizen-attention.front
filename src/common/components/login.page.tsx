@@ -82,7 +82,7 @@ const FormSignIn = (): React.JSX.Element => {
 
   const { setAuthorization } = useContext(AppContext);
   const resolver = useYupValidationResolver(loginValidator);
-  const credentialsSaved = localStorage.getItem("Bcredentials");
+  const credentialsSaved = localStorage.getItem("benefactor-credentials");
 
   const {
     handleSubmit,
@@ -112,6 +112,8 @@ const FormSignIn = (): React.JSX.Element => {
   // Metodo que hace la peticion al api
   const onSubmitSignIn = handleSubmit(
     async (data: { identification: string; password: string }) => {
+      console.log('hola');
+
       const credentials = {
         identification: data.identification,
         password: data.password,
@@ -121,10 +123,10 @@ const FormSignIn = (): React.JSX.Element => {
 
       if (operation.code === EResponseCodes.OK) {
         isRememberData &&
-          localStorage.setItem("Bcredentials", JSON.stringify(credentials));
+          localStorage.setItem("benefactor-credentials", JSON.stringify(credentials));
         JSON.parse(credentialsSaved) &&
           !isRememberData &&
-          localStorage.removeItem("Bcredentials");
+          localStorage.removeItem("benefactor-credentials");
 
         localStorage.setItem("token", dataResponse.token);
         setAuthorization(dataResponse.authorization);
@@ -222,7 +224,7 @@ const FormSignIn = (): React.JSX.Element => {
             className="button-login big"
             value="Ingresar"
             type="submit"
-            disabled={false}
+            // disabled={!formState.isValid}
           />
           <div className="recovery-password">
             <p className="text-primary medium not-margin-padding">

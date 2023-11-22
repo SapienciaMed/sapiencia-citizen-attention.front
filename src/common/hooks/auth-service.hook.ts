@@ -30,7 +30,7 @@ export function useAuthService() {
   async function benefactorSignIn(data: Object): Promise<ApiResponse<IResponseSignIn>> {
     try {
       const endpoint: string = "/signin";
-      return await post(`${authUrl}${endpoint}`, data);
+      return await post(`${baseCitizenAttetionURL}${externalAuthUrl}${endpoint}`, data);
 
     } catch (error) {
       return new ApiResponse(
