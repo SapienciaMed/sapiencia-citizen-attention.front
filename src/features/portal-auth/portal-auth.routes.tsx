@@ -1,6 +1,6 @@
 import React, { lazy } from "react";
 import { Route, Routes } from "react-router-dom";
-
+import RecoveryPassword from "../../common/components/recovery-password.page"
 
 
 function PortalAuthRoutes() {
@@ -13,6 +13,16 @@ function PortalAuthRoutes() {
         path={"/ingreso"}
         element={
           <Login />
+          // <PrivateRoute
+          //   element={<PortalAuthPage />}
+          //   allowedAction={"INDICADOR_ACCION_SEGURIDAD"}
+          // />
+        }
+      />
+      <Route
+        path={"/recuperar-clave"}
+        element={
+          <RecoveryPassword />
           // <PrivateRoute
           //   element={<PortalAuthPage />}
           //   allowedAction={"INDICADOR_ACCION_SEGURIDAD"}

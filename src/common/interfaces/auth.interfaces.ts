@@ -31,5 +31,9 @@ export interface IAuthUser {
   dateCreate?: Date;
 }
 
+export interface IRequestRecoveryPassword {
+  numberDocument: string;
+  email: string;
+}
 
 

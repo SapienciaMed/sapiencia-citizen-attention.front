@@ -56,6 +56,13 @@ export function useAuthService() {
     }
   }
 
+  async function recoveryPassword(
+    data: Object
+  ): Promise<ApiResponse<IResponseSignIn>> {
+    const endpoint: string = "/recoverypassword";
+    return await post(`${authUrl}${endpoint}`, data);
+  }
+
   async function externalSignIn(data: Object): Promise<ApiResponse<IResponseSignIn>> {
     try {
       const endpoint: string = "/signin";
@@ -74,6 +81,7 @@ export function useAuthService() {
     benefactorSignIn,
     externalSignIn,
     getAuthorization,
+    recoveryPassword
   };
 }
 
