@@ -7981,6 +7981,10 @@ video {
   margin-bottom:2rem
 }
 
+.ml-2{
+  margin-left:0.5rem
+}
+
 .ml-3{
   margin-left:0.75rem
 }
@@ -8047,6 +8051,10 @@ video {
 
 .mt-auto{
   margin-top:auto
+}
+
+.ml-1{
+  margin-left:0.25rem
 }
 
 .block{
@@ -8381,18 +8389,6 @@ video {
 
 .gap-y-6{
   row-gap:1.5rem
-}
-
-.space-x-3 > :not([hidden]) ~ :not([hidden]){
-  --tw-space-x-reverse:0;
-  margin-right:calc(0.75rem * var(--tw-space-x-reverse));
-  margin-left:calc(0.75rem * calc(1 - var(--tw-space-x-reverse)))
-}
-
-.space-x-3\.5 > :not([hidden]) ~ :not([hidden]){
-  --tw-space-x-reverse:0;
-  margin-right:calc(0.875rem * var(--tw-space-x-reverse));
-  margin-left:calc(0.875rem * calc(1 - var(--tw-space-x-reverse)))
 }
 
 .space-y-7 > :not([hidden]) ~ :not([hidden]){

@@ -197,7 +197,7 @@ const ManagePqrsdf = () => {
       setTittleButton('Gestionar solicitudes')
       setshowManage(true)
     }else{
-      getTittle('Gestionar PQRDSF');
+      getTittle('Gestionar PQRSDF');
       setTittleButton('Solicitudes en trámite')
       setshowManage(false)
     }

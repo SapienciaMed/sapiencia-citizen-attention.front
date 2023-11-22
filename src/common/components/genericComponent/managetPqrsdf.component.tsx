@@ -307,7 +307,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
 
     useEffect(()=>{
         getInfoPqrsdf(id).then(({data})=>{
-            //console.log(data);
+            console.log(data);
             setTypeDocmuent(data['person']['documentType']['itemDescription'])
             setRequestType({
                 tso_codigo: data['requestType']['tso_codigo'],
@@ -602,7 +602,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
     <>
         <div className="flex justify-start items-center div-manage-mobil">
             <div className="mr-4 div-30 input-mobil-manage">
-                <label>Tipo de solicitud<span className="text-red-600">*</span></label>
+                <label>Tipo de solicitud<span className="text-red-600 ml-1">*</span></label>
                 <br />
                 <Controller
                     name="typeOfRequest"
