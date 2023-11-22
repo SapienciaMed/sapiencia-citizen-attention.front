@@ -382,8 +382,8 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                 PRG_DESCRIPCION: data['program']['prg_descripcion'],
                 CLP_CODIGO: data['program']['clpClasificacionPrograma'][0]['clp_codigo'],
                 CLP_DESCRIPCION: data['program']['clpClasificacionPrograma'][0]['clp_descripcion'],
-                DEP_CODIGO: data['program']['depDependencia'][0]['dep_codigo'],
-                DEP_DESCRIPCION: data['program']['depDependencia'][0]['dep_descripcion']
+                DEP_CODIGO: data['program']['depDependencia']['dep_codigo'],
+                DEP_DESCRIPCION: data['program']['depDependencia']['dep_descripcion']
             };
             setProgram({
                 PRG_CODIGO: programData.PRG_CODIGO,
