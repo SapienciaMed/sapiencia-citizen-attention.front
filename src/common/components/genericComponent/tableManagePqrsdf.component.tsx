@@ -210,9 +210,10 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                 type="button"
                 className={classNames(options.className, "!rounded-lg")}
                 onClick={options.onClick}
-                disabled={options.disabled}                
+                disabled={options.disabled}
+                style={{ opacity: "1.4" }}
               >
-                <span className="p-3 py-2.5 text-black">{prev}</span>
+                <span className="p-3 text-black">{prev}</span>
               </Button>
             );
           },
@@ -221,9 +222,10 @@ export const TableManagePqrsdfComponent = (props:Props) => {
               <Button
                 className={classNames(options.className, "!rounded-lg")}
                 onClick={options.onClick}
-                disabled={options.disabled}                
+                disabled={options.disabled}
+                style={{ opacity: "1.4" }}
               >
-                <span className="p-3 py-2.5 text-black">{next}</span>
+                <span className="p-3 text-black">{next}</span>
               </Button>
             );
           },
@@ -242,7 +244,11 @@ export const TableManagePqrsdfComponent = (props:Props) => {
             }
     
             return (
-              <Button className={options.className} onClick={options.onClick}>
+              <Button
+                style={{ backgroundColor: "#533893", borderRadius: "4px", color: "white" }}
+                className={options.className}
+                onClick={options.onClick}
+              >
                 {options.page + 1}
               </Button>
             );
@@ -314,7 +320,7 @@ export const TableManagePqrsdfComponent = (props:Props) => {
             <div className="flex flex-row items-center tittle-header-movil">
                 <div className=" mr-4 flex items-center total">
                     <div><label className="mr-2 text-base total">Total de resultados</label></div>
-                    <div><span className="flex items-center bold big text-primary">{dataPqrsdf.length}</span></div>
+                    <div><span className="text-black flex items-center bold big">{dataPqrsdf.length}</span></div>
                 </div>
                 <div className="flex items-center pagination-p">
                     <div><label className="mr-2 p-colorpicker">Registro por página</label></div>
@@ -324,19 +330,18 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                           onChange={(e: DropdownChangeEvent) => setSelectPage(e.value)}
                           options={pageNumber}
                           optionLabel="page"
-                          className={"w-12 !font-sans select-xs"}
+                          className="h-10"
                       />
                    </div>
                 </div>
             </div>
         </div>
 
-        <div className="overflow-hidden max-w-[calc(111vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] citizen-attention-paginator block md:block borderless reverse-striped">
+        <div className="overflow-hidden max-w-[calc(111vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] block md:block borderless reverse-striped">
             <DataTable
                 value={dataPqrsdf}
                 paginator
                 paginatorTemplate={paginatorTemplate()}
-                paginatorClassName="mt-9"
                 rows={selectPage.page}
                 stripedRows
                 selectionMode="single"

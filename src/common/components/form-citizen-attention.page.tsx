@@ -25,7 +25,6 @@ import { IDependence } from "../interfaces/dependence.interfaces";
 import { IGenericData } from "../interfaces/genericData.interfaces";
 import { IProgram } from "../interfaces/program.interfaces";
 import { IRequestSubjectType } from "../interfaces/requestSubjectType.interfaces";
-import { emailPattern } from "../utils/helpers";
 
 interface Props {
   isEdit?: boolean;
@@ -74,10 +73,7 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
     setValue,
     trigger,
     reset,
-    watch,
   } = useForm({ mode: "all" });
-
-  const watchDocumentTypeId = watch("documentTypeId");
 
   const checkIsFilled = () => {
     const values = Object.values(getValues()).filter((val) => val != null && val != "" && val != undefined);
@@ -179,7 +175,7 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
       let payload = values as ICitizenAttention;
       if (isEdit) {
         payload.id = parseInt(id);
-      }
+      }      
       const response = await (isEdit
         ? citizenAttentionService.updateCitizenAttention(payload)
         : citizenAttentionService.createCitizenAttention(payload));
@@ -296,7 +292,6 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
           if (currentFetch.isAux) {
             const auxResponse = JSON.parse(JSON.stringify(response));
             if (auxResponse.status === true) {
-              response.data.pop();
               currentFetch.setData(response.data);
             }
           } else {
@@ -343,7 +338,7 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
   }, [citizenAttentionData]);
 
   const resetForm = () => {
-    const allInputs = [...columns(), ...columnsDB(), ...columnsAtention(), ...columnsId()];
+    const allInputs = [...columns(), ...columnsDB(), ...columnsAtention()];
     const toResetArray = allInputs.map((column) => {
       return [column.key, ""];
     });
@@ -382,7 +377,7 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
         },
         onChange: (value) => {
           const dependency = dependencies.filter((dependency) => dependency.dep_codigo == value)[0];
-          setPrograms(dependency?.programs ? dependency?.programs : []);
+          setPrograms(dependency?.programs);
           setValue("programId", "");
         },
       },
@@ -401,14 +396,12 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
         onChange: (value) => {
           const program = programs.filter((program) => program.prg_codigo == value)[0];
           setRequestSubjectTypes(
-            program?.affairs
-              ? program.affairs.map((affair) => {
-                  return {
-                    aso_codigo: affair.aso_codigo,
-                    aso_asunto: affair.aso_asunto,
-                  };
-                })
-              : []
+            program.affairs.map((affair) => {
+              return {
+                aso_codigo: affair.aso_codigo,
+                aso_asunto: affair.aso_asunto,
+              };
+            })
           );
           setValue("requestSubjectTypeId", "");
         },
@@ -445,7 +438,7 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
         options: valueGroups,
         onChange: (value) => {
           const valueGroup = valueGroups.filter((valueGroup) => valueGroup.id == value)[0];
-          setUserTypes(valueGroup?.userTypes ? valueGroup?.userTypes : []);
+          setUserTypes(valueGroup?.userTypes);
           setValue("userTypeId", "");
         },
       },
@@ -470,7 +463,7 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
         },
         rules: {
           required: "El campo es obligatorio.",
-          maxLength: { value: 5000, message: "Solo se permiten 5000 caracteres." },
+          maxLength: { value: 5000, message: "No debe tener más de 5000 caracteres." },
         },
         counter: true,
       },
@@ -492,7 +485,7 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
         },
         onChange: (value) => {
           const channel = serviceChannels.filter((channel) => channel.cna_codigo == value)[0];
-          setDetailServiceChannels(channel?.details ? channel.details : []);
+          setDetailServiceChannels(channel.details);
           setValue("detailServiceChannelId", "");
         },
       },
@@ -512,13 +505,21 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
     ];
   };
 
-  const columnsId = () => {
+  const columns = () => {
+    const requiredIfNit = (value) => {
+      if (getValues("documentTypeId") == EDocumentTypes.NIT && !value.trim()) return "El campo es obligatorio.";
+      return true;
+    };
+    const requiredIfNotNit = (value) => {
+      if (getValues("documentTypeId") != EDocumentTypes.NIT && !value.trim()) return "El campo es obligatorio.";
+      return true;
+    };
     return [
       {
         name: "Tipo",
         type: "select",
         key: "documentTypeId",
-        formClass: "w-20",
+        formClass: "col-span-1 sm:col-span-2 xl:col-span-1",
         optionLabel: "LGE_ELEMENTO_CODIGO",
         optionValue: "LGE_CODIGO",
         options: documentTypes,
@@ -528,57 +529,33 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
         rules: {
           required: "El campo es obligatorio.",
         },
-        onChange: (value) => {
-          if (value == EDocumentTypes.NIT) {
-            setValue("firstName", "");
-            setValue("secondName", "");
-            setValue("firstSurname", "");
-            setValue("secondSurname", "");
-          } else {
-            setValue("businessName", "");
-          }
-        },
       },
       {
-        group: "identification-group",
         name: "No. documento",
         key: "identification",
         field: "identification",
-        formClass: "w-full max-w-[300px]",
+        formClass: "col-span-full sm:col-span-4",
         hidden: () => {
           return false;
         },
         rules: {
           required: "El campo es obligatorio.",
-          maxLength: { value: 15, message: "Solo se permiten 15 caracteres." },
+          maxLength: { value: 15, message: "No debe tener más de 15 caracteres." },
         },
       },
-    ];
-  };
-
-  const columns = () => {
-    const requiredIfNit = (value) => {
-      if (watchDocumentTypeId == EDocumentTypes.NIT && !value) return "El campo es obligatorio.";
-      return true;
-    };
-    const requiredIfNotNit = (value) => {
-      if (watchDocumentTypeId != EDocumentTypes.NIT && !value) return "El campo es obligatorio.";
-      return true;
-    };
-    return [
       {
         name: "Primer nombre",
         key: "firstName",
         field: "firstName",
         formClass: "col-span-full sm:col-span-3 sm:col-start-1",
         hidden: () => {
-          return watchDocumentTypeId == EDocumentTypes.NIT;
+          return getValues("documentTypeId") == EDocumentTypes.NIT;
         },
         rules: {
           validate: {
             required: requiredIfNotNit,
           },
-          maxLength: { value: 50, message: "Solo se permiten 50 caracteres." },
+          maxLength: { value: 50, message: "No debe tener más de 50 caracteres." },
         },
       },
       {
@@ -587,10 +564,10 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
         field: "secondName",
         formClass: "col-span-full sm:col-span-3",
         hidden: () => {
-          return watchDocumentTypeId == EDocumentTypes.NIT;
+          return getValues("documentTypeId") == EDocumentTypes.NIT;
         },
         rules: {
-          maxLength: { value: 50, message: "Solo se permiten 50 caracteres." },
+          maxLength: { value: 50, message: "No debe tener más de 50 caracteres." },
         },
       },
       {
@@ -599,13 +576,13 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
         field: "firstSurname",
         formClass: "col-span-full sm:col-span-3",
         hidden: () => {
-          return watchDocumentTypeId == EDocumentTypes.NIT;
+          return getValues("documentTypeId") == EDocumentTypes.NIT;
         },
         rules: {
           validate: {
             required: requiredIfNotNit,
           },
-          maxLength: { value: 50, message: "Solo se permiten 50 caracteres." },
+          maxLength: { value: 50, message: "No debe tener más de 50 caracteres." },
         },
       },
       {
@@ -614,10 +591,10 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
         field: "secondSurname",
         formClass: "col-span-full sm:col-span-3",
         hidden: () => {
-          return watchDocumentTypeId == EDocumentTypes.NIT;
+          return getValues("documentTypeId") == EDocumentTypes.NIT;
         },
         rules: {
-          maxLength: { value: 50, message: "Solo se permiten 50 caracteres." },
+          maxLength: { value: 50, message: "No debe tener más de 50 caracteres." },
         },
       },
       {
@@ -626,13 +603,13 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
         field: "businessName",
         formClass: "col-span-full sm:col-span-3",
         hidden: () => {
-          return watchDocumentTypeId != EDocumentTypes.NIT;
+          return getValues("documentTypeId") != EDocumentTypes.NIT;
         },
         rules: {
           validate: {
             required: requiredIfNit,
           },
-          maxLength: { value: 200, message: "Solo se permiten 200 caracteres." },
+          maxLength: { value: 200, message: "No debe tener más de 200 caracteres." },
         },
       },
       {
@@ -645,8 +622,7 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
         },
         rules: {
           required: "El campo es obligatorio.",
-          pattern: { value: emailPattern, message: "La dirección de correo electrónico es inválida." },
-          maxLength: { value: 200, message: "Solo se permiten 200 caracteres." },
+          maxLength: { value: 200, message: "No debe tener más de 200 caracteres." },
         },
       },
       {
@@ -659,7 +635,7 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
         },
         rules: {
           required: "El campo es obligatorio.",
-          maxLength: { value: 10, message: "Solo se permiten 10 caracteres." },
+          maxLength: { value: 10, message: "No debe tener más de 10 caracteres." },
         },
       },
       {
@@ -671,7 +647,7 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
           return false;
         },
         rules: {
-          maxLength: { value: 10, message: "Solo se permiten 10 caracteres." },
+          maxLength: { value: 10, message: "No debe tener más de 10 caracteres." },
         },
       },
       {
@@ -690,54 +666,6 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
         },
       },
     ];
-  };
-
-  const columnsTemplate = (column) => {
-    return (
-      !column?.hidden() && (
-        <Controller
-          key={column.key}
-          name={column.key}
-          control={control}
-          rules={column.rules}
-          render={({ field, fieldState }) => (
-            <div className={classNames("flex flex-col gap-y-1.5", column?.formClass)}>
-              <label htmlFor={field.name} className="text-base">
-                {column?.name}{" "}
-                {(column?.rules?.required || column?.rules?.validate?.required) && (
-                  <span className="text-red-600">*</span>
-                )}
-              </label>
-              {!column?.type && (
-                <InputText
-                  id={field.name}
-                  value={field.value}
-                  className={classNames({ "p-invalid": fieldState.error }, "w-full py-2 !font-sans")}
-                  onChange={(e) => field.onChange(e.target.value)}
-                  maxLength={column?.rules?.maxLength?.value}
-                />
-              )}
-              {column?.type == "select" && (
-                <Dropdown
-                  id={field.name}
-                  value={field.value}
-                  className={classNames({ "p-invalid": fieldState.error }, "w-full !font-sans select-sm")}
-                  optionLabel={column?.optionLabel}
-                  options={[{ [column?.optionLabel]: "Seleccionar", [column?.optionValue]: "" }, ...column?.options]}
-                  optionValue={column?.optionValue}
-                  onChange={(e) => {
-                    field.onChange(e.value);
-                    checkIsFilled();
-                  }}
-                  placeholder="Seleccionar"
-                />
-              )}
-              {getFormErrorMessage(field.name)}
-            </div>
-          )}
-        />
-      )
-    );
   };
 
   return (
@@ -853,13 +781,55 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
           </div>
           <div className="p-card-content !pb-0 !pt-0 md:!pt-1">
             <div className="grid grid-cols-4 sm:grid-cols-12 lg:gap-x-4.5 gap-x-3.5 gap-y-6 w-full sm:mt-7">
-              <div className="col-span-full flex lg:space-x-4.5 space-x-3.5">
-                {columnsId().map((column, index) => {
-                  return columnsTemplate(column);
-                })}
-              </div>
               {columns().map((column, index) => {
-                return columnsTemplate(column);
+                return (
+                  !column?.hidden() && (
+                    <Controller
+                      key={column.key}
+                      name={column.key}
+                      control={control}
+                      rules={column.rules}
+                      render={({ field, fieldState }) => (
+                        <div className={classNames("flex flex-col gap-y-1.5", column?.formClass)}>
+                          <label htmlFor={field.name} className="text-base">
+                            {column?.name}{" "}
+                            {(column?.rules?.required || column?.rules?.validate?.required) && (
+                              <span className="text-red-600">*</span>
+                            )}
+                          </label>
+                          {!column?.type && (
+                            <InputText
+                              id={field.name}
+                              value={field.value}
+                              className={classNames({ "p-invalid": fieldState.error }, "w-full py-2 !font-sans")}
+                              onChange={(e) => field.onChange(e.target.value)}
+                              maxLength={column?.rules?.maxLength?.value}
+                            />
+                          )}
+                          {column?.type == "select" && (
+                            <Dropdown
+                              id={field.name}
+                              value={field.value}
+                              className={classNames({ "p-invalid": fieldState.error }, "w-full !font-sans select-sm")}
+                              optionLabel={column?.optionLabel}
+                              options={[
+                                { [column?.optionLabel]: "Seleccionar", [column?.optionValue]: "" },
+                                ...column?.options,
+                              ]}
+                              optionValue={column?.optionValue}
+                              onChange={(e) => {
+                                field.onChange(e.value);
+                                checkIsFilled();
+                              }}
+                              placeholder="Seleccionar"
+                            />
+                          )}
+                          {getFormErrorMessage(field.name)}
+                        </div>
+                      )}
+                    />
+                  )
+                );
               })}
             </div>
           </div>
@@ -897,7 +867,7 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
                               "w-full py-2 !font-sans min-h-[64px"
                             )}
                             onChange={(e) => field.onChange(e.target.value)}
-                            // maxLength={column?.rules?.maxLength?.value}
+                            maxLength={column?.rules?.maxLength?.value}
                           />
                         )}
                         {column?.type == "select" && (
@@ -922,14 +892,12 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
                             placeholder="Seleccionar"
                           />
                         )}
-                        <div className="flex">
-                          {getFormErrorMessage(field.name)}
-                          {column.counter && (
-                            <span className="ml-auto mr-0 text-sm font-sans">
-                              Max {column?.rules?.maxLength?.value} caracteres
-                            </span>
-                          )}
-                        </div>
+                        {column.counter && (
+                          <span className="ml-auto mr-0 text-sm font-sans">
+                            Max {column?.rules?.maxLength?.value} caracteres
+                          </span>
+                        )}
+                        {getFormErrorMessage(field.name)}
                       </div>
                     )}
                   />
