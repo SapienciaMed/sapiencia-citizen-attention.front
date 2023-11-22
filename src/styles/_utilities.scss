@@ -122,7 +122,7 @@
 
 }
 
-.rubik-medium {
+.rubik-medium, .font-medium{
     font-family: "RubikMedium", sans-serif !important
 }
 
@@ -151,7 +151,8 @@
     .p-paginator .p-paginator-last,
     .p-paginator .p-paginator-pages .p-paginator-page,
     .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
-        border-radius: 4px;
+        border-radius: 4px !important;
+        height: 2.5rem;
     }
 }
 
