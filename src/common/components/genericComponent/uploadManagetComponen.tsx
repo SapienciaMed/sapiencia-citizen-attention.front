@@ -140,9 +140,9 @@ export const UploadManagetComponen = (props:Props) => {
             twoBtn={false} 
             onClickBt1={()=>setLargeFile(false)}
           /></>):(<></>)}
-        <Tooltip target=".custom-choose-btn" content="Choose" position="bottom" />
-        <Tooltip target=".custom-upload-btn" content="Upload" position="bottom" />
-        <Tooltip target=".custom-cancel-btn" content="Clear" position="bottom" />
+        <Tooltip target=".custom-choose-btn" content="Adjuntar" position="bottom" />
+        <Tooltip target=".custom-upload-btn" content="Cargar" position="bottom" />
+        <Tooltip target=".custom-cancel-btn" content="Eliminar" position="bottom" />
 
         <FileUpload 
             multiple={multiple} 
