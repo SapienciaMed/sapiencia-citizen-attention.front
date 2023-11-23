@@ -6,6 +6,8 @@ import logoAlcaldiaMedellin from "../../../public/images/logo-alcaldia-black.png
 import logoSapiencia from "../../../public/images/logo-sapiencia.png";
 import whiteLogo from "../../public/images/icons-aplication/aurora-white-logo.svg"
 
+import "../../../styles/auth-styles.scss";
+
 import { EDirection } from "../../constants/input.enum";
 import { EResponseCodes } from "../../constants/api.enum";
 import { IRequestSignIn } from "../../interfaces/auth.interfaces";
@@ -37,7 +39,7 @@ interface IFailedSignIn {
 function LoginPage(): React.JSX.Element {
   return (
     <main className="container-grid_login">
-      <article className="login-visualization">
+      <article className="citizen-login-visualization">
       </article>
 
       <article className="login-signIn">
@@ -208,9 +210,8 @@ const FormSignIn = (): React.JSX.Element => {
             </div>
           )}
         <div className="content-finally_form">
-          {/* <button className="button-login big" onClick={handleSubmit(onSubmitSignIn)}> ingresar</button> */}
           <ButtonComponent
-            className="button-login big"
+            className="citizen-button-login big"
             form="form-sign"
             value="Ingresar"
             type="submit"
