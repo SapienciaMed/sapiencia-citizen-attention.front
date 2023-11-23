@@ -157,14 +157,14 @@ const FooterRecoveryPasssword = (): React.JSX.Element => {
           form="form-changePassword"
         />
       </div>
-      <div className="footer-img">
+      {/* <div className="footer-img">
         <img className="img-sapiencia" src={logoSapiencia} alt="Sapiencia" />
         <img
           className="img-alcaldia"
           src={logoAlcaldiaMedellin}
           alt="Alcaldia de medellin"
         />
-      </div>
+      </div> */}
     </div>
   );
 };
