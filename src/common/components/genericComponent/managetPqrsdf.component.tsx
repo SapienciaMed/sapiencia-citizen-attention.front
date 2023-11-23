@@ -1088,6 +1088,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                     <div>
                     <Button
                         label="Actualizar"
+                        disabled
                         className="rounded-full"
                     />
                     </div>
