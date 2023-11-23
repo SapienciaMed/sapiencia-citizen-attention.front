@@ -15,21 +15,26 @@ interface Props {
     filesSupportDocument?:(data: []) => void;
     statusDialog?:(data:boolean) => void;
     multiple?:boolean;
+    getNameFile?:(data:string) => void;
 }
 
 export const UploadManagetComponen = (props:Props) => {
 
-    const { filesSupportDocument, statusDialog, multiple=true } = props;
+    const { filesSupportDocument, statusDialog, multiple=true, getNameFile } = props;
 
     const [totalSize, setTotalSize] = useState(0);
     const fileUploadRef = useRef<FileUpload>(null);
     const [largeFile, setLargeFile] = useState(false);
     const [visible, setVisible] = useState(false);
     const [fileValue, setFileValue]=useState<number>(0);
+    const [nameFile, setNameFile]=useState<string>('');
 
     const customUpload = (file) => {
         filesSupportDocument(file.files);
         setVisible(true)
+        getNameFile(nameFile)
+        console.log(nameFile);
+        
       };
 
     const onTemplateSelect = (e) => { 
@@ -77,7 +82,8 @@ export const UploadManagetComponen = (props:Props) => {
       }
 
     const itemTemplate = (file, props:ItemTemplateOptions) => {
-        
+        setNameFile(file.name)
+
         if(fileValue > 100 ){
             onTemplateRemove(file, props.onRemove);
             setLargeFile(true)
@@ -140,9 +146,9 @@ export const UploadManagetComponen = (props:Props) => {
             twoBtn={false} 
             onClickBt1={()=>setLargeFile(false)}
           /></>):(<></>)}
-        <Tooltip target=".custom-choose-btn" content="Choose" position="bottom" />
-        <Tooltip target=".custom-upload-btn" content="Upload" position="bottom" />
-        <Tooltip target=".custom-cancel-btn" content="Clear" position="bottom" />
+        <Tooltip target=".custom-choose-btn" content="Adjuntar" position="bottom" />
+        <Tooltip target=".custom-upload-btn" content="Cargar" position="bottom" />
+        <Tooltip target=".custom-cancel-btn" content="Eliminar" position="bottom" />
 
         <FileUpload 
             multiple={multiple} 
