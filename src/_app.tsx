@@ -67,7 +67,10 @@ function App() {
               <Route
                 path={"/atencion-ciudadana/tipos-de-asuntos-de-solicitudes/editar/:id"}
                 element={
-                  <PrivateRoute element={<FormRequestSubjectTypesPage isEdit={true}/>} allowedAction={"TIPO_DE_ASUNTO_EDITAR"} />
+                  <PrivateRoute
+                    element={<FormRequestSubjectTypesPage isEdit={true} />}
+                    allowedAction={"TIPO_DE_ASUNTO_EDITAR"}
+                  />
                 }
               />
               <Route
@@ -106,7 +109,10 @@ function App() {
                 path={"/atencion-ciudadana/gestionar-pqrsdf"}
                 element={<PrivateRoute element={<ManagePqrsdf />} allowedAction={"BANDEJA_PQRSDF"} />}
               />
-              <Route path={"/atencion-ciudadana/registrar-atencion"} element={<FormCitizenAttentionsPage />} />
+              <Route
+                path={"/atencion-ciudadana/registrar-atencion"}
+                element={<PrivateRoute element={<FormCitizenAttentionsPage />} allowedAction={"ATENCION_CIUDADANA_CREAR"} />}
+              />
             </Routes>
           </Suspense>
         </Router>
