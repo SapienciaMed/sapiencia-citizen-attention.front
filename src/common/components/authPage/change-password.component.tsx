@@ -11,6 +11,7 @@ import {
   ButtonComponent,
 } from "../../../common/components/Form/index";
 import { EResponseCodes } from "../../constants/api.enum";
+import "../../../styles/auth-styles.scss";
 
 import { useNavigate } from "react-router-dom";
 import { GiCheckMark } from "react-icons/gi";
@@ -151,20 +152,20 @@ const FooterRecoveryPasssword = (): React.JSX.Element => {
           Cancelar
         </span>
         <ButtonComponent
-          className="button-main big hover-three"
+          className="citizen-button-main big hover-three"
           value="Cambiar"
           type="submit"
           form="form-changePassword"
         />
       </div>
-      {/* <div className="footer-img">
-        <img className="img-sapiencia" src={logoSapiencia} alt="Sapiencia" />
+      <div className="citizen-footer-img">
+        <img className="citizen-img-sapiencia" src={logoSapiencia} alt="Sapiencia" />
         <img
-          className="img-alcaldia"
+          className="citizen-img-alcaldia"
           src={logoAlcaldiaMedellin}
           alt="Alcaldia de medellin"
         />
-      </div> */}
+      </div>
     </div>
   );
 };
