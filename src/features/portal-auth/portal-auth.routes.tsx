@@ -1,11 +1,11 @@
 import React, { lazy } from "react";
 import { Route, Routes } from "react-router-dom";
-import RecoveryPassword from "../../common/components/recovery-password.page"
+import RecoveryPassword from "../../common/components/authPage/recovery-password.page"
 
 
 function PortalAuthRoutes() {
   const PortalAuthPage = lazy(() => import("./pages/portal-login.page"));
-  const Login = lazy(() => import("../../common/components/login.page"))
+  const Login = lazy(() => import("../../common/components/authPage/login.page"))
 
   return (
     <Routes>
