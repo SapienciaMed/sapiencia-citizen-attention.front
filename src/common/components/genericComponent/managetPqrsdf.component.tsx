@@ -112,6 +112,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
     const [fileResponsePqrsdf, setFileResponsePqrsdf] = useState<object>(null);
     const [statusSend, setStatusSend] = useState<boolean>(false);
     const [cancelAction, setCancelAction] = useState<boolean>(false);
+    const [nameFile, setNameFile] = useState<string>('');
     
     const getInfoPqrsdf = async (id:number)=>{
         const infoPqrsdf = pqrsdfService.getPqrsdfById(id);
@@ -1246,6 +1247,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                 className="dialog-manage"
                             >
                                 <UploadManagetComponen
+                                getNameFile={(e)=>{}}
                                 filesSupportDocument={(e)=>{
                                     let cont = 0;
                                     const documents =  e.map((date)=>{
@@ -1503,6 +1505,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                 <UploadManagetComponen
                                     multiple={false}
                                     statusDialog={(e)=>{setVisibleDialog(e)}}
+                                    getNameFile={(e)=>setNameFile(e)}
                                     filesSupportDocument={(e)=>{
                                         const docuement = e.map((file)=>{
                                             return{
@@ -1513,7 +1516,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                     }}
                                 />
                             </Dialog>
-                            <div className="flex">
+                            <div className="flex items-center">
                                 <Button 
                                     label="Adjuntar archivos"
                                     className="flex flex-row-reverse w-52"
@@ -1528,8 +1531,12 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                             </i>
                                         }
                                 />
+                                
                                 {fileResponsePqrsdf!==null?(
                                 <>
+                                    <div className="text-red-600 text-xl">
+                                        {nameFile}
+                                    </div>
                                     <div>
                                         <Button icon={showIcon} rounded text onClick={()=>handleFileView(fileResponsePqrsdf)} />
                                     </div>
