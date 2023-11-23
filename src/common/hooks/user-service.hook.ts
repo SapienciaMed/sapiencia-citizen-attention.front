@@ -5,8 +5,8 @@ import { ApiResponse, IPagingData } from "../utils/api-response";
 import useCrudService from "./crud-service.hook";
 
 export function useUserService() {
-  const baseURL: string = process.env.urlApiAuth;
-  const userUrl: string = "/api/v1/user";
+  const baseURL: string = process.env.urlApiCitizenAttention;
+  const userUrl: string = "/api/v1/auth";
   const { get, post, put, deleted } = useCrudService(baseURL);
 
   async function getPagination(

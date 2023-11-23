@@ -17,14 +17,14 @@ function ChangePasswordRecovery(): React.JSX.Element {
     });
 
     if (operation.code === EResponseCodes.OK) {
-      navigate("../portal/change-password");
+      navigate("../portal");
     } else {
       setMessage({
         title: "¡Ocurrio un error!",
         description:
           "El token es invalido o ha ocurrido un error inesperado, intenta nuevamente",
         show: true,
-        // okTitle: "Aceptar",
+        OkTitle: "Aceptar",
         onOk: () => {
           setMessage({});
         },

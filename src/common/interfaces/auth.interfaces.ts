@@ -54,6 +54,7 @@ export interface IUser {
   address: string;
   profiles?: IProfile[];
   disabled?: boolean;
+  password?: string | null;
 }
 
 export interface IProfile {
