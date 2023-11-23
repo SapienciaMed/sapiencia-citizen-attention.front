@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { useUserService } from "../../hooks/user-service.hook";
+import { useAuthService } from "../../hooks/auth-service.hook";
 import ChangePasswordComponent from "./change-password.component";
 import { EResponseCodes } from "../../constants/api.enum";
 import { useNavigate } from "react-router-dom";
@@ -9,12 +9,12 @@ function ChangePasswordRecovery(): React.JSX.Element {
   const navigate = useNavigate();
   const { setMessage } = useContext(AppContext);
 
-  const { changePassword } = useUserService();
+  const { changeUserPassword } = useAuthService();
 
   const callbackChangePassword = async (data: object) => {
-    const { data: dataResponse, operation } = await changePassword({
+    const { data: dataResponse, operation } = await changeUserPassword({
       ...data,
-    });
+    });    
 
     if (operation.code === EResponseCodes.OK) {
       navigate("../portal");

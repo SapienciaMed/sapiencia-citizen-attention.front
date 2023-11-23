@@ -10,10 +10,12 @@ import {
   InputShowPassword,
   ButtonComponent,
 } from "../../../common/components/Form/index";
+import { EResponseCodes } from "../../constants/api.enum";
+
 import { useNavigate } from "react-router-dom";
 import { GiCheckMark } from "react-icons/gi";
 import { changePassword } from "../../../common/schemas/index";
-
+import useAuthService from "../../hooks/auth-service.hook";
 import { AppContext } from "../../../common/contexts/app.context";
 
 function ChangePassword({ action }): React.JSX.Element {
@@ -21,6 +23,8 @@ function ChangePassword({ action }): React.JSX.Element {
   const { setMessage } = useContext(AppContext);
   const [modal, setModal] = useState<boolean>(false);
   const [formData, setFormData] = useState(null);
+  const navigate = useNavigate();
+
   const {
     handleSubmit,
     register,
@@ -29,10 +33,22 @@ function ChangePassword({ action }): React.JSX.Element {
   const showModal = () => {
     setModal(!modal);
   };
+  const { changeUserPassword } = useAuthService();
+
   // // Metodo que hace la peticion al api
-  const onSubmitSignIn = handleSubmit(async (data) => {
-    setFormData(data);
-    showModal();
+  const onSubmitChangePassword = handleSubmit(async (data: { password: string, confirmPassword: string; }) => {
+    setFormData(data);  
+
+    const object = {
+      password: data.password,
+      token: localStorage.getItem('token')
+    }
+    const { data: dataResponse, operation } = await changeUserPassword(object)
+
+    if (operation.code === EResponseCodes.OK) {
+        navigate("/portal");
+    } 
+    // showModal();
   });
 
   const messageConfirm = {
@@ -82,7 +98,7 @@ function ChangePassword({ action }): React.JSX.Element {
           <FormComponent
             className="form-changePassword"
             id="form-changePassword"
-            action={onSubmitSignIn}
+            action={onSubmitChangePassword}
           >
             <InputShowPassword
               idInput="password"
@@ -131,7 +147,7 @@ const FooterRecoveryPasssword = (): React.JSX.Element => {
   return (
     <div className="content-footer_changePassword">
       <div className="container-buttons">
-        <span className="bold text-center" onClick={() => navigate("../aurora/ingreso")}>
+        <span className="bold text-center" onClick={() => navigate("../../portal/ingreso")}>
           Cancelar
         </span>
         <ButtonComponent
