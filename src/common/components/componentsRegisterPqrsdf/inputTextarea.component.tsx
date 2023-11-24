@@ -1,5 +1,3 @@
-
-import { useState } from 'react';
 import { InputTextarea } from 'primereact/inputtextarea';
 
 
@@ -23,13 +21,11 @@ export const CnputTextareaComponent = ( props:Attributes) => {
                 value={value} 
                 onChange={onChange } 
                 rows={5} 
-                cols={100}
                 placeholder='Escribe aquí'
                 style={{borderRadius:'8px'}}
                 id={ id }
                 className={ className } 
             />
-            <p>Max 5000 caracteres</p>
         </div>
 
 

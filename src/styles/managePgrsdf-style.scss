@@ -1,0 +1,249 @@
+.container-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+}
+
+.card-container {
+    border-radius: 20px;
+    border: 1px solid #CACACA;
+    box-shadow: none;
+    color: #000000;
+}
+
+.input-desabled {
+    background-color: #E9E9E9;
+    opacity: 1.4 !important;
+    color: #292929;
+    font-style: normal;
+}
+
+.punto1{
+    width: 24px;
+    height: 24px;
+    border-radius: 20px;
+    background-color: rgba(230, 183, 18, 1);
+}
+
+.punto2{
+    width: 24px;
+    height: 24px;
+    border-radius: 20px;
+    background-color: rgba(55, 186, 23, 1);
+}
+
+.punto3{
+    width: 24px;
+    height: 24px;
+    border-radius: 20px;
+    background-color: #FF3E00;
+}
+
+.punto4{
+    width: 24px;
+    height: 24px;
+    border-radius: 20px;
+    background-color: rgba(55, 207, 255, 1);
+}
+
+.p-card-content{
+    padding-top: 0 !important;
+}
+
+.zise-card{
+    width: 22%;
+}
+
+.box1{
+    background-color: rgba(255, 226, 124, 0.5);
+    border-radius: 20px;
+}
+
+.box2{
+    background-color: rgba(174, 255, 124, 0.5);
+    border-radius: 20px;
+}
+
+.box3{
+    background-color: rgba(255, 61, 0, 0.5);
+    border-radius: 20px;
+}
+
+.box4{
+    background-color: rgba(55, 207, 255, 0.5);
+    border-radius: 20px;
+}
+
+.btn-t{
+    color: #6C757D;
+    width: 137px;
+    font-family: Rubik;
+    font-size: 19px;
+    font-weight: 500;
+    line-height: 23px;
+    letter-spacing: 0em;
+    text-align: center;
+    font-weight: 600;
+}
+
+.div-30{
+    width: 30%;
+}
+.div-100{
+    width: 100%;
+}
+.div-25{
+    width: 25%;
+}
+.div-50{
+    width: 50%;
+}
+
+.div-end{
+    border-bottom: solid 1px #DEE2E6 ;
+}
+
+.color-row{
+    background-color: rgba(55, 207, 255, 0.5) !important;
+}
+//MOBIL
+@media only screen and (max-width: 768px) {
+
+    .container-div {
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+      
+    }
+
+
+    .card-mobil{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .seeker{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .card-top{
+        border: 0;
+    }
+
+    .card-bottom{
+        padding-top: 10px;
+    }
+    
+
+    .box1{
+        width: 95% !important;
+        height: 80px;
+        margin-bottom: 10px;
+        padding-left: 15px;
+        display: flex;
+        align-items: center; 
+    }
+    
+    .box2{
+        width: 95% !important;
+        height: 80px;
+        margin-bottom: 10px;
+        padding-left: 15px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .box3{
+        width: 95% !important;
+        height: 80px;
+        margin-bottom: 10px;
+        padding-left: 15px;
+        display: flex;
+        align-items: center;  
+    }
+    
+    .box4{
+        width: 95% !important;
+        height: 80px;
+        margin-bottom: 10px;
+        padding-left: 15px;
+        display: flex;
+        align-items: center;  
+    }
+
+    .box-mobil{
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: space-between;
+        align-items: center;
+        width: 326px;
+    }
+
+    .box-text{
+        margin: 0;
+    }
+
+    .punto1{
+        margin: 0;
+    }
+
+    .punto2{
+        margin: 0;
+    }
+
+    .punto3{
+        margin: 0;
+    }
+
+    .punto1{
+        margin: 0;
+    }
+
+    .p-paginator-pages{
+        width: 150px;
+    }
+
+    .text-mobil{
+        width: 100%;
+    }
+
+    .acordeon-manage{
+        width: 22em !important;
+    }
+
+    .div-manage-mobil{
+        display: flex !important;
+        flex-wrap: wrap !important;
+    }
+
+    .input-mobil-manage{
+        width: 100%;
+    }
+
+    .input-mobil-manage-acordeon{
+        width: 100%;
+        margin: 0;
+    }
+
+    .dialog-manage{
+        width: 95vw !important;
+    }
+
+    .button-manage{
+        width: 100%;
+        margin: 0;
+        margin-bottom: 8px;
+    }
+
+    .upload-div{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+}

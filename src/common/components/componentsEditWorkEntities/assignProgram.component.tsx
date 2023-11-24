@@ -1,0 +1,204 @@
+import { useEffect, useState } from "react";
+import { useWorkEntityService } from "../../hooks/WorkEntityService.hook";
+import { Button } from "primereact/button";
+import { Card } from "primereact/card";
+import { Dialog } from "primereact/dialog";
+import { Fieldset } from 'primereact/fieldset';
+import { Tree, TreeCheckboxSelectionKeys } from "primereact/tree";
+import { TreeNode } from "primereact/treenode";
+import { EResponseCodes } from "../../constants/api.enum";
+import { useFetcher } from "react-router-dom";
+
+
+export interface Program {
+    data:      string;
+    key:       string;
+    label:     string;
+    children?: Program[];
+}
+
+
+
+export const AssignProgramComponent = () => {
+
+    const workEntityService = useWorkEntityService();
+
+    const [visible, setVisible] = useState<boolean>(false);
+    const [nodes, setNodes] = useState<Program[]>([
+        {children:[{data: "Meeting",key: "1-0",label: "cambio de programa y univesidad"},{data: "Meeting",key: "1-1",label: "cambio de programa y univesidad"}],data:'Envent',key:'1',label:'Becas mejores bachilleres'},
+        {children:[{data: "Pruebas",key: "2-0",label: "Programa y univesidad"},{data: "Meeting-2",key: "2-1",label: "cambio de programa "}],data:'Envent',key:'2',label:'Mejores bachilleres'},
+        {children:[{data: "Pruebas1",key: "3-0",label: "Univesidad"},{data: "Meeting-3",key: "3-1",label: "cambio de programa "}],data:'Envent',key:'3',label:'Bachilleres'}
+    ]);
+    const [nodesSeleted, setNodesSeleted] = useState<Program[]>([]);
+    const [selectedKeys, setSelectedKeys] = useState(null);
+    const [selectedProgram, setSelectedProgram] = useState(null);
+    
+
+    const fetchPrograms = async () => {
+
+        try {
+          const response = await workEntityService.getProgramsAffairs();
+          
+          if (response.operation.code === EResponseCodes.OK) {
+            const treePrograms = response.data.map((program) => {
+              let affairs = program.affairs.map((affair) => {
+                return {
+                    id: affair.aso_codigo.toString(),
+                    key: program.prg_codigo + "_" + affair.aso_codigo,
+                    label: affair.aso_asunto,
+                    data: affair,
+                } as unknown as Program;
+              });
+              return {
+                  id: program.prg_codigo.toString(),
+                  key: program.prg_codigo,
+                  label: program.prg_descripcion,
+                  data: program,
+                  children: affairs,
+              } as unknown as Program;
+            });
+            setNodes(treePrograms)
+          }
+        } catch (error) {
+          console.error("Error al obtener la lista de programas:", error);
+        } finally {
+        }
+      };
+      //fetchPrograms();
+
+      useEffect(()=>{
+        fetchPrograms();
+      },[])
+
+
+    const addProgram = ()=>{
+
+        const programs = [];
+        const idParen = [];
+        programs.push(selectedKeys);
+        
+        console.log('--> ',programs);
+        
+        const keyProgram = programs[0]!== null?Object.keys(programs[0]):[]; 
+        const selectedNodesData = findNodesByKeys(nodes, keyProgram);
+
+        setNodesSeleted(selectedNodesData)
+        console.log('Resp--> ', selectedNodesData);
+
+   }
+
+   const findNodesByKeys = (tree, keys) => {
+    const result = [];
+
+    const searchNodes = (nodes, parent) => {
+
+      nodes.forEach((node) => {
+        
+        if (keys.includes(node.key)) {
+            result.push({ ...node, parent });
+        }
+
+        if (node.children) {
+          searchNodes(node.children, node);
+        }
+        
+      });
+
+    };
+
+    searchNodes(tree, null);
+
+    return result;
+  };
+
+
+  return (
+    <>
+        <Button 
+            className="rounded-full !h-10 mt-10"
+            style={{padding:'0.25rem'}}
+            onClick={() => setVisible(true)} 
+        > 
+            Asignar programas 
+        </Button>
+
+        <Dialog
+            header="Asignación de Programas y/o asuntos de solicitudes"
+            headerClassName="text-2xl" 
+            visible={visible}
+            style={{ width: '85vw' }} 
+            onHide={() => setVisible(false)}
+            className="dialog-movil" 
+        >
+            <Card className="card col-card-100">
+                <div className="col-card-100 container-fieldset">
+
+                    <div className="col-45">
+                        <Fieldset 
+                            legend="Programas y asuntos disponibles" 
+                            pt={{legend:{style:{marginLeft:'20px'}}}} 
+                        >
+                            <Tree 
+                                value={nodes} 
+                                selectionMode="checkbox" 
+                                selectionKeys={selectedKeys} 
+                                onSelectionChange={(e) => setSelectedKeys(e.value)}
+                                filterMode='lenient' 
+                                className="w-full md:w-30rem"
+                                style={{border:0, padding:0}} 
+                            />
+                        </Fieldset>
+                    </div>
+                    <div className="col-10 btn-fieldset">
+                        <div>
+                            <Button 
+                                className="rounded-full !h-10 mt-10"
+                                onClick={addProgram} 
+                            > 
+                                Agregar 
+                            </Button>
+                        </div>
+                        <div>
+                        <Button
+                                text
+                                className="rounded-full !text-base !text-black !h-10 mt-4"
+                                >Quitar</Button>
+                        </div>
+                    </div>
+                    <div className="col-45">
+                        <Fieldset 
+                            legend="Programas y asuntos seleccionados"
+                            pt={{legend:{style:{marginLeft:'20px'}}}}
+                        >
+                            <Tree 
+                                value={nodesSeleted} 
+                                selectionMode="checkbox" 
+                                selectionKeys={selectedProgram} 
+                                onSelectionChange={(e) => setSelectedProgram(e.value)} 
+                                className="w-full md:w-30rem"
+                                style={{border:0, padding:0}}  
+                            />
+                        </Fieldset>
+                    </div>
+
+                </div>
+            </Card>
+
+            <div className="flex justify-center mt-8">
+                <Button
+                    text
+                    className="!px-8 rounded-full !py-2 !text-base !text-black mr-4 !h-10"
+                >
+                    Cancelar
+                </Button>
+                <Button 
+                    className="rounded-full !h-10"
+                >
+                Asignar
+                </Button>
+            </div>
+
+        </Dialog>
+    </>
+  )
+}

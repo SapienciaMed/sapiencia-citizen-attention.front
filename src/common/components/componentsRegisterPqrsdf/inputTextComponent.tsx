@@ -48,7 +48,7 @@ export const InputTextComponent = ( props:Attributes ) => {
         value={ value }
         id={ id }
         className={ className }
-        onChange={ onChange } 
+        onChange={ onChange }
     />
 
   )

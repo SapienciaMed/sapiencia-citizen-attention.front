@@ -1,0 +1,231 @@
+.split {
+    margin-left: 1.1%;
+}
+
+.input-desabled {
+    background-color: #E9E9E9;
+    opacity: 1.4 !important;
+    color: #292929;
+    font-style: normal;
+}
+
+.buton-fixe {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 10px;
+
+    position: fixed;
+    bottom: -37px;
+    right: 0;
+    margin-bottom: 30px;
+    background-color: white;
+    border-top: solid 1px #a8a8a8;
+    padding-right: 6.1rem;
+}
+
+.buton-pie {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+}
+
+.container {
+    padding-top: 30px;
+    padding-right: 20px;
+    padding-left: 20px;
+    margin: 0 auto;
+}
+
+.card {
+    border-radius: 20px;
+    border: 1px solid #CACACA;
+    box-shadow: none;
+    color: #000000;
+}
+
+.content-card-table {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.paginado {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.col-1 {
+    width: 50%;
+}
+
+.col-card-100 {
+    width: 100% !important;
+}
+
+.col-45 {
+    width: 43% !important;
+}
+
+.col-10 {
+    width: 10% !important;
+}
+
+.container-fieldset {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.btn-fieldset {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.p-dialog-title {
+    font-size: 29px !important;
+}
+
+.p-datatable .p-column-header-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.p-datatable-thead {
+    background-color: white !important;
+}
+
+/*MOVIL*/
+@media only screen and (max-width: 768px) {
+
+    /* For mobile phones: */
+    .container {
+        padding: 0 !important;
+    }
+
+    .p-card-content {
+        padding: 0 !important;
+    }
+
+    .p-card .p-card-body {
+        padding: 0.25rem;
+    }
+
+    .card-body {
+        padding: 0 !important;
+        border: 0 !important;
+        margin: 0 !important;
+    }
+
+    .card-container-movil {
+        padding: 0 !important;
+        border: 0 !important;
+    }
+
+    .card-movil {
+        padding-left: 15px;
+        padding-right: 15px;
+        padding-top: 15px;
+    }
+
+    .col-100 {
+        width: 100% !important;
+    }
+
+    .col-50 {
+        width: 50% !important;
+    }
+
+    .idEntity {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 15px;
+    }
+
+    .split {
+        margin-bottom: 15px;
+    }
+
+    .movil-2 {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .movil-3 {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .movil-4 {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        margin: 0;
+    }
+
+    .movil-5 {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .buton-fixe {
+        width: 100% !important;
+        display: flex;
+        justify-content: center;
+        flex-wrap: nowrap;
+        padding-bottom: 6px;
+        padding-right: 0;
+        padding-left: 0;
+        position: relative;
+        border: 0;
+        bottom: 0;
+    }
+
+    .bt-movil-1 {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: center;
+        margin-bottom: 10px;
+        padding: 0 !important;
+    }
+
+    .dialog-movil {
+        width: 96vw !important;
+    }
+
+    .dialog-movil-modal {
+        width: 100%;
+    }
+
+    .containe-modal {
+        display: flex;
+        flex-direction: column !important;
+    }
+
+    .col-30 {
+        width: 36% !important;
+    }
+
+    .col-60 {
+        width: 60% !important;
+        margin-right: 0px !important;
+    }
+
+    .name-movil {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-end;
+    }
+}
