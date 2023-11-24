@@ -3,6 +3,7 @@ import { IAuthorization,   IResponseSignIn,
 } from "../interfaces/auth.interfaces";
 import { ApiResponse } from "../utils/api-response";
 import useCrudService from "./crud-service.hook";
+import { IUser } from "../interfaces/auth.interfaces";
 
 export function useAuthService() {
   const baseURL: string = process.env.urlApiAuth;
@@ -10,13 +11,27 @@ export function useAuthService() {
   const baseCitizenAttetionURL: string = process.env.urlApiCitizenAttention;
   const externalAuthUrl: string = "/api/v1/auth";
 
-  const { get, post } = useCrudService( baseURL);
+  const { get, post, put } = useCrudService( baseURL);
   const { post: postExternal } = useCrudService(baseCitizenAttetionURL);
 
   async function signIn(data: Object): Promise<ApiResponse<IResponseSignIn>> {
     try {
       const endpoint: string = "/signin";
       return await post(`${authUrl}${endpoint}`, data);
+
+    } catch (error) {
+      return new ApiResponse(
+        {} as IResponseSignIn,
+        EResponseCodes.FAIL,
+        "Error no controlado"
+      );
+    }
+  }
+
+  async function benefactorSignIn(data: Object): Promise<ApiResponse<IResponseSignIn>> {
+    try {
+      const endpoint: string = "/signin";
+      return await post(`${baseCitizenAttetionURL}${externalAuthUrl}${endpoint}`, data);
 
     } catch (error) {
       return new ApiResponse(
@@ -42,6 +57,13 @@ export function useAuthService() {
     }
   }
 
+  async function recoveryPassword(
+    data: Object
+  ): Promise<ApiResponse<IResponseSignIn>> {
+    const endpoint: string = "/recoverypassword";
+    return await post(`${authUrl}${endpoint}`, data);
+  }
+
   async function externalSignIn(data: Object): Promise<ApiResponse<IResponseSignIn>> {
     try {
       const endpoint: string = "/signin";
@@ -55,10 +77,28 @@ export function useAuthService() {
     }
   }
 
+  async function changeUserPassword(data: Object): Promise<ApiResponse<IUser>> {
+    try {
+      const endpoint: string = '/change-password';
+      console.log(data);
+      
+      return await put(`${baseCitizenAttetionURL}${authUrl}${endpoint}`, data);
+    } catch (error) {
+      return new ApiResponse(
+        {} as IUser,
+        EResponseCodes.FAIL,
+        "Error no controlado"
+      );
+    }
+  }
+
   return {
     signIn,
+    benefactorSignIn,
     externalSignIn,
     getAuthorization,
+    recoveryPassword,
+    changeUserPassword
   };
 }
 

@@ -26,6 +26,24 @@ export interface IUser {
   dependency?: number;
 }
 
+export interface IUserCreate {
+  id?: number;
+  names: string;
+  lastNames: string;
+  typeDocument: string;
+  numberDocument: string;
+  email: string;
+  password?: string;
+  userModify?: string;
+  userCreate?: string;
+  gender: string;
+  numberContact1?: string;
+  numberContact2?: string;
+  deparmentCode: string;
+  townCode?: string;
+  neighborhood: string;
+  address: string;
+}
 
 
 export interface IUserFilters {
