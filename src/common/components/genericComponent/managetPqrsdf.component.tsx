@@ -1517,7 +1517,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                     }}
                                 />
                             </Dialog>
-                            <div className="flex items-center">
+                            <div className="flex items-center upload-div">
                                 <Button 
                                     label="Adjuntar archivos"
                                     className="flex flex-row-reverse w-52"

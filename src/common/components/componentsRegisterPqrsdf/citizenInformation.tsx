@@ -841,7 +841,7 @@ export const CitizenInformation = ({ isPerson = false, channel,resetChanel }: Pr
                           <Calendar
                             id={field.name}
                             value={birthDate}
-                            className={classNames({ "p-invalid ": fieldState.error }, "!h-10 pi pi-spin pi-cog")}
+                            className={classNames({ "p-invalid ": fieldState.error }, "!h-10 ")}
                             onChange={(e) => field.onChange(handleDateChange(e.value))}
                             dateFormat="dd/mm/yy"
                             maxDate={new Date()}
