@@ -28,6 +28,7 @@ export interface IPqrsdf {
   responseMedium?: IResponseMedium;
   requestSubject?: IRequestSubject;
   file?: IFile;
+  closedAt?: DateTime;
   createdAt?: DateTime;
   updatedAt?: DateTime;
 }
@@ -179,4 +180,20 @@ export interface Justification {
   sbr_estado?:        boolean;
   pqrsdfId?:          number;
   radicado?:       number;
+}
+
+export interface IPqrsdfResponse {
+  id: number;
+  filingNumber: number;
+  isPetitioner: boolean;
+  pqrsdfId: number;
+  responseTypeId: number;
+  workEntityTypeId: number;
+  factorId: number;
+  fileId: number;
+  assignedUserId: number;
+  respondingUserId: number;
+  observation: string;
+  createdAt: DateTime;
+  updatedAt: DateTime;
 }
