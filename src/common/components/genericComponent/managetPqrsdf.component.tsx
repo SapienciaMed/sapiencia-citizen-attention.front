@@ -33,7 +33,8 @@ import { IWorkEntityType } from "../../interfaces/workEntityType.interface";
 import { trashIcon } from "../icons/trash";
 import { showIcon } from "../icons/show";
 import { MessageComponent } from "../componentsEditWorkEntities/message.component";
-
+import { IPqrsdf, IpqrsdfByReques } from "../../interfaces/pqrsdf.interfaces";
+import { IGenericData } from "../../interfaces/genericData.interfaces";
 
 interface City {
     name: string;
@@ -113,7 +114,15 @@ export const ManagetPqrsdfComponent = (props:Props) => {
     const [statusSend, setStatusSend] = useState<boolean>(false);
     const [cancelAction, setCancelAction] = useState<boolean>(false);
     const [nameFile, setNameFile] = useState<string>('');
-    
+    const [numberDocument, setNumberDocument] = useState<string>();
+    const [documentType, setDocumentType] = useState<IGenericData>();
+    const [idAtentionChannels, setIdAtentionChannels] = useState<number>();
+    const [beneficiary, setBeneficiary] = useState<boolean>();
+    const [nameFilePqrsdf, setNameFilePqrsdf] = useState<string>();
+    const [documentTypeId, setDocumentTypeId] = useState<number>();
+    const [pqrsdfId, setPqrsdfId] = useState<number>();
+    const [supportFiles, setSupportFiles] = useState<[]>();
+
     const getInfoPqrsdf = async (id:number)=>{
         const infoPqrsdf = pqrsdfService.getPqrsdfById(id);
         return infoPqrsdf
@@ -310,6 +319,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
         getInfoPqrsdf(id).then(({data})=>{
             //console.log(data);
             setTypeDocmuent(data['person']['documentType']['itemDescription'])
+            setDocumentType(data['person']['documentType'])
             setRequestType({
                 tso_codigo: data['requestType']['tso_codigo'],
                 tso_description: data['requestType']['tso_description'],
@@ -319,6 +329,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                 tso_description: data['requestType']['tso_description'],
             },{ shouldDirty: true });
             setEntityDocuement(`${data['person']['documentType']['itemCode']} ${data['person']['identification']}`);
+            setNumberDocument(data['person']['identification'])
             setLegalEntityType({
                 tej_codigo: data['person']['entityTypeId'],
                 tej_nombre: data['person']['entityType']['tej_nombre'],
@@ -419,18 +430,14 @@ export const ManagetPqrsdfComponent = (props:Props) => {
             const {nameFile,namepath} = splitUrl(data['file']['name']);
             setNameUrl(namepath);
             setNamePath(nameFile);
-
+            setNameFilePqrsdf(data['file']['name']);
+            setIdAtentionChannels(data['idCanalesAttencion']);
+            setBeneficiary(data['person']['isBeneficiary'])
             setFiledNumber(data['filingNumber']);
+            setDocumentTypeId(data['person']['documentType']['id']);
+            setPqrsdfId(data['id'])
         })
     },[]);
-
-    const cities: City[] = [
-        { name: 'New York', code: 'NY' },
-        { name: 'Rome', code: 'RM' },
-        { name: 'London', code: 'LDN' },
-        { name: 'Istanbul', code: 'IST' },
-        { name: 'Paris', code: 'PRS' }
-    ];
       
     const getFormErrorMessage = (name) => {
         return errors[name] ? (
@@ -450,10 +457,6 @@ export const ManagetPqrsdfComponent = (props:Props) => {
     let maxDate = new Date();
     maxDate.setMonth(nextMonth);
     maxDate.setFullYear(nextYear);
-
-    const handleSwitchChange = (value, data) => {
-        console.log(value, data);
-    }
 
     const suwitchBeneficiary=(data)=>{
         const [checked, setChecked] = useState(false);
@@ -598,6 +601,59 @@ export const ManagetPqrsdfComponent = (props:Props) => {
           />
         </svg>
       );
+
+    const sendResponses = async () =>{
+        const sendResponse:IPqrsdf = {
+            requestTypeId: requestType['tso_codigo'],
+            personId:id,
+            responseMediumId:responsesMediun['MRE_CODIGO'],
+            requestSubjectId:subjectRequest['ASO_CODIGO'],
+            filingNumber:filedNumber,
+            clasification: getValues('classification'),
+            dependency: getValues('dependence'),
+            description:getValues('description'),
+            requestType:requestType,
+            idCanalesAttencion:idAtentionChannels,
+            person:{
+                id:id,
+                identification:numberDocument,
+                documentType:documentType,
+                documentTypeId:documentTypeId,
+                entityTypeId:getValues('typeLegalEntity').tej_codigo,
+                firstName: getValues('firstName'),
+                secondName: getValues('secondName'),
+                firstSurname: getValues('lastName'),
+                secondSurname: getValues('secondLastName'),
+                birthdate: getValues('brithdayDate'),
+                firstContactNumber: getValues('firtContact'),
+                secondContactNumber: getValues('secondContact'),
+                email: getValues('email'),
+                address: getValues('address'),
+                countryId: getValues('country').LGE_CODIGO,
+                departmentId: getValues('departament').LGE_CODIGO,
+                municipalityId: getValues('municipality').LGE_CODIGO,
+                isBeneficiary: beneficiary,
+            },
+            file: {
+              name: nameFilePqrsdf,
+              isActive: true,
+            },
+            pqrsdfResponse:{
+                filingNumber: filedNumber,
+                isPetitioner: true,
+                pqrsdfId: pqrsdfId,
+                responseTypeId: 1, //cambiar
+                workEntityTypeId: getValues('workEntity.tet_codigo'),
+                factorId: getValues('factors').id,
+                fileId: 1, //cambiar
+                assignedUserId: 1, //cambiar
+                respondingUserId: 1, //cambiar
+                observation: getValues('observation') 
+            }
+        }
+
+        const resp = await pqrsdfService.pqrsdfResponse(sendResponse,fileResponsePqrsdf,supportFiles)
+    }
       
   return (
     <>
@@ -1250,6 +1306,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                 <UploadManagetComponen
                                 getNameFile={(e)=>{}}
                                 filesSupportDocument={(e)=>{
+                                    setSupportFiles(e)
                                     let cont = 0;
                                     const documents =  e.map((date)=>{
                                         cont = cont+1
@@ -1388,8 +1445,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                         options={workEntitys}
                                         focusInputRef={field.ref}
                                         onChange={(e) => field.onChange(()=>{
-                                            console.log(e.value);
-                                            
+                                        
                                             setWorkEntity(e.value);
                                             setValue('workEntity',e.value)
                                         })}
@@ -1562,7 +1618,10 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                         className="rounded-full !h-10 button-manage" 
                         label="Enviar"
                         disabled={!isValid}
-                        onClick={()=>setStatusSend(true)}
+                        onClick={()=>{
+                            setStatusSend(true)
+                            sendResponses();
+                        }}
                         >
                     </Button>
                     </div>

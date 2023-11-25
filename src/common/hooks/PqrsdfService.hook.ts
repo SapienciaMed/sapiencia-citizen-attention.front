@@ -104,6 +104,22 @@ export function usePqrsdfService() {
     }
   }
 
+  async function pqrsdfResponse(pqrsdf: IPqrsdf, file: object, files:[]): Promise<ApiResponse<IPqrsdf>> {
+    const formData = new FormData();
+    formData.append('files', JSON.stringify(file));
+    formData.append('soportFile', JSON.stringify(files));
+    formData.append('pqrsdf', JSON.stringify(pqrsdf));
+
+    console.log(formData);
+    
+    try {
+      const endpoint: string = `/pqrsdf-response/`;
+      return await service.post(`${listUrl}${endpoint}`, formData );
+    } catch (error) {
+      return new ApiResponse({} as IPqrsdf, EResponseCodes.FAIL, "Error no controlado");
+    }
+  }
+
 
   return {
     getPqrsdfs,
@@ -114,6 +130,7 @@ export function usePqrsdfService() {
     getPqrsdfByIdentificationAndFilingNumber,
     upLoadFile,
     getPqrsdfByRequest,
-    createRequestReopen
+    createRequestReopen,
+    pqrsdfResponse
   };
 }

@@ -31,6 +31,7 @@ export interface IPqrsdf {
   closedAt?: DateTime;
   createdAt?: DateTime;
   updatedAt?: DateTime;
+  pqrsdfResponse?: IPqrsdfResponse;
 }
 
 export interface IProgram {
@@ -183,17 +184,18 @@ export interface Justification {
 }
 
 export interface IPqrsdfResponse {
-  id: number;
-  filingNumber: number;
-  isPetitioner: boolean;
-  pqrsdfId: number;
-  responseTypeId: number;
-  workEntityTypeId: number;
-  factorId: number;
-  fileId: number;
-  assignedUserId: number;
-  respondingUserId: number;
-  observation: string;
-  createdAt: DateTime;
-  updatedAt: DateTime;
+  id?: number;
+  filingNumber?: number;
+  isPetitioner?: boolean;
+  pqrsdfId?: number;
+  responseTypeId?: number;
+  workEntityTypeId?: number;
+  factorId?: number;
+  fileId?: number;
+  assignedUserId?: number;
+  respondingUserId?: number;
+  observation?: string;
+  createdAt?: DateTime;
+  updatedAt?: DateTime;
 }
+
