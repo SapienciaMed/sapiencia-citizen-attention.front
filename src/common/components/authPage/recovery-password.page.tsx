@@ -17,6 +17,8 @@ import { useNavigate } from "react-router-dom";
 import { EResponseCodes } from "../../constants/api.enum";
 import { AppContext } from "../../contexts/app.context";
 
+import "../../../styles/auth-styles.scss";
+
 function RecoveryPassword(): React.JSX.Element {
   const navigate = useNavigate();
  
@@ -149,7 +151,7 @@ const FooterRecoveryPasssword = (): React.JSX.Element => {
           Cancelar
         </span>
         <ButtonComponent
-          className="button-main huge hover-three"
+          className="citizen-button-main big"
           value="Recuperar"
           type="submit"
           form="form-recovery_password"         

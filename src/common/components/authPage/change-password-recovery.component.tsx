@@ -1,19 +1,19 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import logoAlcaldiaMedellin from "../../public/images/logo-alcaldia-black.png";
-import logoSapiencia from "../../public/images/logo-sapiencia.png";
-import { EDirection } from "../../common/constants/input.enum";
-import { IRequestRecoveryPassword } from "../../common/interfaces/auth.interfaces";
-import useYupValidationResolver from "../../common/hooks/form-validator.hook";
+import logoAlcaldiaMedellin from "../../../public/images/logo-alcaldia-black.png";
+import logoSapiencia from "../../../public/images/logo-sapiencia.png";
+import { EDirection } from "../../constants/input.enum";
+import { IRequestRecoveryPassword } from "../../interfaces/auth.interfaces";
+import useYupValidationResolver from "../../hooks/form-validator.hook";
 import {
   FormComponent,
   InputShowPassword,
   ButtonComponent,
-} from "../../common/components/Form/index";
+} from "../Form/index";
 import { useNavigate } from "react-router-dom";
-import { changePassword } from "../../common/schemas/index";
+import { changePassword } from "../../schemas/index";
 
-import { AppContext } from "../../common/contexts/app.context";
+import { AppContext } from "../../contexts/app.context";
 
 function ChangePasswordRecovery({ action }): React.JSX.Element {
   const resolver = useYupValidationResolver(changePassword);

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { useRecoveryPassword } from "../../hooks/recovery-password.hooks";
-import ChangePasswordRecoveryComponent from "../../components/change-password-recovery.component";
+import ChangePasswordRecoveryComponent from "./change-password-recovery.component";
 import useAuthService from "../../../common/hooks/auth-service.hook";
 import { EResponseCodes } from "../../../common/constants/api.enum";
 import { useNavigate } from "react-router-dom";
