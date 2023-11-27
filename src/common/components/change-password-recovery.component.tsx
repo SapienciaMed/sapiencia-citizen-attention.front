@@ -69,7 +69,7 @@ function ChangePasswordRecovery({ action }): React.JSX.Element {
 
       <article className="container-recoveryPassword">
         <div className="container-close">
-          <span onClick={() => navigate("../aurora/ingreso")}>x</span> 
+          <span onClick={() => navigate("../ingreso")}>x</span> 
         </div>
         <section className="container-form_recoveryPassword">
           <label className="text-main text-center biggest">
