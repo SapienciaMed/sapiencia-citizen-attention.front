@@ -44,10 +44,10 @@ export function useAuthService() {
 
   async function getAuthorization(
     token: string
-  ): Promise<ApiResponse<IAuthorization>> {
+  ): Promise<ApiResponse<IAuthorization>> {    
     try {
-      const endpoint: string = `/authorization/get-by-token/${token}`;
-      return await get(`${authUrl}${endpoint}`);
+      const endpoint: string = `/autorizacion`;
+      return await get(`${baseCitizenAttetionURL}${externalAuthUrl}${endpoint}/${token}`);
     } catch (error) {
       return new ApiResponse(
         {} as IAuthorization,
@@ -60,8 +60,16 @@ export function useAuthService() {
   async function recoveryPassword(
     data: Object
   ): Promise<ApiResponse<IResponseSignIn>> {    
-    const endpoint: string = "/recovery-password";
-    return await post(`${baseCitizenAttetionURL}${externalAuthUrl}${endpoint}`, data);
+    try {
+      const endpoint: string = "/recovery-password";
+      return await post(`${baseCitizenAttetionURL}${externalAuthUrl}${endpoint}`, data);
+    } catch (error) {
+      return new ApiResponse(
+        {} as IResponseSignIn,
+        EResponseCodes.FAIL,
+        "Error no controlado"
+      );
+    }
   }
 
   async function externalSignIn(data: Object): Promise<ApiResponse<IResponseSignIn>> {
@@ -80,7 +88,6 @@ export function useAuthService() {
   async function changeUserPassword(data: Object): Promise<ApiResponse<IUser>> {
     try {
       const endpoint: string = '/change-password';
-      console.log(data);
       
       return await put(`${baseCitizenAttetionURL}${authUrl}${endpoint}`, data);
     } catch (error) {
@@ -105,6 +112,7 @@ export function useAuthService() {
     const endpoint: string = "/change-password-recovery";
     return await post(`${baseCitizenAttetionURL}${authUrl}${endpoint}`, data);
   }
+
   return {
     signIn,
     benefactorSignIn,
@@ -113,7 +121,7 @@ export function useAuthService() {
     recoveryPassword,
     changeUserPassword,
     validateTokenRecovery,
-    changePasswordToken
+    changePasswordToken,
   };
 }
 

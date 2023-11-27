@@ -1,15 +1,13 @@
 import { Button } from "primereact/button";
 import { ConfirmDialog } from "primereact/confirmdialog";
-import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { AppContext } from "../../contexts/app.context";
 
-const BenefactorPrivateRoute = ({ element, allowedAction }) => {
-  const { authorization } = useContext(AppContext);
+const BenefactorPrivateRoute = ({ element }) => {
   const navigate = useNavigate();
-
-  if (!authorization?.allowedActions) {
-    return <div>Loading...</div>;
+  const token = localStorage.getItem('token');
+  
+  if (!token) {
+    navigate('../ingreso')
   }
 
   const closeIcon = () => (
@@ -29,9 +27,9 @@ const BenefactorPrivateRoute = ({ element, allowedAction }) => {
     );
   };
 
-  const toCore = () => navigate("/core");
+  const toCore = () => navigate("/portal/ingreso");
 
-  if (authorization?.allowedActions?.findIndex((i) => i == allowedAction) >= 0) {
+  if (token) {
     return element;
   } else {
     return (

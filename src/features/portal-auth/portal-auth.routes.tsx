@@ -1,6 +1,7 @@
 import React, { lazy } from "react";
 import { Route, Routes } from "react-router-dom";
 import RecoveryPassword from "../../common/components/authPage/recovery-password.page"
+import BenefactorPrivateRoute from "../../common/components/Guard/benefactor-auth-guard";
 
 function PortalAuthRoutes() {
   const PortalAuthPage = lazy(() => import("./pages/portal-login.page"));
@@ -15,7 +16,7 @@ function PortalAuthRoutes() {
       <Route
         path={""}
         element={
-          <Register_pqrsdf isPerson={true} />
+          <BenefactorPrivateRoute element={<Register_pqrsdf isPerson={true} />}/>
           // <PrivateRoute
           //   element={<PortalAuthPage />}
           //   allowedAction={"INDICADOR_ACCION_SEGURIDAD"}
@@ -41,7 +42,7 @@ function PortalAuthRoutes() {
       <Route
         path={"/cambiar-clave"}
         element={
-          <ChangePassword />
+          <BenefactorPrivateRoute element={<ChangePassword />}/>
         }
       />
     </Routes>
