@@ -44,10 +44,10 @@ export function useAuthService() {
 
   async function getAuthorization(
     token: string
-  ): Promise<ApiResponse<IAuthorization>> {    
+  ): Promise<ApiResponse<IAuthorization>> {
     try {
-      const endpoint: string = `/autorizacion`;
-      return await get(`${baseCitizenAttetionURL}${externalAuthUrl}${endpoint}/${token}`);
+      const endpoint: string = `/authorization/get-by-token/${token}`;
+      return await get(`${authUrl}${endpoint}`);
     } catch (error) {
       return new ApiResponse(
         {} as IAuthorization,
