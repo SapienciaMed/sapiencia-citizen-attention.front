@@ -16,7 +16,7 @@ export interface IRequestRefreshToken {
 }
 
 export interface IResponseRefreshToken {
-  numberDocument: string;
+  identification: string;
   accessToken: string;
 }
 
@@ -80,7 +80,7 @@ export interface IProfileForm {
 }
 
 export interface IRequestRecoveryPassword {
-  numberDocument: string;
+  identification: string;
   email: string;
 }
 

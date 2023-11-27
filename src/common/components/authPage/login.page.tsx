@@ -66,7 +66,7 @@ const FormSignIn = (): React.JSX.Element => {
   const navigate = useNavigate();
 
   const { setAuthorization } = useContext(AppContext);
-  const resolver = useYupValidationResolver(loginValidator);
+  // const resolver = useYupValidationResolver(loginValidator);
   const credentialsSaved = localStorage.getItem("benefactor-credentials");
 
   const {

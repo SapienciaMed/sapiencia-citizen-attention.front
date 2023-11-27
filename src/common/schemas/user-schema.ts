@@ -15,7 +15,7 @@ export const loginValidator = yup.object({
 });
 
 export const recoveryPassword = yup.object({
-  numberDocument: yup
+  identification: yup
     .string()
     .matches(/^[0-9]+$/, "Solo se permiten números")
     .required("El número de documento es obligatorio"),

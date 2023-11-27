@@ -42,7 +42,7 @@ function ChangePassword({ action }): React.JSX.Element {
 
     const object = {
       password: data.password,
-      token: localStorage.getItem('token')
+      tokenRecovery: localStorage.getItem('token')
     }
     const { data: dataResponse, operation } = await changeUserPassword(object)
 

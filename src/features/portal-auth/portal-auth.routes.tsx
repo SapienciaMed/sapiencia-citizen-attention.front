@@ -5,7 +5,9 @@ import RecoveryPassword from "../../common/components/authPage/recovery-password
 function PortalAuthRoutes() {
   const PortalAuthPage = lazy(() => import("./pages/portal-login.page"));
   const Login = lazy(() => import("../../common/components/authPage/login.page"))
-  const ChangePasswordRecovery = lazy(() => import("../../common/components/authPage/change-password.page"))
+  const ChangePassword = lazy(() => import("../../common/components/authPage/change-password.page"))
+  const ChangePasswordRecovery = lazy(() => import("../../common/components/authPage/change-password-token.page"));
+
   const Register_pqrsdf = lazy(() => import("../../common/components/register_pqrsdf.page"));
 
   return (
@@ -24,30 +26,22 @@ function PortalAuthRoutes() {
         path={"/ingreso"}
         element={
           <Login />
-          // <PrivateRoute
-          //   element={<PortalAuthPage />}
-          //   allowedAction={"INDICADOR_ACCION_SEGURIDAD"}
-          // />
         }
       />
       <Route
         path={"/recuperar-clave"}
         element={
           <RecoveryPassword />
-          // <PrivateRoute
-          //   element={<PortalAuthPage />}
-          //   allowedAction={"INDICADOR_ACCION_SEGURIDAD"}
-          // />
         }
       />
-            <Route
+      <Route
+        path={"/recuperacion-clave"}
+        element={<ChangePasswordRecovery />}
+      />
+      <Route
         path={"/cambiar-clave"}
         element={
-          <ChangePasswordRecovery />
-          // <PrivateRoute
-          //   element={<PortalAuthPage />}
-          //   allowedAction={"INDICADOR_ACCION_SEGURIDAD"}
-          // />
+          <ChangePassword />
         }
       />
     </Routes>

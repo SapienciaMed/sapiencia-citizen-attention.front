@@ -3,7 +3,7 @@ import { IAuthorization,   IResponseSignIn,
 } from "../interfaces/auth.interfaces";
 import { ApiResponse } from "../utils/api-response";
 import useCrudService from "./crud-service.hook";
-import { IUser } from "../interfaces/auth.interfaces";
+import { IUser, IDecodedToken } from "../interfaces/auth.interfaces";
 
 export function useAuthService() {
   const baseURL: string = process.env.urlApiAuth;
@@ -59,9 +59,9 @@ export function useAuthService() {
 
   async function recoveryPassword(
     data: Object
-  ): Promise<ApiResponse<IResponseSignIn>> {
-    const endpoint: string = "/recoverypassword";
-    return await post(`${authUrl}${endpoint}`, data);
+  ): Promise<ApiResponse<IResponseSignIn>> {    
+    const endpoint: string = "/recovery-password";
+    return await post(`${baseCitizenAttetionURL}${externalAuthUrl}${endpoint}`, data);
   }
 
   async function externalSignIn(data: Object): Promise<ApiResponse<IResponseSignIn>> {
@@ -92,13 +92,28 @@ export function useAuthService() {
     }
   }
 
+  async function validateTokenRecovery(
+    data: Object
+  ): Promise<ApiResponse<IDecodedToken>> {
+    const endpoint: string = "/validate-token-recovery";
+    return await post(`${baseCitizenAttetionURL}${authUrl}${endpoint}`, data);
+  }
+
+  async function changePasswordToken(
+    data: Object
+  ): Promise<ApiResponse<IDecodedToken>> {
+    const endpoint: string = "/change-password-recovery";
+    return await post(`${baseCitizenAttetionURL}${authUrl}${endpoint}`, data);
+  }
   return {
     signIn,
     benefactorSignIn,
     externalSignIn,
     getAuthorization,
     recoveryPassword,
-    changeUserPassword
+    changeUserPassword,
+    validateTokenRecovery,
+    changePasswordToken
   };
 }
 
