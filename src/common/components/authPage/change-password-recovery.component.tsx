@@ -122,7 +122,7 @@ const FooterRecoveryPasssword = (): React.JSX.Element => {
           Cancelar
         </span>
         <ButtonComponent
-          className="button-main huge hover-three"
+          className="citizen-button-main big"
           value="Recuperar"
           type="submit"
           form="form-changePassword"
