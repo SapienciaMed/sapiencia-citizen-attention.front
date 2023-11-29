@@ -151,3 +151,14 @@
     cursor: auto;
   }
 }
+.citizen-show-password {
+  position: relative;
+
+  .citizen-icon-showPassword {
+    position: absolute;
+    right: 0;
+    // bottom: 10;
+    top: 0;
+    margin: 10px;
+  }
+}
