@@ -2,6 +2,7 @@ import React, { SyntheticEvent, useState } from "react";
 import { EDirection } from "../../constants/input.enum";
 import { LabelComponent } from "./label.component";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
+import '../../../styles/auth-styles.scss'
 
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
@@ -56,7 +57,7 @@ export function InputShowPassword({
         classNameLabel={classNameLabel}
       />
       <div>
-        <div className="show-password">
+        <div className="citizen-show-password">
           <input
             {...register(idInput)}
             type={viewPassword ? "text" : "password"}
@@ -68,14 +69,14 @@ export function InputShowPassword({
 
           {viewPassword ? (
             <AiOutlineEyeInvisible
-              className="icon-showPassword pointer"
+              className="citizen-icon-showPassword pointer"
               color="#a71989"
               fontSize={"22px"}
               onClick={handleShowPassword}
             />
           ) : (
             <AiOutlineEye
-              className="icon-showPassword pointer"
+              className="citizen-icon-showPassword pointer"
               color="#a71989"
               fontSize={"22px"}
               onClick={handleShowPassword}
