@@ -56,7 +56,7 @@ export function InputShowPassword({
         classNameLabel={classNameLabel}
       />
       <div>
-        <div className="show-password">
+        <div className="citizen-show-password">
           <input
             {...register(idInput)}
             type={viewPassword ? "text" : "password"}
@@ -68,14 +68,14 @@ export function InputShowPassword({
 
           {viewPassword ? (
             <AiOutlineEyeInvisible
-              className="icon-showPassword pointer"
+              className="citizen-icon-showPassword pointer"
               color="#a71989"
               fontSize={"22px"}
               onClick={handleShowPassword}
             />
           ) : (
             <AiOutlineEye
-              className="icon-showPassword pointer"
+              className="citizen-icon-showPassword pointer"
               color="#a71989"
               fontSize={"22px"}
               onClick={handleShowPassword}
