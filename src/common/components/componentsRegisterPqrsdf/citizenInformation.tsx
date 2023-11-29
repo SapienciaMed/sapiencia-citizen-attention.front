@@ -45,7 +45,7 @@ interface IChannel{
 
 
 export const CitizenInformation = ({ isPerson = false, channel,resetChanel }: Props) => {
-
+  
   const channels = channel as IChannel;
   
   const navigate = useNavigate();

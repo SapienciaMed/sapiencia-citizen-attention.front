@@ -14,13 +14,9 @@ function PortalAuthRoutes() {
   return (
     <Routes>
       <Route
-        path={""}
+        path={"/:identification"}
         element={
           <BenefactorPrivateRoute element={<Register_pqrsdf isPerson={true} />}/>
-          // <PrivateRoute
-          //   element={<PortalAuthPage />}
-          //   allowedAction={"INDICADOR_ACCION_SEGURIDAD"}
-          // />
         }
       />
       <Route

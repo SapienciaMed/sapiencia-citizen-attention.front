@@ -17,7 +17,8 @@ function ChangePasswordRecovery(): React.JSX.Element {
     });    
 
     if (operation.code === EResponseCodes.OK) {
-      navigate("../portal");
+      const identification = sessionStorage.getItem('identification')
+      navigate(`../portal/${identification}`);
     } else {
       setMessage({
         title: "¡Ocurrio un error!",

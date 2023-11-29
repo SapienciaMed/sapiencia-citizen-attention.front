@@ -6,6 +6,10 @@ import { EResponseCodes } from "../constants/api.enum";
 
 function useCrudService<T>(baseUrl: string) {
   const { authorization } = useContext(AppContext);
+  const token = sessionStorage.getItem('token')
+  
+  console.log(token);
+  
   const api = instanceApi(baseUrl);
   let errorMessage = "Hubo un error al cominicarse con la api.";
 
@@ -20,6 +24,7 @@ function useCrudService<T>(baseUrl: string) {
           "Content-Type": "application/json",
           Accept: "application/json",
           permissions: authorization.encryptedAccess,
+          "token": token
         },
         url: `${endpoint}`,
         params: params,
@@ -46,6 +51,7 @@ function useCrudService<T>(baseUrl: string) {
           "Content-Type": "application/json",
           Accept: "application/json",
           permissions: authorization.encryptedAccess,
+          "Token": token
         },
         url: `${endpoint}`,
         params: params,

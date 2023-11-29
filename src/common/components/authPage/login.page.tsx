@@ -67,7 +67,7 @@ const FormSignIn = (): React.JSX.Element => {
 
   const { setAuthorization } = useContext(AppContext);
   // const resolver = useYupValidationResolver(loginValidator);
-  const credentialsSaved = localStorage.getItem("benefactor-credentials");
+  const credentialsSaved = localStorage.getItem("credentials");
 
   const {
     handleSubmit,
@@ -97,7 +97,6 @@ const FormSignIn = (): React.JSX.Element => {
   // Metodo que hace la peticion al api
   const onSubmitSignIn = handleSubmit(
     async (data: { identification: string; password: string }) => {
-
       const credentials = {
         identification: data.identification,
         password: data.password,
@@ -107,17 +106,18 @@ const FormSignIn = (): React.JSX.Element => {
 
       if (operation.code === EResponseCodes.OK) {
         isRememberData &&
-          localStorage.setItem("benefactor-credentials", JSON.stringify(credentials));
+          localStorage.setItem("credentials", JSON.stringify(credentials));
         JSON.parse(credentialsSaved) &&
           !isRememberData &&
-          localStorage.removeItem("benefactor-credentials");
-
+          localStorage.removeItem("credentials");
         localStorage.setItem("token", dataResponse.token);
+        sessionStorage.setItem("token", dataResponse.token);
         setAuthorization(dataResponse.authorization);
 
         if (dataResponse.authorization.user.password) {
-          navigate("/portal");
+          navigate(`/portal/${data.identification}`);
         } else {
+          sessionStorage.setItem('identification', data.identification)
           navigate("../cambiar-clave");
         }
       } else {
