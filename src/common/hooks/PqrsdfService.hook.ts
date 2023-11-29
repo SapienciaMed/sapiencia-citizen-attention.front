@@ -67,7 +67,7 @@ export function usePqrsdfService() {
     formData.append('files', file)
     formData.append('pqrsdf', JSON.stringify(pqrsdf))
     try {
-      const endpoint: string = `/create/`;
+      const endpoint: string = `/create`;
       return await service.post(`${listUrl}${endpoint}`, formData );
     } catch (error) {
       return new ApiResponse({} as IPqrsdf, EResponseCodes.FAIL, "Error no controlado");
