@@ -104,6 +104,15 @@ export function usePqrsdfService() {
     }
   }
 
+  async function updatePerson(person:IPerson): Promise<ApiResponse<IPerson>> {
+    try {
+      const endpoint: string = `/update-person`;
+      return await post(`${listUrl}${endpoint}`,  person);
+    } catch (error) {
+      return new ApiResponse({} as IPerson, EResponseCodes.FAIL, "Error no controlado");
+    }
+  }
+
   async function pqrsdfResponse(pqrsdf: IPqrsdf, file: object, files:[]): Promise<ApiResponse<IPqrsdf>> {
     const formData = new FormData();
     formData.append('files', JSON.stringify(file));
@@ -123,14 +132,15 @@ export function usePqrsdfService() {
 
   return {
     getPqrsdfs,
+    upLoadFile,
+    updatePerson,
     createPqrsdf,
     getPqrsdfById,
+    pqrsdfResponse,
+    getPqrsdfByRequest,
     getPeopleByFilters,
+    createRequestReopen,
     getPersonByDocument,
     getPqrsdfByIdentificationAndFilingNumber,
-    upLoadFile,
-    getPqrsdfByRequest,
-    createRequestReopen,
-    pqrsdfResponse
   };
 }
