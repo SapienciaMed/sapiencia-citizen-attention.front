@@ -35,6 +35,8 @@ import { showIcon } from "../icons/show";
 import { MessageComponent } from "../componentsEditWorkEntities/message.component";
 import { IPqrsdf, IpqrsdfByReques } from "../../interfaces/pqrsdf.interfaces";
 import { IGenericData } from "../../interfaces/genericData.interfaces";
+import { IRequestSubjectType } from "../../interfaces/requestSubjectType.interfaces";
+import { IMotive } from "../../interfaces/motive.interfaces";
 
 interface City {
     name: string;
@@ -78,6 +80,9 @@ export const ManagetPqrsdfComponent = (props:Props) => {
     const [responsesMediuns,setResponsesMediuns] =useState<IMResponseMedium[]>();
     const [programs,setPrograms] =useState<IProgram[]>();
     const [subjectRequests,setSubjectRequests] =useState<ISubjectRequest[]>();
+    const [requestSubjects,setRequestSubjects] =useState<IRequestSubjectType[]>();
+    const [motives,setMotives] = useState<IMotive[]>([])
+    const [selectedRequestSubject,setSelectedRequestSubject] =useState<IRequestSubjectType>();
     const [responseTypes,setResponsesTypes] =useState<IResposeType[]>();
     const [workEntitys,setWorkEntitys] =useState<IWorkEntityType[]>();
     const [arrayworkEntitys,setArrayWorkEntitys] =useState<IWorkEntityType[]>();
@@ -193,7 +198,10 @@ export const ManagetPqrsdfComponent = (props:Props) => {
             setMunicipalitys(arrayMunicipality.data);
             setResponsesMediuns(arrayResposeMediun.data);        
             setPrograms(arrayPrograms.data);
-            setSubjectRequests(arraySubjectRequest.data);
+            setSubjectRequests(arraySubjectRequest.data.map((requestSubject) => {
+                return { ASO_CODIGO: requestSubject.aso_codigo, ASO_ASUNTO: requestSubject.aso_asunto }
+            }));
+            setRequestSubjects(arraySubjectRequest.data);
             const FullName = `${userInfo.data[0].names} ${userInfo.data[0].lastNames}` 
             setNmaeUser(FullName);      
             setResponsesTypes(arrayResponseType.data);
@@ -202,6 +210,10 @@ export const ManagetPqrsdfComponent = (props:Props) => {
         })
     },[]);
 
+    useEffect(()=>{        
+        setMotives(selectedRequestSubject?.motives ?? [])    
+    },[selectedRequestSubject])
+    
     useEffect(()=>{
         
         if(workEntity!== undefined){
@@ -242,6 +254,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
         secondContact:'',
         email:'',
         address:'',
+        motiveId:'',
         country:{LGE_CODIGO:null, LGE_ELEMENTO_DESCRIPCION:''},
         departament:{
             LGE_CODIGO: null,
@@ -308,6 +321,8 @@ export const ManagetPqrsdfComponent = (props:Props) => {
     watch,
     register,
     } = useForm({ defaultValues, mode: "all" }); 
+
+    const watchSubjectRerquest = watch("subjectRerquest");
     
     const handleDateChange = (date: any) => {        
         setValue("brithdayDate",toLocaleDate(date));
@@ -418,10 +433,18 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                 ASO_CODIGO: data['requestSubject']['aso_codigo'],
                 ASO_ASUNTO: data['requestSubject']['aso_asunto']
             });
+
+            setSelectedRequestSubject(
+                requestSubjects?.filter((requestSubject) =>{
+                    return requestSubject.aso_codigo == data.requestSubjectId
+                })[0]
+            )
             setValue('subjectRerquest',{
                 ASO_CODIGO: data['requestSubject']['aso_codigo'],
                 ASO_ASUNTO: data['requestSubject']['aso_asunto']
             },{ shouldDirty: true });
+
+            setValue('motiveId', String(data?.motiveId))
 
             setValue('classification',programData.CLP_DESCRIPCION)
             setValue('dependence',programData.DEP_DESCRIPCION)
@@ -608,6 +631,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
             personId:id,
             responseMediumId:responsesMediun['MRE_CODIGO'],
             requestSubjectId:subjectRequest['ASO_CODIGO'],
+            motiveId: getValues('motiveId') ? parseInt(getValues('motiveId')) : null,
             filingNumber:filedNumber,
             clasification: getValues('classification'),
             dependency: getValues('dependence'),
@@ -640,14 +664,13 @@ export const ManagetPqrsdfComponent = (props:Props) => {
             },
             pqrsdfResponse:{
                 filingNumber: filedNumber,
-                isPetitioner: true,
+                isPetitioner: getValues('responseType').id==4 || getValues('responseType').description == 'Cerrar con respuesta',
                 pqrsdfId: pqrsdfId,
-                responseTypeId: 1, //cambiar
-                workEntityTypeId: getValues('workEntity.tet_codigo'),
+                responseTypeId: getValues('responseType').id, //cambiar
+                workEntityTypeId: getValues('workEntity').tet_codigo,
                 factorId: getValues('factors').id,
-                fileId: 1, //cambiar
-                assignedUserId: 1, //cambiar
-                respondingUserId: 1, //cambiar
+                // fileId: 1, //cambiar
+                assignedUserId: getValues("responsible").id, //cambiar                
                 observation: getValues('observation') 
             }
         }
@@ -664,7 +687,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                 <Controller
                     name="typeOfRequest"
                     control={control}
-                    rules={{ required: 'Campo obligatorio.'}}
+                    rules={{ required: 'El campo es obligatorio.'}}
                     render={({ field, fieldState }) => (
                         <>
                             <Dropdown
@@ -719,7 +742,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                     <Controller
                         name="typeLegalEntity"
                         control={control}
-                        rules={{ required: 'Campo obligatorio.'}}
+                        rules={{ required: 'El campo es obligatorio.'}}
                         render={({ field, fieldState }) => (
                             <>
                                 <Dropdown
@@ -756,7 +779,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                 name="businessName"
                                 control={control}
                                 rules={{
-                                    required: 'Campo obligatorio.',
+                                    required: 'El campo es obligatorio.',
                                     maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
                                     }}
                                 render={({ field, fieldState }) => (
@@ -782,7 +805,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                 name="firstName"
                                 control={control}
                                 rules={{
-                                    required: 'Campo obligatorio.',
+                                    required: 'El campo es obligatorio.',
                                     maxLength: { value: 50, message: "Solo se permiten 50 caracteres" },
                                 }}
                                 render={({ field, fieldState }) => (
@@ -829,7 +852,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                 name="lastName"
                                 control={control}
                                 rules={{
-                                    required: 'Campo obligatorio.',
+                                    required: 'El campo es obligatorio.',
                                     maxLength: { value: 50, message: "Solo se permiten 50 caracteres" },
                                     }}
                                 render={({ field, fieldState }) => (
@@ -882,7 +905,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                 name="brithdayDate"
                                 control={control}
                                 rules={{
-                                    required: 'Campo obligatorio.',
+                                    required: 'El campo es obligatorio.',
                                 }}
                                 render={({ field, fieldState }) => (
                                 <>
@@ -921,7 +944,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                 name="firtContact"
                                 control={control}
                                 rules={{
-                                    required: 'Campo obligatorio.',
+                                    required: 'El campo es obligatorio.',
                                     maxLength: { value: 10, message: "Solo se permiten 10 caracteres" },
                                     }}
                                 render={({ field, fieldState }) => (
@@ -1000,7 +1023,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                 name="address"
                                 control={control}
                                 rules={{
-                                    required: 'Campo obligatorio.',
+                                    required: 'El campo es obligatorio.',
                                     maxLength: { value: 300, message: "Solo se permiten 300 caracteres" },
                                     }}
                                 render={({ field, fieldState }) => (
@@ -1026,7 +1049,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                             name="country"
                             control={control}
                             rules={{
-                                required: 'Campo obligatorio.',
+                                required: 'El campo es obligatorio.',
                                 }}
                                 render={({ field, fieldState }) => (
                                 <>
@@ -1055,7 +1078,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                             name="departament"
                             control={control}
                             rules={{
-                                required: 'Campo obligatorio.',
+                                required: 'El campo es obligatorio.',
                                 }}
                                 render={({ field, fieldState }) => (
                                 <>
@@ -1084,7 +1107,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                             name="municipality"
                             control={control}
                             rules={{
-                                required: 'Campo obligatorio.',
+                                required: 'El campo es obligatorio.',
                                 }}
                                 render={({ field, fieldState }) => (
                                 <>
@@ -1117,7 +1140,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                 name="responseMediun"
                                 control={control}
                                 rules={{
-                                    required: 'Campo obligatorio.',
+                                    required: 'El campo es obligatorio.',
                                 }}
                                 render={({ field, fieldState }) => (
                                     <>
@@ -1158,7 +1181,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                             name="program"
                             control={control}
                             rules={{
-                                required: 'Campo obligatorio.',
+                                required: 'El campo es obligatorio.',
                                 maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
                                 }}
                                 render={({ field, fieldState }) => (
@@ -1190,7 +1213,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                             name="subjectRerquest"
                             control={control}
                             rules={{
-                                required: 'Campo obligatorio.',
+                                required: 'El campo es obligatorio.',
                                 maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
                                 }}
                                 render={({ field, fieldState }) => (
@@ -1205,6 +1228,9 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                                         focusInputRef={field.ref}
                                         onChange={(e) => field.onChange(()=>{
                                             setSubjectRequest(e.value);
+                                            setSelectedRequestSubject(requestSubjects.filter((requestSubject) =>{
+                                                return requestSubject.aso_codigo == e.value.ASO_CODIGO
+                                            })[0])
                                             setValue('subjectRerquest',e.value)
                                         })}
                                         className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
@@ -1215,6 +1241,45 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                         />
                     </div>
                 </div> 
+                {selectedRequestSubject?.motives.length && (
+                <div className="flex div-manage-mobil">
+                    <div className="mr-4 div-50 input-mobil-manage-acordeon">
+                        <label>Motivo de la solicitud<span className="text-red-600 ml-1">*</span></label>
+                        <Controller
+                            name="motiveId"
+                            control={control}
+                            rules={{
+                                validate: {
+                                    required: (value) => {
+                                        if (selectedRequestSubject?.motives.length && !value) return "El campo es obligatorio.";
+                                        return true;
+                                    }
+                                },                                
+                                maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
+                                }}
+                                render={({ field, fieldState }) => (
+                                <>
+                                    <Dropdown
+                                        id={field.name}
+                                        value={field.value}
+                                        optionLabel="motive"
+                                        optionValue="id"
+                                        placeholder="Seleccionar"
+                                        showClear 
+                                        options={selectedRequestSubject?.motives ?? []}
+                                        focusInputRef={field.ref}
+                                        onChange={(e) => {
+                                            field.onChange(e.value);                                            
+                                        }}
+                                        className={classNames({ 'p-invalid': fieldState.error },'h-10 flex items-center input-mobil-manage-acordeon')}
+                                    />
+                                    {getFormErrorMessage(field.name)}
+                                </>
+                            )}
+                        />
+                    </div>                
+                </div> 
+                )}
                 <div className="flex div-manage-mobil">
                     <div className="mr-4 div-50 input-mobil-manage-acordeon">
                         <label>Clasificación</label>
@@ -1395,14 +1460,14 @@ export const ManagetPqrsdfComponent = (props:Props) => {
         </div>
             </AccordionTab>
             <AccordionTab header={`Respuesta PQRSDF ${filedNumber}`}>
-                <div className="flex justify-between div-manage-mobil">
+                <div className="flex justify-between div-manage-mobil">            
                     <div className="mr-4 div-30 input-mobil-manage-acordeon">
                         <label>Tipo de respuesta<span className="text-red-600 ml-1">*</span></label>
                         <Controller
                             name="responseType"
                             control={control}
                             rules={{
-                                required: 'Campo obligatorio.',
+                                required: 'El campo es obligatorio.',
                             }}
                             render={({ field, fieldState }) => (
                             <>
@@ -1424,101 +1489,135 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                             </>
                             )}
                         />
-                    </div>
-                    <div className="mr-4 div-30 input-mobil-manage-acordeon">
-                        <label>Enviar a {obligatoryField?(<span className="text-red-600 ml-1">*</span>):(<></>)}</label>
-                        <Controller
-                            name="workEntity"
-                            control={control}
-                            rules={{
-                                required:{value:obligatoryField,message:'Campo obligatorio.'},
-                                }}
-                                render={({ field, fieldState }) => (
-                                <>
-                                    <Dropdown
-                                        id={field.name}
-                                        value={workEntity}
-                                        optionLabel="tet_descripcion"
-                                        placeholder="Seleccionar"
-                                        showClear 
-                                        disabled={disableIntput}
-                                        options={workEntitys}
-                                        focusInputRef={field.ref}
-                                        onChange={(e) => field.onChange(()=>{
-                                        
-                                            setWorkEntity(e.value);
-                                            setValue('workEntity',e.value)
-                                        })}
-                                        className={classNames({ 'p-invalid': fieldState.error }, `h-10 flex items-center input-mobil-manage-acordeon ${styleDisableIntput}`)}
-                                    />
-                                    {getFormErrorMessage(field.name)}
-                                </>
-                            )}
-                        />
-                    </div>
-                    <div className="mr-4 div-30 input-mobil-manage-acordeon">
-                        <label>Responsable</label>
-                        <Controller
-                            name="responsible"
-                            control={control}
-                            rules={{
-                                required: {value:obligatoryField,message:'Campo obligatorio.'},
-                                }}
-                                render={({ field, fieldState }) => (
-                                <>
-                                    <Dropdown
-                                        id={field.name}
-                                        value={mangeWorkEntity}
-                                        disabled={disableIntput}
-                                        optionLabel="fullName"
-                                        placeholder="Seleccionar"
-                                        showClear 
-                                        options={arrayUserManage}
-                                        focusInputRef={field.ref}
-                                        onChange={(e) => field.onChange(()=>{
-                                            setManageWorkEntity(e.value);
-                                            setValue('responsible',e.value)
-                                        })}
-                                        className={classNames({ 'p-invalid': fieldState.error },`h-10 flex items-center input-mobil-manage-acordeon ${styleDisableIntput}`)}
-                                    />
-                                    {getFormErrorMessage(field.name)}
-                                </>
-                            )}
-                        />
-                    </div>
+                    </div>                    
+                    {(getValues('responseType').id==4 || getValues('responseType').description == 'Cerrar con respuesta') && (
+                        <div className="mr-4 div-30 input-mobil-manage-acordeon" >
+                            <label>Enviar a {obligatoryField?(<span className="text-red-600 ml-1">*</span>):(<></>)}</label>                        
+                            <Dropdown         
+                                value={1}                                                                       
+                                optionLabel="label"
+                                optionValue="id"
+                                placeholder="Seleccionar"                             
+                                // disabled={disableIntput}
+                                options={[{id: 1, label: 'Peticionario'}]}                                                
+                                className="h-10 flex items-center input-mobil-manage-acordeon "
+                            />                                                              
+                        </div>
+                    )}
+                    {(getValues('responseType').id==4 || getValues('responseType').description == 'Cerrar con respuesta') && (
+                        <div className="mr-4 div-30 input-mobil-manage-acordeon opacity-0">
+                            <label>Enviar a {obligatoryField?(<span className="text-red-600 ml-1">*</span>):(<></>)}</label>                        
+                            <Dropdown         
+                                value={1}                                                                       
+                                optionLabel="label"
+                                optionValue="id"
+                                placeholder="Seleccionar"                             
+                                disabled={disableIntput}
+                                options={[{id: 1, label: 'Peticionario'}]}                                                
+                                className="h-10 flex items-center input-mobil-manage-acordeon "
+                            />   
+                        </div>
+                    )}
+                    {(getValues('responseType').id!=4 && getValues('responseType').description != 'Cerrar con respuesta') && (
+                        <div className="mr-4 div-30 input-mobil-manage-acordeon">
+                            <label>Enviar a {obligatoryField?(<span className="text-red-600 ml-1">*</span>):(<></>)}</label>
+                            <Controller
+                                name="workEntity"
+                                control={control}
+                                rules={{
+                                    required:{value:obligatoryField,message:'El campo es obligatorio.'},
+                                    }}
+                                    render={({ field, fieldState }) => (
+                                    <>
+                                        <Dropdown
+                                            id={field.name}
+                                            value={workEntity}
+                                            optionLabel="tet_descripcion"
+                                            placeholder="Seleccionar"
+                                            showClear 
+                                            disabled={disableIntput}
+                                            options={workEntitys}
+                                            focusInputRef={field.ref}
+                                            onChange={(e) => field.onChange(()=>{
+                                            
+                                                setWorkEntity(e.value);
+                                                setValue('workEntity',e.value)
+                                            })}
+                                            className={classNames({ 'p-invalid': fieldState.error }, `h-10 flex items-center input-mobil-manage-acordeon ${styleDisableIntput}`)}
+                                        />
+                                        {getFormErrorMessage(field.name)}
+                                    </>
+                                )}
+                            />
+                        </div>
+                    )}
+                    {(getValues('responseType').id!=4 && getValues('responseType').description != 'Cerrar con respuesta') && (
+                        <div className="mr-4 div-30 input-mobil-manage-acordeon">
+                            <label>Responsable</label>
+                            <Controller
+                                name="responsible"
+                                control={control}
+                                rules={{
+                                    required: {value:obligatoryField,message:'El campo es obligatorio.'},
+                                    }}
+                                    render={({ field, fieldState }) => (
+                                    <>
+                                        <Dropdown
+                                            id={field.name}
+                                            value={mangeWorkEntity}
+                                            disabled={disableIntput}
+                                            optionLabel="fullName"
+                                            placeholder="Seleccionar"
+                                            showClear 
+                                            options={arrayUserManage}
+                                            focusInputRef={field.ref}
+                                            onChange={(e) => field.onChange(()=>{
+                                                setManageWorkEntity(e.value);
+                                                setValue('responsible',e.value)
+                                            })}
+                                            className={classNames({ 'p-invalid': fieldState.error },`h-10 flex items-center input-mobil-manage-acordeon ${styleDisableIntput}`)}
+                                        />
+                                        {getFormErrorMessage(field.name)}
+                                    </>
+                                )}
+                            />
+                        </div>
+                    )}
                 </div>
                 <div className="flex div-manage-mobil">
-                    <div className="mr-4 div-30 input-mobil-manage-acordeon">
-                        <label>Factor{obligatoryField?(<span className="text-red-600 ml-1">*</span>):(<></>)}</label>
-                        <Controller
-                            name="factors"
-                            control={control}
-                            rules={{
-                                required: {value:obligatoryField,message:'Campo obligatorio.'},
-                                maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
-                                }}
-                                render={({ field, fieldState }) => (
-                                <>
-                                    <Dropdown
-                                        id={field.name}
-                                        value={factors}
-                                        disabled={disableIntput}
-                                        optionLabel="name"
-                                        placeholder="Seleccionar"
-                                        showClear 
-                                        options={arrayFactors}
-                                        focusInputRef={field.ref}
-                                        onChange={(e) => field.onChange(()=>{
-                                            setFactors(e.value);
-                                            setValue('factors',e.value);
-                                        })}
-                                        className={classNames({ 'p-invalid': fieldState.error },`h-10 flex items-center input-mobil-manage-acordeon ${styleDisableIntput}`)}
-                                    />
-                                    {getFormErrorMessage(field.name)}
-                                </>
-                            )}
-                        />
-                    </div>
+                    {(getValues('responseType').id!=4 && getValues('responseType').description != 'Cerrar con respuesta') && (
+                        <div className="mr-4 div-30 input-mobil-manage-acordeon">
+                            <label>Factor{obligatoryField?(<span className="text-red-600 ml-1">*</span>):(<></>)}</label>
+                            <Controller
+                                name="factors"
+                                control={control}
+                                rules={{
+                                    required: {value:obligatoryField,message:'El campo es obligatorio.'},
+                                    maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
+                                    }}
+                                    render={({ field, fieldState }) => (
+                                    <>
+                                        <Dropdown
+                                            id={field.name}
+                                            value={factors}
+                                            disabled={disableIntput}
+                                            optionLabel="name"
+                                            placeholder="Seleccionar"
+                                            showClear 
+                                            options={arrayFactors}
+                                            focusInputRef={field.ref}
+                                            onChange={(e) => field.onChange(()=>{
+                                                setFactors(e.value);
+                                                setValue('factors',e.value);
+                                            })}
+                                            className={classNames({ 'p-invalid': fieldState.error },`h-10 flex items-center input-mobil-manage-acordeon ${styleDisableIntput}`)}
+                                        />
+                                        {getFormErrorMessage(field.name)}
+                                    </>
+                                )}
+                            />
+                        </div>
+                    )}
                 </div>
                 <div className="flex">
                     <div className="mr-4 div-100 input-mobil-manage-acordeon">
@@ -1527,7 +1626,7 @@ export const ManagetPqrsdfComponent = (props:Props) => {
                             name="observation"
                             control={control}
                             rules={{
-                                required: 'Campo obligatorio.',
+                                required: 'El campo es obligatorio.',
                                 maxLength: { value: 5000, message: "Solo se permiten 5000 caracteres" },
                                 }}
                                 render={({ field, fieldState }) => (

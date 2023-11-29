@@ -113,7 +113,7 @@ export function usePqrsdfService() {
     console.log(formData);
     
     try {
-      const endpoint: string = `/pqrsdf-response/`;
+      const endpoint: string = `/response/`;
       return await service.post(`${listUrl}${endpoint}`, formData );
     } catch (error) {
       return new ApiResponse({} as IPqrsdf, EResponseCodes.FAIL, "Error no controlado");
