@@ -6,12 +6,13 @@ import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { classNames } from "primereact/utils";
 import { Card } from "primereact/card";
-import { DataTable, DataTableSelection } from "primereact/datatable";
+import { DataTable, DataTableSelection, DataTableSelectionChangeEvent } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { IWorkEntityFilters } from "../../interfaces/workEntity.interfaces";
 import { MessageComponent } from "./message.component";
 import { ProgressSpinner } from "primereact/progressspinner";
+import { RadioButton } from "primereact/radiobutton";
 
 interface PageNumber {
   page: number;
@@ -46,6 +47,7 @@ export const ChangeResponsibleComponent = (props: Props) => {
   const [cancelar, setCancelar] = useState(false);
   const [changeUser, setChangeUser] = useState(false);
   const [changeBtn, setChangeBtn] = useState(true);
+  const [datosUser, setDatosUser] = useState('');
   const [selectPage, setSelectPage] = useState<PageNumber>({ page: 5 });
   const dataTable = useRef(null);
 
@@ -53,6 +55,7 @@ export const ChangeResponsibleComponent = (props: Props) => {
   const [data, setData] = useState([]);
 
   const getData = (data: DataTableSelection<[]>) => {
+    
     dataTable.current = data;
     setChangeBtn(false);
   };
@@ -60,7 +63,7 @@ export const ChangeResponsibleComponent = (props: Props) => {
   const defaultValues = {
     identification: "",
     names: "",
-    lastName: "",
+    lastNames: "",
     email: "",
   };
 
@@ -94,7 +97,7 @@ export const ChangeResponsibleComponent = (props: Props) => {
   if (
     watch("names").length > 0 ||
     watch("identification").length > 0 ||
-    watch("lastName").length > 0 ||
+    watch("lastNames").length > 0 ||
     watch("email").length > 0
   ) {
     statusButon = false;
@@ -107,13 +110,13 @@ export const ChangeResponsibleComponent = (props: Props) => {
 
       const payload: IWorkEntityFilters = {
         email,
-        lastNames,
+        lastNames:filter.lastNames,
         names,
         identification: parseInt(identification),
-      };
+      };      
 
       const response = await workEntityService.getUserByFilters(payload);
-      const { data, operation } = response;
+      const { data, operation } = response;      
 
       if (operation.code !== "OK") {
         setLoad(false), setError(true);
@@ -195,6 +198,23 @@ export const ChangeResponsibleComponent = (props: Props) => {
       },
     };
   };
+
+  
+  const seleTemplate = (user:DataTableSelection<[]>) => { 
+    return (
+        <>
+          <div className="flex align-items-center">
+            <RadioButton 
+              value="User" 
+              onChange={(e) => {
+                setDatosUser(e.value)
+                getData(user)
+              }} 
+              checked={datosUser === 'User'} />
+    </div>
+        </>
+    );
+};
 
   const closeIcon = () => (
     <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -298,7 +318,7 @@ export const ChangeResponsibleComponent = (props: Props) => {
                 <label>Apellidos</label>
                 <br />
                 <Controller
-                  name="lastName"
+                  name="lastNames"
                   control={control}
                   rules={{
                     maxLength: { value: 50, message: "Solo se permiten 50 caracteres" },
@@ -398,7 +418,6 @@ export const ChangeResponsibleComponent = (props: Props) => {
                     rows={selectPage.page}
                     showGridlines={false}
                     stripedRows={true}
-                    onSelectionChange={(e) => getData(e.value)}
                     dataKey="id"
                     emptyMessage={
                       <span className="!font-sans">
@@ -423,8 +442,9 @@ export const ChangeResponsibleComponent = (props: Props) => {
                     <Column
                       field="selet"
                       header="Seleccionar"
-                      selectionMode="single"
+                      body={seleTemplate}
                       style={{ textAlign: "center" }}
+                      className="flex justify-center"
                       headerStyle={{ display: "flex", justifyContent: "center" }}
                     ></Column>
                   </DataTable>

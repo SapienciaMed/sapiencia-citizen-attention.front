@@ -119,7 +119,7 @@ export function usePqrsdfService() {
     formData.append('soportFile', JSON.stringify(files));
     formData.append('pqrsdf', JSON.stringify(pqrsdf));
 
-    console.log(formData);
+    //console.log(formData);
     
     try {
       const endpoint: string = `/response/`;
