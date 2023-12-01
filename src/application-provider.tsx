@@ -13,12 +13,12 @@ function ApplicationProvider({ children }: IPropsAppProvider): React.JSX.Element
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
-          BenefactorgetAuthorization(token)
+          getAuthorization(token)
             .then((res) => {
               if (res.operation.code == EResponseCodes.OK) {
                 setAuthorization(res.data);
               } else {
-                getAuthorization(token)
+                BenefactorgetAuthorization(token)
                 .then((res) => {
                   if (res.operation.code == EResponseCodes.OK) {
                     setAuthorization(res.data);
@@ -26,9 +26,9 @@ function ApplicationProvider({ children }: IPropsAppProvider): React.JSX.Element
                     localStorage.removeItem("token");
                   }
                 })
+                .catch(() => {});
               }
             })
-
             .catch(() => {});
         }
     }, []);
