@@ -1,6 +1,6 @@
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { fetchData } from "../../apis/fetchData";
@@ -8,7 +8,6 @@ import { fetchData } from "../../apis/fetchData";
 import { Calendar } from "primereact/calendar";
 import { Nullable } from "primereact/ts-helpers";
 import { classNames } from "primereact/utils";
-import { useParams } from "react-router-dom";
 import { usePqrsdfService } from "../../hooks/PqrsdfService.hook";
 import { FormPqrsdf, IPqrsdf } from "../../interfaces/pqrsdf.interfaces";
 import { toLocaleDate } from "../../utils/helpers";
@@ -48,6 +47,8 @@ export const CitizenInformation = ({ isPerson = false, channel,resetChanel }: Pr
   
   const channels = channel as IChannel;
   
+  const location = useLocation();  
+  const isPortal = location.pathname.includes('portal')  
   const navigate = useNavigate();
   const optionSolicitudes = ApiDatatypoSolicitudes.read();
   const optionTypeDocument = ApiDatatypoDocument.read();
@@ -471,7 +472,7 @@ export const CitizenInformation = ({ isPerson = false, channel,resetChanel }: Pr
             style={{ backgroundColor: "533893" }}
             onClick={() => {
               setVisibleMsg(false),
-              navigate("/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf")
+              navigate(isPortal ? "/portal/ingreso" : "/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf")
             }}
             label="Cerrar"
             rounded
