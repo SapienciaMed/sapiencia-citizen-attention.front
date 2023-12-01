@@ -57,6 +57,21 @@ export function useAuthService() {
     }
   }
 
+  async function BenefactorgetAuthorization(
+    token: string
+  ): Promise<ApiResponse<IAuthorization>> {
+    try {
+      const endpoint: string = `/benefactor-authorization/get-by-token/${token}`;
+      return await get(`${baseCitizenAttetionURL}${externalAuthUrl}${endpoint}`);
+    } catch (error) {
+      return new ApiResponse(
+        {} as IAuthorization,
+        EResponseCodes.FAIL,
+        "Error no controlado"
+      );
+    }
+  }
+
   async function recoveryPassword(
     data: Object
   ): Promise<ApiResponse<IResponseSignIn>> {    
@@ -118,6 +133,7 @@ export function useAuthService() {
     benefactorSignIn,
     externalSignIn,
     getAuthorization,
+    BenefactorgetAuthorization,
     recoveryPassword,
     changeUserPassword,
     validateTokenRecovery,

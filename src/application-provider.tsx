@@ -8,19 +8,27 @@ interface IPropsAppProvider {
 }
 
 function ApplicationProvider({ children }: IPropsAppProvider): React.JSX.Element {
-    const { getAuthorization } = useAuthService();
+    const { getAuthorization, BenefactorgetAuthorization } = useAuthService();
     const { setAuthorization } = useContext(AppContext);
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
-          getAuthorization(token)
+          BenefactorgetAuthorization(token)
             .then((res) => {
               if (res.operation.code == EResponseCodes.OK) {
                 setAuthorization(res.data);
               } else {
-                localStorage.removeItem("token");
+                getAuthorization(token)
+                .then((res) => {
+                  if (res.operation.code == EResponseCodes.OK) {
+                    setAuthorization(res.data);
+                  } else {
+                    localStorage.removeItem("token");
+                  }
+                })
               }
             })
+
             .catch(() => {});
         }
     }, []);
