@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
 import { IProgram } from "./program.interfaces";
+import { IMotive } from "./motive.interfaces";
 export interface IRequestSubjectType {
   aso_codigo?: number;
   aso_asunto: string;
@@ -8,6 +9,7 @@ export interface IRequestSubjectType {
   requestObjectId?: number;
   requestObject?: IRequestObject;
   programs?: IProgram[];
+  motives?: IMotive[];
   createdAt?: DateTime;
   updatedAt?: DateTime;
 }

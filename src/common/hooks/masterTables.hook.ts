@@ -3,7 +3,8 @@ import {  Countrys, Departament,
           IChannelAttetion, IChannelAttetionDetail, 
           IMunicipality, ItypeDocument, 
           ItypeRFequest, IlegalEntityType, 
-          IMResponseMedium, IProgram, ISubjectRequest, IResposeType, IFactors } from "../interfaces/mastersTables.interface";
+          IMResponseMedium, IProgram, IResposeType, IFactors } from "../interfaces/mastersTables.interface";
+import { IRequestSubjectType } from "../interfaces/requestSubjectType.interfaces";
 import { ApiResponse } from "../utils/api-response";
 import useCrudService from "./crud-service.hook";
 
@@ -11,6 +12,7 @@ import useCrudService from "./crud-service.hook";
 export function mastersTablesServices() {
     const baseURL: string = process.env.urlApiCitizenAttention;
     const listUrl: string = "/api/v1/utility";
+    const CitizenUrl: string = "/api/v1/citizen-attention";
     const { get } = useCrudService(baseURL);
 
     async function getDocuemntType(): Promise<ApiResponse<ItypeDocument[]>> {
@@ -103,13 +105,13 @@ export function mastersTablesServices() {
       }
     };
 
-    async function getSbjectRequest(): Promise<ApiResponse<ISubjectRequest[]>> {
+    async function getSbjectRequest(): Promise<ApiResponse<IRequestSubjectType[]>> {
       try {
-        const endpoint: string = `/get-solicitudes`;
-        return await get(`${endpoint}`);
+        const endpoint: string = `/get-request-subject-types`;
+        return await get(`${CitizenUrl}${endpoint}`);
       } catch (error) {
-        return new ApiResponse([], EResponseCodes.FAIL, "Error no controlado");
-      }
+        return new ApiResponse([] as IRequestSubjectType[], EResponseCodes.FAIL, "Error no controlado");
+      }     
     };
 
     async function getResponseTypes(): Promise<ApiResponse<IResposeType[]>> {
