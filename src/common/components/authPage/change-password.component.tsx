@@ -42,7 +42,7 @@ function ChangePassword({ action }): React.JSX.Element {
 
     const object = {
       password: data.password,
-      token: localStorage.getItem('token')
+      tokenRecovery: localStorage.getItem('token')
     }
     const { data: dataResponse, operation } = await changeUserPassword(object)
 
@@ -87,17 +87,20 @@ function ChangePassword({ action }): React.JSX.Element {
   }
 
   return (
-    <main className="container-grid_changePassword">
-      <article className="changePassword-visualization"></article>
+    <main className="container-grid_recoveryPassword">
+      <article className="recoveryPassword-visualization"></article>
 
-      <article className="container-changePassword">
-        <section className="container-form_changePassword">
-          <label className="text-main biggest bold">Cambiar contraseña</label>
-          <p className="text-primary big not-margin-padding text-center">
+      <article className="container-recoveryPassword">
+      <div className="container-close">
+          <span onClick={() => navigate("../ingreso")}>x</span> 
+      </div>
+        <section className="container-form_recoveryPassword">
+          <label className="text-main text-center biggest">Cambiar contraseña</label>
+          <p className="text-black big not-margin-padding text-center">
             Por favor digita la siguiente información para cambiar tu contraseña
           </p>
           <FormComponent
-            className="form-changePassword"
+            className="form-recoveryPassword"
             id="form-changePassword"
             action={onSubmitChangePassword}
           >
@@ -106,7 +109,7 @@ function ChangePassword({ action }): React.JSX.Element {
               className="input-basic-login"
               register={register}
               label="Nueva contraseña"
-              classNameLabel="text-primary medium bold"
+              classNameLabel="text-black big"
               direction={EDirection.column}
               errors={errors}
               placeholder={"Contraseña nueva"}
@@ -116,7 +119,7 @@ function ChangePassword({ action }): React.JSX.Element {
               className="input-basic-login"
               register={register}
               label="Confirmación"
-              classNameLabel="text-primary medium bold"
+              classNameLabel="text-black big"
               direction={EDirection.column}
               errors={errors}
               placeholder={"Confirmar contraseña"}
@@ -146,22 +149,22 @@ const FooterRecoveryPasssword = (): React.JSX.Element => {
   const navigate = useNavigate();
 
   return (
-    <div className="content-footer_changePassword">
+    <div className="content-footer_recoveryPassword">
       <div className="container-buttons">
         <span className="bold text-center" onClick={() => navigate("../../portal/ingreso")}>
           Cancelar
         </span>
         <ButtonComponent
-          className="citizen-button-main big hover-three"
+          className="citizen-button-main big"
           value="Cambiar"
           type="submit"
           form="form-changePassword"
         />
       </div>
-      <div className="citizen-footer-img">
-        <img className="citizen-img-sapiencia" src={logoSapiencia} alt="Sapiencia" />
+      <div className="footer-img">
+        <img className="img-sapiencia" src={logoSapiencia} alt="Sapiencia" />
         <img
-          className="citizen-img-alcaldia"
+          className="img-alcaldia"
           src={logoAlcaldiaMedellin}
           alt="Alcaldia de medellin"
         />

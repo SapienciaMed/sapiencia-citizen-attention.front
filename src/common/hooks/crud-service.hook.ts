@@ -6,6 +6,8 @@ import { EResponseCodes } from "../constants/api.enum";
 
 function useCrudService<T>(baseUrl: string) {
   const { authorization } = useContext(AppContext);
+  // const token = sessionStorage.getItem('token')
+    
   const api = instanceApi(baseUrl);
   let errorMessage = "Hubo un error al cominicarse con la api.";
 

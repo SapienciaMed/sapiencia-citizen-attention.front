@@ -78,7 +78,7 @@ const FormSignIn = (): React.JSX.Element => {
             !isRememberData &&
             localStorage.removeItem("credentials");
   
-          localStorage.setItem("token", dataResponse.token);
+            localStorage.setItem("token", dataResponse.token);
           setAuthorization(dataResponse.authorization);
           navigate("/atencion-ciudadana");
         } else {

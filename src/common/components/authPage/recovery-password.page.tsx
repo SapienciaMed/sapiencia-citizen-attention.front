@@ -17,6 +17,8 @@ import { useNavigate } from "react-router-dom";
 import { EResponseCodes } from "../../constants/api.enum";
 import { AppContext } from "../../contexts/app.context";
 
+import "../../../styles/auth-styles.scss";
+
 function RecoveryPassword(): React.JSX.Element {
   const navigate = useNavigate();
  
@@ -26,7 +28,7 @@ function RecoveryPassword(): React.JSX.Element {
 
       <article className="container-recoveryPassword">
         <div className="container-close">
-          <span onClick={() => navigate("../aurora/ingreso")}>x</span>
+          <span onClick={() => navigate("../ingreso")}>x</span>
         </div>
         <section className="container-form_recoveryPassword">
           <label className="text-main text-center biggest bold">
@@ -65,7 +67,7 @@ const FormRecoveryPassword = (): React.JSX.Element => {
   } = useForm<IRequestRecoveryPassword>({ resolver });
 
   // // Metodo que hace la peticion al api
-  const onSubmitSignIn = handleSubmit(async (data) => {
+  const onSubmitSendRecoveryToken = handleSubmit(async (data) => {
     const { data: dataResponse, operation } = await recoveryPasswordService(
       data
     );
@@ -78,7 +80,7 @@ const FormRecoveryPassword = (): React.JSX.Element => {
         OkTitle: "Aceptar",
         onOk: () => {
           setMessage({});
-          navigate("../aurora/ingreso");
+          navigate("../ingreso");
         },
         background: true,
       });
@@ -101,10 +103,10 @@ const FormRecoveryPassword = (): React.JSX.Element => {
       <FormComponent
         className="form-recoveryPassword"
         id="form-recovery_password"
-        action={onSubmitSignIn}
+        action={onSubmitSendRecoveryToken}
       >
         <InputComponent
-          idInput="numberDocument"
+          idInput="identification"
           className="input-basic-login"
           typeInput="text"
           register={register}          
@@ -145,11 +147,11 @@ const FooterRecoveryPasssword = (): React.JSX.Element => {
   return (
     <div className="content-footer_recoveryPassword">
       <div className="container-buttons">
-        <span className="text-center" onClick={() => navigate("../portal/ingreso")}>
+        <span className="text-center" onClick={() => navigate("../ingreso")}>
           Cancelar
         </span>
         <ButtonComponent
-          className="button-main huge hover-three"
+          className="citizen-button-main big"
           value="Recuperar"
           type="submit"
           form="form-recovery_password"         
