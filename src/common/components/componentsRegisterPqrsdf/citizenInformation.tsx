@@ -1288,7 +1288,7 @@ export const CitizenInformation = ({ isPerson = false, channel,resetChanel }: Pr
           )}
         />
         <div className="alert-textarea">
-          {getFormErrorMessage("Descripción")}
+          {getFormErrorMessage("Descripcion")}
           <span className="font-label">Max 5000 caracteres</span>
         </div>
       </div>
