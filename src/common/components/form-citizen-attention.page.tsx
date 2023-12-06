@@ -299,10 +299,11 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
               response.data.pop();
               currentFetch.setData(response.data);
             }
-          } else {
-            if (response.operation.code === EResponseCodes.OK) {
-              currentFetch.setData(response.data);
+          } else if (response.operation.code === EResponseCodes.OK) {
+            if (currentFetch.method=='getSeviceChannels') {
+              response.data.pop();
             }
+            currentFetch.setData(response.data);
           }
         } catch (error) {
           console.error("Error al obtener la lista de tipos de documento:", error);
