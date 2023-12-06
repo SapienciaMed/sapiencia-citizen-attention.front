@@ -519,7 +519,7 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
         name: "Tipo",
         type: "select",
         key: "documentTypeId",
-        formClass: "w-20",
+        formClass: "w-36",
         optionLabel: "LGE_ELEMENTO_CODIGO",
         optionValue: "LGE_CODIGO",
         options: documentTypes,
