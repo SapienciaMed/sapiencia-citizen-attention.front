@@ -299,10 +299,11 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
               response.data.pop();
               currentFetch.setData(response.data);
             }
-          } else {
-            if (response.operation.code === EResponseCodes.OK) {
-              currentFetch.setData(response.data);
+          } else if (response.operation.code === EResponseCodes.OK) {
+            if (currentFetch.method=='getSeviceChannels') {
+              response.data.pop();
             }
+            currentFetch.setData(response.data);
           }
         } catch (error) {
           console.error("Error al obtener la lista de tipos de documento:", error);
@@ -518,7 +519,7 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
         name: "Tipo",
         type: "select",
         key: "documentTypeId",
-        formClass: "w-20",
+        formClass: "w-36",
         optionLabel: "LGE_ELEMENTO_CODIGO",
         optionValue: "LGE_CODIGO",
         options: documentTypes,

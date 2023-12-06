@@ -32,23 +32,21 @@ const ApiDataMunicipios = fetchData("/get-municipios/", "5");
 
 interface Props {
   isPerson?: boolean;
-  channel?:object;
+  channel?: object;
   resetChanel?: () => void;
 }
 
-interface IChannel{
-  channels?: string,
-  attention?: string,
-  isValid?:boolean
+interface IChannel {
+  channels?: string;
+  attention?: string;
+  isValid?: boolean;
 }
 
-
-export const CitizenInformation = ({ isPerson = false, channel,resetChanel }: Props) => {
-  
+export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: Props) => {
   const channels = channel as IChannel;
-  
-  const location = useLocation();  
-  const isPortal = location.pathname.includes('portal')  
+
+  const location = useLocation();
+  const isPortal = location.pathname.includes("portal");
   const navigate = useNavigate();
   const optionSolicitudes = ApiDatatypoSolicitudes.read();
   const optionTypeDocument = ApiDatatypoDocument.read();
@@ -137,7 +135,7 @@ export const CitizenInformation = ({ isPerson = false, channel,resetChanel }: Pr
   const [btnDisable, setBtnDisable] = useState("");
   const [statusSummit, SetstatusSummit] = useState<boolean>(true);
 
-  const seleTipoDocument = (document: { LGE_CODIGO: number; LGE_ELEMENTO_DESCRIPCION: string }) => {
+  const seleTipoDocument = (document: { LGE_CODIGO: number; LGE_ELEMENTO_CODIGO: string, LGE_ELEMENTO_DESCRIPCION: string }) => {
     setValueDocument(document);
 
     showFieldPersons.current = document == null ? "" : document.LGE_ELEMENTO_DESCRIPCION;
@@ -180,23 +178,21 @@ export const CitizenInformation = ({ isPerson = false, channel,resetChanel }: Pr
     return document;
   };
 
-  useEffect(()=>{
-
-    if(channels.isValid && isValid){
-      SetstatusSummit(false)
-    }else{
-      SetstatusSummit(true)
+  useEffect(() => {
+    if (channels.isValid && isValid) {
+      SetstatusSummit(false);
+    } else {
+      SetstatusSummit(true);
     }
-  },[channels.isValid])
+  }, [channels.isValid]);
 
-  useEffect(()=>{
-
-    if(channels.isValid && isValid){
-      SetstatusSummit(false)
-    }else{
-      SetstatusSummit(true)
+  useEffect(() => {
+    if (channels.isValid && isValid) {
+      SetstatusSummit(false);
+    } else {
+      SetstatusSummit(true);
     }
-  },[isValid])
+  }, [isValid]);
 
   const selectCountry = (pais: { LGE_CODIGO: number; LGE_ELEMENTO_DESCRIPCION: string }) => {
     setValuePais(pais);
@@ -260,7 +256,6 @@ export const CitizenInformation = ({ isPerson = false, channel,resetChanel }: Pr
 
   const [fileaa, setFileaa] = useState(null);
 
-
   const handleFileView = () => {
     if (fileaa) {
       const reader = new FileReader();
@@ -297,7 +292,6 @@ export const CitizenInformation = ({ isPerson = false, channel,resetChanel }: Pr
     return responseUser;
   };
 
-
   const { identification } = useParams();
 
   useEffect(() => {
@@ -320,8 +314,9 @@ export const CitizenInformation = ({ isPerson = false, channel,resetChanel }: Pr
         setValue("segundoNombre", user?.secondName, { shouldDirty: true });
         setSecondSurname(user?.secondSurname);
         setValue("segundoApellido", user?.secondSurname, { shouldDirty: true });
-        setValueDocument({
+        seleTipoDocument({
           LGE_CODIGO: user?.documentType?.id,
+          LGE_ELEMENTO_CODIGO: user?.documentType?.itemCode,
           LGE_ELEMENTO_DESCRIPCION: user?.documentType?.itemDescription,
         });
         setValueIdentification(user?.identification);
@@ -404,9 +399,9 @@ export const CitizenInformation = ({ isPerson = false, channel,resetChanel }: Pr
         isActive: true,
       },
     };
-    SetstatusSummit(true)
+    SetstatusSummit(true);
     const respFile = await pqrsdfService.upLoadFile(file);
-    const resp = await pqrsdfService.createPqrsdf(pqrsdf,file);
+    const resp = await pqrsdfService.createPqrsdf(pqrsdf, file);
 
     if (resp.operation["code"] == "OK") {
       radicado.current = resp.data.filingNumber;
@@ -421,10 +416,9 @@ export const CitizenInformation = ({ isPerson = false, channel,resetChanel }: Pr
       showDependecia.current = "";
       showClasificacion.current = "";
       SetstatusSummit(false);
-      setBirthDate(null)
-      resetChanel()
+      setBirthDate(null);
+      resetChanel();
       if (isPerson) {
-        
         resetField("tipoDeSolicitud");
         resetField("politicaTratamiento");
         resetField("medioRespuesta");
@@ -450,7 +444,7 @@ export const CitizenInformation = ({ isPerson = false, channel,resetChanel }: Pr
       <small className="p-error">&nbsp;</small>
     );
   };
-  
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="form-container">
       <div className=" flex justify-content-center">
@@ -472,7 +466,7 @@ export const CitizenInformation = ({ isPerson = false, channel,resetChanel }: Pr
             style={{ backgroundColor: "533893" }}
             onClick={() => {
               setVisibleMsg(false),
-              navigate(isPortal ? "/portal/ingreso" : "/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf")
+                navigate(isPortal ? "/portal/ingreso" : "/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf");
             }}
             label="Cerrar"
             rounded
@@ -1288,7 +1282,7 @@ export const CitizenInformation = ({ isPerson = false, channel,resetChanel }: Pr
           )}
         />
         <div className="alert-textarea">
-          {getFormErrorMessage("Descripción")}
+          {getFormErrorMessage("Descripcion")}
           <span className="font-label">Max 5000 caracteres</span>
         </div>
       </div>
@@ -1328,25 +1322,27 @@ export const CitizenInformation = ({ isPerson = false, channel,resetChanel }: Pr
             ></path>
           </svg>
         </label>
-        {file != undefined && file.name ? <div className="flex items-center">
-          <div>
-            <button 
-              className="!text-base !text-red-500"
-              onClick={()=>handleFileView()}
-            >
-              {file.name}
-            </button>
+        {file != undefined && file.name ? (
+          <div className="flex items-center">
+            <div>
+              <button className="!text-base !text-red-500" onClick={() => handleFileView()}>
+                {file.name}
+              </button>
+            </div>
+            <div>
+              <Button
+                icon={trashIcon}
+                onClick={() => setfile(null)}
+                rounded
+                text
+                severity="danger"
+                aria-label="Cancel"
+              />
+            </div>
           </div>
-          <div>
-          <Button icon={ trashIcon }
-            onClick={()=>setfile(null)} 
-            rounded 
-            text 
-            severity="danger" 
-            aria-label="Cancel" 
-          />
-          </div>
-        </div>: <></>}
+        ) : (
+          <></>
+        )}
 
         <Button label="Show" style={{ display: "none" }} name="modal" id="modal" onClick={() => setVisible(true)} />
         <Dialog
