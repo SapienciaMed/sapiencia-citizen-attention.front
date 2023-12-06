@@ -135,7 +135,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
   const [btnDisable, setBtnDisable] = useState("");
   const [statusSummit, SetstatusSummit] = useState<boolean>(true);
 
-  const seleTipoDocument = (document: { LGE_CODIGO: number; LGE_ELEMENTO_DESCRIPCION: string }) => {
+  const seleTipoDocument = (document: { LGE_CODIGO: number; LGE_ELEMENTO_CODIGO: string, LGE_ELEMENTO_DESCRIPCION: string }) => {
     setValueDocument(document);
 
     showFieldPersons.current = document == null ? "" : document.LGE_ELEMENTO_DESCRIPCION;
@@ -316,6 +316,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
         setValue("segundoApellido", user?.secondSurname, { shouldDirty: true });
         seleTipoDocument({
           LGE_CODIGO: user?.documentType?.id,
+          LGE_ELEMENTO_CODIGO: user?.documentType?.itemCode,
           LGE_ELEMENTO_DESCRIPCION: user?.documentType?.itemDescription,
         });
         setValueIdentification(user?.identification);
