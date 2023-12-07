@@ -84,6 +84,8 @@ export const ManagetPqrsdfComponent = (props: Props) => {
 
     const [typeReques, setTypeRequest] = useState<ItypeRFequest[]>();
     const [typelegalEntity, setTypelegalEntity] = useState<IlegalEntityType[]>();
+    const [loadData, setLoadData] = useState(false);
+    const [isUpdatePerson, setIsUpdatePerson] = useState(false);
     const [countrys, setCountrys] = useState<Countrys[]>();
     const [departamets, setDepartamets] = useState<Departament[]>();
     const [municipalitys, setMunicipalitys] = useState<IMunicipality[]>();
@@ -341,6 +343,10 @@ export const ManagetPqrsdfComponent = (props: Props) => {
         return birthdate;
     };
 
+    const personIsChange =() =>{
+
+    }
+
     useEffect(() => {
         getInfoPqrsdf(id).then(({ data }) => {
             //console.log(data);
@@ -471,6 +477,8 @@ export const ManagetPqrsdfComponent = (props: Props) => {
             setDocumentTypeId(data['person']['documentType']['id']);
             setPqrsdfId(data['id'])
             setPersonId(data.personId)
+
+            setLoadData(true);
         })
     }, []);
 
@@ -707,6 +715,24 @@ export const ManagetPqrsdfComponent = (props: Props) => {
         }
     }
 
+    const isPersonChange = () =>{
+        if (loadData) {                    
+            const values = [
+                getValues('responseMediun'),
+                getValues('typeLegalEntity'),
+                getValues('firstName'),                
+                getValues('lastName'),                
+                getValues('brithdayDate'),
+                getValues('firtContact'),                
+                getValues('email'),                
+                getValues('country'),
+                getValues('departament'),
+                getValues('municipality'),
+            ].filter((val) => val != null && val != "" && val != undefined);
+            setIsUpdatePerson(!!values.length);
+        }
+    }
+
     const sendResponses = async () => {
         const sendResponse: IPqrsdf = {
             id: id,
@@ -854,7 +880,10 @@ export const ManagetPqrsdfComponent = (props: Props) => {
                                                         id={field.name}
                                                         value={field.value}
                                                         className={classNames({ 'p-invalid': fieldState.error }, 'h-10 flex items-center input-mobil-manage-acordeon')}
-                                                        onChange={(e) => field.onChange(e.target.value)} />
+                                                        onChange={(e) => {
+                                                            field.onChange(e.target.value)
+                                                            isPersonChange();
+                                                        }} />
                                                 </span>
                                                 {getFormErrorMessage(field.name)}
                                             </>
@@ -881,7 +910,10 @@ export const ManagetPqrsdfComponent = (props: Props) => {
                                                         value={field.value}
                                                         keyfilter={'alpha'}
                                                         className={classNames({ 'p-invalid': fieldState.error }, 'h-10 flex items-center input-mobil-manage-acordeon')}
-                                                        onChange={(e) => field.onChange(e.target.value)} />
+                                                        onChange={(e) => {
+                                                            field.onChange(e.target.value)
+                                                            isPersonChange();
+                                                        }} />
                                                 </span>
                                                 {getFormErrorMessage(field.name)}
                                             </>
@@ -904,7 +936,10 @@ export const ManagetPqrsdfComponent = (props: Props) => {
                                                         value={field.value}
                                                         keyfilter={'alpha'}
                                                         className={classNames({ 'p-invalid': fieldState.error }, 'h-10 flex items-center input-mobil-manage-acordeon')}
-                                                        onChange={(e) => field.onChange(e.target.value)} />
+                                                        onChange={(e) => {
+                                                            field.onChange(e.target.value)
+                                                            isPersonChange();
+                                                        }} />
                                                 </span>
                                                 {getFormErrorMessage(field.name)}
                                             </>
@@ -928,7 +963,10 @@ export const ManagetPqrsdfComponent = (props: Props) => {
                                                         value={field.value}
                                                         keyfilter={'alpha'}
                                                         className={classNames({ 'p-invalid': fieldState.error }, 'h-10 flex items-center input-mobil-manage-acordeon')}
-                                                        onChange={(e) => field.onChange(e.target.value)} />
+                                                        onChange={(e) => {
+                                                            field.onChange(e.target.value)
+                                                            isPersonChange();
+                                                        }} />
                                                 </span>
                                                 {getFormErrorMessage(field.name)}
                                             </>
@@ -951,7 +989,10 @@ export const ManagetPqrsdfComponent = (props: Props) => {
                                                         value={field.value}
                                                         keyfilter={'alpha'}
                                                         className={classNames({ 'p-invalid': fieldState.error }, 'h-10 flex items-center input-mobil-manage-acordeon')}
-                                                        onChange={(e) => field.onChange(e.target.value)} />
+                                                        onChange={(e) => {
+                                                            field.onChange(e.target.value)
+                                                            isPersonChange();
+                                                        }} />
                                                 </span>
                                                 {getFormErrorMessage(field.name)}
                                             </>
@@ -978,7 +1019,10 @@ export const ManagetPqrsdfComponent = (props: Props) => {
                                                     <Calendar
                                                         inputId={field.name}
                                                         value={birthday}
-                                                        onChange={(e) => field.onChange(handleDateChange(e.value))}
+                                                        onChange={(e) => {
+                                                            field.onChange(handleDateChange(e.value))
+                                                            isPersonChange();
+                                                        }}
                                                         dateFormat="dd/mm/yy"
                                                         placeholder='DD / MM / AAA'
                                                         maxDate={maxDate}
@@ -1020,7 +1064,10 @@ export const ManagetPqrsdfComponent = (props: Props) => {
                                                         value={field.value}
                                                         keyfilter={'num'}
                                                         className={classNames({ 'p-invalid': fieldState.error }, 'h-10 flex items-center input-mobil-manage-acordeon')}
-                                                        onChange={(e) => field.onChange(e.target.value)} />
+                                                        onChange={(e) => {
+                                                            field.onChange(e.target.value)
+                                                            isPersonChange();
+                                                        }} />
                                                 </span>
                                                 {getFormErrorMessage(field.name)}
                                             </>
@@ -1043,7 +1090,10 @@ export const ManagetPqrsdfComponent = (props: Props) => {
                                                         value={field.value}
                                                         keyfilter={'num'}
                                                         className={classNames({ 'p-invalid': fieldState.error }, 'h-10 flex items-center input-mobil-manage-acordeon')}
-                                                        onChange={(e) => field.onChange(e.target.value)} />
+                                                        onChange={(e) => {
+                                                            field.onChange(e.target.value)
+                                                            isPersonChange();
+                                                        }} />
                                                 </span>
                                                 {getFormErrorMessage(field.name)}
                                             </>
@@ -1075,7 +1125,10 @@ export const ManagetPqrsdfComponent = (props: Props) => {
                                                         id={field.name}
                                                         value={field.value}
                                                         className={classNames({ 'p-invalid': fieldState.error }, 'h-10 flex items-center div-100')}
-                                                        onChange={(e) => field.onChange(e.target.value)} />
+                                                        onChange={(e) => {
+                                                            field.onChange(e.target.value)
+                                                            isPersonChange();
+                                                        }} />
                                                 </span>
                                                 {getFormErrorMessage(field.name)}
                                             </>
@@ -1098,7 +1151,10 @@ export const ManagetPqrsdfComponent = (props: Props) => {
                                                         id={field.name}
                                                         value={field.value}
                                                         className={classNames({ 'p-invalid': fieldState.error }, 'h-10 flex items-center div-100')}
-                                                        onChange={(e) => field.onChange(e.target.value)} />
+                                                        onChange={(e) => {
+                                                            field.onChange(e.target.value);
+                                                            isPersonChange();
+                                                        }} />
                                                 </span>
                                                 {getFormErrorMessage(field.name)}
                                             </>
@@ -1129,6 +1185,7 @@ export const ManagetPqrsdfComponent = (props: Props) => {
                                             onChange={(e) => field.onChange(() => {
                                                 setCountry(e.value);
                                                 setValue('country', e.value);
+                                                isPersonChange();
                                             })}
                                             className={classNames({ 'p-invalid': fieldState.error }, 'h-10 flex items-center input-mobil-manage-acordeon')}
                                         />
@@ -1158,6 +1215,7 @@ export const ManagetPqrsdfComponent = (props: Props) => {
                                             onChange={(e) => field.onChange(() => {
                                                 setDepartamet(e.value);
                                                 setValue('departament', e.value);
+                                                isPersonChange();
                                             })}
                                             className={classNames({ 'p-invalid': fieldState.error }, 'h-10 flex items-center input-mobil-manage-acordeon')}
                                         />
@@ -1187,6 +1245,7 @@ export const ManagetPqrsdfComponent = (props: Props) => {
                                             onChange={(e) => field.onChange(() => {
                                                 setMunicipality(e.value);
                                                 setValue('municipality', e.value)
+                                                isPersonChange();
                                             })}
                                             className={classNames({ 'p-invalid': fieldState.error }, 'h-10 flex items-center input-mobil-manage-acordeon')}
                                         />
@@ -1218,6 +1277,7 @@ export const ManagetPqrsdfComponent = (props: Props) => {
                                                     options={responsesMediuns}
                                                     focusInputRef={field.ref}
                                                     onChange={(e) => field.onChange(() => {
+                                                        isPersonChange();
                                                         setResponsesMediun(e.value);
                                                         setValue('responseMediun', e.value);
                                                     })}
@@ -1235,7 +1295,7 @@ export const ManagetPqrsdfComponent = (props: Props) => {
                                     <Button
                                         onClick={() => { updatePerson() }}
                                         label="Actualizar"
-                                        disabled
+                                        disabled={!isUpdatePerson}
                                         className="rounded-full"
                                     />)}
                         </div>
