@@ -298,7 +298,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
   const selectProgram = (programId) => {
     const program = programs.filter((program) => program.prg_codigo == programId)[0];
     const optionsRequestSubjectTypes = program?.affairs ? program.affairs : [];
-    setClasification(program?.clpClasificacionPrograma?.[0].clp_descripcion);
+    setClasification(program?.clpClasificacionPrograma?.[0]?.clp_descripcion);
     setDependence(program?.depDependencia?.dep_descripcion);
     setRequestSubjectTypes(optionsRequestSubjectTypes);
     setValue("asuntoSolicitud", "");
@@ -386,10 +386,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
         setAddress(user?.address);
         setValue("direccion", user?.address, { shouldDirty: true });
 
-        setValueTypeEntidad({
-          TEJ_CODIGO: user?.entityType?.tej_codigo,
-          TEJ_NOMBRE: user?.entityType?.tej_nombre,
-        });
+        setValueTypeEntidad(user?.entityType?.tej_codigo);
         setValue("pais", user?.countryId);
         const country = await selectCountry(user?.countryId, false);
         await selectDepartment(user?.departmentId, country.childs, false);
@@ -426,7 +423,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
       person: {
         identification: data["noDocumento"],
         documentTypeId: data.tipo["LGE_CODIGO"],
-        entityTypeId: data.tipoEntidad["TEJ_CODIGO"],
+        entityTypeId: getValues("tipoEntidad"),
         firstName: data["primerNombre"],
         secondName: data["segundoNombre"],
         firstSurname: data["primerApellido"],
@@ -653,7 +650,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
                       id={field.name}
                       value={field.value}
                       className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                      // optionValue="TEJ_CODIGO"
+                      optionValue="TEJ_CODIGO"
                       onChange={(e) =>
                         field.onChange(() => {
                           setValueTypeEntidad(e.value);

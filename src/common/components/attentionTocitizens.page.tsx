@@ -6,7 +6,7 @@ import { classNames } from "primereact/utils";
 import { useEffect, useReducer, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import "../../styles/attentionCitizens-styles.scss";
-import { usePqrsdfService } from "../hooks/PqrsdfService.hook"
+import { usePqrsdfService } from "../hooks/PqrsdfService.hook";
 import { TableGenericComponent } from "./genericComponent/table.component";
 import { mastersTablesServices } from "../hooks/masterTables.hook";
 
@@ -43,7 +43,7 @@ const AttentionTocitizens = () => {
   const [loadbuton, setLoadbuton] = useState(false);
 
   const navigate = useNavigate();
-  const statusButton = useRef(true)
+  const statusButton = useRef(true);
 
   const pqrsdfService = usePqrsdfService();
   const masterTablesServices = mastersTablesServices();
@@ -64,52 +64,57 @@ const AttentionTocitizens = () => {
     watch,
     reset,
   } = useForm({ defaultValues, mode: "all" });
-  
+
   useBreadCrumb({
     isPrimaryPage: true,
     name: "Radicar PQRDSF",
     url: "atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf",
-  });  
+  });
 
   const resetForm = () => {
-    setLoad(false), 
-    reset();
-    setLoadbuton(false)
+    setLoad(false), reset();
+    setLoadbuton(false);
     setUser([]);
-    setSelectDocumentType(null)
+    setSelectDocumentType(null);
     statusButton.current = true;
   };
-  
- useEffect(()=>{
-  if (
-    watch("names").length > 0 ||
-    watch("identification").length > 0 ||
-    watch("lastNames").length > 0 ||
-    watch("email").length > 0 ||
-    selectDocumentType !== null ||
-    watch("contactNumber").length > 0
-  ) {
-    setLoadbuton(false)
-  }else{
-    setLoadbuton(true)
-    setUser([]); 
-  } 
 
- },[ watch("names"), watch("identification"),watch("lastNames"),watch("email"),selectDocumentType,watch("contactNumber")])
+  useEffect(() => {
+    if (
+      watch("names").length > 0 ||
+      watch("identification").length > 0 ||
+      watch("lastNames").length > 0 ||
+      watch("email").length > 0 ||
+      selectDocumentType !== null ||
+      watch("contactNumber").length > 0
+    ) {
+      setLoadbuton(false);
+    } else {
+      setLoadbuton(true);
+      setUser([]);
+    }
+  }, [
+    watch("names"),
+    watch("identification"),
+    watch("lastNames"),
+    watch("email"),
+    selectDocumentType,
+    watch("contactNumber"),
+  ]);
 
+  const getDocumentType = async () => {
+    const docuementsTypes = await masterTablesServices.getDocuemntType();
+    return docuementsTypes;
+  };
 
-
-  const getDocumentType = async ()=>{
-    const docuementsTypes = await masterTablesServices.getDocuemntType()
-    return docuementsTypes
-  }
-
-  useEffect(()=>{
-    getDocumentType().then(({data})=>{ setDocumentType(data) });
-  },[])
+  useEffect(() => {
+    getDocumentType().then(({ data }) => {
+      setDocumentType(data);
+    });
+  }, []);
 
   const onSubmit = async (filter: Payload) => {
-    setLoadbuton(true)
+    setLoadbuton(true);
     try {
       const { email, identification, lastNames, names, documentTypeId, contactNumber } = filter;
 
@@ -122,28 +127,30 @@ const AttentionTocitizens = () => {
         contactNumber,
       };
 
-      const response = await pqrsdfService.getPeopleByFilters(payload)
+      const response = await pqrsdfService.getPeopleByFilters(payload);
       const { data, operation } = response;
       const { array } = data;
-      
+
       if (operation.code !== "OK") {
         setLoad(true);
         return;
       }
-  
+
       const usersData = array.map((user) => {
         return {
-          identification: `${user['identification']}`,
-          names: `${user['firstName']} ${user['firstSurname']}`,
-          lastName: user['secondName'],
-          email: user['email'],
-          noContact1: user['firstContactNumber'],
-          noContact2: user['secondContactNumber'],
-          userId: user['id'],
+          identification: `${user["identification"]}`,
+          names: `${user["firstName"]}${user?.secondName ? " " + user?.secondName : ""} ${user["firstSurname"]}${
+            user?.secondSurname ? " " + user?.secondSurname : ""
+          }`,
+          lastName: user["secondName"],
+          email: user["email"],
+          noContact1: user["firstContactNumber"],
+          noContact2: user["secondContactNumber"],
+          userId: user["id"],
         };
-      })
+      });
       setLoad(false);
-      
+
       setUser(usersData);
     } catch (error) {}
   };
@@ -180,11 +187,12 @@ const AttentionTocitizens = () => {
                             value={selectDocumentType}
                             options={documentType}
                             onChange={(e) => setSelectDocumentType(e.value)}
-                            optionLabel="LGE_ELEMENTO_DESCRIPCION" 
+                            optionLabel="LGE_ELEMENTO_DESCRIPCION"
                             optionValue="LGE_CODIGO"
-                            className="h-10 col-100" 
-                            placeholder="Seleccionar" 
-                            style={{ alignItems: "center" }} />
+                            className="h-10 col-100"
+                            placeholder="Seleccionar"
+                            style={{ alignItems: "center" }}
+                          />
                         </>
                       )}
                     />
@@ -328,15 +336,15 @@ const AttentionTocitizens = () => {
                   type="button"
                   label="Limpiar Campos"
                 ></Button>
-                <Button 
-                  className="rounded-full !h-10" 
-                  type="submit" 
-                  disabled={loadbuton }
+                <Button
+                  className="rounded-full !h-10"
+                  type="submit"
+                  disabled={loadbuton}
                   label="Buscar"
-                  onClick={()=>{statusButton.current = true}}
-                  >
-              
-                </Button>
+                  onClick={() => {
+                    statusButton.current = true;
+                  }}
+                ></Button>
               </div>
             </form>
           </Card>
@@ -349,7 +357,9 @@ const AttentionTocitizens = () => {
               nameBtn1="Radicar"
               nameBtn2="Cancelar"
               onClickBt2={() => setLoad(false)}
-              onClickBt1={()=>{navigate("/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf/radicar")}}
+              onClickBt1={() => {
+                navigate("/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf/radicar");
+              }}
             />
           ) : (
             <></>
