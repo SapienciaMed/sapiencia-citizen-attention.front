@@ -301,7 +301,7 @@ export const ChangeResponsibleComponent = (props: Props) => {
                       <InputText
                         id={field.name}
                         value={field.value}
-                        keyfilter="alpha"
+                        keyfilter={/^[a-zA-Z\s]*$/}
                         className={classNames({ "p-invalid": fieldState.error }, "!h-10 col-100")}
                         onChange={(e) => field.onChange(e.target.value)}
                       />
@@ -328,7 +328,7 @@ export const ChangeResponsibleComponent = (props: Props) => {
                       <InputText
                         id={field.name}
                         value={field.value}
-                        keyfilter="alpha"
+                        keyfilter={/^[a-zA-Z\s]*$/}
                         className={classNames({ "p-invalid": fieldState.error }, "!h-10 col-100")}
                         onChange={(e) => field.onChange(e.target.value)}
                       />

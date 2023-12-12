@@ -231,7 +231,7 @@ const AttentionTocitizens = () => {
                             value={field.value}
                             className={classNames({ "p-invalid": fieldState.error }, "h-10 col-100")}
                             onChange={(e) => field.onChange(e.target.value)}
-                            keyfilter="alpha"
+                            keyfilter={/^[a-zA-Z\s]*$/}
                           />
                         </span>
                         {getFormErrorMessage(field.name)}
@@ -255,7 +255,7 @@ const AttentionTocitizens = () => {
                             value={field.value}
                             className={classNames({ "p-invalid": fieldState.error }, "h-10 col-100")}
                             onChange={(e) => field.onChange(e.target.value)}
-                            keyfilter="alpha"
+                            keyfilter={/^[a-zA-Z\s]*$/}
                           />
                         </span>
                         {getFormErrorMessage(field.name)}
