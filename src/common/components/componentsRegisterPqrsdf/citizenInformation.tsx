@@ -395,10 +395,10 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
         await selectDepartment(user?.departmentId, country.childs, false);
         setTimeout(() => {
           setValue("departamento", user?.departmentId);
-        }, 1000);
+        }, 500);
         setTimeout(() => {
           setValue("municipio", user?.municipalityId);
-        }, 1000);
+        }, 1500);
       };
 
       setInitialData();
@@ -653,7 +653,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
                       id={field.name}
                       value={field.value}
                       className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                      optionValue="TEJ_CODIGO"
+                      // optionValue="TEJ_CODIGO"
                       onChange={(e) =>
                         field.onChange(() => {
                           setValueTypeEntidad(e.value);

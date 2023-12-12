@@ -97,8 +97,8 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
 
   useBreadCrumb({
     isPrimaryPage: true,
-    name: "Registro de atención",
-    url: "/atencion-ciudadana/registrar-atencion",
+    name: "Gestionar PQRDSF",
+    url: "/atencion-ciudadana/gestionar-pqrsd",
   });
 
   const {
@@ -434,7 +434,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
 
   useEffect(() => {
     if (initDataLoaded) {
-      checkIsFilled();      
+      checkIsFilled();
     }
   }, [initDataLoaded]);
 
@@ -1821,7 +1821,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
               })}
             </div>
             <div className="w-full mt-4 md:mt-8 md:pt-0.5 citizen-attention">
-              <Accordion activeIndex={3}>
+              <Accordion activeIndex={null}>
                 {accordionTabs().map((tab, index) => {
                   return (
                     <AccordionTab header={tab.header} key={tab.key}>
