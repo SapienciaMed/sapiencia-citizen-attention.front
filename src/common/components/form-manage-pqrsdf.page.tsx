@@ -61,7 +61,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
   const [visibleDialog, setVisibleDialog] = useState(false);
   const [pqrsdfData, setPqrsdfData] = useState<IPqrsdf>();
   const [perPage, setPerPage] = useState(10);
-  const [tableData, setTableData] = useState<InfoTable[]>([]);  
+  const [tableData, setTableData] = useState<InfoTable[]>([]);
   const [fileResponsePqrsdf, setFileResponsePqrsdf] = useState<Blob>(null);
   const [fileName, setFileName] = useState<string>("");
   const [supportFiles, setSupportFiles] = useState<[]>([]);
@@ -77,7 +77,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
   const [legalEntityTypes, setLegalEntityTypes] = useState<ILegalEntityType[]>([]);
   const [requestSubjectTypes, setRequestSubjectTypes] = useState<IRequestSubjectType[]>([]);
   const [motives, setMotives] = useState<IMotive[]>([]);
-  const [dependencies, setDependencies] = useState<IDependence[]>([]);  
+  const [dependencies, setDependencies] = useState<IDependence[]>([]);
   const [programs, setPrograms] = useState<IProgram[]>([]);
   const [isMobile, setIsMobile] = useState(false);
   const [isFilled, setIsFilled] = useState(false);
@@ -243,7 +243,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
           closeIcon: closeIcon,
           acceptLabel: "Cerrar",
           footer: (options) => acceptButton(options),
-        });        
+        });
         navigate(-1);
       } else {
         confirmDialog({
@@ -676,14 +676,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
 
   const setRequestSubjectTypesByProgram = async (programId) => {
     const program = programs.filter((program) => program.prg_codigo == programId)[0];
-    const optionsRequestSubjectTypes = program?.affairs
-      ? program.affairs.map((affair) => {
-          return {
-            aso_codigo: affair.aso_codigo,
-            aso_asunto: affair.aso_asunto,
-          };
-        })
-      : [];
+    const optionsRequestSubjectTypes = program?.affairs ? program.affairs : [];
     setValue("programClasification", program?.clpClasificacionPrograma?.[0].clp_descripcion);
     setValue("programDependence", program?.depDependencia?.dep_descripcion);
     setRequestSubjectTypes(optionsRequestSubjectTypes);
