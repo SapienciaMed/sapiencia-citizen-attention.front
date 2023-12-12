@@ -434,8 +434,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
 
   useEffect(() => {
     if (initDataLoaded) {
-      checkIsFilled();
-      trigger();
+      checkIsFilled();      
     }
   }, [initDataLoaded]);
 
