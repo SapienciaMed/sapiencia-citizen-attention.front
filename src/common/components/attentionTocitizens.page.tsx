@@ -54,7 +54,7 @@ const AttentionTocitizens = () => {
     names: "",
     lastNames: "",
     email: "",
-    noContact: "",
+    contactNumber: "",
   };
 
   const {
@@ -87,7 +87,7 @@ const AttentionTocitizens = () => {
     watch("lastNames").length > 0 ||
     watch("email").length > 0 ||
     selectDocumentType !== null ||
-    watch("noContact").length > 0
+    watch("contactNumber").length > 0
   ) {
     setLoadbuton(false)
   }else{
@@ -95,7 +95,7 @@ const AttentionTocitizens = () => {
     setUser([]); 
   } 
 
- },[ watch("names"), watch("identification"),watch("lastNames"),watch("email"),selectDocumentType,watch("noContact")])
+ },[ watch("names"), watch("identification"),watch("lastNames"),watch("email"),selectDocumentType,watch("contactNumber")])
 
 
 
@@ -269,7 +269,7 @@ const AttentionTocitizens = () => {
                   <label>No. De contacto</label>
                   <br />
                   <Controller
-                    name="noContact"
+                    name="contactNumber"
                     control={control}
                     rules={{ maxLength: { value: 10, message: "Solo se permiten 10 caracteres" } }}
                     render={({ field, fieldState }) => (
