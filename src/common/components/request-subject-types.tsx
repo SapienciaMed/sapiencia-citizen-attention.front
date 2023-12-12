@@ -330,7 +330,9 @@ function RequestSubjectTypesPage(): React.JSX.Element {
         name: "Días",
         key: "termino_dias",
         body: (rowData: IRequestSubjectType) => {
-          return rowData?.requestObject?.obs_termino_dias + " " + rowData?.requestObject?.obs_tipo_dias;
+          return rowData?.requestObject
+            ? rowData?.requestObject?.obs_termino_dias + " " + rowData?.requestObject?.obs_tipo_dias
+            : "";
         },
         showForm: false,
       },

@@ -387,12 +387,15 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
         setValue("direccion", user?.address, { shouldDirty: true });
 
         setValueTypeEntidad(user?.entityType?.tej_codigo);
-        setValue("pais", user?.countryId);
+
         const country = await selectCountry(user?.countryId, false);
+        setTimeout(() => {
+          setValue("pais", user?.countryId);
+        }, 1000);
         await selectDepartment(user?.departmentId, country.childs, false);
         setTimeout(() => {
           setValue("departamento", user?.departmentId);
-        }, 500);
+        }, 1250);
         setTimeout(() => {
           setValue("municipio", user?.municipalityId);
         }, 1500);
