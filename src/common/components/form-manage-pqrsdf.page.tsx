@@ -408,11 +408,11 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
     const department = auxDepartments.filter((department) => department.id == pqrsdf?.person?.departmentId)[0];
     setTimeout(() => {
       setValue("person.departmentId", pqrsdf?.person?.departmentId);
-    }, 100);
+    }, 1000);
     await getMunicipalities(department);
     setTimeout(() => {
       setValue("person.municipalityId", pqrsdf?.person?.municipalityId);
-    }, 100);
+    }, 1000);
 
     setValue("responseMediumId", pqrsdf?.responseMediumId);
     //Request information

@@ -395,10 +395,10 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
         await selectDepartment(user?.departmentId, country.childs, false);
         setTimeout(() => {
           setValue("departamento", user?.departmentId);
-        }, 100);
+        }, 1000);
         setTimeout(() => {
           setValue("municipio", user?.municipalityId);
-        }, 100);
+        }, 1000);
       };
 
       setInitialData();
