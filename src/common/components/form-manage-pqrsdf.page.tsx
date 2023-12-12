@@ -406,9 +406,14 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
     const country = countries.filter((country) => country.id == pqrsdf?.person?.countryId)[0];
     const auxDepartments = await getDepartments(country);
     const department = auxDepartments.filter((department) => department.id == pqrsdf?.person?.departmentId)[0];
-    setValue("person.departmentId", pqrsdf?.person?.departmentId);
+    setTimeout(() => {
+      setValue("person.departmentId", pqrsdf?.person?.departmentId);
+    }, 100);
     await getMunicipalities(department);
-    setValue("person.municipalityId", pqrsdf?.person?.municipalityId);
+    setTimeout(() => {
+      setValue("person.municipalityId", pqrsdf?.person?.municipalityId);
+    }, 100);
+
     setValue("responseMediumId", pqrsdf?.responseMediumId);
     //Request information
     setValue("programId", pqrsdf?.programId);
