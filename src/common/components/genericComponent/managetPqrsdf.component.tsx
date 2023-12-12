@@ -22,7 +22,7 @@ import { IGenericData } from "../../interfaces/genericData.interfaces";
 import {
     Countrys,
     Departament,
-    IFactors,
+    IFactor,
     IMResponseMedium,
     IMunicipality,
     IProgram,
@@ -40,11 +40,11 @@ import { toLocaleDate } from "../../utils/helpers";
 import { MessageComponent } from "../componentsEditWorkEntities/message.component";
 import { showIcon } from "../icons/show";
 import { trashIcon } from "../icons/trash";
-import { UploadManagetComponen } from "./uploadManagetComponen";
 import { AppContext } from '../../contexts/app.context';
 import { IPerson } from '../../interfaces/person.interfaces';
 import { EResponseCodes } from '../../constants/api.enum';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { UploadManagetComponent } from './uploadManagetComponent';
 
 interface City {
     name: string;
@@ -99,7 +99,7 @@ export const ManagetPqrsdfComponent = (props: Props) => {
     const [workEntitys, setWorkEntitys] = useState<IWorkEntityType[]>();
     const [arrayworkEntitys, setArrayWorkEntitys] = useState<IWorkEntityType[]>();
     const [arrayUserManage, setArrayArrayUserManage] = useState<IUserManageEntity[]>();
-    const [arrayFactors, setArrayFactors] = useState<IFactors[]>();
+    const [arrayFactors, setArrayFactors] = useState<IFactor[]>();
     const [selectPage, setSelectPage] = useState<PageNumber>({ page: 5 });
     const pageNumber: PageNumber[] = [{ page: 5 }, { page: 10 }, { page: 15 }, { page: 20 }];
     const [tableData, setTableData] = useState<InfoTable[]>([]);
@@ -126,7 +126,7 @@ export const ManagetPqrsdfComponent = (props: Props) => {
     const [disableIntput, setDisableIntput] = useState<boolean>(true);
     const [obligatoryField, setObligatoryField] = useState<boolean>(false);
     const [styleDisableIntput, setStyleDisableIntput] = useState<string>('input-desabled');
-    const [factors, setFactors] = useState<IFactors>();
+    const [factors, setFactors] = useState<IFactor>();
     const [fileResponsePqrsdf, setFileResponsePqrsdf] = useState<object>(null);
     const [statusSend, setStatusSend] = useState<boolean>(false);
     const [cancelAction, setCancelAction] = useState<boolean>(false);
@@ -542,6 +542,7 @@ export const ManagetPqrsdfComponent = (props: Props) => {
     };
 
     const accionesIcons = (data) => {
+        
         return (
             <>
                 <div className="flex justify-center items-center">
@@ -752,7 +753,7 @@ export const ManagetPqrsdfComponent = (props: Props) => {
                 name: nameFilePqrsdf,
                 isActive: true,
             },
-            pqrsdfResponse: {
+            response: {
                 filingNumber: filedNumber,
                 isPetitioner: getValues('responseType').id == 4 || getValues('responseType').description == 'Cerrar con respuesta',
                 pqrsdfId: pqrsdfId,
@@ -1496,7 +1497,7 @@ export const ManagetPqrsdfComponent = (props: Props) => {
                                     closeIcon={closeIcon}
                                     className="dialog-manage"
                                 >
-                                    <UploadManagetComponen
+                                    <UploadManagetComponent
                                         getNameFile={(e) => { }}
                                         filesSupportDocument={(e) => {
                                             setSupportFiles(e)
@@ -1786,7 +1787,7 @@ export const ManagetPqrsdfComponent = (props: Props) => {
                                     closeIcon={closeIcon}
                                     className="dialog-manage"
                                 >
-                                    <UploadManagetComponen
+                                    <UploadManagetComponent
                                         multiple={false}
                                         statusDialog={(e) => { setVisibleDialog(e) }}
                                         getNameFile={(e) => setNameFile(e)}

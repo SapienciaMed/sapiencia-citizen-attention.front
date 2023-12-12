@@ -6,16 +6,19 @@ import { IFile } from "./file.interfaces";
 import { IRequestType } from "./requestType.interfaces";
 import { IWorkEntity } from "./workEntity.interfaces";
 import { IMotive } from "./motive.interfaces";
+import { IProgram } from "./program.interfaces";
 
 export interface IPqrsdf {
   id?: number;
   requestTypeId: number;
   personId?: number;
   responseMediumId: number;
-  requestSubjectId: number;
+  programId?: number;
   responsibleId?: number;
+  requestSubjectId: number;
   fileId?: number;
   motiveId?: number;
+  statusId?: number;
   filingNumber?: number;
   idCanalesAttencion?: number;
   clasification: string;
@@ -24,34 +27,30 @@ export interface IPqrsdf {
   requestType?: IRequestType;
   motive?: IMotive;
   person?: IPerson;
-  program?: IProgram;
   answer?: string;
+  program?: IProgram;
   answerDate?: DateTime;
   responsible?: IWorkEntity;
   responseMedium?: IResponseMedium;
   requestSubject?: IRequestSubject;
+  status?: IPqrsdfStatus;
+  response?: IPqrsdfResponse;
   file?: IFile;
   closedAt?: DateTime;
   createdAt?: DateTime;
   updatedAt?: DateTime;
-  pqrsdfResponse?: IPqrsdfResponse;
 }
 
-export interface IProgram {
-  prg_codigo: number;
-  prg_descripcion: string,
-  prg_clasificacion: number;
-  prg_dependencia: number;
-  prg_activo: number;
-  prg_orden: number;
-  depDependencia: IdepDependencia;
-  clpClasificacionPrograma: IclpClasificacionPrograma
+export interface IPqrsdfStatus {
+  lep_codigo?: number;
+  lep_estado?: string;
+  lep_activo?: boolean;
+  lep_orden?: number;
 }
-
 
 export interface IclpClasificacionPrograma {
   clp_codigo: number;
-  clp_descripcion: string,
+  clp_descripcion: string;
   clp_programa: number;
   clp_activo: number;
   clp_orden: number;
@@ -90,8 +89,7 @@ export interface FormPqrsdf {
   archivo: Archivo;
 }
 
-interface Archivo {
-}
+interface Archivo {}
 
 interface AsuntoSolicitud {
   ASO_CODIGO: number;
@@ -152,13 +150,12 @@ interface TypeEntidad {
   TEJ_NOMBRE: string;
 }
 
-
 export interface IrequestPqrsdf {
   userId?: number;
   typeReques?: number;
 }
 
-export interface IpqrsdfByReques {
+export interface IpqrsdfByRequest {
   PQR_CODIGO?: number;
   PQR_NRO_RADICADO?: number;
   PQR_FECHA_CREACION?: string;
@@ -196,9 +193,10 @@ export interface IPqrsdfResponse {
   factorId?: number;
   fileId?: number;
   assignedUserId?: number;
+  assignedDependenceId?: number;
   respondingUserId?: number;
+  respondingDependenceId?: number;
   observation?: string;
   createdAt?: DateTime;
   updatedAt?: DateTime;
 }
-

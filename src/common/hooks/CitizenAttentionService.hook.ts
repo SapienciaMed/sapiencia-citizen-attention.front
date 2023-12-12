@@ -14,6 +14,11 @@ import useCrudService from "./crud-service.hook";
 import { IDependence } from "../interfaces/dependence.interfaces";
 import { IRequestSubjectType } from "../interfaces/requestSubjectType.interfaces";
 import { IGenericData } from "../interfaces/genericData.interfaces";
+import { IRequestType } from "../interfaces/requestType.interfaces";
+import { ILegalEntityType } from "../interfaces/legalEntityType.interfaces";
+import { IResponseMedium } from "../interfaces/responseMedium.interfaces";
+import { IResponseType } from "../interfaces/responseType.interfaces";
+import { IFactor } from "../interfaces/mastersTables.interface";
 
 export function useCitizenAttentionService() {
   const baseURL: string = process.env.urlApiCitizenAttention;
@@ -59,10 +64,61 @@ export function useCitizenAttentionService() {
     }
   }
 
+  async function getResponseTypes(): Promise<ApiResponse<IResponseType[]>> {
+    try {
+      const endpoint: string = `/get-response-types`;
+      return await get(`${listUrl}${endpoint}`);
+    } catch (error) {
+      return new ApiResponse([] as IResponseType[], EResponseCodes.FAIL, "Error no controlado");
+    }
+  }
+  
+
   async function getStratums(): Promise<ApiResponse<IGenericData[]>> {
     try {
       const endpoint: string = `/get-stratums`;
       return await get(`${listUrl}${endpoint}`);
+    } catch (error) {
+      return new ApiResponse([] as IGenericData[], EResponseCodes.FAIL, "Error no controlado");
+    }
+  }
+
+  async function getCountries(): Promise<ApiResponse<IGenericData[]>> {
+    try {
+      const endpoint: string = `/get-countries`;
+      return await get(`${listUrl}${endpoint}`);
+    } catch (error) {
+      return new ApiResponse([] as IGenericData[], EResponseCodes.FAIL, "Error no controlado");
+    }
+  }
+
+  async function getDepartments(countryId?: number): Promise<ApiResponse<IGenericData[]>> {
+    try {
+      const endpoint: string = `/get-departments`;
+      return await get(
+        `${listUrl}${endpoint}`,
+        countryId
+          ? {
+              countryId: countryId,
+            }
+          : {}
+      );
+    } catch (error) {
+      return new ApiResponse([] as IGenericData[], EResponseCodes.FAIL, "Error no controlado");
+    }
+  }
+
+  async function getMunicipalities(departmentId?: number): Promise<ApiResponse<IGenericData[]>> {
+    try {
+      const endpoint: string = `/get-municipalities`;
+      return await get(
+        `${listUrl}${endpoint}`,
+        departmentId
+          ? {
+              departmentId: departmentId,
+            }
+          : {}
+      );
     } catch (error) {
       return new ApiResponse([] as IGenericData[], EResponseCodes.FAIL, "Error no controlado");
     }
@@ -86,12 +142,39 @@ export function useCitizenAttentionService() {
     }
   }
 
+  async function getResponseMediums(): Promise<ApiResponse<IResponseMedium[]>> {
+    try {
+      const endpoint: string = `/get-response-mediums`;
+      return await get(`${listUrl}${endpoint}`);
+    } catch (error) {
+      return new ApiResponse([] as IResponseMedium[], EResponseCodes.FAIL, "Error no controlado");
+    }
+  }
+
   async function getPrograms(): Promise<ApiResponse<IProgram[]>> {
     try {
       const endpoint: string = `/get-programs`;
       return await get(`${listUrl}${endpoint}`);
     } catch (error) {
       return new ApiResponse([] as IProgram[], EResponseCodes.FAIL, "Error no controlado");
+    }
+  }
+
+  async function getRequestTypes(): Promise<ApiResponse<IRequestType[]>> {
+    try {
+      const endpoint: string = `/get-request-types`;
+      return await get(`${listUrl}${endpoint}`);
+    } catch (error) {
+      return new ApiResponse([] as IRequestType[], EResponseCodes.FAIL, "Error no controlado");
+    }
+  }
+
+  async function getLegalEntityTypes(): Promise<ApiResponse<ILegalEntityType[]>> {
+    try {
+      const endpoint: string = `/get-legal-entity-types`;
+      return await get(`${listUrl}${endpoint}`);
+    } catch (error) {
+      return new ApiResponse([] as ILegalEntityType[], EResponseCodes.FAIL, "Error no controlado");
     }
   }
 
@@ -140,14 +223,31 @@ export function useCitizenAttentionService() {
     }
   }
 
+  async function getFactors(): Promise<ApiResponse<IFactor[]>> {
+    try {
+      const endpoint: string = `/get-factors`;
+      return await get(`/api/v1/utility${endpoint}`);
+    } catch (error) {
+      return new ApiResponse([], EResponseCodes.FAIL, "Error no controlado");
+    }
+  };
+
   return {
+    getFactors,
     getStratums,
     getPrograms,
+    getCountries,
     getValueGroups,
+    getDepartments,
     getDependencies,
     getDocumentType,
+    getRequestTypes,
+    getResponseTypes,
+    getMunicipalities,
     getCorregimientos,
     getSeviceChannels,
+    getResponseMediums,
+    getLegalEntityTypes,
     getRequestSubjectTypes,
     updateCitizenAttention,
     createCitizenAttention,

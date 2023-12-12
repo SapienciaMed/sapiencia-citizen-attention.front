@@ -7,9 +7,10 @@ export interface IRequestSubjectType {
   aso_activo?: boolean;
   aso_orden?: number;
   requestObjectId?: number;
+  affairProgramId?: number;
   requestObject?: IRequestObject;
-  programs?: IProgram[];
   motives?: IMotive[];
+  programs?: IProgram[];
   createdAt?: DateTime;
   updatedAt?: DateTime;
 }

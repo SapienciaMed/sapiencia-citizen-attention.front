@@ -87,7 +87,7 @@ export function useWorkEntityService() {
 
   async function getEntityManagersByEntityTypeId(id:number): Promise<ApiResponse<IUserManageEntity[]>> {
     try {
-      const endpoint: string = `/get-Entitymanagers-by-entityType-id/${id}`;
+      const endpoint: string = `/get-entitymanagers-by-entityType-id/${id}`;
       return await get(`${listUrl}${endpoint}`);
     } catch (error) {
       return new ApiResponse([] , EResponseCodes.FAIL, "Error no controlado");

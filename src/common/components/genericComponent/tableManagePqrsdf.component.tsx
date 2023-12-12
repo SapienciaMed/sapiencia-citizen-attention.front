@@ -143,7 +143,7 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                         <div>
                         {authorization?.allowedActions &&
                         authorization?.allowedActions?.findIndex((i) => i == "GESTIONAR_PQRSDF") >= 0 && (
-                            <Link to={''} onClick={()=>managetPqr({pqrsdfId:pqrsdf.pqrsdfId,managetStatus:true})}>
+                            <Link to={"" + pqrsdf.pqrsdfId}>
                                 <Tooltip target=".custom-target-icon" style={{borderRadius:'1px'}} />
                                 <i className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center"
                                     data-pr-tooltip="Gestionar"

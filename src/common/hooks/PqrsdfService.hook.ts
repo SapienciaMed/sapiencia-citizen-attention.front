@@ -1,6 +1,6 @@
 import { EResponseCodes } from "../constants/api.enum";
 import { IPerson, IPersonFilters } from "../interfaces/person.interfaces";
-import { IPqrsdf, IpqrsdfByReques, IrequestPqrsdf, IrequestReopen } from "../interfaces/pqrsdf.interfaces";
+import { IPqrsdf, IpqrsdfByRequest, IrequestPqrsdf, IrequestReopen } from "../interfaces/pqrsdf.interfaces";
 import { ApiResponse, IPagingData } from "../utils/api-response";
 import useCrudService from "./crud-service.hook";
 import formDataService from "./form-data.hook";
@@ -85,13 +85,13 @@ export function usePqrsdfService() {
     }
   }
 
-  async function getPqrsdfByRequest(filters: IrequestPqrsdf): Promise<ApiResponse<IpqrsdfByReques[] | null>> {
+  async function getPqrsdfByRequest(filters: IrequestPqrsdf): Promise<ApiResponse<IpqrsdfByRequest[] | null>> {
       
     try {
       const endpoint: string = `/get-request-by-filters`;
       return await post(`${listUrl}${endpoint}`,  filters );
     } catch (error) {
-      return new ApiResponse({} as IpqrsdfByReques[] , EResponseCodes.FAIL, "Error no controlado");
+      return new ApiResponse({} as IpqrsdfByRequest[] , EResponseCodes.FAIL, "Error no controlado");
     }
   }
 

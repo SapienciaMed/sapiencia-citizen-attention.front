@@ -3,7 +3,7 @@ import { Card } from 'primereact/card';
 import { usePqrsdfService } from '../hooks/PqrsdfService.hook';
 import { useDaysParametrizationService } from '../hooks/daysParametrizationService.hook';
 import { IDaysParametrization } from '../interfaces/daysParametrization.interfaces';
-import { IrequestPqrsdf, IpqrsdfByReques } from '../interfaces/pqrsdf.interfaces';
+import { IrequestPqrsdf, IpqrsdfByRequest } from '../interfaces/pqrsdf.interfaces';
 import moment from 'moment-timezone';
 import { ManagetPqrsdfComponent } from './genericComponent/managetPqrsdf.component';
 import { TableManagePqrsdfComponent } from './genericComponent/tableManagePqrsdf.component';
@@ -133,7 +133,7 @@ const ManagePqrsdf = () => {
     const resp = await pqrsdfService.getPqrsdfByRequest(param)
     const { data } = resp;
     
-    const pqrsdfData = data.map((pqr:IpqrsdfByReques)=>{
+    const pqrsdfData = data.map((pqr:IpqrsdfByRequest)=>{
       return{
         radicado: pqr['PQR_NRO_RADICADO'],
         identification: pqr['PER_NUMERO_DOCUMENTO'],

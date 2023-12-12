@@ -21,6 +21,15 @@ const toLocaleDate = (date: string | Date, isMoment = false): Date => {
   return localeDate;
 };
 
+const splitUrl = (url: string) => {
+  const split = url.split("/");
+  const urlSplit = split.slice(0, -1);
+  const fileName = urlSplit.pop();
+  const namepath = `${urlSplit[0]}/${urlSplit[1]}/${fileName}`;
+
+  return { fileName, namepath };
+};
+
 /**
  * get all months in an array per language
  *
@@ -43,4 +52,4 @@ const capitalize = (str: string): string => {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 };
 
-export { toLocaleDate, allMonths, capitalize, emailPattern };
+export { toLocaleDate, allMonths, capitalize, emailPattern, splitUrl };
