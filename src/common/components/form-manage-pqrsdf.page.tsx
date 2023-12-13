@@ -490,8 +490,20 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
     checkIsFilled();
   };
 
-  const getFormErrorMessage = (name) => {
-    return errors[name] ? <small className="p-error">{errors[name].message}</small> : "";
+  const getFormErrorMessage = (name: string) => {
+    let property = name.includes(".") ? name.split(".") : name;
+    let error = null;
+
+    if (Array.isArray(property)) {
+      let auxErrors = errors;
+      property.forEach((item) => {
+        error = auxErrors?.[item];
+        auxErrors = error;
+      });
+    } else {
+      error = errors?.[property];
+    }
+    return error ? <small className="p-error">{error.message}</small> : "";
   };
 
   const columnsDB = () => {
@@ -603,6 +615,8 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
 
   const getDepartments = async (country?: IGenericData) => {
     let departments: IGenericData[] = [];
+    console.log(country?.itemCode);
+    
     if (country) {
       setLoading(true);
       try {
@@ -610,12 +624,18 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         if (response.operation.code === EResponseCodes.OK) {
           departments = response.data;
           setDepartments(response.data);
+        } else {
+          setDepartments([]);
         }
+        setMunicipalities([]);
       } catch (error) {
         console.error("Error al obtener la lista:", error);
       } finally {
         setLoading(false);
       }
+    } else {
+      setDepartments([]);
+      setMunicipalities([]);
     }
     return departments;
   };
@@ -629,12 +649,16 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         if (response.operation.code === EResponseCodes.OK) {
           municipalities = response.data;
           setMunicipalities(response.data);
+        } else {
+          setMunicipalities([]);
         }
       } catch (error) {
         console.error("Error al obtener la lista:", error);
       } finally {
         setLoading(false);
       }
+    }else{
+      setMunicipalities([]);
     }
     return municipalities;
   };

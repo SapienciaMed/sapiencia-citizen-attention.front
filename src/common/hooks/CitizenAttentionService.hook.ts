@@ -72,7 +72,6 @@ export function useCitizenAttentionService() {
       return new ApiResponse([] as IResponseType[], EResponseCodes.FAIL, "Error no controlado");
     }
   }
-  
 
   async function getStratums(): Promise<ApiResponse<IGenericData[]>> {
     try {
@@ -230,7 +229,7 @@ export function useCitizenAttentionService() {
     } catch (error) {
       return new ApiResponse([], EResponseCodes.FAIL, "Error no controlado");
     }
-  };
+  }
 
   return {
     getFactors,
