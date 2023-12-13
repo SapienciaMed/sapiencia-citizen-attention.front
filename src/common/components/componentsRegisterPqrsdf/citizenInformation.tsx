@@ -262,7 +262,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
     if (country) {
       // setLoading(true);
       try {
-        const response = await service.getDepartments(parseInt(country.itemCode));
+        const response = await service.getDepartments(country.itemCode);
         if (response.operation.code === EResponseCodes.OK) {
           departments = response.data;
           setDepartments(response.data);
