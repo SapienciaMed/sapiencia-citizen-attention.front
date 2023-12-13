@@ -1,8 +1,16 @@
+import { DateTime } from "luxon";
+import { Accordion, AccordionTab } from "primereact/accordion";
 import { Button } from "primereact/button";
+import { Calendar } from "primereact/calendar";
+import { Column } from "primereact/column";
 import { ConfirmDialog, ConfirmDialogOptions, confirmDialog } from "primereact/confirmdialog";
+import { DataTable } from "primereact/datatable";
+import { Dialog } from "primereact/dialog";
 import { Dropdown } from "primereact/dropdown";
+import { InputSwitch } from "primereact/inputswitch";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
+import { Tooltip } from "primereact/tooltip";
 import { classNames } from "primereact/utils";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -10,36 +18,29 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import useBreadCrumb from "../../common/hooks/bread-crumb.hook";
 import { EResponseCodes } from "../constants/api.enum";
 import { EDocumentTypes } from "../constants/documentTypes";
+import { AppContext } from "../contexts/app.context";
+import { useCitizenAttentionService } from "../hooks/CitizenAttentionService.hook";
 import { usePqrsdfService } from "../hooks/PqrsdfService.hook";
+import { useWorkEntityService } from "../hooks/WorkEntityService.hook";
 import useCheckMobileScreen from "../hooks/isMobile.hook";
 import { IDependence } from "../interfaces/dependence.interfaces";
+import { IFile } from "../interfaces/file.interfaces";
 import { IGenericData } from "../interfaces/genericData.interfaces";
+import { ILegalEntityType } from "../interfaces/legalEntityType.interfaces";
+import { IFactor, IResposeType } from "../interfaces/mastersTables.interface";
+import { IMotive } from "../interfaces/motive.interfaces";
+import { IPerson } from "../interfaces/person.interfaces";
 import { IPqrsdf } from "../interfaces/pqrsdf.interfaces";
 import { IProgram } from "../interfaces/program.interfaces";
 import { IRequestSubjectType } from "../interfaces/requestSubjectType.interfaces";
-import { emailPattern, splitUrl, toLocaleDate } from "../utils/helpers";
-import { useCitizenAttentionService } from "../hooks/CitizenAttentionService.hook";
 import { IRequestType } from "../interfaces/requestType.interfaces";
-import { ILegalEntityType } from "../interfaces/legalEntityType.interfaces";
-import { Accordion, AccordionTab } from "primereact/accordion";
-import { Calendar } from "primereact/calendar";
 import { IResponseMedium } from "../interfaces/responseMedium.interfaces";
-import { IPerson } from "../interfaces/person.interfaces";
-import { IMotive } from "../interfaces/motive.interfaces";
-import { IFile } from "../interfaces/file.interfaces";
-import { Dialog } from "primereact/dialog";
-import { Column } from "primereact/column";
+import { IUserManageEntity, IWorkEntity } from "../interfaces/workEntity.interfaces";
+import { IWorkEntityType } from "../interfaces/workEntityType.interface";
+import { emailPattern, splitUrl, toLocaleDate } from "../utils/helpers";
 import { UploadManagetComponent } from "./genericComponent/uploadManagetComponent";
-import { AppContext } from "../contexts/app.context";
-import { DataTable } from "primereact/datatable";
-import { InputSwitch } from "primereact/inputswitch";
-import { Tooltip } from "primereact/tooltip";
 import { showIcon } from "./icons/show";
 import { trashIcon } from "./icons/trash";
-import { IFactor, IResposeType } from "../interfaces/mastersTables.interface";
-import { useWorkEntityService } from "../hooks/WorkEntityService.hook";
-import { IWorkEntityType } from "../interfaces/workEntityType.interface";
-import { IUserManageEntity, IWorkEntity } from "../interfaces/workEntity.interfaces";
 
 interface Props {
   isEdit?: boolean;
@@ -59,6 +60,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
   const [isUpdatePerson, setIsUpdatePerson] = useState(false);
   const { authorization } = useContext(AppContext);
   const [visibleDialog, setVisibleDialog] = useState(false);
+  const [currentWorkEntity, setCurrentWorkEntity] = useState<IWorkEntity>();
   const [pqrsdfData, setPqrsdfData] = useState<IPqrsdf>();
   const [perPage, setPerPage] = useState(10);
   const [tableData, setTableData] = useState<InfoTable[]>([]);
@@ -224,8 +226,40 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
       let values = getValues();
       let payload = values as IPqrsdf;
       payload.id = parseInt(id);
+      if (watchResponseTypeId == 3) {
+        payload.extensionDate = DateTime.now();
+        payload.closedAt = getValues("isPetitioner") ? DateTime.now() : null;
+      }
+      payload.person = getPersonData();
+      payload.response = {
+        assignedUserId: getValues("assignedUserId"),
+        createdAt: DateTime.now(),
+        factorId: getValues("isPetitioner") ? null : getValues("factorId"),
+        isPetitioner: !!getValues("isPetitioner"),
+        observation: getValues("observation"),
+        respondingUserId: authorization.user.id,
+        respondingDependenceId: currentWorkEntity?.workEntityType?.dependenceId,
+        pqrsdfId: payload.id,
+        workEntityTypeId: getValues("isPetitioner") ? null : getValues("workEntityTypeId"),
+        responseTypeId: getValues("responseTypeId"),
+      };
       const response = await pqrsdfService.pqrsdfResponse(payload, fileResponsePqrsdf, supportFiles);
 
+      let message = "";
+      switch (watchResponseTypeId) {
+        case 3:
+          message = "Envío de solicitud de prórroga realizado con éxito";
+          break;
+        case 4:
+          message = "Solicitud cerrada satisfactoriamente";
+          break;
+        case 5:
+          message = "Solicitud cerrada satisfactoriamente";
+          break;
+        default:
+          message = "Respuesta enviada satisfactoriamente";
+          break;
+      }
       if (response.operation.code === EResponseCodes.OK) {
         confirmDialog({
           id: "messages",
@@ -235,9 +269,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
           message: (
             <div className="flex flex-wrap w-full items-center justify-center">
               <div className="mx-auto text-primary text-3xl w-full text-center">Envío exitoso</div>
-              <div className="flex items-center justify-center text-center w-full mt-6 pt-0.5">
-                Respuesta enviada satisfactoriamente
-              </div>
+              <div className="flex items-center justify-center text-center w-full mt-6 pt-0.5">{message}</div>
             </div>
           ),
           closeIcon: closeIcon,
@@ -357,15 +389,6 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         if (response.operation.code === EResponseCodes.OK) {
           setPqrsdfData(response.data);
           console.log(response.data);
-          let pqrsdf = response.data;
-          /* setValue("aso_asunto", pqrsdf.aso_asunto);
-          setValue("requestObjectId", pqrsdf.requestObjectId);
-          setValue(
-            "programId",
-            pqrsdf.programs.map((program) => {
-              return program.prg_codigo;
-            })
-          ); */
         } else {
           navigate(-1);
         }
@@ -377,6 +400,26 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
       }
     };
     fetchPqrsdf(parseInt(id));
+
+    const fetchWorkEntity = async (id: number) => {
+      setLoading(true);
+      try {
+        const response = await service.getWorkEntityByUserId(id);
+
+        if (response.operation.code === EResponseCodes.OK) {
+          setCurrentWorkEntity(response.data);
+          console.log(response.data);
+        } else {
+          navigate(-1);
+        }
+      } catch (error) {
+        navigate(-1);
+        console.error("Error al obtener la entidad de trabajo:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchWorkEntity(authorization.user.id);
 
     handleResize();
     window.addEventListener("resize", handleResize);
@@ -681,7 +724,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
   const setRequestSubjectTypesByProgram = async (programId) => {
     const program = programs.filter((program) => program.prg_codigo == programId)[0];
     const optionsRequestSubjectTypes = program?.affairs ? program.affairs : [];
-    setValue("programClasification", program?.clpClasificacionPrograma?.[0].clp_descripcion);
+    setValue("programClasification", program?.clpClasificacionPrograma?.[0]?.clp_descripcion);
     setValue("programDependence", program?.depDependencia?.dep_descripcion);
     setRequestSubjectTypes(optionsRequestSubjectTypes);
     setValue("requestSubjectId", "");
@@ -741,12 +784,13 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         options: motives,
         disabled: !initDataLoaded || loading,
         hidden: () => {
-          return !motives?.length;
+          return !motives?.length && pqrsdfData?.responsible?.workEntityTypeId != 3;
         },
         rules: {
           validate: {
-            required: () => {
-              if (motives?.length) return "El campo es obligatorio.";
+            required: (value) => {
+              if (motives?.length && pqrsdfData?.responsible?.workEntityTypeId == 3 && !value)
+                return "El campo es obligatorio.";
               return true;
             },
           },
@@ -1162,6 +1206,9 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
           if (watchResponseTypeId == 4) {
             setValue("workEntityTypeId", "");
           }
+          if (watchResponseTypeId != 1 && watchResponseTypeId != 2) {
+            setValue("assignedUserId", "");
+          }
         },
       },
       {
@@ -1174,12 +1221,23 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         options: workEntityTypes,
         disabled: !initDataLoaded || !workEntityTypes?.length || loading,
         hidden: () => {
-          return watchResponseTypeId == 4;
+          return (
+            (watchResponseTypeId == 5 && currentWorkEntity?.workEntityTypeId == 5) ||
+            (watchResponseTypeId == 4 &&
+              currentWorkEntity?.workEntityTypeId != 2 &&
+              currentWorkEntity?.workEntityTypeId != 7)
+          );
         },
         rules: {
           validate: {
             required: (value) => {
-              if (watchResponseTypeId != 4 && !value) return "El campo es obligatorio.";
+              if (
+                ((watchResponseTypeId != 5 && currentWorkEntity?.workEntityTypeId != 5 && watchResponseTypeId != 4) ||
+                  currentWorkEntity?.workEntityTypeId == 2 ||
+                  currentWorkEntity?.workEntityTypeId == 7) &&
+                !value
+              )
+                return "El campo es obligatorio.";
               return true;
             },
           },
@@ -1199,12 +1257,24 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         options: [{ id: 1, label: "Peticionario" }],
         disabled: !initDataLoaded || !workEntityTypes?.length || loading,
         hidden: () => {
-          return watchResponseTypeId != 4;
+          return (
+            (watchResponseTypeId == 5 && currentWorkEntity?.workEntityTypeId == 5) ||
+            (watchResponseTypeId != 4 &&
+              (currentWorkEntity?.workEntityTypeId == 2 || currentWorkEntity?.workEntityTypeId == 7))
+          );
         },
         rules: {
           validate: {
             required: (value) => {
-              if (watchResponseTypeId == 4 && !value) return "El campo es obligatorio.";
+              if (
+                watchResponseTypeId != 5 &&
+                currentWorkEntity?.workEntityTypeId != 5 &&
+                watchResponseTypeId == 4 &&
+                currentWorkEntity?.workEntityTypeId != 2 &&
+                currentWorkEntity?.workEntityTypeId != 7 &&
+                !value
+              )
+                return "El campo es obligatorio.";
               return true;
             },
           },
@@ -1464,6 +1534,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
                 <div className="grid w-full">
                   <Button
                     label="Adjuntar archivos"
+                    type="button"
                     className="flex flex-row-reverse w-44 !p-0 !font-medium !text-base"
                     onClick={() => setVisibleDialog(true)}
                     text
@@ -1547,7 +1618,6 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
   };
 
   const handleFileView = (file: Blob) => {
-    console.log(typeof file);
     if (file.type.includes("image")) {
       const fileUrl = URL.createObjectURL(file);
       window.open(fileUrl);

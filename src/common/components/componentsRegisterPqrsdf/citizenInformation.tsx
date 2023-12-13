@@ -191,7 +191,11 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
       }
     };
     fecthCountries();
+  }, []);
 
+  const { identification } = useParams();
+
+  useEffect(() => {
     const getUser = async (identification: string) => {
       try {
         const response = await pqrsdfService.getPersonByDocument(parseInt(identification));
@@ -204,8 +208,10 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
         // setLoading(false);
       }
     };
-    getUser(identification);
-  }, []);
+    if (identification) {
+      getUser(identification);
+    }
+  }, [identification]);
 
   useEffect(() => {
     if (channels.isValid && isValid) {
@@ -349,8 +355,6 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
     return estado;
   };
 
-  const { identification } = useParams();
-
   useEffect(() => {
     if (identification && personData) {
       setBtnDisable("input-desabled");
@@ -405,7 +409,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
     } else {
       setBtnDisable("");
     }
-  }, [personData, identification]);
+  }, [personData]);
 
   const handleDateChange = (date: any) => {
     setValue("fechaNacimento", date);

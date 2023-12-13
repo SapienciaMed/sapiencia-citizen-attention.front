@@ -30,6 +30,7 @@ export interface IPqrsdf {
   answer?: string;
   program?: IProgram;
   answerDate?: DateTime;
+  extensionDate?: DateTime;
   responsible?: IWorkEntity;
   responseMedium?: IResponseMedium;
   requestSubject?: IRequestSubject;

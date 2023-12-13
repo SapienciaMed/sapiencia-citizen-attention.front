@@ -127,7 +127,7 @@ export const ManagetPqrsdfComponent = (props: Props) => {
     const [obligatoryField, setObligatoryField] = useState<boolean>(false);
     const [styleDisableIntput, setStyleDisableIntput] = useState<string>('input-desabled');
     const [factors, setFactors] = useState<IFactor>();
-    const [fileResponsePqrsdf, setFileResponsePqrsdf] = useState<object>(null);
+    const [fileResponsePqrsdf, setFileResponsePqrsdf] = useState<Blob>(null);
     const [statusSend, setStatusSend] = useState<boolean>(false);
     const [cancelAction, setCancelAction] = useState<boolean>(false);
     const [nameFile, setNameFile] = useState<string>('');

@@ -56,79 +56,84 @@ export function usePqrsdfService() {
   async function getPeopleByFilters(filters: IPersonFilters): Promise<ApiResponse<IPagingData<IPerson | null>>> {
     try {
       const endpoint: string = `/get-people-by-filters`;
-      return await post(`${listUrl}${endpoint}`,  filters );
+      return await post(`${listUrl}${endpoint}`, filters);
     } catch (error) {
       return new ApiResponse({} as IPagingData<IPerson | null>, EResponseCodes.FAIL, "Error no controlado");
     }
   }
 
-  async function createPqrsdf(pqrsdf: IPqrsdf, file:string | Blob): Promise<ApiResponse<IPqrsdf>> {
+  async function createPqrsdf(pqrsdf: IPqrsdf, file: string | Blob): Promise<ApiResponse<IPqrsdf>> {
     const formData = new FormData();
-    formData.append('files', file)
-    formData.append('pqrsdf', JSON.stringify(pqrsdf))
+    formData.append("files", file);
+    formData.append("pqrsdf", JSON.stringify(pqrsdf));
     try {
       const endpoint: string = `/create`;
-      return await service.post(`${listUrl}${endpoint}`, formData );
+      return await service.post(`${listUrl}${endpoint}`, formData);
     } catch (error) {
       return new ApiResponse({} as IPqrsdf, EResponseCodes.FAIL, "Error no controlado");
     }
   }
-  
+
   async function upLoadFile(file: string | Blob) {
     const formData = new FormData();
-    formData.append('files', file);
+    formData.append("files", file);
     try {
       const endpoint: string = `/upload`;
-      return await service.post(`${listUrl}${endpoint}`,  formData );
+      return await service.post(`${listUrl}${endpoint}`, formData);
     } catch (error) {
       return new ApiResponse({} as IPagingData<IPerson | null>, EResponseCodes.FAIL, "Error no controlado");
     }
   }
 
   async function getPqrsdfByRequest(filters: IrequestPqrsdf): Promise<ApiResponse<IpqrsdfByRequest[] | null>> {
-      
     try {
       const endpoint: string = `/get-request-by-filters`;
-      return await post(`${listUrl}${endpoint}`,  filters );
+      return await post(`${listUrl}${endpoint}`, filters);
     } catch (error) {
-      return new ApiResponse({} as IpqrsdfByRequest[] , EResponseCodes.FAIL, "Error no controlado");
+      return new ApiResponse({} as IpqrsdfByRequest[], EResponseCodes.FAIL, "Error no controlado");
     }
   }
 
-  async function createRequestReopen(justification:IrequestReopen): Promise<ApiResponse<IrequestReopen>> {
+  async function createRequestReopen(justification: IrequestReopen): Promise<ApiResponse<IrequestReopen>> {
     try {
       const endpoint: string = `/create-request-reopen`;
-      return await post(`${listUrl}${endpoint}`,  justification );
+      return await post(`${listUrl}${endpoint}`, justification);
     } catch (error) {
       return new ApiResponse({} as IrequestReopen, EResponseCodes.FAIL, "Error no controlado");
     }
   }
 
-  async function updatePerson(person:IPerson): Promise<ApiResponse<IPerson>> {
+  async function updatePerson(person: IPerson): Promise<ApiResponse<IPerson>> {
     try {
       const endpoint: string = `/update-person`;
-      return await post(`${listUrl}${endpoint}`,  person);
+      return await post(`${listUrl}${endpoint}`, person);
     } catch (error) {
       return new ApiResponse({} as IPerson, EResponseCodes.FAIL, "Error no controlado");
     }
   }
 
-  async function pqrsdfResponse(pqrsdf: IPqrsdf, file: object, files:[]): Promise<ApiResponse<IPqrsdf>> {
+  async function pqrsdfResponse(pqrsdf: IPqrsdf, file?: Blob, files: Blob[] = []): Promise<ApiResponse<IPqrsdf>> {
     const formData = new FormData();
-    formData.append('files', JSON.stringify(file));
-    formData.append('soportFile', JSON.stringify(files));
-    formData.append('pqrsdf', JSON.stringify(pqrsdf));
+    if (file) {
+      formData.append("file", file);
+    }
+    if (files.length) {
+      files.forEach((file) => {
+        formData.append("supportFiles[]", file);
+      });
+    }
+    formData.append("pqrsdf", JSON.stringify(pqrsdf));
 
-    //console.log(formData);
-    
+    console.log(formData);
+
     try {
-      const endpoint: string = `/response/`;
-      return await service.post(`${listUrl}${endpoint}`, formData );
+      const endpoint: string = `/response`;
+      return await service.post(`${listUrl}${endpoint}`, formData);
     } catch (error) {
+      console.log(error);      
       return new ApiResponse({} as IPqrsdf, EResponseCodes.FAIL, "Error no controlado");
     }
   }
-
 
   return {
     getPqrsdfs,
