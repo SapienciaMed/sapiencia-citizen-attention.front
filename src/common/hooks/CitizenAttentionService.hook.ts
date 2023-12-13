@@ -91,7 +91,7 @@ export function useCitizenAttentionService() {
     }
   }
 
-  async function getDepartments(countryId?: number): Promise<ApiResponse<IGenericData[]>> {
+  async function getDepartments(countryId?: string): Promise<ApiResponse<IGenericData[]>> {
     try {
       const endpoint: string = `/get-departments`;
       return await get(

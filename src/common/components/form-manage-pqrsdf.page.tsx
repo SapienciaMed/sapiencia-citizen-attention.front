@@ -620,7 +620,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
     if (country) {
       setLoading(true);
       try {
-        const response = await service.getDepartments(parseInt(country.itemCode));
+        const response = await service.getDepartments(country.itemCode);
         if (response.operation.code === EResponseCodes.OK) {
           departments = response.data;
           setDepartments(response.data);
