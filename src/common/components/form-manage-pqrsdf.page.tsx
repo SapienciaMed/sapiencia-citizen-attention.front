@@ -616,7 +616,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
   const getDepartments = async (country?: IGenericData) => {
     let departments: IGenericData[] = [];
     console.log(country?.itemCode);
-    
+
     if (country) {
       setLoading(true);
       try {
@@ -657,7 +657,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
       } finally {
         setLoading(false);
       }
-    }else{
+    } else {
       setMunicipalities([]);
     }
     return municipalities;
@@ -1132,10 +1132,15 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         options: departments,
         disabled: !initDataLoaded || !departments?.length || loading,
         hidden: () => {
-          return false;
+          return !departments?.length;
         },
         rules: {
-          required: "El campo es obligatorio.",
+          validate: {
+            required: (value) => {
+              if (departments?.length && !value) return "El campo es obligatorio.";
+              return true;
+            },
+          },
         },
         onChange: async (value) => {
           const department = departments.filter((department) => department.id == value)[0];
@@ -1154,13 +1159,18 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         options: municipalities,
         disabled: !initDataLoaded || !municipalities?.length || loading,
         hidden: () => {
-          return false;
+          return !municipalities?.length;
+        },
+        rules: {
+          validate: {
+            required: (value) => {
+              if (municipalities?.length && !value) return "El campo es obligatorio.";
+              return true;
+            },
+          },
         },
         onChange: async (value) => {
           isPersonChange();
-        },
-        rules: {
-          required: "El campo es obligatorio.",
         },
       },
       {
