@@ -1,5 +1,5 @@
 import React, { Fragment, useContext, useEffect } from "react";
-import useAuthService from "./common/hooks/auth-service.hook";
+import useAuthService from "./features/portal-auth/hooks/auth-service.hook";
 import { AppContext } from "./common/contexts/app.context";
 import { EResponseCodes } from "./common/constants/api.enum";
 

@@ -1,45 +1,26 @@
 import React, { lazy } from "react";
 import { Route, Routes } from "react-router-dom";
-import RecoveryPassword from "../../common/components/authPage/recovery-password.page"
+import RecoveryPassword from "./pages/recovery-password.page";
 import BenefactorPrivateRoute from "../../common/components/Guard/benefactor-auth-guard";
 
 function PortalAuthRoutes() {
-  const PortalAuthPage = lazy(() => import("./pages/portal-login.page"));
-  const Login = lazy(() => import("../../common/components/authPage/login.page"))
-  const ChangePassword = lazy(() => import("../../common/components/authPage/change-password.page"))
-  const ChangePasswordRecovery = lazy(() => import("../../common/components/authPage/change-password-token.page"));
-
-  const Register_pqrsdf = lazy(() => import("../../common/components/register_pqrsdf.page"));
+  const PortalHomePage = lazy(() => import("./pages/portal-home.page"));
+  const PortalLoginPage = lazy(() => import("./pages/porta-login.page"));
+  const ChangePasswordPage = lazy(() => import("./pages/change-password.page"));
+  const ChangePasswordRecoveryPage = lazy(() => import("./pages/change-password-token.page"));
+  const RegisterPqrsdfPage = lazy(() => import("../../common/components/register_pqrsdf.page"));
 
   return (
     <Routes>
+      <Route path={"/layout"} element={<PortalHomePage />} />
+      <Route path={"/ingreso"} element={<PortalLoginPage />} />
+      <Route path={"/recuperar-clave"} element={<RecoveryPassword />} />
+      <Route path={"/recuperacion-clave"} element={<ChangePasswordRecoveryPage />} />
+      <Route path={"/cambiar-clave"} element={<BenefactorPrivateRoute element={<ChangePasswordPage />} />} />
+
       <Route
         path={"/:identification"}
-        element={
-          <BenefactorPrivateRoute element={<Register_pqrsdf isPerson={true} />}/>
-        }
-      />
-      <Route
-        path={"/ingreso"}
-        element={
-          <Login />
-        }
-      />
-      <Route
-        path={"/recuperar-clave"}
-        element={
-          <RecoveryPassword />
-        }
-      />
-      <Route
-        path={"/recuperacion-clave"}
-        element={<ChangePasswordRecovery />}
-      />
-      <Route
-        path={"/cambiar-clave"}
-        element={
-          <BenefactorPrivateRoute element={<ChangePassword />}/>
-        }
+        element={<BenefactorPrivateRoute element={<RegisterPqrsdfPage isPerson={true} />} />}
       />
     </Routes>
   );

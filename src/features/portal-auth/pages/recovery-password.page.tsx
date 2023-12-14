@@ -1,27 +1,23 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
 import logoAlcaldiaMedellin from "../../../public/images/logo-alcaldia-black.png";
 import logoSapiencia from "../../../public/images/logo-sapiencia.png";
-import { EDirection } from "../../constants/input.enum";
-import { IRequestRecoveryPassword } from "../../interfaces/auth.interfaces";
-import useYupValidationResolver from "../../hooks/form-validator.hook";
-import useAuthService from "../../hooks/auth-service.hook";
-import {
-  FormComponent,
-  InputComponent,
-  ButtonComponent,
-} from "../Form/index";
-import { recoveryPassword } from "../../schemas/index";
+import { EDirection } from "../../../common/constants/input.enum";
+import { IRequestRecoveryPassword } from "../../../common/interfaces/auth.interfaces";
+import useYupValidationResolver from "../../../common/hooks/form-validator.hook";
+import useAuthService from "../hooks/auth-service.hook";
+import { FormComponent, InputComponent, ButtonComponent } from "../../../common/components/Form/index";
+import { recoveryPassword } from "../../../common/schemas/index";
 import { useNavigate } from "react-router-dom";
 
-import { EResponseCodes } from "../../constants/api.enum";
-import { AppContext } from "../../contexts/app.context";
+import { EResponseCodes } from "../../../common/constants/api.enum";
+import { AppContext } from "../../../common/contexts/app.context";
 
 import "../../../styles/auth-styles.scss";
 
-function RecoveryPassword(): React.JSX.Element {
+function RecoveryPasswordPage(): React.JSX.Element {
   const navigate = useNavigate();
- 
+
   return (
     <main className="container-grid_recoveryPassword">
       <article className="recoveryPassword-visualization"></article>
@@ -31,9 +27,7 @@ function RecoveryPassword(): React.JSX.Element {
           <span onClick={() => navigate("../ingreso")}>x</span>
         </div>
         <section className="container-form_recoveryPassword">
-          <label className="text-main text-center biggest bold">
-            Recuperar contraseña
-          </label>
+          <label className="text-main text-center biggest bold">Recuperar contraseña</label>
           <p className="text-black big not-margin-padding text-center">
             Por favor ingresa la siguiente información para recuperar tu contraseña
           </p>
@@ -62,15 +56,12 @@ const FormRecoveryPassword = (): React.JSX.Element => {
     handleSubmit,
     formState,
     register,
-    formState: { errors }
-    
+    formState: { errors },
   } = useForm<IRequestRecoveryPassword>({ resolver });
 
   // // Metodo que hace la peticion al api
   const onSubmitSendRecoveryToken = handleSubmit(async (data) => {
-    const { data: dataResponse, operation } = await recoveryPasswordService(
-      data
-    );
+    const { data: dataResponse, operation } = await recoveryPasswordService(data);
 
     if (operation.code === EResponseCodes.OK) {
       setMessage({
@@ -100,16 +91,12 @@ const FormRecoveryPassword = (): React.JSX.Element => {
 
   return (
     <>
-      <FormComponent
-        className="form-recoveryPassword"
-        id="form-recovery_password"
-        action={onSubmitSendRecoveryToken}
-      >
+      <FormComponent className="form-recoveryPassword" id="form-recovery_password" action={onSubmitSendRecoveryToken}>
         <InputComponent
           idInput="identification"
           className="input-basic-login"
           typeInput="text"
-          register={register}          
+          register={register}
           // label={
           //   <>
           //     Documento de identidad <span>*</span>
@@ -118,7 +105,7 @@ const FormRecoveryPassword = (): React.JSX.Element => {
           classNameLabel="text-black big"
           direction={EDirection.column}
           errors={errors}
-          placeholder={"Tu documento de identidad"}          
+          placeholder={"Tu documento de identidad"}
         />
         <InputComponent
           idInput="email"
@@ -134,7 +121,6 @@ const FormRecoveryPassword = (): React.JSX.Element => {
           direction={EDirection.column}
           errors={errors}
           placeholder={"Tu email"}
-
         />
       </FormComponent>
     </>
@@ -154,19 +140,15 @@ const FooterRecoveryPasssword = (): React.JSX.Element => {
           className="citizen-button-main big"
           value="Recuperar"
           type="submit"
-          form="form-recovery_password"         
+          form="form-recovery_password"
         />
       </div>
       <div className="footer-img">
         <img className="img-sapiencia" src={logoSapiencia} alt="Sapiencia" />
-        <img
-          className="img-alcaldia"
-          src={logoAlcaldiaMedellin}
-          alt="Alcaldia de medellin"
-        />
+        <img className="img-alcaldia" src={logoAlcaldiaMedellin} alt="Alcaldia de medellin" />
       </div>
     </div>
   );
 };
 
-export default React.memo(RecoveryPassword);
+export default React.memo(RecoveryPasswordPage);

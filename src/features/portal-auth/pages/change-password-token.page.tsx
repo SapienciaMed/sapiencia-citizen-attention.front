@@ -1,29 +1,23 @@
 import React, { useContext, useEffect } from "react";
-import { useRecoveryPassword } from "../../hooks/recovery-password.hooks";
-import ChangePasswordRecoveryComponent from "./change-password-recovery.component";
-import useAuthService from "../../../common/hooks/auth-service.hook";
+import { useRecoveryPassword } from "../../../common/hooks/recovery-password.hooks";
+import ChangePasswordRecoveryComponent from "../components/change-password-recovery.component";
+import useAuthService from "../hooks/auth-service.hook";
 import { EResponseCodes } from "../../../common/constants/api.enum";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../../common/contexts/app.context";
 
-function ChangePasswordRecovery(): React.JSX.Element {
-  //context
+function ChangePasswordRecoveryPage(): React.JSX.Element {
+  // Servicios
   const { setMessage } = useContext(AppContext);
-
-  // react-router-dom
   const navigate = useNavigate();
-
-  // hooks
-  const { token: tokenRecovery,user:user, showModal } = useRecoveryPassword();
-
+  const { token: tokenRecovery, user: user, showModal } = useRecoveryPassword();
   const { changePasswordToken } = useAuthService();
 
   useEffect(() => {
     if (showModal)
       setMessage({
         title: "¡Error en el token!",
-        description:
-          "El token es invalido, vuelva a intentarlo generando nuevamente un correo",
+        description: "El token es invalido, vuelva a intentarlo generando nuevamente un correo",
         show: true,
         OkTitle: "Aceptar",
         onClose: () => {
@@ -42,7 +36,7 @@ function ChangePasswordRecovery(): React.JSX.Element {
     const { data: dataResponse, operation } = await changePasswordToken({
       ...data,
       tokenRecovery,
-      user
+      user,
     });
 
     if (operation.code === EResponseCodes.OK) {
@@ -50,8 +44,7 @@ function ChangePasswordRecovery(): React.JSX.Element {
     } else {
       setMessage({
         title: "¡Ocurrio un error!",
-        description:
-          "El token es invalido o ha ocurrido un error inesperado, intenta nuevamente",
+        description: "El token es invalido o ha ocurrido un error inesperado, intenta nuevamente",
         show: true,
         OkTitle: "Aceptar",
         onOk: () => {
@@ -62,13 +55,7 @@ function ChangePasswordRecovery(): React.JSX.Element {
     }
   };
 
-  return showModal ? (
-    <></>
-  ) : (
-    
-        <ChangePasswordRecoveryComponent action={callbackChangePassword} />
-      
-  );
+  return showModal ? <></> : <ChangePasswordRecoveryComponent action={callbackChangePassword} />;
 }
 
-export default React.memo(ChangePasswordRecovery);
+export default React.memo(ChangePasswordRecoveryPage);
