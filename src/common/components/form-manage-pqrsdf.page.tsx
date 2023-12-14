@@ -116,6 +116,8 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
   } = useForm({ mode: "all" });
 
   const watchResponseTypeId = watch("responseTypeId");
+  const watchDepartmentId = watch("person.departmentId");
+  const watchMunicipalityId = watch("person.municipalityId");
 
   const checkIsFilled = () => {
     const personKeys = Object.keys(getValues("person"));
@@ -727,6 +729,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
           acceptLabel: "Cerrar",
           footer: (options) => acceptButton(options),
         });
+        setIsUpdatePerson(false);
       }
     } catch (error) {
       console.error("Error al editar la información del ciudadano", error);
@@ -1131,7 +1134,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         onChange: async (value) => {
           const country = countries.filter((country) => country.id == value)[0];
           await getDepartments(country);
-          setValue("departmentId", "");
+          setValue("person.departmentId", "");
           isPersonChange();
         },
       },
@@ -1158,7 +1161,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         onChange: async (value) => {
           const department = departments.filter((department) => department.id == value)[0];
           await getMunicipalities(department);
-          setValue("municipalityId", "");
+          setValue("person.municipalityId", "");
           isPersonChange();
         },
       },
@@ -1679,17 +1682,21 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
   };
 
   const isPersonInvalid = () => {
+    console.log((departments.length && !watchDepartmentId) || (municipalities.length && !watchMunicipalityId));
+
     return (
-      !getFieldState("person.firstName")?.error?.message ||
-      !getFieldState("person.firstSurname")?.error?.message ||
-      !getFieldState("person.businessName")?.error?.message ||
-      !getFieldState("person.email")?.error?.message ||
-      !getFieldState("person.firstContactNumber")?.error?.message ||
-      !getFieldState("person.birthdate")?.error?.message ||
-      !getFieldState("person.address")?.error?.message ||
-      !getFieldState("person.countryId")?.error?.message ||
-      !getFieldState("person.departmentId")?.error?.message ||
-      !getFieldState("person.departmentId")?.error?.message
+      getFieldState("person.firstName")?.invalid ||
+      getFieldState("person.firstSurname")?.invalid ||
+      getFieldState("person.businessName")?.invalid ||
+      getFieldState("person.email")?.invalid ||
+      getFieldState("person.firstContactNumber")?.invalid ||
+      getFieldState("person.birthdate")?.invalid ||
+      getFieldState("person.address")?.invalid ||
+      getFieldState("person.countryId")?.invalid ||
+      getFieldState("person.departmentId")?.invalid ||
+      getFieldState("person.municipalityId")?.invalid ||
+      (departments.length && !watchDepartmentId) ||
+      (municipalities.length && !watchMunicipalityId)
     );
   };
 
