@@ -8467,6 +8467,10 @@ video {
   margin-bottom:calc(1.75rem * var(--tw-space-y-reverse))
 }
 
+.justify-self-end{
+  justify-self:end
+}
+
 .overflow-auto{
   overflow:auto
 }
@@ -9578,6 +9582,10 @@ select::placeholder{
     margin-top:2rem
   }
 
+  .md\:mt-4{
+    margin-top:1rem
+  }
+
   .md\:block{
     display:block
   }
@@ -9829,6 +9837,10 @@ select::placeholder{
     grid-column:span 4 / span 4
   }
 
+  .lg\:col-span-5{
+    grid-column:span 5 / span 5
+  }
+
   .lg\:block{
     display:block
   }
@@ -9916,6 +9928,10 @@ select::placeholder{
     grid-column:span 6 / span 6
   }
 
+  .xl\:col-span-5{
+    grid-column:span 5 / span 5
+  }
+
   .xl\:mx-auto{
     margin-left:auto;
     margin-right:auto
@@ -9952,5 +9968,9 @@ select::placeholder{
 @media (min-width: 1536px){
   .\32xl\:col-span-4{
     grid-column:span 4 / span 4
+  }
+
+  .\32xl\:col-span-6{
+    grid-column:span 6 / span 6
   }
 }
