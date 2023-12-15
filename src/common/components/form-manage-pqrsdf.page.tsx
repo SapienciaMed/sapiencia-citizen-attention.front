@@ -232,13 +232,13 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
       let payload = values as IPqrsdf;
       payload.id = parseInt(id);
       if (watchResponseTypeId == 3) {
-        payload.extensionDate = DateTime.now();
-        payload.closedAt = getValues("isPetitioner") ? DateTime.now() : null;
+        payload.extensionDate = DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss");
+        payload.closedAt = getValues("isPetitioner") ? DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss") : null;
       }
       payload.person = getPersonData();
       payload.response = {
         assignedUserId: getValues("assignedUserId"),
-        createdAt: DateTime.now(),
+        createdAt: DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss"),
         factorId: getValues("isPetitioner") ? null : getValues("factorId"),
         isPetitioner: !!getValues("isPetitioner"),
         observation: getValues("observation"),
