@@ -443,8 +443,8 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
         email: data["correoElectronico"],
         address: data["direccion"],
         countryId: getValues("pais"),
-        departmentId: getValues("departamento"),
-        municipalityId: getValues("municipio"),
+        departmentId: getValues("departamento") ? getValues("departamento") : null,
+        municipalityId: getValues("municipio") ? getValues("municipio") : null,
         isBeneficiary: true,
       },
       file: {
