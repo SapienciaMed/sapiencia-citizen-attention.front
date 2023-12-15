@@ -1,6 +1,6 @@
 import { EResponseCodes } from "../constants/api.enum";
 import { IPerson, IPersonFilters } from "../interfaces/person.interfaces";
-import { IPqrsdf, IpqrsdfByRequest, IrequestPqrsdf, IrequestReopen } from "../interfaces/pqrsdf.interfaces";
+import { IPqrsdf, IpqrsdfByRequest, IrequestPqrsdf, IReopenRequest } from "../interfaces/pqrsdf.interfaces";
 import { ApiResponse, IPagingData } from "../utils/api-response";
 import useCrudService from "./crud-service.hook";
 import formDataService from "./form-data.hook";
@@ -85,21 +85,21 @@ export function usePqrsdfService() {
     }
   }
 
-  async function getPqrsdfByRequest(filters: IrequestPqrsdf): Promise<ApiResponse<IpqrsdfByRequest[] | null>> {
+  async function getPqrsdfByRequest(filters: IrequestPqrsdf): Promise<ApiResponse<IPqrsdf[] | null>> {
     try {
       const endpoint: string = `/get-request-by-filters`;
       return await post(`${listUrl}${endpoint}`, filters);
     } catch (error) {
-      return new ApiResponse({} as IpqrsdfByRequest[], EResponseCodes.FAIL, "Error no controlado");
+      return new ApiResponse([] as IPqrsdf[], EResponseCodes.FAIL, "Error no controlado");
     }
   }
 
-  async function createRequestReopen(justification: IrequestReopen): Promise<ApiResponse<IrequestReopen>> {
+  async function createRequestReopen(justification: IReopenRequest): Promise<ApiResponse<IReopenRequest>> {
     try {
       const endpoint: string = `/create-request-reopen`;
       return await post(`${listUrl}${endpoint}`, justification);
     } catch (error) {
-      return new ApiResponse({} as IrequestReopen, EResponseCodes.FAIL, "Error no controlado");
+      return new ApiResponse({} as IReopenRequest, EResponseCodes.FAIL, "Error no controlado");
     }
   }
 
