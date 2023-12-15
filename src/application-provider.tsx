@@ -4,39 +4,31 @@ import { AppContext } from "./common/contexts/app.context";
 import { EResponseCodes } from "./common/constants/api.enum";
 
 interface IPropsAppProvider {
-    children: React.JSX.Element;
+  children: React.JSX.Element;
 }
 
 function ApplicationProvider({ children }: IPropsAppProvider): React.JSX.Element {
-    const { getAuthorization, BenefactorgetAuthorization } = useAuthService();
-    const { setAuthorization } = useContext(AppContext);
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-          getAuthorization(token)
-            .then((res) => {
-              if (res.operation.code == EResponseCodes.OK) {
-                setAuthorization(res.data);
-              } else {
-                BenefactorgetAuthorization(token)
-                .then((res) => {
-                  if (res.operation.code == EResponseCodes.OK) {
-                    setAuthorization(res.data);
-                  } else {
-                    localStorage.removeItem("token");
-                  }
-                })
-                .catch(() => {});
-              }
-            })
-            .catch(() => {});
+  const { getAuthorization, getPortalAuthorization } = useAuthService();
+  const { setAuthorization, setPortalUser } = useContext(AppContext);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      getAuthorization(token).then((res) => {
+        if (res.operation.code == EResponseCodes.OK) {
+          setAuthorization(res.data);
+        } else {
+          getPortalAuthorization(token).then((res) => {
+            if (res.operation.code == EResponseCodes.OK) {
+              setPortalUser(res.data.user);
+            } else {
+              localStorage.removeItem("token");
+            }
+          });
         }
-    }, []);
-    return(
-        <Fragment>
-            {children}
-        </Fragment>
-    )
+      });
+    }
+  }, []);
+  return <Fragment>{children}</Fragment>;
 }
 
 export default React.memo(ApplicationProvider);

@@ -1,5 +1,5 @@
 import { EResponseCodes } from "../../../common/constants/api.enum";
-import { IAuthorization, IResponseSignIn } from "../../../common/interfaces/auth.interfaces";
+import { IAuthorization, IPortalUser, IResponseSignIn } from "../../../common/interfaces/auth.interfaces";
 import { ApiResponse } from "../../../common/utils/api-response";
 import useCrudService from "../../../common/hooks/crud-service.hook";
 import { IUser, IDecodedToken } from "../../../common/interfaces/auth.interfaces";
@@ -40,12 +40,12 @@ export function useAuthService() {
     }
   }
 
-  async function BenefactorgetAuthorization(token: string): Promise<ApiResponse<IAuthorization>> {
+  async function getPortalAuthorization(token: string): Promise<ApiResponse<{user: IPortalUser}>> {
     try {
       const endpoint: string = `/benefactor-authorization/get-by-token/${token}`;
       return await get(`${baseCitizenAttetionURL}${externalAuthUrl}${endpoint}`);
     } catch (error) {
-      return new ApiResponse({} as IAuthorization, EResponseCodes.FAIL, "Error no controlado");
+      return new ApiResponse({} as {user: IPortalUser}, EResponseCodes.FAIL, "Error no controlado");
     }
   }
 
@@ -92,7 +92,7 @@ export function useAuthService() {
     benefactorSignIn,
     externalSignIn,
     getAuthorization,
-    BenefactorgetAuthorization,
+    getPortalAuthorization,
     recoveryPassword,
     changeUserPassword,
     validateTokenRecovery,
