@@ -422,7 +422,8 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
     const pqrsdf: IPqrsdf = {
       requestTypeId: data.tipoDeSolicitud["TSO_CODIGO"],
       responseMediumId: data.medioRespuesta["MRE_CODIGO"],
-      requestSubjectId: parseInt(getValues("asuntoSolicitud")),
+      requestSubjectId: getValues("asuntoSolicitud"),
+      programId: getValues("programaSolicitud"),
       clasification: clasification,
       dependency: dependence,
       description: data["Descripcion"],
