@@ -34,6 +34,29 @@ export interface IAuthorization {
   encryptedAccess: string;
 }
 
+export interface IPortalUser {
+  address: string;
+  birthdate: string;
+  businessName: any;
+  countryId: number;
+  createdAt: string;
+  departmentId: number;
+  documentTypeId: number;
+  email: string;
+  entityTypeId: any;
+  firstContactNumber: string;
+  firstName: string;
+  firstSurname: string;
+  id: number;
+  identification: string;
+  isBeneficiary: number;
+  municipalityId: number;
+  secondContactNumber: string;
+  secondName: string;
+  secondSurname: string;
+  updatedAt: string;
+}
+
 export interface IUser {
   id?: number;
   names: string;
@@ -66,7 +89,7 @@ export interface IProfile {
   transferRoles: {
     available: ITransferBox[];
     selected: ITransferBox[];
-  }; 
+  };
 }
 
 export interface IProfileForm {
@@ -87,5 +110,3 @@ export interface IRequestRecoveryPassword {
 export interface IDecodedToken {
   id: number;
 }
-
-
