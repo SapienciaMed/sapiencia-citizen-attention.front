@@ -279,9 +279,11 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
           ),
           closeIcon: closeIcon,
           acceptLabel: "Cerrar",
-          footer: (options) => acceptButton(options),
+          footer: (options) =>
+            acceptButton(options, () => {
+              navigate(-1);
+            }),
         });
-        navigate(-1);
       } else {
         confirmDialog({
           id: "messages",
@@ -318,7 +320,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
     }
   }, [checkMobileScreen]);
 
-  const acceptButton = (options) => {
+  const acceptButton = (options, callback = () => {}) => {
     return (
       <div className="flex items-center justify-center gap-2 pb-2">
         <Button
@@ -328,6 +330,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
           disabled={loading}
           onClick={(e) => {
             options.accept();
+            callback();
           }}
         />
       </div>
