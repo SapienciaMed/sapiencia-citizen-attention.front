@@ -436,6 +436,14 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
     };
   }, []);
 
+  useEffect(() => {
+    if (currentWorkEntity?.workEntityTypeId == 2 || currentWorkEntity?.workEntityTypeId == 7) {
+      let auxResponseTypes = [...responseTypes];
+      const newResponseTypes = auxResponseTypes.filter((responseType) => responseType.id != 4);
+      setResponseTypes(newResponseTypes);
+    }
+  }, [currentWorkEntity]);
+
   const setInitialForm = async () => {
     const pqrsdf = pqrsdfData;
     //Id columns
@@ -481,7 +489,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
     setValue("programClasification", pqrsdf?.program?.clpClasificacionPrograma?.[0]?.clp_descripcion);
     setValue("programDependence", pqrsdf?.program?.depDependencia?.dep_descripcion);
     setValue("description", pqrsdf?.description);
-    setValue("file", [pqrsdf?.file]);
+    setValue("file", pqrsdf?.file ? [pqrsdf?.file] : []);
     setInitDataLoaded(true);
   };
 
@@ -1235,10 +1243,9 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         disabled: !initDataLoaded || !workEntityTypes?.length || loading,
         hidden: () => {
           return (
-            (watchResponseTypeId == 5 && currentWorkEntity?.workEntityTypeId == 5) ||
-            (watchResponseTypeId == 4 &&
-              currentWorkEntity?.workEntityTypeId != 2 &&
-              currentWorkEntity?.workEntityTypeId != 7)
+            (watchResponseTypeId == 4 || watchResponseTypeId == 5) &&
+            currentWorkEntity?.workEntityTypeId != 2 &&
+            currentWorkEntity?.workEntityTypeId != 7
           );
         },
         rules: {
@@ -1268,20 +1275,17 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         optionLabel: "label",
         optionValue: "id",
         options: [{ id: 1, label: "Peticionario" }],
-        disabled: !initDataLoaded || !workEntityTypes?.length || loading,
+        disabled: !initDataLoaded || watchResponseTypeId != 4 || loading,
         hidden: () => {
           return (
-            (watchResponseTypeId == 5 && currentWorkEntity?.workEntityTypeId == 5) ||
-            (watchResponseTypeId != 4 &&
-              (currentWorkEntity?.workEntityTypeId == 2 || currentWorkEntity?.workEntityTypeId == 7))
+            watchResponseTypeId != 4 ||
+            (currentWorkEntity?.workEntityTypeId == 2 || currentWorkEntity?.workEntityTypeId == 7)
           );
         },
         rules: {
           validate: {
             required: (value) => {
               if (
-                watchResponseTypeId != 5 &&
-                currentWorkEntity?.workEntityTypeId != 5 &&
                 watchResponseTypeId == 4 &&
                 currentWorkEntity?.workEntityTypeId != 2 &&
                 currentWorkEntity?.workEntityTypeId != 7 &&
