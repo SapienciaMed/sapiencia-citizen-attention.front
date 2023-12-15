@@ -20,7 +20,7 @@ const ManagePqrsdf = () => {
   const daysServices = useDaysParametrizationService();
 
   const [statusRequest, setStatusRequest] = useState<boolean>(true);
-  const [pqrs, setPqrs] = useState<object[]>([]);  
+  const [pqrs, setPqrs] = useState<object[]>([]);
   const [title, getTitle] = useState<String>("Gestionar PQRDSF");
   const [showManage, setshowManage] = useState<boolean>(false);
   const [titleButton, setTitleButton] = useState<string>("Solicitudes en trámite");
@@ -122,7 +122,11 @@ const ManagePqrsdf = () => {
       return {
         radicado: pqr?.filingNumber,
         identification: pqr?.person?.identification,
-        names: `${pqr?.person?.firstName} ${pqr?.person?.secondName} ${pqr?.person?.firstSurname} ${pqr?.person?.secondSurname}`,
+        names: pqr?.person?.businessName
+          ? pqr?.person?.businessName
+          : `${pqr?.person?.firstName ?? ""} ${pqr?.person?.secondName ?? ""} ${pqr?.person?.firstSurname ?? ""} ${
+              pqr?.person?.secondSurname ?? ""
+            }`,
         program: pqr?.program?.prg_descripcion ?? "",
         asunto: pqr?.requestSubject?.aso_asunto ?? "",
         fechaRadicado: moment(pqr?.createdAt).format("DD-MM-YYYY"),
@@ -174,7 +178,7 @@ const ManagePqrsdf = () => {
   useEffect(() => {
     focusBtn("btn-1");
   }, []);
-  
+
   return (
     <>
       <div className="container-div">

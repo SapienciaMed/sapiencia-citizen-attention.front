@@ -439,7 +439,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
   useEffect(() => {
     if (currentWorkEntity?.workEntityTypeId == 2 || currentWorkEntity?.workEntityTypeId == 7) {
       let auxResponseTypes = [...responseTypes];
-      const newResponseTypes = auxResponseTypes.filter((responseType) => responseType.id != 4);
+      const newResponseTypes = auxResponseTypes.filter((responseType) => responseType.id != 4 &&  responseType.id != 5);
       setResponseTypes(newResponseTypes);
     }
   }, [currentWorkEntity]);
