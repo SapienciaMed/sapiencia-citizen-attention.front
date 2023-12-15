@@ -100,7 +100,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
   useBreadCrumb({
     isPrimaryPage: true,
     name: "Gestionar PQRDSF",
-    url: "/atencion-ciudadana/gestionar-pqrsd",
+    url: "/atencion-ciudadana/gestionar-pqrsdf",
   });
 
   const {
