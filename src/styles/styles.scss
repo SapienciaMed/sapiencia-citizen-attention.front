@@ -1,0 +1,78 @@
+@import "./variables.scss";
+.dashboard-margin-ac {
+    height: 100%;
+    background-color: #E5E1EF;
+    padding: 37px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 9%;
+}
+
+.card-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 155px;
+    width: 155px;
+    border: 1px solid $main-color;
+    background: #FFF;
+    box-shadow:
+      -70px -70px 0 -65px $main-color,
+      -70px 70px 0 -65px $main-color,
+      70px -70px 0 -65px $main-color,
+      70px 70px 0 -65px $main-color;
+    & img {
+        height: 100px;
+        width: 100px;
+    }
+}
+  
+.external-link {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.welcome-container {
+    gap: var(--24, 24px);
+    flex-shrink: 0;
+    align-items: end;
+    & .title {
+        color: $main-color;
+    }
+
+    & .content {
+        color: $color-black;
+        text-align: center;
+        font-family: Rubik !important;;
+        font-size: 17px;
+        font-style: normal;
+        font-weight: 300;
+        line-height: 120%;
+    }
+}
+
+.primary-bold {
+    color: $main-color;
+    font-family: Rubik;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 120%;
+}
+
+@media (min-width: 1024px) {
+    .dashboard-margin-ac {
+        background-size: cover;
+        background-repeat: no-repeat;
+        padding: 45px 25px;
+    }
+
+    .welcome-container {
+        width: 820px;
+    }
+}
