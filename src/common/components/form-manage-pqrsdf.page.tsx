@@ -1224,7 +1224,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
           if (watchResponseTypeId != 4) {
             setValue("isPetitioner", "");
           }
-          if (watchResponseTypeId == 4) {
+          if (watchResponseTypeId == 4 || watchResponseTypeId == 5) {
             setValue("workEntityTypeId", "");
           }
           if (watchResponseTypeId != 1 && watchResponseTypeId != 2) {
@@ -1278,7 +1278,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         disabled: !initDataLoaded || watchResponseTypeId != 4 || loading,
         hidden: () => {
           return (
-            watchResponseTypeId != 4 ||
+            (watchResponseTypeId != 4 && watchResponseTypeId != 5) ||
             (currentWorkEntity?.workEntityTypeId == 2 || currentWorkEntity?.workEntityTypeId == 7)
           );
         },
