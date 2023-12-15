@@ -1,15 +1,14 @@
-import { useEffect, useState } from "react";
+import moment from "moment-timezone";
 import { Card } from "primereact/card";
+import { useEffect, useState } from "react";
 import { usePqrsdfService } from "../hooks/PqrsdfService.hook";
 import { useDaysParametrizationService } from "../hooks/daysParametrizationService.hook";
 import { IDaysParametrization } from "../interfaces/daysParametrization.interfaces";
-import { IrequestPqrsdf, IpqrsdfByRequest, IPqrsdf } from "../interfaces/pqrsdf.interfaces";
-import moment from "moment-timezone";
-import { ManagetPqrsdfComponent } from "./genericComponent/managetPqrsdf.component";
+import { IPqrsdf, IrequestPqrsdf } from "../interfaces/pqrsdf.interfaces";
 import { TableManagePqrsdfComponent } from "./genericComponent/tableManagePqrsdf.component";
 
-import "../../styles/managePgrsdf-style.scss";
 import useBreadCrumb from "../../common/hooks/bread-crumb.hook";
+import "../../styles/managePgrsdf-style.scss";
 
 interface Detail {
   detailDate?: string;
@@ -21,12 +20,10 @@ const ManagePqrsdf = () => {
   const daysServices = useDaysParametrizationService();
 
   const [statusRequest, setStatusRequest] = useState<boolean>(true);
-  const [pqrs, setPqrs] = useState<object[]>([]);
-  const [getPqrsdfId, setGetPqrsdfId] = useState<number>();
-  const [getManagetStatus, setManagetStatus] = useState<boolean>(false);
-  const [tittle, getTittle] = useState<String>("Gestionar PQRDSF");
+  const [pqrs, setPqrs] = useState<object[]>([]);  
+  const [title, getTitle] = useState<String>("Gestionar PQRDSF");
   const [showManage, setshowManage] = useState<boolean>(false);
-  const [tittleButton, setTittleButton] = useState<string>("Solicitudes en trámite");
+  const [titleButton, setTitleButton] = useState<string>("Solicitudes en trámite");
 
   useBreadCrumb({
     isPrimaryPage: true,
@@ -177,23 +174,11 @@ const ManagePqrsdf = () => {
   useEffect(() => {
     focusBtn("btn-1");
   }, []);
-
-  useEffect(() => {
-    if (getManagetStatus) {
-      getTittle("Gestionar PQRDSF");
-      setTittleButton("Gestionar solicitudes");
-      setshowManage(true);
-    } else {
-      getTittle("Gestionar PQRSDF");
-      setTittleButton("Solicitudes en trámite");
-      setshowManage(false);
-    }
-  }, [getManagetStatus]);
-
+  
   return (
     <>
       <div className="container-div">
-        <Card title={<p className="text-3xl block pb-5">{tittle}</p>} className="card-container card-top">
+        <Card title={<p className="text-3xl block pb-5">{title}</p>} className="card-container card-top">
           {showManage ? (
             <></>
           ) : (
@@ -244,31 +229,19 @@ const ManagePqrsdf = () => {
           )}
           <div className="div-end mt-10 mb-10">
             <button className="btn-t btn-1" id="btn-1" onClick={async () => await focusBtn("btn-1")}>
-              {tittleButton}
+              {titleButton}
             </button>
-            <button className="btn-t btn-2" id="btn-2" onClick={async() => await focusBtn("btn-2")}>
+            <button className="btn-t btn-2" id="btn-2" onClick={async () => await focusBtn("btn-2")}>
               Solicitudes cerradas
             </button>
           </div>
-          {showManage ? (
-            <ManagetPqrsdfComponent
-              id={getPqrsdfId}
-              getManagetStatus={(e) => {
-                setManagetStatus(e);
-              }}
+          <Card className="card-container mt-10 card-bottom">
+            <TableManagePqrsdfComponent
+              statusReq={statusRequest}
+              dataPqrsdf={pqrs}
+              getPqrsdfClose={() => getPqrsdf({ typeReques: 3 })}
             />
-          ) : (
-            <Card className="card-container mt-10 card-bottom">
-              <TableManagePqrsdfComponent
-                statusReq={statusRequest}
-                dataPqrsdf={pqrs}
-                getPqrsdfClose={() => getPqrsdf({ typeReques: 3 })}
-                managetPqr={(e) => {
-                  setGetPqrsdfId(e.pqrsdfId), setManagetStatus(e.managetStatus);
-                }}
-              />
-            </Card>
-          )}
+          </Card>
         </Card>
       </div>
     </>
