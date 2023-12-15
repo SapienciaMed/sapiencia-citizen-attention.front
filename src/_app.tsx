@@ -6,9 +6,10 @@ import "primereact/resources/primereact.min.css";
 import ModalMessageComponent from "./common/components/modal-message.component";
 import ApplicationProvider from "./application-provider";
 import useAppCominicator from "./common/hooks/app-communicator.hook";
+import HomePage from "./features/home/pages/home.page"; 
 
 function App() {
- //const HomePage = lazy(() => import("./common/components/home.page"));
+  const HomePage = lazy(() => import("./features/home/pages/home.page"));
   const Register_pqrsdf = lazy(() => import("./common/components/register_pqrsdf.page"))
   const { publish } = useAppCominicator();
 
@@ -28,7 +29,7 @@ function App() {
         <Router>
           <Suspense fallback={<p>Loading...</p>}>
             <Routes>
-              {/*<Route path={"/atencion-ciudadana/"} element={<HomePage />} />;*/}
+              <Route path={"*"} element={<HomePage />} />;
               <Route path={"/atencion-ciudadana/"} element={<Register_pqrsdf />}/>
               {/* <Route path={"/direccion-estrategica/razon-social/*"} element={<BussinesRoutes />} />
             <Route path={"/direccion-estrategica/contratos/*"} element={<ContractRoutes />} /> */}
