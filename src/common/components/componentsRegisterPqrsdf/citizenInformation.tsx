@@ -395,7 +395,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
         const country = await selectCountry(user?.countryId, false);
         setTimeout(() => {
           setValue("pais", user?.countryId);
-        }, 1000);
+        }, 800);
         await selectDepartment(user?.departmentId, country.childs, false);
         setTimeout(() => {
           setValue("departamento", user?.departmentId);
@@ -422,7 +422,8 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
     const pqrsdf: IPqrsdf = {
       requestTypeId: data.tipoDeSolicitud["TSO_CODIGO"],
       responseMediumId: data.medioRespuesta["MRE_CODIGO"],
-      requestSubjectId: parseInt(getValues("asuntoSolicitud")),
+      requestSubjectId: getValues("asuntoSolicitud"),
+      programId: getValues("programaSolicitud"),
       clasification: clasification,
       dependency: dependence,
       description: data["Descripcion"],

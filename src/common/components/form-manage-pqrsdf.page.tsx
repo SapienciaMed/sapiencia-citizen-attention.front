@@ -100,7 +100,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
   useBreadCrumb({
     isPrimaryPage: true,
     name: "Gestionar PQRDSF",
-    url: "/atencion-ciudadana/gestionar-pqrsd",
+    url: "/atencion-ciudadana/gestionar-pqrsdf",
   });
 
   const {
@@ -110,11 +110,14 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
     getValues,
     setValue,
     trigger,
+    getFieldState,
     reset,
     watch,
   } = useForm({ mode: "all" });
 
   const watchResponseTypeId = watch("responseTypeId");
+  const watchDepartmentId = watch("person.departmentId");
+  const watchMunicipalityId = watch("person.municipalityId");
 
   const checkIsFilled = () => {
     const personKeys = Object.keys(getValues("person"));
@@ -124,9 +127,11 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
       })
       .filter((property) => {
         let initialValue = pqrsdfData?.person?.[property.key];
-        if (property.key == "birthdate") {
+        if (property.key == "birthdate" && property.val) {
           property.val = toLocaleDate(property.val).getTime();
-          initialValue = toLocaleDate(pqrsdfData?.person?.[property.key]).getTime();
+          if (initialValue) {
+            initialValue = toLocaleDate(pqrsdfData?.person?.[property.key]).getTime();
+          }
         }
         return property.val != null && property.val != "" && property.val != undefined && property.val != initialValue;
       });
@@ -227,13 +232,13 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
       let payload = values as IPqrsdf;
       payload.id = parseInt(id);
       if (watchResponseTypeId == 3) {
-        payload.extensionDate = DateTime.now();
-        payload.closedAt = getValues("isPetitioner") ? DateTime.now() : null;
+        payload.extensionDate = DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss");
+        payload.closedAt = getValues("isPetitioner") ? DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss") : null;
       }
       payload.person = getPersonData();
       payload.response = {
         assignedUserId: getValues("assignedUserId"),
-        createdAt: DateTime.now(),
+        createdAt: DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss"),
         factorId: getValues("isPetitioner") ? null : getValues("factorId"),
         isPetitioner: !!getValues("isPetitioner"),
         observation: getValues("observation"),
@@ -274,9 +279,11 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
           ),
           closeIcon: closeIcon,
           acceptLabel: "Cerrar",
-          footer: (options) => acceptButton(options),
+          footer: (options) =>
+            acceptButton(options, () => {
+              navigate(-1);
+            }),
         });
-        navigate(-1);
       } else {
         confirmDialog({
           id: "messages",
@@ -313,7 +320,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
     }
   }, [checkMobileScreen]);
 
-  const acceptButton = (options) => {
+  const acceptButton = (options, callback = () => {}) => {
     return (
       <div className="flex items-center justify-center gap-2 pb-2">
         <Button
@@ -323,6 +330,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
           disabled={loading}
           onClick={(e) => {
             options.accept();
+            callback();
           }}
         />
       </div>
@@ -428,6 +436,14 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
     };
   }, []);
 
+  useEffect(() => {
+    if (currentWorkEntity?.workEntityTypeId == 2 || currentWorkEntity?.workEntityTypeId == 7) {
+      let auxResponseTypes = [...responseTypes];
+      const newResponseTypes = auxResponseTypes.filter((responseType) => responseType.id != 4);
+      setResponseTypes(newResponseTypes);
+    }
+  }, [currentWorkEntity]);
+
   const setInitialForm = async () => {
     const pqrsdf = pqrsdfData;
     //Id columns
@@ -450,11 +466,19 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
     const auxDepartments = await getDepartments(country);
     const department = auxDepartments.filter((department) => department.id == pqrsdf?.person?.departmentId)[0];
     setTimeout(() => {
-      setValue("person.departmentId", pqrsdf?.person?.departmentId);
+      if (auxDepartments.length) {
+        setValue("person.departmentId", pqrsdf?.person?.departmentId);
+      } else {
+        setValue("person.departmentId", "");
+      }
     }, 1000);
     await getMunicipalities(department);
     setTimeout(() => {
-      setValue("person.municipalityId", pqrsdf?.person?.municipalityId);
+      if (auxDepartments.length) {
+        setValue("person.municipalityId", pqrsdf?.person?.municipalityId);
+      } else {
+        setValue("person.municipalityId", "");
+      }
     }, 1000);
 
     setValue("responseMediumId", pqrsdf?.responseMediumId);
@@ -462,10 +486,10 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
     setValue("programId", pqrsdf?.programId);
     await setRequestSubjectTypesByProgram(pqrsdf?.programId);
     setValue("requestSubjectId", pqrsdf?.requestSubjectId);
-    setValue("programClasification", pqrsdf?.program?.clpClasificacionPrograma?.[0].clp_descripcion);
+    setValue("programClasification", pqrsdf?.program?.clpClasificacionPrograma?.[0]?.clp_descripcion);
     setValue("programDependence", pqrsdf?.program?.depDependencia?.dep_descripcion);
     setValue("description", pqrsdf?.description);
-    setValue("file", [pqrsdf?.file]);
+    setValue("file", pqrsdf?.file ? [pqrsdf?.file] : []);
     setInitDataLoaded(true);
   };
 
@@ -716,6 +740,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
           acceptLabel: "Cerrar",
           footer: (options) => acceptButton(options),
         });
+        setIsUpdatePerson(false);
       }
     } catch (error) {
       console.error("Error al editar la información del ciudadano", error);
@@ -733,9 +758,11 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         })
         .filter((property) => {
           let initialValue = pqrsdfData?.person?.[property.key];
-          if (property.key == "birthdate") {
+          if (property.key == "birthdate" && property.val) {
             property.val = toLocaleDate(property.val).getTime();
-            initialValue = toLocaleDate(pqrsdfData?.person?.[property.key]).getTime();
+            if (initialValue) {
+              initialValue = toLocaleDate(pqrsdfData?.person?.[property.key]).getTime();
+            }
           }
           return (
             property.val != null && property.val != "" && property.val != undefined && property.val != initialValue
@@ -1118,7 +1145,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         onChange: async (value) => {
           const country = countries.filter((country) => country.id == value)[0];
           await getDepartments(country);
-          setValue("departmentId", "");
+          setValue("person.departmentId", "");
           isPersonChange();
         },
       },
@@ -1145,7 +1172,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         onChange: async (value) => {
           const department = departments.filter((department) => department.id == value)[0];
           await getMunicipalities(department);
-          setValue("municipalityId", "");
+          setValue("person.municipalityId", "");
           isPersonChange();
         },
       },
@@ -1172,46 +1199,6 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         onChange: async (value) => {
           isPersonChange();
         },
-      },
-      {
-        name: "Seleccione el medio por el cual quiere recibir la respuesta",
-        type: "select",
-        key: "responseMediumId",
-        formClass: "col-span-full md:col-span-7 xl:col-span-6",
-        optionLabel: "mre_descripcion",
-        optionValue: "mre_codigo",
-        options: responseMediums,
-        disabled: !initDataLoaded || loading,
-        hidden: () => {
-          return false;
-        },
-        onChange: async (value) => {
-          isPersonChange();
-        },
-        rules: {
-          required: "El campo es obligatorio.",
-        },
-      },
-      //Action
-      {
-        type: "button",
-        formClass: "col-span-full md:col-span-2 xl:col-span-6 text-right",
-        hidden: () => {
-          return false;
-        },
-        template: () => (
-          <div className="mt-auto">
-            <Button
-              key={"updatedPerson"}
-              label="Actualizar"
-              rounded
-              className="!px-4 !py-2 !text-base !font-sans"
-              type="button"
-              onClick={updatePerson}
-              disabled={loading || !isUpdatePerson}
-            />
-          </div>
-        ),
       },
     ];
   };
@@ -1256,10 +1243,9 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         disabled: !initDataLoaded || !workEntityTypes?.length || loading,
         hidden: () => {
           return (
-            (watchResponseTypeId == 5 && currentWorkEntity?.workEntityTypeId == 5) ||
-            (watchResponseTypeId == 4 &&
-              currentWorkEntity?.workEntityTypeId != 2 &&
-              currentWorkEntity?.workEntityTypeId != 7)
+            (watchResponseTypeId == 4 || watchResponseTypeId == 5) &&
+            currentWorkEntity?.workEntityTypeId != 2 &&
+            currentWorkEntity?.workEntityTypeId != 7
           );
         },
         rules: {
@@ -1289,20 +1275,17 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         optionLabel: "label",
         optionValue: "id",
         options: [{ id: 1, label: "Peticionario" }],
-        disabled: !initDataLoaded || !workEntityTypes?.length || loading,
+        disabled: !initDataLoaded || watchResponseTypeId != 4 || loading,
         hidden: () => {
           return (
-            (watchResponseTypeId == 5 && currentWorkEntity?.workEntityTypeId == 5) ||
-            (watchResponseTypeId != 4 &&
-              (currentWorkEntity?.workEntityTypeId == 2 || currentWorkEntity?.workEntityTypeId == 7))
+            watchResponseTypeId != 4 ||
+            (currentWorkEntity?.workEntityTypeId == 2 || currentWorkEntity?.workEntityTypeId == 7)
           );
         },
         rules: {
           validate: {
             required: (value) => {
               if (
-                watchResponseTypeId != 5 &&
-                currentWorkEntity?.workEntityTypeId != 5 &&
                 watchResponseTypeId == 4 &&
                 currentWorkEntity?.workEntityTypeId != 2 &&
                 currentWorkEntity?.workEntityTypeId != 7 &&
@@ -1513,14 +1496,16 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
                       placeholder="Seleccionar"
                     />
                   )}
-                  <div className="flex">
-                    {getFormErrorMessage(field.name)}
-                    {column.counter && (
-                      <span className="ml-auto mr-0 text-sm font-sans">
-                        Max {column?.rules?.maxLength?.value} caracteres
-                      </span>
-                    )}
-                  </div>
+                  {(getFormErrorMessage(field.name) || column.counter) && (
+                    <div className="flex">
+                      {getFormErrorMessage(field.name)}
+                      {column.counter && (
+                        <span className="ml-auto mr-0 text-sm font-sans">
+                          Max {column?.rules?.maxLength?.value} caracteres
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </>
               )}
             />
@@ -1703,6 +1688,25 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
     );
   };
 
+  const isPersonInvalid = () => {
+    console.log((departments.length && !watchDepartmentId) || (municipalities.length && !watchMunicipalityId));
+
+    return (
+      getFieldState("person.firstName")?.invalid ||
+      getFieldState("person.firstSurname")?.invalid ||
+      getFieldState("person.businessName")?.invalid ||
+      getFieldState("person.email")?.invalid ||
+      getFieldState("person.firstContactNumber")?.invalid ||
+      getFieldState("person.birthdate")?.invalid ||
+      getFieldState("person.address")?.invalid ||
+      getFieldState("person.countryId")?.invalid ||
+      getFieldState("person.departmentId")?.invalid ||
+      getFieldState("person.municipalityId")?.invalid ||
+      (departments.length && !watchDepartmentId) ||
+      (municipalities.length && !watchMunicipalityId)
+    );
+  };
+
   const accordionTabs = () => {
     return [
       {
@@ -1710,7 +1714,50 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         header: "Información del ciudadano",
         wrapperClass:
           "grid grid-cols-6 md:grid-cols-9 xl:grid-cols-12 md:gap-x-4.5 gap-x-3.5 gap-y-6 md:gap-y-4 w-full",
+        secondWrapper: true,
         columns: columns(),
+        secondColumns: [
+          {
+            name: "Seleccione el medio por el cual quiere recibir la respuesta",
+            type: "select",
+            key: "responseMediumId",
+            formClass: "col-span-full md:col-span-7 2xl:col-span-6",
+            optionLabel: "mre_descripcion",
+            optionValue: "mre_codigo",
+            options: responseMediums,
+            disabled: !initDataLoaded || loading,
+            hidden: () => {
+              return false;
+            },
+            onChange: async (value) => {
+              isPersonChange();
+            },
+            rules: {
+              required: "El campo es obligatorio.",
+            },
+          },
+          //Action
+          {
+            type: "button",
+            formClass: "col-span-full md:col-span-2 xl:col-span-5 2xl:col-span-6 text-right",
+            hidden: () => {
+              return false;
+            },
+            template: () => (
+              <div className="mt-auto">
+                <Button
+                  key={"updatedPerson"}
+                  label="Actualizar"
+                  rounded
+                  className="!px-4 !py-2 !text-base !font-sans"
+                  type="button"
+                  onClick={updatePerson}
+                  disabled={loading || !isUpdatePerson || isPersonInvalid()}
+                />
+              </div>
+            ),
+          },
+        ],
       },
 
       {
@@ -1936,6 +1983,15 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
                             })
                           : tab?.template()}
                       </div>
+                      {tab?.secondWrapper && (
+                        <div className={tab.wrapperClass + " md:mt-4 mt-6"}>
+                          {tab?.columns
+                            ? tab.secondColumns.map((column, index) => {
+                                return columnsTemplate(column);
+                              })
+                            : tab?.template()}
+                        </div>
+                      )}
                     </AccordionTab>
                   );
                 })}

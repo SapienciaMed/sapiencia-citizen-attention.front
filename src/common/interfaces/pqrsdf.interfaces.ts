@@ -7,6 +7,7 @@ import { IRequestType } from "./requestType.interfaces";
 import { IWorkEntity } from "./workEntity.interfaces";
 import { IMotive } from "./motive.interfaces";
 import { IProgram } from "./program.interfaces";
+import { IRequestSubjectType } from "./requestSubjectType.interfaces";
 
 export interface IPqrsdf {
   id?: number;
@@ -18,6 +19,7 @@ export interface IPqrsdf {
   requestSubjectId: number;
   fileId?: number;
   motiveId?: number;
+  reopenRequestId?: number;
   statusId?: number;
   filingNumber?: number;
   idCanalesAttencion?: number;
@@ -26,6 +28,7 @@ export interface IPqrsdf {
   description: string;
   requestType?: IRequestType;
   motive?: IMotive;
+  reopenRequest?: IReopenRequest;
   person?: IPerson;
   answer?: string;
   program?: IProgram;
@@ -33,7 +36,7 @@ export interface IPqrsdf {
   extensionDate?: DateTime;
   responsible?: IWorkEntity;
   responseMedium?: IResponseMedium;
-  requestSubject?: IRequestSubject;
+  requestSubject?: IRequestSubjectType;
   status?: IPqrsdfStatus;
   response?: IPqrsdfResponse;
   file?: IFile;
@@ -173,7 +176,7 @@ export interface IpqrsdfByRequest {
   SBR_ESTADO?: string;
 }
 
-export interface IrequestReopen {
+export interface IReopenRequest {
   justification?: Justification[];
 }
 
