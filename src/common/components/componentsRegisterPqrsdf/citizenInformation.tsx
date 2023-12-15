@@ -395,7 +395,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
         const country = await selectCountry(user?.countryId, false);
         setTimeout(() => {
           setValue("pais", user?.countryId);
-        }, 1000);
+        }, 800);
         await selectDepartment(user?.departmentId, country.childs, false);
         setTimeout(() => {
           setValue("departamento", user?.departmentId);
