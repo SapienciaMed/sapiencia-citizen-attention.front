@@ -3,7 +3,7 @@ import {  Countrys, Departament,
           IChannelAttetion, IChannelAttetionDetail, 
           IMunicipality, ItypeDocument, 
           ItypeRFequest, IlegalEntityType, 
-          IMResponseMedium, IProgram, IResposeType, IFactors } from "../interfaces/mastersTables.interface";
+          IMResponseMedium, IProgram, IResposeType, IFactor } from "../interfaces/mastersTables.interface";
 import { IRequestSubjectType } from "../interfaces/requestSubjectType.interfaces";
 import { ApiResponse } from "../utils/api-response";
 import useCrudService from "./crud-service.hook";
@@ -123,7 +123,7 @@ export function mastersTablesServices() {
       }
     };
 
-    async function getFactors(): Promise<ApiResponse<IFactors[]>> {
+    async function getFactors(): Promise<ApiResponse<IFactor[]>> {
       try {
         const endpoint: string = `/get-factors`;
         return await get(`${listUrl}${endpoint}`);

@@ -15,7 +15,7 @@ import { Dialog } from "primereact/dialog";
 import { Card } from "primereact/card";
 import { usePqrsdfService } from "../../hooks/PqrsdfService.hook";
 import "../../../styles/table-movil-style.scss"
-import { IrequestReopen } from "../../interfaces/pqrsdf.interfaces";
+import { IReopenRequest } from "../../interfaces/pqrsdf.interfaces";
 
 
 
@@ -143,7 +143,7 @@ export const TableManagePqrsdfComponent = (props:Props) => {
                         <div>
                         {authorization?.allowedActions &&
                         authorization?.allowedActions?.findIndex((i) => i == "GESTIONAR_PQRSDF") >= 0 && (
-                            <Link to={''} onClick={()=>managetPqr({pqrsdfId:pqrsdf.pqrsdfId,managetStatus:true})}>
+                            <Link to={"" + pqrsdf.pqrsdfId}>
                                 <Tooltip target=".custom-target-icon" style={{borderRadius:'1px'}} />
                                 <i className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center"
                                     data-pr-tooltip="Gestionar"
@@ -250,7 +250,7 @@ export const TableManagePqrsdfComponent = (props:Props) => {
         };
     };
     
-    const createReopen = async (justification:IrequestReopen)=>{
+    const createReopen = async (justification:IReopenRequest)=>{
       const resp = await pqrsdfService.createRequestReopen(justification);
       return resp;
     }
@@ -263,7 +263,7 @@ export const TableManagePqrsdfComponent = (props:Props) => {
     
     const onSubmit = async (data:{justification:string}) => {
     
-      const  justification:IrequestReopen = { justification: [ {
+      const  justification:IReopenRequest = { justification: [ {
         srb_justificacion:data['justification'],
         sbr_estado: true
         },

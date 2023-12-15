@@ -67,9 +67,9 @@ export interface IResposeType {
     description:string;
 }
 
-export interface IFactors {
-    id: number;
-    name: string;
-    isActive: number;
-    order: number;
+export interface IFactor {
+    id?: number;
+    name?: string;
+    isActive?: number;
+    order?: number;
 }

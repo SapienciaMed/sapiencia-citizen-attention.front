@@ -11,6 +11,7 @@ export interface IPerson {
   identification: string;
   firstName: string;
   secondName?: string;
+  businessName?: string;
   firstSurname: string;
   secondSurname?: string;
   birthdate?: Date;

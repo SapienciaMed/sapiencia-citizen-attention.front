@@ -15,6 +15,7 @@ import PrivateRoute from "./common/components/Guard/auth-private-guard";
 import PortalAuthRoutes from "./features/portal-auth/portal-auth.routes";
 import RequestSubjectTypesPage from "./common/components/request-subject-types";
 import FormRequestSubjectTypesPage from "./common/components/form-request-subject-types.page";
+import FormManagePqrsdfPage from "./common/components/form-manage-pqrsdf.page";
 
 function App() {
   //const HomePage = lazy(() => import("./common/components/home.page"));
@@ -108,6 +109,10 @@ function App() {
               <Route
                 path={"/atencion-ciudadana/gestionar-pqrsdf"}
                 element={<PrivateRoute element={<ManagePqrsdf />} allowedAction={"BANDEJA_PQRSDF"} />}
+              />
+              <Route
+                path={"/atencion-ciudadana/gestionar-pqrsdf/:id"}
+                element={<PrivateRoute element={<FormManagePqrsdfPage />} allowedAction={"GESTIONAR_PQRSDF"} />}
               />
               <Route
                 path={"/atencion-ciudadana/registrar-atencion"}

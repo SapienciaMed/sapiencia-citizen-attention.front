@@ -47,7 +47,7 @@ export const ChangeResponsibleComponent = (props: Props) => {
   const [cancelar, setCancelar] = useState(false);
   const [changeUser, setChangeUser] = useState(false);
   const [changeBtn, setChangeBtn] = useState(true);
-  const [datosUser, setDatosUser] = useState('');
+  const [datosUser, setDatosUser] = useState("");
   const [selectPage, setSelectPage] = useState<PageNumber>({ page: 5 });
   const dataTable = useRef(null);
 
@@ -55,7 +55,6 @@ export const ChangeResponsibleComponent = (props: Props) => {
   const [data, setData] = useState([]);
 
   const getData = (data: DataTableSelection<[]>) => {
-    
     dataTable.current = data;
     setChangeBtn(false);
   };
@@ -110,13 +109,13 @@ export const ChangeResponsibleComponent = (props: Props) => {
 
       const payload: IWorkEntityFilters = {
         email,
-        lastNames:filter.lastNames,
+        lastNames: filter.lastNames,
         names,
         identification: parseInt(identification),
-      };      
+      };
 
       const response = await workEntityService.getUserByFilters(payload);
-      const { data, operation } = response;      
+      const { data, operation } = response;
 
       if (operation.code !== "OK") {
         setLoad(false), setError(true);
@@ -199,22 +198,25 @@ export const ChangeResponsibleComponent = (props: Props) => {
     };
   };
 
-  
-  const seleTemplate = (user:DataTableSelection<[]>) => { 
+  const seleTemplate = (user: DataTableSelection<[]>) => {
+    let userData = JSON.parse(JSON.stringify(user));
+
     return (
-        <>
-          <div className="flex align-items-center">
-            <RadioButton 
-              value="User" 
-              onChange={(e) => {
-                setDatosUser(e.value)
-                getData(user)
-              }} 
-              checked={datosUser === 'User'} />
-    </div>
-        </>
+      <>
+        <div className="flex align-items-center">
+          <RadioButton
+            inputId={"responsible_" + userData?.userId}
+            value={"User_" + userData?.userId}
+            onChange={(e) => {
+              setDatosUser(e.value);
+              getData(user);
+            }}
+            checked={datosUser === "User_" + userData?.userId}
+          />
+        </div>
+      </>
     );
-};
+  };
 
   const closeIcon = () => (
     <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -301,7 +303,7 @@ export const ChangeResponsibleComponent = (props: Props) => {
                       <InputText
                         id={field.name}
                         value={field.value}
-                        keyfilter="alpha"
+                        keyfilter={/^[a-zA-Z\s]*$/}
                         className={classNames({ "p-invalid": fieldState.error }, "!h-10 col-100")}
                         onChange={(e) => field.onChange(e.target.value)}
                       />
@@ -328,7 +330,7 @@ export const ChangeResponsibleComponent = (props: Props) => {
                       <InputText
                         id={field.name}
                         value={field.value}
-                        keyfilter="alpha"
+                        keyfilter={/^[a-zA-Z\s]*$/}
                         className={classNames({ "p-invalid": fieldState.error }, "!h-10 col-100")}
                         onChange={(e) => field.onChange(e.target.value)}
                       />
@@ -457,7 +459,7 @@ export const ChangeResponsibleComponent = (props: Props) => {
                       nameBtn1="Continuar"
                       nameBtn2="Cancelar"
                       onClickBt2={cancelarChanges}
-                      onClickBt1={() => setCancelar(false) }
+                      onClickBt1={() => setCancelar(false)}
                       headerMsg="Cancelar cambios"
                       msg="Desea cancelar la acción, no se guardarán los datos"
                     />

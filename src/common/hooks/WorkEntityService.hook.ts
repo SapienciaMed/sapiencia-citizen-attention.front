@@ -19,6 +19,15 @@ export function useWorkEntityService() {
       return new ApiResponse({} as IWorkEntity, EResponseCodes.FAIL, "Error no controlado");
     }
   }
+
+  async function getWorkEntityByUserId(id: number): Promise<ApiResponse<IWorkEntity>> {
+    try {
+      const endpoint: string = `/get-by-user-id/${id}`;
+      return await get(`${listUrl}${endpoint}`);
+    } catch (error) {
+      return new ApiResponse({} as IWorkEntity, EResponseCodes.FAIL, "Error no controlado");
+    }
+  }
   
   async function getUserByDocument(identification: number): Promise<ApiResponse<IWorkEntity>> {
     try {
@@ -87,7 +96,7 @@ export function useWorkEntityService() {
 
   async function getEntityManagersByEntityTypeId(id:number): Promise<ApiResponse<IUserManageEntity[]>> {
     try {
-      const endpoint: string = `/get-Entitymanagers-by-entityType-id/${id}`;
+      const endpoint: string = `/get-entitymanagers-by-entityType-id/${id}`;
       return await get(`${listUrl}${endpoint}`);
     } catch (error) {
       return new ApiResponse([] , EResponseCodes.FAIL, "Error no controlado");
@@ -97,12 +106,13 @@ export function useWorkEntityService() {
   return {
     createWorkEntity,
     getUserByFilters,
+    updateWorkEntity, 
     getUserByDocument,
     getWorkEntityById,
     getWorkEntityTypes,
     getProgramsAffairs,
+    getWorkEntityByUserId,
     getWorkEntityByFilters,
-    updateWorkEntity,
     getEntityManagersByEntityTypeId
   };
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import useAuthService from "./auth-service.hook";
+import useAuthService from "../../features/portal-auth/hooks/auth-service.hook";
 import { EResponseCodes } from "../constants/api.enum";
 
 export function useRecoveryPassword() {

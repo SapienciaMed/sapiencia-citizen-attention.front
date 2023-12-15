@@ -18,17 +18,18 @@ import { ScrollPanelComponent } from "./scrollPanelComponent";
 import { TriStateCheckboxComponent } from "./triStateCheckboxComponent";
 import { UploadComponent } from "./uploadComponent";
 import { trashIcon } from "../icons/trash";
+import { useCitizenAttentionService } from "../../hooks/CitizenAttentionService.hook";
+import { EResponseCodes } from "../../constants/api.enum";
+import { IProgram } from "../../interfaces/program.interfaces";
+import { IRequestSubjectType } from "../../interfaces/requestSubjectType.interfaces";
+import { IGenericData } from "../../interfaces/genericData.interfaces";
+import { IPerson } from "../../interfaces/person.interfaces";
 
 const ApiDatatypoSolicitudes = fetchData("/get-type-solicituds");
 const ApiDatatypoDocument = fetchData("/get-type-docuement");
 const ApiDatalegalEntity = fetchData("/get-legal-entity");
 const ApiDataResponseMedium = fetchData("/get-response-medium");
-const ApiDataProgramas = fetchData("/get-Programs");
-const ApiDataAsuntoSolicitud = fetchData("/get-solicitudes");
 const ApiDataListaParametros = fetchData("/get-listaParametros");
-const ApiDataPais = fetchData("/get-paises");
-const ApiDataDepartamentos = fetchData("/get-departamentos");
-const ApiDataMunicipios = fetchData("/get-municipios/", "5");
 
 interface Props {
   isPerson?: boolean;
@@ -52,39 +53,11 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
   const optionTypeDocument = ApiDatatypoDocument.read();
   const optionLegalEntity = ApiDatalegalEntity.read();
   const optionResponseMedium = ApiDataResponseMedium.read();
-  const optionPrograma = ApiDataProgramas.read();
-  const optionAsuntoSolicitud = ApiDataAsuntoSolicitud.read();
   const linkPoliticaCondiciones = ApiDataListaParametros.read();
-  const paises = ApiDataPais.read();
   const { LPA_VALOR } = linkPoliticaCondiciones[0];
 
   const pqrsdfService = usePqrsdfService();
-
-  const defaultValues = {
-    tipoDeSolicitud: "",
-    tipo: "",
-    tipoEntidad: "",
-    medioRespuesta: "",
-    programaSolicitud: "",
-    asuntoSolicitud: "",
-    noDocumento: "",
-    primerNombre: "",
-    segundoNombre: "",
-    primerApellido: "",
-    segundoApellido: "",
-    noContacto1: "",
-    noContacto2: "",
-    correoElectronico: "",
-    direccion: "",
-    pais: "",
-    departamento: "",
-    municipio: "",
-    fechaNacimento: null,
-    politicaTratamiento: null,
-    Descripcion: "",
-    RazonSocial: "",
-    archivo: "",
-  };
+  const citizenInformationService = useCitizenAttentionService();
 
   const {
     control,
@@ -97,18 +70,21 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
     getValues,
     watch,
     register,
-  } = useForm({ defaultValues, mode: "all" });
+  } = useForm({ mode: "all" });
 
-  const optionDepartamento = useRef(null);
-  const optionMunicipios = useRef(null);
+  const watchCountry = watch("pais");
+  const watchDeparment = watch("departamento");
+
   const showFieldPersons = useRef("");
   const showDependecia = useRef("");
   const showClasificacion = useRef("");
-  const showDeptoMupio = useRef(null);
   const showMupio = useRef(null);
   const radicado = useRef(null);
   const birthdateData = useRef(null);
 
+  const [personData, setPersonData] = useState<IPerson | null>();
+  const [programs, setPrograms] = useState<IProgram[]>([]);
+  const [requestSubjectTypes, setRequestSubjectTypes] = useState<IRequestSubjectType[]>([]);
   const [valueTypeSolicitud, setValueTypeSolicitud] = useState(null);
   const [valueDocument, setValueDocument] = useState(null);
   const [valueTypeEntidad, setValueTypeEntidad] = useState(null);
@@ -123,10 +99,15 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
   const [file, setfile] = useState<File>(null);
   const [visibleMsg, setVisibleMsg] = useState(null);
   const [name, setName] = useState("");
+  const [clasification, setClasification] = useState("");
+  const [dependence, setDependence] = useState("");
   const [secondName, setSecondName] = useState("");
   const [lastName, setLastName] = useState("");
   const [secondSurname, setSecondSurname] = useState("");
   const [valueIdentification, setValueIdentification] = useState("");
+  const [countries, setCountries] = useState<IGenericData[]>([]);
+  const [departments, setDepartments] = useState<IGenericData[]>([]);
+  const [municipalities, setMunicipalities] = useState<IGenericData[]>([]);
   const [birthDate, setBirthDate] = useState<Nullable<Date>>(null);
   const [email, setEmail] = useState("");
   const [firstContactNumber, setFirstContactNumber] = useState("");
@@ -135,7 +116,11 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
   const [btnDisable, setBtnDisable] = useState("");
   const [statusSummit, SetstatusSummit] = useState<boolean>(true);
 
-  const seleTipoDocument = (document: { LGE_CODIGO: number; LGE_ELEMENTO_CODIGO: string, LGE_ELEMENTO_DESCRIPCION: string }) => {
+  const seleTipoDocument = (document: {
+    LGE_CODIGO: number;
+    LGE_ELEMENTO_CODIGO: string;
+    LGE_ELEMENTO_DESCRIPCION: string;
+  }) => {
     setValueDocument(document);
 
     showFieldPersons.current = document == null ? "" : document.LGE_ELEMENTO_DESCRIPCION;
@@ -179,6 +164,56 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
   };
 
   useEffect(() => {
+    const fecthPrograms = async () => {
+      try {
+        const response = await citizenInformationService.getPrograms();
+        if (response.operation.code === EResponseCodes.OK) {
+          setPrograms(response.data);
+        }
+      } catch (error) {
+        console.error("Error al obtener la lista:", error);
+      } finally {
+        // setLoading(false);
+      }
+    };
+    fecthPrograms();
+
+    const fecthCountries = async () => {
+      try {
+        const response = await citizenInformationService.getCountries();
+        if (response.operation.code === EResponseCodes.OK) {
+          setCountries(response.data);
+        }
+      } catch (error) {
+        console.error("Error al obtener la lista:", error);
+      } finally {
+        // setLoading(false);
+      }
+    };
+    fecthCountries();
+  }, []);
+
+  const { identification } = useParams();
+
+  useEffect(() => {
+    const getUser = async (identification: string) => {
+      try {
+        const response = await pqrsdfService.getPersonByDocument(parseInt(identification));
+        if (response.operation.code === EResponseCodes.OK) {
+          setPersonData(response.data);
+        }
+      } catch (error) {
+        console.error("Error al obtener la lista:", error);
+      } finally {
+        // setLoading(false);
+      }
+    };
+    if (identification) {
+      getUser(identification);
+    }
+  }, [identification]);
+
+  useEffect(() => {
     if (channels.isValid && isValid) {
       SetstatusSummit(false);
     } else {
@@ -194,30 +229,26 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
     }
   }, [isValid]);
 
-  const selectCountry = (pais: { LGE_CODIGO: number; LGE_ELEMENTO_DESCRIPCION: string }) => {
-    setValuePais(pais);
-
-    showDeptoMupio.current = pais == null ? "" : pais.LGE_CODIGO;
-
-    if (showDeptoMupio.current == 4) {
-      const departamentos = ApiDataDepartamentos.read();
-      optionDepartamento.current = departamentos.data;
+  const selectCountry = async (countryId, childReset = true) => {
+    const country = countries.filter((country) => country.id == countryId)[0];
+    if (childReset) {
+      setValue("departamento", "");
     }
+    let departments = await getDepartments(country);
 
-    return pais;
+    return { parent: country, childs: departments };
   };
 
-  const selectDepartment = (depart: any) => {
-    setValueDepartamento(depart);
-
-    showMupio.current = depart == null ? "" : depart.LGE_CODIGO;
-
-    if (showMupio.current == 204) {
-      const municipios = ApiDataMunicipios.read();
-      optionMunicipios.current = municipios.data;
+  const selectDepartment = async (departmentId, preData = [], childReset = true) => {
+    const department = (preData.length ? preData : departments).filter(
+      (department) => department.id == departmentId
+    )[0];
+    if (childReset) {
+      setValue("municipio", "");
     }
+    let municipalities = await getMunicipalities(department);
 
-    return depart;
+    return { parent: department, childs: municipalities };
   };
 
   const selectMunicipality = (municipio: { LGE_CODIGO: number; LGE_ELEMENTO_DESCRIPCION: string }) => {
@@ -226,20 +257,57 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
     return municipio;
   };
 
-  const selectProgram = (programa: {
-    CLP_CODIGO: number;
-    CLP_DESCRIPCION: string;
-    DEP_CODIGO: number;
-    DEP_DESCRIPCION: string;
-    PRG_CODIGO: number;
-    PRG_DESCRIPCION: string;
-  }) => {
-    setprogram(programa);
+  const getDepartments = async (country?: IGenericData) => {
+    let departments: IGenericData[] = [];
+    if (country) {
+      // setLoading(true);
+      try {
+        const response = await service.getDepartments(country.itemCode);
+        if (response.operation.code === EResponseCodes.OK) {
+          departments = response.data;
+          setDepartments(response.data);
+        } else {
+          setDepartments([]);
+        }
+      } catch (error) {
+        console.error("Error al obtener la lista:", error);
+      } finally {
+        // setLoading(false);
+      }
+    }
+    return departments;
+  };
 
-    showDependecia.current = programa == null ? "" : programa.DEP_DESCRIPCION;
-    showClasificacion.current = programa == null ? "" : programa.CLP_DESCRIPCION;
+  const service = useCitizenAttentionService();
 
-    return programa;
+  const getMunicipalities = async (department?: IGenericData) => {
+    let municipalities: IGenericData[] = [];
+    if (department) {
+      // setLoading(true);
+      try {
+        const response = await service.getMunicipalities(parseInt(department.itemCode));
+        if (response.operation.code === EResponseCodes.OK) {
+          municipalities = response.data;
+          setMunicipalities(response.data);
+        } else {
+          setMunicipalities([]);
+        }
+      } catch (error) {
+        console.error("Error al obtener la lista:", error);
+      } finally {
+        // setLoading(false);
+      }
+    }
+    return municipalities;
+  };
+
+  const selectProgram = (programId) => {
+    const program = programs.filter((program) => program.prg_codigo == programId)[0];
+    const optionsRequestSubjectTypes = program?.affairs ? program.affairs : [];
+    setClasification(program?.clpClasificacionPrograma?.[0]?.clp_descripcion);
+    setDependence(program?.depDependencia?.dep_descripcion);
+    setRequestSubjectTypes(optionsRequestSubjectTypes);
+    setValue("asuntoSolicitud", "");
   };
 
   const selectResponseMedium = (respuesta: { MRE_CODIGO: number; MRE_DESCRIPCION: string }) => {
@@ -287,23 +355,13 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
     return estado;
   };
 
-  const getUser = async (identification: string) => {
-    const responseUser = pqrsdfService.getPersonByDocument(parseInt(identification));
-    return responseUser;
-  };
-
-  const { identification } = useParams();
-
   useEffect(() => {
-    if (identification) {
+    if (identification && personData) {
       setBtnDisable("input-desabled");
-      getUser(identification).then(({ data, operation }) => {
-        const user = data;
+      const setInitialData = async () => {
+        const user = personData;
 
         setValue("tipo", "tipo", { shouldDirty: true });
-        setValue("pais", "pais", { shouldDirty: true });
-        setValue("departamento", "departamento", { shouldDirty: true });
-        setValue("municipio", "municipio", { shouldDirty: true });
         setValue("fechaNacimento", "fechaNacimento", { shouldDirty: true });
 
         setName(user?.firstName);
@@ -332,33 +390,26 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
         setAddress(user?.address);
         setValue("direccion", user?.address, { shouldDirty: true });
 
-        setValueTypeEntidad({
-          TEJ_CODIGO: user?.entityType?.tej_codigo,
-          TEJ_NOMBRE: user?.entityType?.tej_nombre,
-        });
-        selectCountry({
-          LGE_CODIGO: user?.country?.id,
-          LGE_ELEMENTO_DESCRIPCION: user?.country?.itemDescription,
-        });
-        selectDepartment({
-          LGE_AGRUPADOR: user?.department?.grouper,
-          LGE_CAMPOS_ADICIONALES: user?.department?.additionalFields,
-          LGE_CODIGO: user?.departmentId,
-          LGE_ELEMENTO_CODIGO: user?.department?.itemCode,
-          LGE_ELEMENTO_DESCRIPCION: user?.department?.itemDescription,
-        });
-        setValueMunicipio({
-          LGE_AGRUPADOR: user?.municipality?.grouper,
-          LGE_CAMPOS_ADICIONALES: user?.municipality?.additionalFields,
-          LGE_CODIGO: user?.municipality?.id,
-          LGE_ELEMENTO_CODIGO: user?.municipality?.itemCode,
-          LGE_ELEMENTO_DESCRIPCION: user?.municipality?.itemDescription,
-        });
-      });
+        setValueTypeEntidad(user?.entityType?.tej_codigo);
+
+        const country = await selectCountry(user?.countryId, false);
+        setTimeout(() => {
+          setValue("pais", user?.countryId);
+        }, 800);
+        await selectDepartment(user?.departmentId, country.childs, false);
+        setTimeout(() => {
+          setValue("departamento", user?.departmentId);
+        }, 1250);
+        setTimeout(() => {
+          setValue("municipio", user?.municipalityId);
+        }, 1500);
+      };
+
+      setInitialData();
     } else {
       setBtnDisable("");
     }
-  }, [identification]);
+  }, [personData]);
 
   const handleDateChange = (date: any) => {
     setValue("fechaNacimento", date);
@@ -371,15 +422,15 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
     const pqrsdf: IPqrsdf = {
       requestTypeId: data.tipoDeSolicitud["TSO_CODIGO"],
       responseMediumId: data.medioRespuesta["MRE_CODIGO"],
-      requestSubjectId: 1,
-      clasification: data.programaSolicitud["CLP_DESCRIPCION"],
-      dependency: data.programaSolicitud["DEP_DESCRIPCION"],
+      requestSubjectId: parseInt(getValues("asuntoSolicitud")),
+      clasification: clasification,
+      dependency: dependence,
       description: data["Descripcion"],
       idCanalesAttencion: parseInt(channels.attention),
       person: {
         identification: data["noDocumento"],
         documentTypeId: data.tipo["LGE_CODIGO"],
-        entityTypeId: data.tipoEntidad["TEJ_CODIGO"],
+        entityTypeId: getValues("tipoEntidad"),
         firstName: data["primerNombre"],
         secondName: data["segundoNombre"],
         firstSurname: data["primerApellido"],
@@ -389,9 +440,9 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
         secondContactNumber: data["noContacto2"],
         email: data["correoElectronico"],
         address: data["direccion"],
-        countryId: data.pais["LGE_CODIGO"],
-        departmentId: data.departamento["LGE_CODIGO"],
-        municipalityId: data.municipio["LGE_CODIGO"],
+        countryId: getValues("pais"),
+        departmentId: getValues("departamento"),
+        municipalityId: getValues("municipio"),
         isBeneficiary: true,
       },
       file: {
@@ -1037,12 +1088,16 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
               <>
                 <DropDownComponent
                   id={field.name}
-                  value={valuePais}
+                  value={field.value}
                   className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                  onChange={(e) => field.onChange(selectCountry(e.value))}
+                  onChange={(e) => {
+                    field.onChange(e.value);
+                    selectCountry(e.value);
+                  }}
                   focusInputRef={field.ref}
-                  optionLabel="LGE_ELEMENTO_DESCRIPCION"
-                  options={paises.data}
+                  optionValue="id"
+                  optionLabel="itemDescription"
+                  options={countries}
                   placeholder="Selecionar"
                   width="100%"
                 />
@@ -1054,7 +1109,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
 
         <span className="split"></span>
 
-        {showDeptoMupio.current == 4 ? (
+        {watchCountry == 4 ? (
           <>
             <div className="row-1 width-25">
               <label className="font-label">
@@ -1068,12 +1123,16 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
                   <>
                     <DropDownComponent
                       id={field.name}
-                      value={valueDepartamento}
+                      value={field.value}
                       className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                      onChange={(e) => field.onChange(selectDepartment(e.value))}
+                      onChange={(e) => {
+                        field.onChange(e.value);
+                        selectDepartment(e.value);
+                      }}
                       focusInputRef={field.ref}
-                      optionLabel="LGE_ELEMENTO_DESCRIPCION"
-                      options={optionDepartamento.current}
+                      optionValue="id"
+                      optionLabel="itemDescription"
+                      options={departments}
                       placeholder="Selecionar"
                       width="100%"
                     />
@@ -1089,43 +1148,34 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
 
         <span className="split"></span>
 
-        {showDeptoMupio.current == 4 ? (
-          <>
-            {showMupio.current == 204 ? (
-              <>
-                <div className="row-1 width-25">
-                  <label className="font-label">
-                    Municipio<span className="required">*</span>
-                  </label>
-                  <Controller
-                    name="municipio"
-                    control={control}
-                    rules={{ required: "Campo requerido." }}
-                    render={({ field, fieldState }) => (
-                      <>
-                        <DropDownComponent
-                          id={field.name}
-                          value={valueMunicipio}
-                          className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                          onChange={(e) => field.onChange(selectMunicipality(e.value))}
-                          focusInputRef={field.ref}
-                          optionLabel="LGE_ELEMENTO_DESCRIPCION"
-                          options={optionMunicipios.current}
-                          placeholder="Selecionar"
-                          width="100%"
-                        />
-                      </>
-                    )}
+        {watchDeparment == 204 && (
+          <div className="row-1 width-25">
+            <label className="font-label">
+              Municipio<span className="required">*</span>
+            </label>
+            <Controller
+              name="municipio"
+              control={control}
+              rules={{ required: "Campo requerido." }}
+              render={({ field, fieldState }) => (
+                <>
+                  <DropDownComponent
+                    id={field.name}
+                    value={field.value}
+                    className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
+                    onChange={(e) => field.onChange(e.value)}
+                    focusInputRef={field.ref}
+                    optionValue="id"
+                    optionLabel="itemDescription"
+                    options={municipalities}
+                    placeholder="Selecionar"
+                    width="100%"
                   />
-                  {getFormErrorMessage("municipio")}
-                </div>
-              </>
-            ) : (
-              <></>
-            )}
-          </>
-        ) : (
-          <></>
+                </>
+              )}
+            />
+            {getFormErrorMessage("municipio")}
+          </div>
         )}
       </div>
 
@@ -1177,17 +1227,16 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
                 <Suspense fallback={<div>Cargando...</div>}>
                   <DropDownComponent
                     id={field.name}
-                    value={program}
+                    value={field.value}
                     className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                    onChange={(e) =>
-                      field.onChange(() => {
-                        selectProgram(e.value);
-                        setValue("programaSolicitud", e.value);
-                      })
-                    }
+                    onChange={(e) => {
+                      field.onChange(e.value);
+                      selectProgram(e.value);
+                    }}
                     focusInputRef={field.ref}
-                    optionLabel="PRG_DESCRIPCION"
-                    options={optionPrograma.data}
+                    optionLabel="prg_descripcion"
+                    optionValue="prg_codigo"
+                    options={programs}
                     placeholder="Seleccionar"
                     width="100%"
                   />
@@ -1213,17 +1262,14 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
                 <Suspense fallback={<div>Cargando...</div>}>
                   <DropDownComponent
                     id={field.name}
-                    value={valueAsunto}
+                    value={field.value}
                     className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                    onChange={(e) =>
-                      field.onChange(() => {
-                        selectRequestSubject(e.value);
-                        setValue("asuntoSolicitud", e.value);
-                      })
-                    }
+                    onChange={(e) => field.onChange(e.value)}
                     focusInputRef={field.ref}
-                    optionLabel="ASO_ASUNTO"
-                    options={optionAsuntoSolicitud.data}
+                    optionLabel="aso_asunto"
+                    optionValue="aso_codigo"
+                    options={requestSubjectTypes}
+                    disabled={!requestSubjectTypes.length}
                     placeholder="Seleccionar"
                     width="100%"
                   />
@@ -1241,6 +1287,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
           <InputTextComponent
             placeholder={showClasificacion.current}
             width=""
+            value={clasification}
             disabled={true}
             className="mi-input !h-10"
           />
@@ -1253,6 +1300,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
           <InputTextComponent
             placeholder={showDependecia.current}
             width=""
+            value={dependence}
             disabled={true}
             className="mi-input !h-10"
           />
