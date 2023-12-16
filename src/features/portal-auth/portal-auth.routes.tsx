@@ -19,7 +19,7 @@ function PortalAuthRoutes() {
       <Route path={"/cambiar-clave"} element={<BenefactorPrivateRoute element={<ChangePasswordPage />} />} />
 
       <Route
-        path={"/:identification"}
+        path={"/layout/registrar-pqrsdf/:identification"}
         element={<BenefactorPrivateRoute element={<RegisterPqrsdfPage isPerson={true} />} />}
       />
     </Routes>

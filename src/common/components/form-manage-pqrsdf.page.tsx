@@ -279,9 +279,11 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
           ),
           closeIcon: closeIcon,
           acceptLabel: "Cerrar",
-          footer: (options) => acceptButton(options),
+          footer: (options) =>
+            acceptButton(options, () => {
+              navigate(-1);
+            }),
         });
-        navigate(-1);
       } else {
         confirmDialog({
           id: "messages",
@@ -318,7 +320,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
     }
   }, [checkMobileScreen]);
 
-  const acceptButton = (options) => {
+  const acceptButton = (options, callback = () => {}) => {
     return (
       <div className="flex items-center justify-center gap-2 pb-2">
         <Button
@@ -328,6 +330,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
           disabled={loading}
           onClick={(e) => {
             options.accept();
+            callback();
           }}
         />
       </div>
@@ -433,6 +436,14 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
     };
   }, []);
 
+  useEffect(() => {
+    if (currentWorkEntity?.workEntityTypeId == 2 || currentWorkEntity?.workEntityTypeId == 7) {
+      let auxResponseTypes = [...responseTypes];
+      const newResponseTypes = auxResponseTypes.filter((responseType) => responseType.id != 4 &&  responseType.id != 5);
+      setResponseTypes(newResponseTypes);
+    }
+  }, [currentWorkEntity]);
+
   const setInitialForm = async () => {
     const pqrsdf = pqrsdfData;
     //Id columns
@@ -478,7 +489,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
     setValue("programClasification", pqrsdf?.program?.clpClasificacionPrograma?.[0]?.clp_descripcion);
     setValue("programDependence", pqrsdf?.program?.depDependencia?.dep_descripcion);
     setValue("description", pqrsdf?.description);
-    setValue("file", [pqrsdf?.file]);
+    setValue("file", pqrsdf?.file ? [pqrsdf?.file] : []);
     setInitDataLoaded(true);
   };
 
@@ -1213,7 +1224,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
           if (watchResponseTypeId != 4) {
             setValue("isPetitioner", "");
           }
-          if (watchResponseTypeId == 4) {
+          if (watchResponseTypeId == 4 || watchResponseTypeId == 5) {
             setValue("workEntityTypeId", "");
           }
           if (watchResponseTypeId != 1 && watchResponseTypeId != 2) {
@@ -1232,10 +1243,9 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         disabled: !initDataLoaded || !workEntityTypes?.length || loading,
         hidden: () => {
           return (
-            (watchResponseTypeId == 5 && currentWorkEntity?.workEntityTypeId == 5) ||
-            (watchResponseTypeId == 4 &&
-              currentWorkEntity?.workEntityTypeId != 2 &&
-              currentWorkEntity?.workEntityTypeId != 7)
+            (watchResponseTypeId == 4 || watchResponseTypeId == 5) &&
+            currentWorkEntity?.workEntityTypeId != 2 &&
+            currentWorkEntity?.workEntityTypeId != 7
           );
         },
         rules: {
@@ -1265,20 +1275,17 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         optionLabel: "label",
         optionValue: "id",
         options: [{ id: 1, label: "Peticionario" }],
-        disabled: !initDataLoaded || !workEntityTypes?.length || loading,
+        disabled: !initDataLoaded || watchResponseTypeId != 4 || loading,
         hidden: () => {
           return (
-            (watchResponseTypeId == 5 && currentWorkEntity?.workEntityTypeId == 5) ||
-            (watchResponseTypeId != 4 &&
-              (currentWorkEntity?.workEntityTypeId == 2 || currentWorkEntity?.workEntityTypeId == 7))
+            (watchResponseTypeId != 4 && watchResponseTypeId != 5) ||
+            (currentWorkEntity?.workEntityTypeId == 2 || currentWorkEntity?.workEntityTypeId == 7)
           );
         },
         rules: {
           validate: {
             required: (value) => {
               if (
-                watchResponseTypeId != 5 &&
-                currentWorkEntity?.workEntityTypeId != 5 &&
                 watchResponseTypeId == 4 &&
                 currentWorkEntity?.workEntityTypeId != 2 &&
                 currentWorkEntity?.workEntityTypeId != 7 &&

@@ -422,7 +422,8 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
     const pqrsdf: IPqrsdf = {
       requestTypeId: data.tipoDeSolicitud["TSO_CODIGO"],
       responseMediumId: data.medioRespuesta["MRE_CODIGO"],
-      requestSubjectId: parseInt(getValues("asuntoSolicitud")),
+      requestSubjectId: getValues("asuntoSolicitud"),
+      programId: getValues("programaSolicitud"),
       clasification: clasification,
       dependency: dependence,
       description: data["Descripcion"],
@@ -435,14 +436,15 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
         secondName: data["segundoNombre"],
         firstSurname: data["primerApellido"],
         secondSurname: data["segundoApellido"],
+        businessName: getValues("RazonSocial") ? getValues("RazonSocial") : null,
         birthdate: birthdateData.current,
         firstContactNumber: data["noContacto1"],
         secondContactNumber: data["noContacto2"],
         email: data["correoElectronico"],
         address: data["direccion"],
         countryId: getValues("pais"),
-        departmentId: getValues("departamento"),
-        municipalityId: getValues("municipio"),
+        departmentId: getValues("departamento") ? getValues("departamento") : null,
+        municipalityId: getValues("municipio") ? getValues("municipio") : null,
         isBeneficiary: true,
       },
       file: {
@@ -533,7 +535,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
           <Controller
             name="tipoDeSolicitud"
             control={control}
-            rules={{ required: "Campo obligatorio." }}
+            rules={{ required: "El campo es obligatorio." }}
             render={({ field, fieldState }) => (
               <>
                 <Suspense fallback={<div>Cargando...</div>}>
@@ -566,7 +568,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
               name="tipo"
               defaultValue={valueDocument}
               control={control}
-              rules={{ required: "Campo obligatorio." }}
+              rules={{ required: "El campo es obligatorio." }}
               render={({ field, fieldState }) => (
                 <>
                   <Suspense fallback={<div>Cargando...</div>}>
@@ -607,7 +609,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
                   control={control}
                   defaultValue={valueIdentification}
                   rules={{
-                    required: "Campo obligatorio.",
+                    required: "El campo es obligatorio.",
                     maxLength: { value: 15, message: "Solo se permiten 15 caracteres" },
                   }}
                   render={({ field, fieldState }) => (
@@ -649,7 +651,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
               name="tipoEntidad"
               control={control}
               defaultValue={valueTypeEntidad}
-              rules={{ required: "Campo obligatorio." }}
+              rules={{ required: "El campo es obligatorio." }}
               render={({ field, fieldState }) => (
                 <>
                   <Suspense fallback={<div>Cargando...</div>}>
@@ -695,7 +697,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
               name="RazonSocial"
               control={control}
               rules={{
-                required: "Campo obligatorio.",
+                required: "El campo es obligatorio.",
                 maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
               }}
               render={({ field, fieldState }) => (
@@ -715,7 +717,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
                 </>
               )}
             />
-            {getFormErrorMessage("RazónSocial")}
+            {getFormErrorMessage("RazonSocial")}
           </div>
         ) : (
           <></>
@@ -734,7 +736,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
                     control={control}
                     defaultValue={name}
                     rules={{
-                      required: "Campo obligatorio.",
+                      required: "El campo es obligatorio.",
                       maxLength: { value: 50, message: "Solo se permiten 50 caracteres" },
                     }}
                     render={({ field, fieldState }) => (
@@ -803,7 +805,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
                     control={control}
                     defaultValue={lastName}
                     rules={{
-                      required: "Campo obligatorio.",
+                      required: "El campo es obligatorio.",
                       maxLength: { value: 50, message: "Solo se permiten 50 caracteres" },
                     }}
                     render={({ field, fieldState }) => (
@@ -880,7 +882,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
                   <Controller
                     name="fechaNacimento"
                     control={control}
-                    rules={{ required: "Campo obligatorio." }}
+                    rules={{ required: "El campo es obligatorio." }}
                     render={({ field, fieldState }) => (
                       <>
                         <span className="p-input-icon-right">
@@ -927,7 +929,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
                     defaultValue={firstContactNumber}
                     control={control}
                     rules={{
-                      required: "Campo obligatorio.",
+                      required: "El campo es obligatorio.",
                       maxLength: { value: 10, message: "Solo se permiten 10 caracteres" },
                     }}
                     render={({ field, fieldState }) => (
@@ -1005,7 +1007,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
                 name="correoElectronico"
                 control={control}
                 rules={{
-                  required: "Este campo es obligatorio",
+                  required: "El campo es obligatorio.",
                   maxLength: { value: 100, message: "Solo se permiten 100 caracteres" },
                   pattern: {
                     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
@@ -1046,7 +1048,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
                 control={control}
                 defaultValue={address}
                 rules={{
-                  required: "Campo obligatorio.",
+                  required: "El campo es obligatorio.",
                   maxLength: { value: 300, message: "Solo se permiten 300 caracteres" },
                 }}
                 render={({ field, fieldState }) => (
@@ -1083,7 +1085,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
           <Controller
             name="pais"
             control={control}
-            rules={{ required: "Campo obligatorio." }}
+            rules={{ required: "El campo es obligatorio." }}
             render={({ field, fieldState }) => (
               <>
                 <DropDownComponent
@@ -1118,7 +1120,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
               <Controller
                 name="departamento"
                 control={control}
-                rules={{ required: "Campo obligatorio." }}
+                rules={{ required: "El campo es obligatorio." }}
                 render={({ field, fieldState }) => (
                   <>
                     <DropDownComponent
@@ -1187,7 +1189,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
           <Controller
             name="medioRespuesta"
             control={control}
-            rules={{ required: "Campo obligatorio." }}
+            rules={{ required: "El campo es obligatorio." }}
             render={({ field, fieldState }) => (
               <>
                 <DropDownComponent
@@ -1221,7 +1223,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
           <Controller
             name="programaSolicitud"
             control={control}
-            rules={{ required: "Campo obligatorio." }}
+            rules={{ required: "El campo es obligatorio." }}
             render={({ field, fieldState }) => (
               <>
                 <Suspense fallback={<div>Cargando...</div>}>
@@ -1256,7 +1258,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
           <Controller
             name="asuntoSolicitud"
             control={control}
-            rules={{ required: "Campo obligatorio." }}
+            rules={{ required: "El campo es obligatorio." }}
             render={({ field, fieldState }) => (
               <>
                 <Suspense fallback={<div>Cargando...</div>}>
@@ -1315,7 +1317,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
           name="Descripcion"
           control={control}
           rules={{
-            required: "Campo obligatorio.",
+            required: "El campo es obligatorio.",
             maxLength: { value: 5000, message: "Solo se permiten 5000 caracteres" },
           }}
           render={({ field, fieldState }) => (
@@ -1440,7 +1442,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
         <Controller
           name="politicaTratamiento"
           control={control}
-          rules={{ required: "Campo obligatorio." }}
+          rules={{ required: "El campo es obligatorio." }}
           render={({ field, fieldState }) => (
             <>
               <TriStateCheckboxComponent

@@ -141,7 +141,7 @@ const FormSignInComponent = (): React.JSX.Element => {
           <ButtonComponent
             className="citizen-button-login big"
             form="form-sign"
-            value="Ingresar1"
+            value="Ingresar"
             type="submit"
             disabled={!formState.isValid}
           />
