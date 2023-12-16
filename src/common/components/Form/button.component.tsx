@@ -1,4 +1,5 @@
 import React, { SyntheticEvent } from "react";
+import { FaSpinner } from "react-icons/fa";
 
 interface ILabelProps {
   value: string;
@@ -8,6 +9,7 @@ interface ILabelProps {
   id?: string;
   form?: string;
   disabled?: boolean;
+  loading?: boolean;
 }
 
 export function ButtonComponent({
@@ -17,7 +19,8 @@ export function ButtonComponent({
   action = () => {},
   id,
   form,
-  disabled
+  disabled,
+  loading,
 }: ILabelProps): React.JSX.Element {
   const handleButtonClick = (event: SyntheticEvent) => {
     if (type !== "submit") event.preventDefault();
@@ -25,15 +28,16 @@ export function ButtonComponent({
   };
 
   return (
-    <button
-      type={type}
-      id={id}
-      form={form}
-      className={className}
-      onClick={handleButtonClick}
-      disabled={disabled}
-    >
-      {value}
+    <button type={type} id={id} form={form} className={className} onClick={handleButtonClick} disabled={disabled}>
+      <div className="app5-container-button-text">
+        {loading && (
+          <span>
+            <FaSpinner />{" "}
+          </span>
+        )}
+
+        {value}
+      </div>
     </button>
   );
 }
