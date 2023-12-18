@@ -395,8 +395,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         const response = await pqrsdfService.getPqrsdfById(id);
 
         if (response.operation.code === EResponseCodes.OK) {
-          setPqrsdfData(response.data);
-          console.log(response.data);
+          setPqrsdfData(response.data);         
         } else {
           navigate(-1);
         }
@@ -415,8 +414,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         const response = await service.getWorkEntityByUserId(id);
 
         if (response.operation.code === EResponseCodes.OK) {
-          setCurrentWorkEntity(response.data);
-          console.log(response.data);
+          setCurrentWorkEntity(response.data);          
         } else {
           navigate(-1);
         }
@@ -638,9 +636,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
   };
 
   const getDepartments = async (country?: IGenericData) => {
-    let departments: IGenericData[] = [];
-    console.log(country?.itemCode);
-
+    let departments: IGenericData[] = [];    
     if (country) {
       setLoading(true);
       try {
@@ -1688,9 +1684,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
     );
   };
 
-  const isPersonInvalid = () => {
-    console.log((departments.length && !watchDepartmentId) || (municipalities.length && !watchMunicipalityId));
-
+  const isPersonInvalid = () => {    
     return (
       getFieldState("person.firstName")?.invalid ||
       getFieldState("person.firstSurname")?.invalid ||

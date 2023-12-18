@@ -46,7 +46,7 @@ export function AppContextProvider({ children }: IProps) {
       setMessage,
       validateActionAccess,
     };
-  }, [message, authorization]);
+  }, [message, authorization, portalUser]);
 
   return <AppContext.Provider value={values}>{children}</AppContext.Provider>;
 }

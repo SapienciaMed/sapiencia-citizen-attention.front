@@ -123,14 +123,10 @@ export function usePqrsdfService() {
       });
     }
     formData.append("pqrsdf", JSON.stringify(pqrsdf));
-
-    console.log(formData);
-
     try {
       const endpoint: string = `/response`;
       return await service.post(`${listUrl}${endpoint}`, formData);
-    } catch (error) {
-      console.log(error);      
+    } catch (error) {      
       return new ApiResponse({} as IPqrsdf, EResponseCodes.FAIL, "Error no controlado");
     }
   }

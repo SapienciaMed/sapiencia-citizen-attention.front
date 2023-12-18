@@ -1457,8 +1457,14 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
         />
       </div>
 
-      <div>
-        <Button disabled={statusSummit} rounded label="Enviar solicitud" className="!px-10 !text-sm btn-sumit" />
+      <div className="w-full text-right">
+        <Button
+          label="Enviar solicitud"
+          rounded
+          className="!px-4 !py-2 !text-base !font-sans"
+          type="submit"
+          disabled={statusSummit}
+        />
       </div>
     </form>
   );

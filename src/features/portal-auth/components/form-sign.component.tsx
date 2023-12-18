@@ -20,9 +20,9 @@ interface IFailedSignIn {
 
 const FormSignInComponent = (): React.JSX.Element => {
   // Servicos
-  const { benefactorSignIn } = useAuthService();
+  const { benefactorSignIn, getPortalAuthorization } = useAuthService();
   const navigate = useNavigate();
-  const { setAuthorization } = useContext(AppContext);
+  const { setAuthorization, setPortalUser } = useContext(AppContext);
   const credentialsSaved = localStorage.getItem("credentials");
   const {
     handleSubmit,
@@ -79,8 +79,6 @@ const FormSignInComponent = (): React.JSX.Element => {
 
     const { data: dataResponse, operation } = await benefactorSignIn(data);
 
-    console.log(operation);
-
     setLoading(false);
     if (operation.code === EResponseCodes.OK) {
       isRememberData && localStorage.setItem("credentials", JSON.stringify(credentials));
@@ -88,8 +86,14 @@ const FormSignInComponent = (): React.JSX.Element => {
       localStorage.setItem("token", dataResponse.token);
       sessionStorage.setItem("token", dataResponse.token);
       setAuthorization(dataResponse.authorization);
-
       if (dataResponse.authorization.user.password) {
+        await getPortalAuthorization(dataResponse.token).then((res) => {
+          if (res.operation.code == EResponseCodes.OK) {
+            setPortalUser(res.data.user);
+          } else {
+            localStorage.removeItem("token");
+          }
+        });
         navigate(`/portal/layout`);
       } else {
         sessionStorage.setItem("identification", data.identification);

@@ -310,8 +310,7 @@ function FormRequestSubjectTypesPage({ isEdit = false }: Props): React.JSX.Eleme
           setLoading(false);
         }
       };
-      fetchRequestSubjectType(parseInt(id));
-      console.log(id);
+      fetchRequestSubjectType(parseInt(id));      
     }
     handleResize();
     window.addEventListener("resize", handleResize);
