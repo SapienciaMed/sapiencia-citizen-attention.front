@@ -41,7 +41,7 @@ export const TableGenericComponent = (props:Props) => {
             <>
                 <Link to={'radicar/'+ user.identification}>
                     <Tooltip target=".custom-target-icon" style={{borderRadius:'1px'}} />
-                    <i className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center"
+                    <i className="custom-target-icon pi  p-text-secondary p-overlay-badge flex justify-center"
                         data-pr-tooltip="Radicar"
                         data-pr-position="right"
                     >

@@ -10,7 +10,7 @@ function HomePage(): React.JSX.Element {
   const { applications } = useApplicationsData();
 
   return (
-    <div className="full-height">
+    <div className="full-height portal-attention">
       <div className="dashboard-margin-ac full-height">
         <section className="welcome-container">
           <span className="text-dasboard huge text-center title">Bienvenido</span>

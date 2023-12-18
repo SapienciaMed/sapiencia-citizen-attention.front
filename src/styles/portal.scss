@@ -12,19 +12,19 @@ $base-path-url-image: "../public/images/";
 // alerts
 $alert-failed-color: #ff0000;
 $alert-failed-background-color: #f9f0ef;
-
-.dashboard-margin-ac {
+.portal-attention {
+  .dashboard-margin-ac {
     height: 100%;
-    background-color: #E5E1EF;
+    background-color: #e5e1ef;
     padding: 37px 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 9%;
-}
+  }
 
-.card-container {
+  .card-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -32,37 +32,34 @@ $alert-failed-background-color: #f9f0ef;
     height: 155px;
     width: 155px;
     border: 1px solid $main-color;
-    background: #FFF;
+    background: #fff;
     cursor: pointer;
-    box-shadow:
-      -70px -70px 0 -65px $main-color,
-      -70px 70px 0 -65px $main-color,
-      70px -70px 0 -65px $main-color,
+    box-shadow: -70px -70px 0 -65px $main-color, -70px 70px 0 -65px $main-color, 70px -70px 0 -65px $main-color,
       70px 70px 0 -65px $main-color;
     & img {
-        height: 67px;
-        width: 67px;
+      height: 67px;
+      width: 67px;
     }
     & .application-name {
-        color: $main-color;
-        max-width: 90%;
-        text-align: center;
-        font-family: Rubik !important;
-        font-size: 17px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: 120%;
+      color: $main-color;
+      max-width: 90%;
+      text-align: center;
+      font-family: Rubik !important;
+      font-size: 17px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 120%;
     }
-}
-  
-.external-link {
+  }
+
+  .external-link {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-}
+  }
 
-.footer-portal {
+  .footer-portal {
     background-color: $main-color;
     height: 25px;
     display: grid;
@@ -73,52 +70,53 @@ $alert-failed-background-color: #f9f0ef;
     align-items: center;
     justify-content: center;
     & span {
-        color: $secondary-color;
-        text-align: center;
-        font-family: Rubik;
-        font-size: 10px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: 120%;
+      color: $secondary-color;
+      text-align: center;
+      font-family: Rubik;
+      font-size: 10px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 120%;
     }
-}
+  }
 
-.welcome-container {
+  .welcome-container {
     gap: var(--24, 24px);
     flex-shrink: 0;
     align-items: end;
     & .title {
-        color: $main-color;
+      color: $main-color;
     }
 
     & .content {
-        color: $color-black;
-        text-align: center;
-        font-family: Rubik !important;;
-        font-size: 17px;
-        font-style: normal;
-        font-weight: 300;
-        line-height: 120%;
+      color: $color-black;
+      text-align: center;
+      font-family: Rubik !important;
+      font-size: 17px;
+      font-style: normal;
+      font-weight: 300;
+      line-height: 120%;
     }
-}
+  }
 
-.primary-bold {
+  .primary-bold {
     color: $main-color;
     font-family: Rubik;
     font-size: 17px;
     font-style: normal;
     font-weight: 500;
     line-height: 120%;
-}
+  }
 
-@media (min-width: 1024px) {
+  @media (min-width: 1024px) {
     .dashboard-margin-ac {
-        background-size: cover;
-        background-repeat: no-repeat;
-        padding: 45px 25px;
+      background-size: cover;
+      background-repeat: no-repeat;
+      padding: 45px 25px;
     }
 
     .welcome-container {
-        width: 820px;
+      width: 820px;
     }
+  }
 }

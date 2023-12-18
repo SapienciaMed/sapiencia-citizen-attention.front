@@ -395,7 +395,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         const response = await pqrsdfService.getPqrsdfById(id);
 
         if (response.operation.code === EResponseCodes.OK) {
-          setPqrsdfData(response.data);         
+          setPqrsdfData(response.data);
         } else {
           navigate(-1);
         }
@@ -414,7 +414,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         const response = await service.getWorkEntityByUserId(id);
 
         if (response.operation.code === EResponseCodes.OK) {
-          setCurrentWorkEntity(response.data);          
+          setCurrentWorkEntity(response.data);
         } else {
           navigate(-1);
         }
@@ -437,7 +437,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
   useEffect(() => {
     if (currentWorkEntity?.workEntityTypeId == 2 || currentWorkEntity?.workEntityTypeId == 7) {
       let auxResponseTypes = [...responseTypes];
-      const newResponseTypes = auxResponseTypes.filter((responseType) => responseType.id != 4 &&  responseType.id != 5);
+      const newResponseTypes = auxResponseTypes.filter((responseType) => responseType.id != 4 && responseType.id != 5);
       setResponseTypes(newResponseTypes);
     }
   }, [currentWorkEntity]);
@@ -636,7 +636,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
   };
 
   const getDepartments = async (country?: IGenericData) => {
-    let departments: IGenericData[] = [];    
+    let departments: IGenericData[] = [];
     if (country) {
       setLoading(true);
       try {
@@ -1275,7 +1275,8 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         hidden: () => {
           return (
             (watchResponseTypeId != 4 && watchResponseTypeId != 5) ||
-            (currentWorkEntity?.workEntityTypeId == 2 || currentWorkEntity?.workEntityTypeId == 7)
+            currentWorkEntity?.workEntityTypeId == 2 ||
+            currentWorkEntity?.workEntityTypeId == 7
           );
         },
         rules: {
@@ -1511,11 +1512,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
             column?.files?.map((file: IFile) => (
               <div className="w-full flex flex-wrap" key={column?.key}>
                 <label className="text-base w-full">{column?.name}</label>
-                <a
-                  className="font-medium text-red-600 mt-3 ml-1"
-                  href={"https://storage.cloud.google.com/" + splitUrl(file?.name).namepath}
-                  target="_blank"
-                >
+                <a className="font-medium text-red-600 mt-3 ml-1" href={file?.filePath} target="_blank">
                   {splitUrl(file?.name).fileName}
                 </a>
               </div>
@@ -1554,7 +1551,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
                     onClick={() => setVisibleDialog(true)}
                     text
                     icon={
-                      <i className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center">
+                      <i className="custom-target-icon pi p-text-secondary p-overlay-badge flex justify-center">
                         <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path
                             d="M7.99984 5.83334V11.1667"
@@ -1659,7 +1656,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
             <Link to={""} onClick={() => handleFileView(data.action)}>
               <Tooltip target=".custom-target-icon" style={{ borderRadius: "1px" }} />
               <i
-                className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center"
+                className="custom-target-icon pi  p-text-secondary p-overlay-badge flex justify-center"
                 data-pr-tooltip="Ver adjunto"
                 data-pr-position="right"
               >
@@ -1671,7 +1668,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
             <Link to={""} onClick={() => selectFileToDelete(data)}>
               <Tooltip target=".custom-target-icon" style={{ borderRadius: "1px" }} />
               <i
-                className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center"
+                className="custom-target-icon pi  p-text-secondary p-overlay-badge flex justify-center"
                 data-pr-tooltip="Eliminar"
                 data-pr-position="right"
               >
@@ -1684,7 +1681,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
     );
   };
 
-  const isPersonInvalid = () => {    
+  const isPersonInvalid = () => {
     return (
       getFieldState("person.firstName")?.invalid ||
       getFieldState("person.firstSurname")?.invalid ||
@@ -1806,7 +1803,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
                       onClick={() => setVisibleDialog(true)}
                       text
                       icon={
-                        <i className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center">
+                        <i className="custom-target-icon pi  p-text-secondary p-overlay-badge flex justify-center">
                           <svg
                             width="16"
                             height="17"
