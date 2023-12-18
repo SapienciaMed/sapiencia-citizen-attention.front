@@ -831,12 +831,15 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         options: motives,
         disabled: !initDataLoaded || loading,
         hidden: () => {
-          return !motives?.length && pqrsdfData?.responsible?.workEntityTypeId != 3;
+          return (
+            !motives?.length &&
+            (pqrsdfData?.responsible?.workEntityTypeId != 3 && pqrsdfData?.responsible?.workEntityTypeId != 2)
+          );
         },
         rules: {
           validate: {
             required: (value) => {
-              if (motives?.length && pqrsdfData?.responsible?.workEntityTypeId == 3 && !value)
+              if (motives?.length && (pqrsdfData?.responsible?.workEntityTypeId == 3 || pqrsdfData?.responsible?.workEntityTypeId == 2) && !value)
                 return "El campo es obligatorio.";
               return true;
             },

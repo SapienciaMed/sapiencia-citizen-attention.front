@@ -650,7 +650,6 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
             <Controller
               name="tipoEntidad"
               control={control}
-              defaultValue={valueTypeEntidad}
               rules={{ required: "El campo es obligatorio." }}
               render={({ field, fieldState }) => (
                 <>
@@ -660,12 +659,10 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
                       value={field.value}
                       className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
                       optionValue="TEJ_CODIGO"
-                      onChange={(e) =>
-                        field.onChange(() => {
-                          setValueTypeEntidad(e.value);
-                          setValue("tipoEntidad", e.value);
-                        })
-                      }
+                      onChange={(e) => {
+                        field.onChange(e.value);
+                        setValueTypeEntidad(e.value);
+                      }}
                       focusInputRef={field.ref}
                       optionLabel="TEJ_NOMBRE"
                       options={optionLegalEntity.data}
