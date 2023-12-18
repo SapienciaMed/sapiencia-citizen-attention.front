@@ -833,13 +833,18 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         hidden: () => {
           return (
             !motives?.length &&
-            (pqrsdfData?.responsible?.workEntityTypeId != 3 && pqrsdfData?.responsible?.workEntityTypeId != 2)
+            pqrsdfData?.responsible?.workEntityTypeId != 3 &&
+            pqrsdfData?.responsible?.workEntityTypeId != 2
           );
         },
         rules: {
           validate: {
             required: (value) => {
-              if (motives?.length && (pqrsdfData?.responsible?.workEntityTypeId == 3 || pqrsdfData?.responsible?.workEntityTypeId == 2) && !value)
+              if (
+                motives?.length &&
+                (pqrsdfData?.responsible?.workEntityTypeId == 3 || pqrsdfData?.responsible?.workEntityTypeId == 2) &&
+                !value
+              )
                 return "El campo es obligatorio.";
               return true;
             },
@@ -1515,7 +1520,13 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
             column?.files?.map((file: IFile) => (
               <div className="w-full flex flex-wrap" key={column?.key}>
                 <label className="text-base w-full">{column?.name}</label>
-                <a className="font-medium text-red-600 mt-3 ml-1" href={file?.filePath} target="_blank">
+                <a
+                  href="javascript:void(0);"
+                  className="font-medium text-red-600 mt-3 ml-1"
+                  onClick={() => {
+                    window.open(file?.filePath);
+                  }}
+                >
                   {splitUrl(file?.name).fileName}
                 </a>
               </div>

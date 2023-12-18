@@ -26,7 +26,7 @@ function HomePage(): React.JSX.Element {
           <p className="text-dasboard big text-center content">Esta plataforma está diseñada para...</p>
           <a className="external-link" target="_blank" href="https://www.medellin.gov.co/">
             <button type="submit" className="citizen-button-main huge hover-three">
-              Saber mas...
+              Saber más...
             </button>
           </a>
         </section>
