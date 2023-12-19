@@ -166,10 +166,10 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
         if (response.operation.code === EResponseCodes.OK) {
           setPqrsdfData(response.data);
         } else {
-          navigate('/atencion-ciudadana/gestionar-pqrsdf');
+          navigate("/atencion-ciudadana/gestionar-pqrsdf");
         }
       } catch (error) {
-        navigate('/atencion-ciudadana/gestionar-pqrsdf');
+        navigate("/atencion-ciudadana/gestionar-pqrsdf");
         console.error("Error al obtener la pqrsdf:", error);
       } finally {
         setLoading(false);
@@ -185,10 +185,10 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
         if (response.operation.code === EResponseCodes.OK) {
           setCurrentWorkEntity(response.data);
         } else {
-          navigate('/atencion-ciudadana/gestionar-pqrsdf');
+          navigate("/atencion-ciudadana/gestionar-pqrsdf");
         }
       } catch (error) {
-        navigate('/atencion-ciudadana/gestionar-pqrsdf');
+        navigate("/atencion-ciudadana/gestionar-pqrsdf");
         console.error("Error al obtener la entidad de trabajo:", error);
       } finally {
         setLoading(false);
@@ -278,7 +278,7 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
           "Aceptar",
           () => {
             resetForm();
-            navigate('/atencion-ciudadana/gestionar-pqrsdf');
+            navigate("/atencion-ciudadana/gestionar-pqrsdf");
           },
           () => {
             options.accept();
@@ -386,7 +386,7 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
           acceptLabel: "Cerrar",
           footer: (options) =>
             acceptButton(options, () => {
-              navigate('/atencion-ciudadana/gestionar-pqrsdf');
+              navigate("/atencion-ciudadana/gestionar-pqrsdf");
             }),
         });
       } else {
@@ -752,9 +752,19 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
               initialValue = toLocaleDate(pqrsdfData?.person?.[property.key]).getTime();
             }
           }
-          return (
-            property.val != null && property.val != "" && property.val != undefined && property.val != initialValue
-          );
+          let validateField = personRequiredFields.includes(property.key)
+            ? property.val != null && property.val != "" && property.val != undefined && property.val != initialValue
+            : property.val != initialValue;
+
+          if (property.key == "departmentId") {
+            validateField = !departments.length ? false : validateField;
+          }
+          if (property.key == "municipalityId") {
+            validateField = !municipalities.length ? false : validateField;
+          }
+          console.log(property.key, validateField);
+
+          return validateField;
         });
       setIsUpdatePerson(!!values.length);
     }
@@ -825,7 +835,8 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
         hidden: () => {
           return (
             !motives?.length ||
-            (pqrsdfData?.responsible?.workEntityTypeId == 3 || pqrsdfData?.responsible?.workEntityTypeId == 2)
+            pqrsdfData?.responsible?.workEntityTypeId == 3 ||
+            pqrsdfData?.responsible?.workEntityTypeId == 2
           );
         },
         rules: {
@@ -1681,18 +1692,25 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
     );
   };
 
+  const personRequiredFields = [
+    "person.firstName",
+    "person.firstSurname",
+    "person.businessName",
+    "person.email",
+    "person.firstContactNumber",
+    "person.birthdate",
+    "person.address",
+    "person.countryId",
+    "person.departmentId",
+    "person.municipalityId",
+  ];
+
   const isPersonInvalid = () => {
+    let invalidFields = personRequiredFields.filter((field) => {
+      return form.getFieldState(field)?.invalid;
+    });
     return (
-      form.getFieldState("person.firstName")?.invalid ||
-      form.getFieldState("person.firstSurname")?.invalid ||
-      form.getFieldState("person.businessName")?.invalid ||
-      form.getFieldState("person.email")?.invalid ||
-      form.getFieldState("person.firstContactNumber")?.invalid ||
-      form.getFieldState("person.birthdate")?.invalid ||
-      form.getFieldState("person.address")?.invalid ||
-      form.getFieldState("person.countryId")?.invalid ||
-      form.getFieldState("person.departmentId")?.invalid ||
-      form.getFieldState("person.municipalityId")?.invalid ||
+      !!invalidFields.length ||
       (departments.length && !watchDepartmentId) ||
       (municipalities.length && !watchMunicipalityId)
     );
