@@ -352,7 +352,6 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
         responseTypeId: form.getValues("responseTypeId"),
       };
 
-      console.log("akive");
       const response = await pqrsdfService.pqrsdfResponse(payload, fileResponsePqrsdf, supportFiles);
 
       let message = "";
