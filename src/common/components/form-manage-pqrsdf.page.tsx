@@ -42,6 +42,7 @@ import { UploadManagetComponent } from "./genericComponent/uploadManagetComponen
 import { showIcon } from "./icons/show";
 import { trashIcon } from "./icons/trash";
 import { pdfShowFile } from "../utils/file-functions";
+import { MessageComponent } from "./componentsEditWorkEntities/message.component";
 
 interface IProps {
   isEdit?: boolean;
@@ -79,7 +80,8 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
   const watchMunicipalityId = form.watch("person.municipalityId");
 
   // States
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
   const [initDataLoaded, setInitDataLoaded] = useState(false);
   const [isUpdatePerson, setIsUpdatePerson] = useState(false);
   const [visibleDialog, setVisibleDialog] = useState(false);
@@ -328,7 +330,12 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
     );
   };
 
-  const onSave = async () => {
+  const onSave = async (skipFile?: boolean) => {
+    if (!skipFile && !fileResponsePqrsdf && [1, 3, 4, 6].includes(Number(form.getValues("responseTypeId")))) {
+      setShowConfirmation(true);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -518,41 +525,6 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
       error = form.formState.errors?.[property];
     }
     return error ? <small className="p-error">{error.message}</small> : "";
-  };
-
-  const columnsDB = () => {
-    return [
-      {
-        name: "Canal de atención",
-        type: "select",
-        key: "serviceChannelId",
-        formClass: "w-1/3",
-        optionLabel: "cna_canal",
-        optionValue: "cna_codigo",
-        options: /* serviceChannels */ [],
-        rules: {
-          required: "El campo es obligatorio.",
-        },
-        onChange: (value) => {
-          /* const channel = serviceChannels.filter((channel) => channel.cna_codigo == value)[0];
-          setDetailServiceChannels(channel?.details ? channel.details : []);
-          setValue("detailServiceChannelId", ""); */
-        },
-      },
-      {
-        name: "Elija ¿Cuál?",
-        type: "select",
-        key: "detailServiceChannelId",
-        formClass: "w-1/3",
-        optionLabel: "cad_nombre",
-        optionValue: "cad_codigo",
-        options: /* detailServiceChannels */ [],
-        disabled: !initDataLoaded || ![]?.length,
-        rules: {
-          required: "El campo es obligatorio.",
-        },
-      },
-    ];
   };
 
   const columnsId = () => {
@@ -1655,34 +1627,32 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
 
   const iconActions = (data: InfoTable) => {
     return (
-      <>
-        <div className="flex justify-center items-center">
-          <div className="mr-4">
-            <Link to={""} onClick={() => handleFileView(data.action)}>
-              <Tooltip target=".custom-target-icon" style={{ borderRadius: "1px" }} />
-              <i
-                className="custom-target-icon pi  p-text-secondary p-overlay-badge flex justify-center"
-                data-pr-tooltip="Ver adjunto"
-                data-pr-position="right"
-              >
-                {showIcon}
-              </i>
-            </Link>
-          </div>
-          <div className="ml-4">
-            <Link to={""} onClick={() => selectFileToDelete(data)}>
-              <Tooltip target=".custom-target-icon" style={{ borderRadius: "1px" }} />
-              <i
-                className="custom-target-icon pi  p-text-secondary p-overlay-badge flex justify-center"
-                data-pr-tooltip="Eliminar"
-                data-pr-position="right"
-              >
-                {trashIcon}
-              </i>
-            </Link>
-          </div>
+      <div className="flex justify-center items-center">
+        <div className="mr-4">
+          <Link to={""} onClick={() => handleFileView(data.action)}>
+            <Tooltip target=".custom-target-icon" style={{ borderRadius: "1px" }} />
+            <i
+              className="custom-target-icon pi  p-text-secondary p-overlay-badge flex justify-center"
+              data-pr-tooltip="Ver adjunto"
+              data-pr-position="right"
+            >
+              {showIcon}
+            </i>
+          </Link>
         </div>
-      </>
+        <div className="ml-4">
+          <Link to={""} onClick={() => selectFileToDelete(data)}>
+            <Tooltip target=".custom-target-icon" style={{ borderRadius: "1px" }} />
+            <i
+              className="custom-target-icon pi  p-text-secondary p-overlay-badge flex justify-center"
+              data-pr-tooltip="Eliminar"
+              data-pr-position="right"
+            >
+              {trashIcon}
+            </i>
+          </Link>
+        </div>
+      </div>
     );
   };
 
@@ -1936,67 +1906,86 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
   };
 
   return (
-    <form
-      onSubmit={form.handleSubmit(() => {})}
-      onChange={checkIsFilled}
-      className="p-4 md:p-6 max-w-[1200px] mx-auto mt-6"
-      ref={parentForm}
-    >
-      <ConfirmDialog id="messages"></ConfirmDialog>
-      <div className="p-card rounded-2xl md:rounded-4xl shadow-none border border-[#D9D9D9]">
-        <div className="p-card-body !py-6 !px-6 md:!px-11">
-          <div className="p-card-title">
-            <span className="text-2xl md:text-3xl font-medium">Gestionar PQRDSF</span>
-          </div>
-          <div className="p-card-content !pb-0 !pt-0 mt-4 md:mt-7">
-            <div className="px-4">
-              <div className="border-b border-[#DEE2E6] w-full flex text-[19px] font-medium text-center">
-                <span className="h-12 max-w-[184px] w-full border-b border-primary leading-6 px-1 text-primary">
-                  Gestionar solicitudes
-                </span>
-                <Link
-                  to={"/atencion-ciudadana/gestionar-pqrsdf?tab=2"}
-                  className="h-12 max-w-[184px] w-full text-[#6C757D] leading-[23px] px-1"
-                >
-                  Respuestas a la solicitud
-                </Link>
+    <>
+      {" "}
+      <form
+        onSubmit={form.handleSubmit(() => {})}
+        onChange={checkIsFilled}
+        className="p-4 md:p-6 max-w-[1200px] mx-auto mt-6"
+        ref={parentForm}
+      >
+        <ConfirmDialog id="messages"></ConfirmDialog>
+        <div className="p-card rounded-2xl md:rounded-4xl shadow-none border border-[#D9D9D9]">
+          <div className="p-card-body !py-6 !px-6 md:!px-11">
+            <div className="p-card-title">
+              <span className="text-2xl md:text-3xl font-medium">Gestionar PQRDSF</span>
+            </div>
+            <div className="p-card-content !pb-0 !pt-0 mt-4 md:mt-7">
+              <div className="px-4">
+                <div className="border-b border-[#DEE2E6] w-full flex text-[19px] font-medium text-center">
+                  <span className="h-12 max-w-[184px] w-full border-b border-primary leading-6 px-1 text-primary">
+                    Gestionar solicitudes
+                  </span>
+                  <Link
+                    to={"/atencion-ciudadana/gestionar-pqrsdf?tab=2"}
+                    className="h-12 max-w-[184px] w-full text-[#6C757D] leading-[23px] px-1"
+                  >
+                    Respuestas a la solicitud
+                  </Link>
+                </div>
               </div>
-            </div>
-            <div className="grid grid-cols-6 xl:gap-x-12 md:gap-x-4.5 gap-x-3.5 gap-y-6 w-full mt-5 pt-1.5 md:mt-20">
-              {columnsId().map((column, index) => {
-                return columnsTemplate(column);
-              })}
-            </div>
-            <div className="w-full mt-4 md:mt-8 md:pt-0.5 citizen-attention">
-              <Accordion activeIndex={null}>
-                {accordionTabs().map((tab, index) => {
-                  return (
-                    <AccordionTab header={tab.header} key={tab.key}>
-                      <div className={tab.wrapperClass}>
-                        {tab?.columns
-                          ? tab.columns.map((column, index) => {
-                              return columnsTemplate(column);
-                            })
-                          : tab?.template()}
-                      </div>
-                      {tab?.secondWrapper && (
-                        <div className={tab.wrapperClass + " md:mt-4 mt-6"}>
+              <div className="grid grid-cols-6 xl:gap-x-12 md:gap-x-4.5 gap-x-3.5 gap-y-6 w-full mt-5 pt-1.5 md:mt-20">
+                {columnsId().map((column, index) => {
+                  return columnsTemplate(column);
+                })}
+              </div>
+              <div className="w-full mt-4 md:mt-8 md:pt-0.5 citizen-attention">
+                <Accordion activeIndex={null}>
+                  {accordionTabs().map((tab, index) => {
+                    return (
+                      <AccordionTab header={tab.header} key={tab.key}>
+                        <div className={tab.wrapperClass}>
                           {tab?.columns
-                            ? tab.secondColumns.map((column, index) => {
+                            ? tab.columns.map((column, index) => {
                                 return columnsTemplate(column);
                               })
                             : tab?.template()}
                         </div>
-                      )}
-                    </AccordionTab>
-                  );
-                })}
-              </Accordion>
+                        {tab?.secondWrapper && (
+                          <div className={tab.wrapperClass + " md:mt-4 mt-6"}>
+                            {tab?.columns
+                              ? tab.secondColumns.map((column, index) => {
+                                  return columnsTemplate(column);
+                                })
+                              : tab?.template()}
+                          </div>
+                        )}
+                      </AccordionTab>
+                    );
+                  })}
+                </Accordion>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </form>
+      </form>
+      {showConfirmation && (
+        <MessageComponent
+          headerMsg="No adjuntó ningún archivo"
+          msg="¿Desea continuar de todas formas?"
+          twoBtn={true}
+          nameBtn1="Aceptar"
+          nameBtn2="Cancelar"
+          onClickBt1={() => {
+            setShowConfirmation(false);
+            onSave(true);
+          }}
+          onClickBt2={() => {
+            setShowConfirmation(false);
+          }}
+        />
+      )}
+    </>
   );
 }
 
