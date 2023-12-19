@@ -327,6 +327,7 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
       </div>
     );
   };
+  
 
   const onSave = async () => {
     setLoading(true);
@@ -339,6 +340,7 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
         payload.extensionDate = DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss");
         payload.closedAt = form.getValues("isPetitioner") ? DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss") : null;
       }
+      payload.filingNumber = pqrsdfData.filingNumber;
       payload.person = getPersonData();
       payload.response = {
         assignedUserId: form.getValues("assignedUserId"),
