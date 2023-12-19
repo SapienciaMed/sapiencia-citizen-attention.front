@@ -835,8 +835,7 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
         hidden: () => {
           return (
             !motives?.length ||
-            pqrsdfData?.responsible?.workEntityTypeId == 3 ||
-            pqrsdfData?.responsible?.workEntityTypeId == 2
+            (pqrsdfData?.responsible?.workEntityTypeId != 3 && pqrsdfData?.responsible?.workEntityTypeId != 2)
           );
         },
         rules: {
