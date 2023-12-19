@@ -455,7 +455,7 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
             style={{ backgroundColor: "533893" }}
             onClick={() => {
               setVisibleMsg(false),
-                navigate(isPortal ? "/portal/ingreso" : "/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf");
+                navigate(isPortal ? "/portal/layout" : "/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf");
             }}
             label="Cerrar"
             rounded
