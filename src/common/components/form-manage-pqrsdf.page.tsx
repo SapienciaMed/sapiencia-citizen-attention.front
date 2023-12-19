@@ -41,6 +41,7 @@ import { emailPattern, splitUrl, toLocaleDate } from "../utils/helpers";
 import { UploadManagetComponent } from "./genericComponent/uploadManagetComponent";
 import { showIcon } from "./icons/show";
 import { trashIcon } from "./icons/trash";
+import { pdfShowFile } from "../utils/file-functions";
 
 interface IProps {
   isEdit?: boolean;
@@ -166,10 +167,10 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
         if (response.operation.code === EResponseCodes.OK) {
           setPqrsdfData(response.data);
         } else {
-          navigate('/atencion-ciudadana/gestionar-pqrsdf');
+          navigate("/atencion-ciudadana/gestionar-pqrsdf");
         }
       } catch (error) {
-        navigate('/atencion-ciudadana/gestionar-pqrsdf');
+        navigate("/atencion-ciudadana/gestionar-pqrsdf");
         console.error("Error al obtener la pqrsdf:", error);
       } finally {
         setLoading(false);
@@ -185,10 +186,10 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
         if (response.operation.code === EResponseCodes.OK) {
           setCurrentWorkEntity(response.data);
         } else {
-          navigate('/atencion-ciudadana/gestionar-pqrsdf');
+          navigate("/atencion-ciudadana/gestionar-pqrsdf");
         }
       } catch (error) {
-        navigate('/atencion-ciudadana/gestionar-pqrsdf');
+        navigate("/atencion-ciudadana/gestionar-pqrsdf");
         console.error("Error al obtener la entidad de trabajo:", error);
       } finally {
         setLoading(false);
@@ -278,7 +279,7 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
           "Aceptar",
           () => {
             resetForm();
-            navigate('/atencion-ciudadana/gestionar-pqrsdf');
+            navigate("/atencion-ciudadana/gestionar-pqrsdf");
           },
           () => {
             options.accept();
@@ -385,7 +386,7 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
           acceptLabel: "Cerrar",
           footer: (options) =>
             acceptButton(options, () => {
-              navigate('/atencion-ciudadana/gestionar-pqrsdf');
+              navigate("/atencion-ciudadana/gestionar-pqrsdf");
             }),
         });
       } else {
@@ -824,7 +825,8 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
         hidden: () => {
           return (
             !motives?.length ||
-            (pqrsdfData?.responsible?.workEntityTypeId == 3 || pqrsdfData?.responsible?.workEntityTypeId == 2)
+            pqrsdfData?.responsible?.workEntityTypeId == 3 ||
+            pqrsdfData?.responsible?.workEntityTypeId == 2
           );
         },
         rules: {
@@ -1511,7 +1513,11 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
             column?.files?.map((file: IFile) => (
               <div className="w-full flex flex-wrap" key={column?.key}>
                 <label className="text-base w-full">{column?.name}</label>
-                <a className="font-medium text-red-600 mt-3 ml-1" href={file?.filePath} target="_blank">
+                <a
+                  className="font-medium text-red-600 mt-3 ml-1"
+                  href={file?.filePath}
+                  onClick={() => pdfShowFile(file?.filePath, splitUrl(file?.name).fileName)}
+                >
                   {splitUrl(file?.name).fileName}
                 </a>
               </div>
