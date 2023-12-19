@@ -1,6 +1,6 @@
 import { Card } from "primereact/card";
 import { AccordionComponent } from "./componentsRegisterPqrsdf/accordionComponent";
-import { CitizenInformation } from "./componentsRegisterPqrsdf/citizenInformation";
+import CitizenInformation from "./componentsRegisterPqrsdf/citizenInformation.component";
 
 import "../../styles/register_pqrsdf.scss";
 import { Controller, useForm } from "react-hook-form";

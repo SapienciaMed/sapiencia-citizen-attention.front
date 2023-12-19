@@ -22,16 +22,15 @@ export const pdfShowFile = async (filePath: any, name: string) => {
   const blob = convertBase64toBlob(String(filePath), "application/pdf");
   const blobWithType = new Blob([blob], { type: "application/pdf" });
   const url = window.URL.createObjectURL(blobWithType);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = name;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  // const a = document.createElement("a");
+  // a.href = url;
+  // a.download = name;
+  // document.body.appendChild(a);
+  // a.click();
+  // document.body.removeChild(a);
 
-  const fileName = name;
   const fileUrl = new URL(url);
-  fileUrl.pathname = `${fileName}.pdf`;
+  fileUrl.pathname = `${name}.pdf`;
   window.open(fileUrl.toString(), "_blank");
   // Liberar el objeto URL cuando ya no sea necesario
   window.URL.revokeObjectURL(url);

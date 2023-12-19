@@ -41,6 +41,7 @@ import { emailPattern, splitUrl, toLocaleDate } from "../utils/helpers";
 import { UploadManagetComponent } from "./genericComponent/uploadManagetComponent";
 import { showIcon } from "./icons/show";
 import { trashIcon } from "./icons/trash";
+import { pdfShowFile } from "../utils/file-functions";
 
 interface IProps {
   isEdit?: boolean;
@@ -352,7 +353,6 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
         responseTypeId: form.getValues("responseTypeId"),
       };
 
-      console.log("akive");
       const response = await pqrsdfService.pqrsdfResponse(payload, fileResponsePqrsdf, supportFiles);
 
       let message = "";
@@ -1523,7 +1523,11 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
             column?.files?.map((file: IFile) => (
               <div className="w-full flex flex-wrap" key={column?.key}>
                 <label className="text-base w-full">{column?.name}</label>
-                <a className="font-medium text-red-600 mt-3 ml-1" href={file?.filePath} target="_blank">
+                <a
+                  className="font-medium text-red-600 mt-3 ml-1"
+                  href={file?.filePath}
+                  onClick={() => pdfShowFile(file?.filePath, splitUrl(file?.name).fileName)}
+                >
                   {splitUrl(file?.name).fileName}
                 </a>
               </div>

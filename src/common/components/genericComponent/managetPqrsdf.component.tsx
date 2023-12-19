@@ -791,7 +791,6 @@ export const ManagetPqrsdfComponent = (props: Props) => {
                                     options={typeReques}
                                     focusInputRef={field.ref}
                                     onChange={(e) => field.onChange(() => {
-                                        console.log(e.value);
                                         setRequestType(e.value)
                                         setValue("typeOfRequest", e.value);
                                     })}
