@@ -100,7 +100,7 @@ const FormSignInComponent = (): React.JSX.Element => {
         navigate("../cambiar-clave");
       }
     } else {
-      console.log("akive");
+
       setObjectSignInFailed({
         show: true,
         msg: operation.message,
