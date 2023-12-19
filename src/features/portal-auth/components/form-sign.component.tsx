@@ -20,9 +20,9 @@ interface IFailedSignIn {
 
 const FormSignInComponent = (): React.JSX.Element => {
   // Servicos
-  const { benefactorSignIn } = useAuthService();
+  const { benefactorSignIn, getPortalAuthorization } = useAuthService();
   const navigate = useNavigate();
-  const { setAuthorization } = useContext(AppContext);
+  const { setAuthorization, setPortalUser } = useContext(AppContext);
   const credentialsSaved = localStorage.getItem("credentials");
   const {
     handleSubmit,
@@ -33,6 +33,7 @@ const FormSignInComponent = (): React.JSX.Element => {
   } = useForm<IRequestSignIn>({ mode: "all" });
 
   // States
+  const [loading, setLoading] = useState<boolean>(false);
   const [isRememberData, setIsRememberData] = useState<boolean>(false);
   const [objectSignInFailed, setObjectSignInFailed] = useState<IFailedSignIn>({
     show: false,
@@ -69,6 +70,8 @@ const FormSignInComponent = (): React.JSX.Element => {
 
   // Metodo que hace la peticion al api
   const onSubmitSignIn = handleSubmit(async (data: { identification: string; password: string }) => {
+    setLoading(true);
+
     const credentials = {
       identification: data.identification,
       password: data.password,
@@ -76,20 +79,28 @@ const FormSignInComponent = (): React.JSX.Element => {
 
     const { data: dataResponse, operation } = await benefactorSignIn(data);
 
+    setLoading(false);
     if (operation.code === EResponseCodes.OK) {
       isRememberData && localStorage.setItem("credentials", JSON.stringify(credentials));
       JSON.parse(credentialsSaved) && !isRememberData && localStorage.removeItem("credentials");
       localStorage.setItem("token", dataResponse.token);
       sessionStorage.setItem("token", dataResponse.token);
       setAuthorization(dataResponse.authorization);
-
       if (dataResponse.authorization.user.password) {
+        await getPortalAuthorization(dataResponse.token).then((res) => {
+          if (res.operation.code == EResponseCodes.OK) {
+            setPortalUser(res.data.user);
+          } else {
+            localStorage.removeItem("token");
+          }
+        });
         navigate(`/portal/layout`);
       } else {
         sessionStorage.setItem("identification", data.identification);
         navigate("../cambiar-clave");
       }
     } else {
+
       setObjectSignInFailed({
         show: true,
         msg: operation.message,
@@ -97,7 +108,6 @@ const FormSignInComponent = (): React.JSX.Element => {
     }
   });
 
-  
   const onChangeCheckBox = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsRememberData(event.target.checked);
   };
@@ -131,7 +141,7 @@ const FormSignInComponent = (): React.JSX.Element => {
           <input type="checkbox" className="checkbox-basic" onChange={onChangeCheckBox} checked={isRememberData} />
           <label className="text-primary medium">Recordar datos de acceso</label>
         </div>
-        {objectSignInFailed.show && objectSignInFailed.msg != "Usuario no existe" && (
+        {objectSignInFailed.show && (
           <div className="error-message-user">
             <button onClick={() => setObjectSignInFailed({ show: false, msg: "" })}>x</button>
             <p className="error-message-p not-margin-padding">{objectSignInFailed.msg}</p>
@@ -142,6 +152,7 @@ const FormSignInComponent = (): React.JSX.Element => {
             className="citizen-button-login big"
             form="form-sign"
             value="Ingresar"
+            loading={loading}
             type="submit"
             disabled={!formState.isValid}
           />

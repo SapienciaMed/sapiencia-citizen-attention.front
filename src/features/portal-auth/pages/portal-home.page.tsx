@@ -10,7 +10,7 @@ function HomePage(): React.JSX.Element {
   const { applications } = useApplicationsData();
 
   return (
-    <div className="full-height">
+    <div className="full-height portal-attention">
       <div className="dashboard-margin-ac full-height">
         <section className="welcome-container">
           <span className="text-dasboard huge text-center title">Bienvenido</span>
@@ -26,7 +26,7 @@ function HomePage(): React.JSX.Element {
           <p className="text-dasboard big text-center content">Esta plataforma está diseñada para...</p>
           <a className="external-link" target="_blank" href="https://www.medellin.gov.co/">
             <button type="submit" className="citizen-button-main huge hover-three">
-              Saber mas...
+              Saber más...
             </button>
           </a>
         </section>
@@ -40,23 +40,26 @@ function HomePage(): React.JSX.Element {
             } catch {
               imagePath = require("../../../public/images/application-image-default.png");
             }
+
             return (
-              <div
-                className="card-container"
-                key={app.id}
-                onClick={() => {
-                  navigate(app.url.replace("$$identification", portalUser.identification));
-                }}
-              >
-                <div className="card-header">
-                  <img src={imagePath} />
+              portalUser.identification && (
+                <div
+                  className="card-container"
+                  key={app.id}
+                  onClick={() => {
+                    navigate(app.url.replace("$$identification", portalUser.identification));
+                  }}
+                >
+                  <div className="card-header">
+                    <img src={imagePath} />
+                  </div>
+                  <div className="card-footer">
+                    <p className="text-dasboard-name-applications big text-center weight-500 application-name">
+                      {app.name}
+                    </p>
+                  </div>
                 </div>
-                <div className="card-footer">
-                  <p className="text-dasboard-name-applications big text-center weight-500 application-name">
-                    {app.name}
-                  </p>
-                </div>
-              </div>
+              )
             );
           })}
         </div>

@@ -41,8 +41,10 @@ import { emailPattern, splitUrl, toLocaleDate } from "../utils/helpers";
 import { UploadManagetComponent } from "./genericComponent/uploadManagetComponent";
 import { showIcon } from "./icons/show";
 import { trashIcon } from "./icons/trash";
+import { pdfShowFile } from "../utils/file-functions";
+import { MessageComponent } from "./componentsEditWorkEntities/message.component";
 
-interface Props {
+interface IProps {
   isEdit?: boolean;
 }
 
@@ -53,18 +55,40 @@ interface InfoTable {
   id?: number;
 }
 
-function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
+function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
+  // Servicios
   const parentForm = useRef(null);
-  const [loading, setLoading] = useState(false);
+  const { authorization } = useContext(AppContext);
+  const [fileResponsePqrsdf, setFileResponsePqrsdf] = useState<Blob>(null);
+  const navigate = useNavigate();
+  const checkMobileScreen = useCheckMobileScreen();
+  const pqrsdfService = usePqrsdfService();
+  const citizenAttentionService = useCitizenAttentionService();
+  const workEntityService = useWorkEntityService();
+  const form = useForm({ mode: "all" });
+  useBreadCrumb({
+    isPrimaryPage: true,
+    name: "Gestionar PQRDSF",
+    url: "/atencion-ciudadana/gestionar-pqrsdf",
+  });
+
+  // Variables
+  const { id } = useParams();
+  const service = { ...citizenAttentionService, ...pqrsdfService, ...workEntityService };
+  const watchResponseTypeId = form.watch("responseTypeId");
+  const watchDepartmentId = form.watch("person.departmentId");
+  const watchMunicipalityId = form.watch("person.municipalityId");
+
+  // States
+  const [loading, setLoading] = useState<boolean>(false);
+  const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
   const [initDataLoaded, setInitDataLoaded] = useState(false);
   const [isUpdatePerson, setIsUpdatePerson] = useState(false);
-  const { authorization } = useContext(AppContext);
   const [visibleDialog, setVisibleDialog] = useState(false);
   const [currentWorkEntity, setCurrentWorkEntity] = useState<IWorkEntity>();
   const [pqrsdfData, setPqrsdfData] = useState<IPqrsdf>();
   const [perPage, setPerPage] = useState(10);
   const [tableData, setTableData] = useState<InfoTable[]>([]);
-  const [fileResponsePqrsdf, setFileResponsePqrsdf] = useState<Blob>(null);
   const [fileName, setFileName] = useState<string>("");
   const [supportFiles, setSupportFiles] = useState<[]>([]);
   const [countries, setCountries] = useState<IGenericData[]>([]);
@@ -88,230 +112,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
     left: 0,
   });
 
-  const navigate = useNavigate();
-
-  const checkMobileScreen = useCheckMobileScreen();
-
-  const pqrsdfService = usePqrsdfService();
-  const citizenAttentionService = useCitizenAttentionService();
-  const workEntityService = useWorkEntityService();
-  const service = { ...citizenAttentionService, ...pqrsdfService, ...workEntityService };
-
-  useBreadCrumb({
-    isPrimaryPage: true,
-    name: "Gestionar PQRDSF",
-    url: "/atencion-ciudadana/gestionar-pqrsdf",
-  });
-
-  const {
-    control,
-    formState: { errors, isValid },
-    handleSubmit,
-    getValues,
-    setValue,
-    trigger,
-    getFieldState,
-    reset,
-    watch,
-  } = useForm({ mode: "all" });
-
-  const watchResponseTypeId = watch("responseTypeId");
-  const watchDepartmentId = watch("person.departmentId");
-  const watchMunicipalityId = watch("person.municipalityId");
-
-  const checkIsFilled = () => {
-    const personKeys = Object.keys(getValues("person"));
-    const personValues = personKeys
-      .map((key) => {
-        return { key: key, val: getValues("person." + key) };
-      })
-      .filter((property) => {
-        let initialValue = pqrsdfData?.person?.[property.key];
-        if (property.key == "birthdate" && property.val) {
-          property.val = toLocaleDate(property.val).getTime();
-          if (initialValue) {
-            initialValue = toLocaleDate(pqrsdfData?.person?.[property.key]).getTime();
-          }
-        }
-        return property.val != null && property.val != "" && property.val != undefined && property.val != initialValue;
-      });
-    const values = Object.values(getValues()).filter((val) => val != null && val != "" && val != undefined);
-
-    setIsFilled(!!values.length && !!personValues.length);
-  };
-
-  const closeIcon = () => (
-    <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M1.43383 25C1.22383 25 1.04883 24.93 0.908828 24.79C0.768828 24.6267 0.698828 24.4517 0.698828 24.265C0.698828 24.195 0.710495 24.125 0.733828 24.055C0.757161 23.985 0.780495 23.915 0.803828 23.845L8.53883 12.505L1.32883 1.655C1.25883 1.515 1.22383 1.375 1.22383 1.235C1.22383 1.04833 1.29383 0.884999 1.43383 0.744999C1.57383 0.581665 1.74883 0.499998 1.95883 0.499998H6.26383C6.56716 0.499998 6.8005 0.581665 6.96383 0.744999C7.1505 0.908332 7.2905 1.06 7.38383 1.2L12.0738 8.165L16.7988 1.2C16.8922 1.06 17.0322 0.908332 17.2188 0.744999C17.4055 0.581665 17.6505 0.499998 17.9538 0.499998H22.0488C22.2355 0.499998 22.3988 0.581665 22.5388 0.744999C22.7022 0.884999 22.7838 1.04833 22.7838 1.235C22.7838 1.39833 22.7372 1.53833 22.6438 1.655L15.4338 12.47L23.2038 23.845C23.2505 23.915 23.2738 23.985 23.2738 24.055C23.2972 24.125 23.3088 24.195 23.3088 24.265C23.3088 24.4517 23.2388 24.6267 23.0988 24.79C22.9588 24.93 22.7838 25 22.5738 25H18.1288C17.8255 25 17.5805 24.9183 17.3938 24.755C17.2305 24.5917 17.1022 24.4517 17.0088 24.335L11.8988 16.985L6.82383 24.335C6.75383 24.4517 6.6255 24.5917 6.43883 24.755C6.27549 24.9183 6.0305 25 5.70383 25H1.43383Z"
-        fill="#533893"
-      />
-    </svg>
-  );
-
-  const cancel = async () => {
-    confirmDialog({
-      id: "messages",
-      className: "!rounded-2xl overflow-hidden",
-      headerClassName: "!rounded-t-2xl",
-      contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
-      message: (
-        <div className="flex flex-wrap w-full items-center justify-center mx-auto">
-          <div className="mx-auto text-primary text-2xl md:text-3xl w-full text-center">Cancelar acción</div>
-          <div className="flex items-center justify-center text-center w-full mt-6 pt-0.5">
-            ¿Desea cancelar la acción?,
-            <br />
-            no se guardarán los datos
-          </div>
-        </div>
-      ),
-      closeIcon: closeIcon,
-      acceptLabel: "Cerrar",
-      footer: (options) =>
-        cancelButtons(
-          options,
-          "Aceptar",
-          () => {
-            resetForm();
-            navigate(-1);
-          },
-          () => {
-            options.accept();
-          }
-        ),
-    });
-  };
-
-  const cancelButtons = (
-    options: ConfirmDialogOptions,
-    acceptLabel = "Continuar",
-    callback = null,
-    cancelCallback = null,
-    disabledCondition = false
-  ) => {
-    if (!callback) {
-      callback = options.reject();
-    }
-    return (
-      <div className="flex items-center justify-center gap-2 pb-2">
-        <Button
-          text
-          rounded
-          severity="secondary"
-          className="!py-2 !text-base !font-sans !text-black"
-          disabled={loading}
-          onClick={(e) => {
-            options.accept();
-            if (cancelCallback) {
-              cancelCallback();
-            }
-          }}
-        >
-          Cancelar
-        </Button>
-        <Button
-          label={acceptLabel}
-          rounded
-          className="!px-4 !py-2 !text-base !mr-0 !font-sans"
-          disabled={loading || disabledCondition}
-          onClick={(e) => {
-            callback();
-          }}
-        />
-      </div>
-    );
-  };
-
-  const { id } = useParams();
-
-  const onSave = async () => {
-    setLoading(true);
-
-    try {
-      let values = getValues();
-      let payload = values as IPqrsdf;
-      payload.id = parseInt(id);
-      if (watchResponseTypeId == 3) {
-        payload.extensionDate = DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss");
-        payload.closedAt = getValues("isPetitioner") ? DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss") : null;
-      }
-      payload.person = getPersonData();
-      payload.response = {
-        assignedUserId: getValues("assignedUserId"),
-        createdAt: DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss"),
-        factorId: getValues("isPetitioner") ? null : getValues("factorId"),
-        isPetitioner: !!getValues("isPetitioner"),
-        observation: getValues("observation"),
-        respondingUserId: authorization.user.id,
-        respondingDependenceId: currentWorkEntity?.workEntityType?.dependenceId,
-        pqrsdfId: payload.id,
-        workEntityTypeId: getValues("isPetitioner") ? null : getValues("workEntityTypeId"),
-        responseTypeId: getValues("responseTypeId"),
-      };
-      const response = await pqrsdfService.pqrsdfResponse(payload, fileResponsePqrsdf, supportFiles);
-
-      let message = "";
-      switch (watchResponseTypeId) {
-        case 3:
-          message = "Envío de solicitud de prórroga realizado con éxito";
-          break;
-        case 4:
-          message = "Solicitud cerrada satisfactoriamente";
-          break;
-        case 5:
-          message = "Solicitud cerrada satisfactoriamente";
-          break;
-        default:
-          message = "Respuesta enviada satisfactoriamente";
-          break;
-      }
-      if (response.operation.code === EResponseCodes.OK) {
-        confirmDialog({
-          id: "messages",
-          className: "!rounded-2xl overflow-hidden",
-          headerClassName: "!rounded-t-2xl",
-          contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
-          message: (
-            <div className="flex flex-wrap w-full items-center justify-center">
-              <div className="mx-auto text-primary text-3xl w-full text-center">Envío exitoso</div>
-              <div className="flex items-center justify-center text-center w-full mt-6 pt-0.5">{message}</div>
-            </div>
-          ),
-          closeIcon: closeIcon,
-          acceptLabel: "Cerrar",
-          footer: (options) =>
-            acceptButton(options, () => {
-              navigate(-1);
-            }),
-        });
-      } else {
-        confirmDialog({
-          id: "messages",
-          className: "!rounded-2xl overflow-hidden",
-          headerClassName: "!rounded-t-2xl",
-          contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
-          message: (
-            <div className="flex flex-wrap w-full items-center justify-center">
-              <div className="mx-auto text-primary text-3xl w-full text-center">
-                {response.operation?.title ?? "Lo sentimos"}
-              </div>
-              <div className="flex items-center justify-center text-center w-full mt-6 pt-0.5">
-                {response.operation.message}
-              </div>
-            </div>
-          ),
-          closeIcon: closeIcon,
-          acceptLabel: "Aceptar",
-          footer: (options) => acceptButton(options),
-        });
-      }
-    } catch (error) {
-      console.error("Error al " + (isEdit ? "editar" : "crear") + " tipo de asunto:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Effects
   useEffect(() => {
     if (checkMobileScreen && !isMobile) {
       setIsMobile(true);
@@ -319,35 +120,6 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
       setIsMobile(false);
     }
   }, [checkMobileScreen]);
-
-  const acceptButton = (options, callback = () => {}) => {
-    return (
-      <div className="flex items-center justify-center gap-2 pb-2">
-        <Button
-          label="Aceptar"
-          rounded
-          className="!px-4 !py-2 !text-base !mr-0"
-          disabled={loading}
-          onClick={(e) => {
-            options.accept();
-            callback();
-          }}
-        />
-      </div>
-    );
-  };
-
-  const handleResize = () => {
-    if (parentForm.current?.offsetWidth) {
-      let style = getComputedStyle(parentForm.current);
-      let domReact = parentForm.current.getBoundingClientRect();
-
-      setButtonWidth({
-        width: parentForm?.current.offsetWidth + parseInt(style.marginLeft) + parseInt(style.marginRight),
-        left: domReact.x - parseInt(style.marginLeft),
-      });
-    }
-  };
 
   useEffect(() => {
     const toFetch = [
@@ -396,12 +168,11 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
 
         if (response.operation.code === EResponseCodes.OK) {
           setPqrsdfData(response.data);
-          console.log(response.data);
         } else {
-          navigate(-1);
+          navigate("/atencion-ciudadana/gestionar-pqrsdf");
         }
       } catch (error) {
-        navigate(-1);
+        navigate("/atencion-ciudadana/gestionar-pqrsdf");
         console.error("Error al obtener la pqrsdf:", error);
       } finally {
         setLoading(false);
@@ -416,12 +187,11 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
 
         if (response.operation.code === EResponseCodes.OK) {
           setCurrentWorkEntity(response.data);
-          console.log(response.data);
         } else {
-          navigate(-1);
+          navigate("/atencion-ciudadana/gestionar-pqrsdf");
         }
       } catch (error) {
-        navigate(-1);
+        navigate("/atencion-ciudadana/gestionar-pqrsdf");
         console.error("Error al obtener la entidad de trabajo:", error);
       } finally {
         setLoading(false);
@@ -439,59 +209,10 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
   useEffect(() => {
     if (currentWorkEntity?.workEntityTypeId == 2 || currentWorkEntity?.workEntityTypeId == 7) {
       let auxResponseTypes = [...responseTypes];
-      const newResponseTypes = auxResponseTypes.filter((responseType) => responseType.id != 4 &&  responseType.id != 5);
+      const newResponseTypes = auxResponseTypes.filter((responseType) => responseType.id != 4 && responseType.id != 5);
       setResponseTypes(newResponseTypes);
     }
   }, [currentWorkEntity]);
-
-  const setInitialForm = async () => {
-    const pqrsdf = pqrsdfData;
-    //Id columns
-    setValue("requestTypeId", pqrsdf?.requestTypeId);
-    setValue("identification", pqrsdf?.person?.documentType?.itemCode + " " + pqrsdf?.person?.identification);
-    setValue("person.entityTypeId", pqrsdf?.person?.entityTypeId);
-    //Citizen information
-    setValue("person.firstName", pqrsdf?.person?.firstName);
-    setValue("person.secondName", pqrsdf?.person?.secondName);
-    setValue("person.firstSurname", pqrsdf?.person?.firstSurname);
-    setValue("person.secondSurname", pqrsdf?.person?.secondSurname);
-    setValue("person.businessName", pqrsdf?.person?.businessName);
-    setValue("person.email", pqrsdf?.person?.email);
-    setValue("person.firstContactNumber", pqrsdf?.person?.firstContactNumber);
-    setValue("person.secondContactNumber", pqrsdf?.person?.secondContactNumber);
-    setValue("person.birthdate", toLocaleDate(pqrsdf?.person?.birthdate));
-    setValue("person.address", pqrsdf?.person?.address);
-    setValue("person.countryId", pqrsdf?.person?.countryId);
-    const country = countries.filter((country) => country.id == pqrsdf?.person?.countryId)[0];
-    const auxDepartments = await getDepartments(country);
-    const department = auxDepartments.filter((department) => department.id == pqrsdf?.person?.departmentId)[0];
-    setTimeout(() => {
-      if (auxDepartments.length) {
-        setValue("person.departmentId", pqrsdf?.person?.departmentId);
-      } else {
-        setValue("person.departmentId", "");
-      }
-    }, 1000);
-    await getMunicipalities(department);
-    setTimeout(() => {
-      if (auxDepartments.length) {
-        setValue("person.municipalityId", pqrsdf?.person?.municipalityId);
-      } else {
-        setValue("person.municipalityId", "");
-      }
-    }, 1000);
-
-    setValue("responseMediumId", pqrsdf?.responseMediumId);
-    //Request information
-    setValue("programId", pqrsdf?.programId);
-    await setRequestSubjectTypesByProgram(pqrsdf?.programId);
-    setValue("requestSubjectId", pqrsdf?.requestSubjectId);
-    setValue("programClasification", pqrsdf?.program?.clpClasificacionPrograma?.[0]?.clp_descripcion);
-    setValue("programDependence", pqrsdf?.program?.depDependencia?.dep_descripcion);
-    setValue("description", pqrsdf?.description);
-    setValue("file", pqrsdf?.file ? [pqrsdf?.file] : []);
-    setInitDataLoaded(true);
-  };
 
   useEffect(() => {
     if (pqrsdfData) {
@@ -505,12 +226,290 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
     }
   }, [initDataLoaded]);
 
+  // Metodos
+  const checkIsFilled = () => {
+    const personKeys = Object.keys(form.getValues("person"));
+    const personValues = personKeys
+      .map((key) => {
+        return { key: key, val: form.getValues("person." + key) };
+      })
+      .filter((property) => {
+        let initialValue = pqrsdfData?.person?.[property.key];
+        if (property.key == "birthdate" && property.val) {
+          property.val = toLocaleDate(property.val).getTime();
+          if (initialValue) {
+            initialValue = toLocaleDate(pqrsdfData?.person?.[property.key]).getTime();
+          }
+        }
+        return property.val != null && property.val != "" && property.val != undefined && property.val != initialValue;
+      });
+    const values = Object.values(form.getValues()).filter((val) => val != null && val != "" && val != undefined);
+
+    setIsFilled(!!values.length && !!personValues.length);
+  };
+
+  const closeIcon = () => (
+    <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M1.43383 25C1.22383 25 1.04883 24.93 0.908828 24.79C0.768828 24.6267 0.698828 24.4517 0.698828 24.265C0.698828 24.195 0.710495 24.125 0.733828 24.055C0.757161 23.985 0.780495 23.915 0.803828 23.845L8.53883 12.505L1.32883 1.655C1.25883 1.515 1.22383 1.375 1.22383 1.235C1.22383 1.04833 1.29383 0.884999 1.43383 0.744999C1.57383 0.581665 1.74883 0.499998 1.95883 0.499998H6.26383C6.56716 0.499998 6.8005 0.581665 6.96383 0.744999C7.1505 0.908332 7.2905 1.06 7.38383 1.2L12.0738 8.165L16.7988 1.2C16.8922 1.06 17.0322 0.908332 17.2188 0.744999C17.4055 0.581665 17.6505 0.499998 17.9538 0.499998H22.0488C22.2355 0.499998 22.3988 0.581665 22.5388 0.744999C22.7022 0.884999 22.7838 1.04833 22.7838 1.235C22.7838 1.39833 22.7372 1.53833 22.6438 1.655L15.4338 12.47L23.2038 23.845C23.2505 23.915 23.2738 23.985 23.2738 24.055C23.2972 24.125 23.3088 24.195 23.3088 24.265C23.3088 24.4517 23.2388 24.6267 23.0988 24.79C22.9588 24.93 22.7838 25 22.5738 25H18.1288C17.8255 25 17.5805 24.9183 17.3938 24.755C17.2305 24.5917 17.1022 24.4517 17.0088 24.335L11.8988 16.985L6.82383 24.335C6.75383 24.4517 6.6255 24.5917 6.43883 24.755C6.27549 24.9183 6.0305 25 5.70383 25H1.43383Z"
+        fill="#533893"
+      />
+    </svg>
+  );
+
+  const cancel = async () => {
+    confirmDialog({
+      id: "messages",
+      className: "!rounded-2xl overflow-hidden",
+      headerClassName: "!rounded-t-2xl",
+      contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
+      message: (
+        <div className="flex flex-wrap w-full items-center justify-center mx-auto">
+          <div className="mx-auto text-primary text-2xl md:text-3xl w-full text-center">Cancelar acción</div>
+          <div className="flex items-center justify-center text-center w-full mt-6 pt-0.5">
+            ¿Desea cancelar la acción?,
+            <br />
+            no se guardarán los datos
+          </div>
+        </div>
+      ),
+      closeIcon: closeIcon,
+      acceptLabel: "Cerrar",
+      footer: (options) =>
+        cancelButtons(
+          options,
+          "Aceptar",
+          () => {
+            resetForm();
+            navigate("/atencion-ciudadana/gestionar-pqrsdf");
+          },
+          () => {
+            options.accept();
+          }
+        ),
+    });
+  };
+
+  const cancelButtons = (
+    options: ConfirmDialogOptions,
+    acceptLabel = "Continuar",
+    callback = null,
+    cancelCallback = null,
+    disabledCondition = false
+  ) => {
+    if (!callback) {
+      callback = options.reject();
+    }
+    return (
+      <div className="flex items-center justify-center gap-2 pb-2">
+        <Button
+          text
+          rounded
+          severity="secondary"
+          className="!py-2 !text-base !font-sans !text-black"
+          disabled={loading}
+          onClick={(e) => {
+            options.accept();
+            if (cancelCallback) {
+              cancelCallback();
+            }
+          }}
+        >
+          Cancelar
+        </Button>
+        <Button
+          label={acceptLabel}
+          rounded
+          className="!px-4 !py-2 !text-base !mr-0 !font-sans"
+          disabled={loading || disabledCondition}
+          onClick={(e) => {
+            callback();
+          }}
+        />
+      </div>
+    );
+  };
+  
+
+  const onSave = async (skipFile?: boolean) => {
+    if (!skipFile && !fileResponsePqrsdf && [1, 3, 4, 6].includes(Number(form.getValues("responseTypeId")))) {
+      setShowConfirmation(true);
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      let values = form.getValues();
+      let payload = values as IPqrsdf;
+      payload.id = parseInt(id);
+      if (watchResponseTypeId == 3) {
+        payload.extensionDate = DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss");
+        payload.closedAt = form.getValues("isPetitioner") ? DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss") : null;
+      }
+      payload.filingNumber = pqrsdfData.filingNumber;
+      payload.person = getPersonData();
+      payload.response = {
+        assignedUserId: form.getValues("assignedUserId"),
+        createdAt: DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss"),
+        factorId: form.getValues("isPetitioner") ? null : form.getValues("factorId"),
+        isPetitioner: !!form.getValues("isPetitioner"),
+        observation: form.getValues("observation"),
+        respondingUserId: authorization.user.id,
+        respondingDependenceId: currentWorkEntity?.workEntityType?.dependenceId,
+        pqrsdfId: payload.id,
+        workEntityTypeId: form.getValues("isPetitioner") ? null : form.getValues("workEntityTypeId"),
+        responseTypeId: form.getValues("responseTypeId"),
+      };
+
+      const response = await pqrsdfService.pqrsdfResponse(payload, fileResponsePqrsdf, supportFiles);
+
+      let message = "";
+      switch (watchResponseTypeId) {
+        case 3:
+          message = "Envío de solicitud de prórroga realizado con éxito";
+          break;
+        case 4:
+          message = "Solicitud cerrada satisfactoriamente";
+          break;
+        case 5:
+          message = "Solicitud cerrada satisfactoriamente";
+          break;
+        default:
+          message = "Respuesta enviada satisfactoriamente";
+          break;
+      }
+      if (response.operation.code === EResponseCodes.OK) {
+        confirmDialog({
+          id: "messages",
+          className: "!rounded-2xl overflow-hidden",
+          headerClassName: "!rounded-t-2xl",
+          contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
+          message: (
+            <div className="flex flex-wrap w-full items-center justify-center">
+              <div className="mx-auto text-primary text-3xl w-full text-center">Envío exitoso</div>
+              <div className="flex items-center justify-center text-center w-full mt-6 pt-0.5">{message}</div>
+            </div>
+          ),
+          closeIcon: closeIcon,
+          acceptLabel: "Cerrar",
+          footer: (options) =>
+            acceptButton(options, () => {
+              navigate("/atencion-ciudadana/gestionar-pqrsdf");
+            }),
+        });
+      } else {
+        confirmDialog({
+          id: "messages",
+          className: "!rounded-2xl overflow-hidden",
+          headerClassName: "!rounded-t-2xl",
+          contentClassName: "md:w-[640px] max-w-full mx-auto justify-center",
+          message: (
+            <div className="flex flex-wrap w-full items-center justify-center">
+              <div className="mx-auto text-primary text-3xl w-full text-center">
+                {response.operation?.title ?? "Lo sentimos"}
+              </div>
+              <div className="flex items-center justify-center text-center w-full mt-6 pt-0.5">
+                {response.operation.message}
+              </div>
+            </div>
+          ),
+          closeIcon: closeIcon,
+          acceptLabel: "Aceptar",
+          footer: (options) => acceptButton(options),
+        });
+      }
+    } catch (error) {
+      console.error("Error al " + (isEdit ? "editar" : "crear") + " tipo de asunto:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const acceptButton = (options, callback = () => {}) => {
+    return (
+      <div className="flex items-center justify-center gap-2 pb-2">
+        <Button
+          label="Aceptar"
+          rounded
+          className="!px-4 !py-2 !text-base !mr-0"
+          disabled={loading}
+          onClick={(e) => {
+            options.accept();
+            callback();
+          }}
+        />
+      </div>
+    );
+  };
+
+  const handleResize = () => {
+    if (parentForm.current?.offsetWidth) {
+      let style = getComputedStyle(parentForm.current);
+      let domReact = parentForm.current.getBoundingClientRect();
+
+      setButtonWidth({
+        width: parentForm?.current.offsetWidth + parseInt(style.marginLeft) + parseInt(style.marginRight),
+        left: domReact.x - parseInt(style.marginLeft),
+      });
+    }
+  };
+
+  const setInitialForm = async () => {
+    const pqrsdf = pqrsdfData;
+    //Id columns
+    form.setValue("requestTypeId", pqrsdf?.requestTypeId);
+    form.setValue("identification", pqrsdf?.person?.documentType?.itemCode + " " + pqrsdf?.person?.identification);
+    form.setValue("person.entityTypeId", pqrsdf?.person?.entityTypeId);
+    //Citizen information
+    form.setValue("person.firstName", pqrsdf?.person?.firstName);
+    form.setValue("person.secondName", pqrsdf?.person?.secondName);
+    form.setValue("person.firstSurname", pqrsdf?.person?.firstSurname);
+    form.setValue("person.secondSurname", pqrsdf?.person?.secondSurname);
+    form.setValue("person.businessName", pqrsdf?.person?.businessName);
+    form.setValue("person.email", pqrsdf?.person?.email);
+    form.setValue("person.firstContactNumber", pqrsdf?.person?.firstContactNumber);
+    form.setValue("person.secondContactNumber", pqrsdf?.person?.secondContactNumber);
+    form.setValue("person.birthdate", toLocaleDate(pqrsdf?.person?.birthdate));
+    form.setValue("person.address", pqrsdf?.person?.address);
+    form.setValue("person.countryId", pqrsdf?.person?.countryId);
+    const country = countries.filter((country) => country.id == pqrsdf?.person?.countryId)[0];
+    const auxDepartments = await getDepartments(country);
+    const department = auxDepartments.filter((department) => department.id == pqrsdf?.person?.departmentId)[0];
+    setTimeout(() => {
+      if (auxDepartments.length) {
+        form.setValue("person.departmentId", pqrsdf?.person?.departmentId);
+      } else {
+        form.setValue("person.departmentId", "");
+      }
+    }, 1000);
+    await getMunicipalities(department);
+    setTimeout(() => {
+      if (auxDepartments.length) {
+        form.setValue("person.municipalityId", pqrsdf?.person?.municipalityId);
+      } else {
+        form.setValue("person.municipalityId", "");
+      }
+    }, 1000);
+
+    form.setValue("responseMediumId", pqrsdf?.responseMediumId);
+    //Request information
+    form.setValue("programId", pqrsdf?.programId);
+    await setRequestSubjectTypesByProgram(pqrsdf?.programId);
+    form.setValue("requestSubjectId", pqrsdf?.requestSubjectId);
+    form.setValue("programClasification", pqrsdf?.program?.clpClasificacionPrograma?.[0]?.clp_descripcion);
+    form.setValue("programDependence", pqrsdf?.program?.depDependencia?.dep_descripcion);
+    form.setValue("description", pqrsdf?.description);
+    form.setValue("file", pqrsdf?.file ? [pqrsdf?.file] : []);
+    setInitDataLoaded(true);
+  };
+
   const resetForm = () => {
     const allInputs = [...columns(), ...columnsId()];
     const toResetArray = allInputs.map((column) => {
       return [column.key, ""];
     });
-    reset(Object.fromEntries(toResetArray), { keepValues: false, keepErrors: false });
+    form.reset(Object.fromEntries(toResetArray), { keepValues: false, keepErrors: false });
     checkIsFilled();
   };
 
@@ -519,50 +518,15 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
     let error = null;
 
     if (Array.isArray(property)) {
-      let auxErrors = errors;
+      let auxErrors = form.formState.errors;
       property.forEach((item) => {
         error = auxErrors?.[item];
         auxErrors = error;
       });
     } else {
-      error = errors?.[property];
+      error = form.formState.errors?.[property];
     }
     return error ? <small className="p-error">{error.message}</small> : "";
-  };
-
-  const columnsDB = () => {
-    return [
-      {
-        name: "Canal de atención",
-        type: "select",
-        key: "serviceChannelId",
-        formClass: "w-1/3",
-        optionLabel: "cna_canal",
-        optionValue: "cna_codigo",
-        options: /* serviceChannels */ [],
-        rules: {
-          required: "El campo es obligatorio.",
-        },
-        onChange: (value) => {
-          /* const channel = serviceChannels.filter((channel) => channel.cna_codigo == value)[0];
-          setDetailServiceChannels(channel?.details ? channel.details : []);
-          setValue("detailServiceChannelId", ""); */
-        },
-      },
-      {
-        name: "Elija ¿Cuál?",
-        type: "select",
-        key: "detailServiceChannelId",
-        formClass: "w-1/3",
-        optionLabel: "cad_nombre",
-        optionValue: "cad_codigo",
-        options: /* detailServiceChannels */ [],
-        disabled: !initDataLoaded || ![]?.length,
-        rules: {
-          required: "El campo es obligatorio.",
-        },
-      },
-    ];
   };
 
   const columnsId = () => {
@@ -639,8 +603,6 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
 
   const getDepartments = async (country?: IGenericData) => {
     let departments: IGenericData[] = [];
-    console.log(country?.itemCode);
-
     if (country) {
       setLoading(true);
       try {
@@ -707,7 +669,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
   };
 
   const getPersonData = (): IPerson => {
-    let person: IPerson = getValues("person") as IPerson;
+    let person: IPerson = form.getValues("person") as IPerson;
     person.id = pqrsdfData?.personId;
     person.identification = pqrsdfData?.person?.identification;
     person.documentTypeId = pqrsdfData?.person?.documentTypeId;
@@ -751,10 +713,10 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
 
   const isPersonChange = () => {
     if (initDataLoaded) {
-      const personKeys = Object.keys(getValues("person"));
+      const personKeys = Object.keys(form.getValues("person"));
       const values = personKeys
         .map((key) => {
-          return { key: key, val: getValues("person." + key) };
+          return { key: key, val: form.getValues("person." + key) };
         })
         .filter((property) => {
           let initialValue = pqrsdfData?.person?.[property.key];
@@ -764,9 +726,19 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
               initialValue = toLocaleDate(pqrsdfData?.person?.[property.key]).getTime();
             }
           }
-          return (
-            property.val != null && property.val != "" && property.val != undefined && property.val != initialValue
-          );
+          let validateField = personRequiredFields.includes(property.key)
+            ? property.val != null && property.val != "" && property.val != undefined && property.val != initialValue
+            : property.val != initialValue;
+
+          if (property.key == "departmentId") {
+            validateField = !departments.length ? false : validateField;
+          }
+          if (property.key == "municipalityId") {
+            validateField = !municipalities.length ? false : validateField;
+          }
+          console.log(property.key, validateField);
+
+          return validateField;
         });
       setIsUpdatePerson(!!values.length);
     }
@@ -775,10 +747,10 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
   const setRequestSubjectTypesByProgram = async (programId) => {
     const program = programs.filter((program) => program.prg_codigo == programId)[0];
     const optionsRequestSubjectTypes = program?.affairs ? program.affairs : [];
-    setValue("programClasification", program?.clpClasificacionPrograma?.[0]?.clp_descripcion);
-    setValue("programDependence", program?.depDependencia?.dep_descripcion);
+    form.setValue("programClasification", program?.clpClasificacionPrograma?.[0]?.clp_descripcion);
+    form.setValue("programDependence", program?.depDependencia?.dep_descripcion);
     setRequestSubjectTypes(optionsRequestSubjectTypes);
-    setValue("requestSubjectId", "");
+    form.setValue("requestSubjectId", "");
   };
 
   const columnsRequest = () => {
@@ -822,7 +794,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
             (requestSubjectType) => requestSubjectType.aso_codigo == value
           )[0];
           setMotives(requestSubjectType?.motives);
-          setValue("motiveId", "");
+          form.setValue("motiveId", "");
         },
       },
       {
@@ -835,12 +807,19 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         options: motives,
         disabled: !initDataLoaded || loading,
         hidden: () => {
-          return !motives?.length && pqrsdfData?.responsible?.workEntityTypeId != 3;
+          return (
+            !motives?.length ||
+            (pqrsdfData?.responsible?.workEntityTypeId != 3 && pqrsdfData?.responsible?.workEntityTypeId != 2)
+          );
         },
         rules: {
           validate: {
             required: (value) => {
-              if (motives?.length && pqrsdfData?.responsible?.workEntityTypeId == 3 && !value)
+              if (
+                motives?.length &&
+                (pqrsdfData?.responsible?.workEntityTypeId == 3 || pqrsdfData?.responsible?.workEntityTypeId == 2) &&
+                !value
+              )
                 return "El campo es obligatorio.";
               return true;
             },
@@ -888,7 +867,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         name: "Archivos o documentos que soportan la solicitud",
         key: "file",
         formClass: "col-span-full",
-        files: getValues("file"),
+        files: form.getValues("file"),
         hidden: () => {
           return false;
         },
@@ -1145,7 +1124,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         onChange: async (value) => {
           const country = countries.filter((country) => country.id == value)[0];
           await getDepartments(country);
-          setValue("person.departmentId", "");
+          form.setValue("person.departmentId", "");
           isPersonChange();
         },
       },
@@ -1172,7 +1151,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         onChange: async (value) => {
           const department = departments.filter((department) => department.id == value)[0];
           await getMunicipalities(department);
-          setValue("person.municipalityId", "");
+          form.setValue("person.municipalityId", "");
           isPersonChange();
         },
       },
@@ -1222,13 +1201,13 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         },
         onChange: async () => {
           if (watchResponseTypeId != 4) {
-            setValue("isPetitioner", "");
+            form.setValue("isPetitioner", "");
           }
           if (watchResponseTypeId == 4 || watchResponseTypeId == 5) {
-            setValue("workEntityTypeId", "");
+            form.setValue("workEntityTypeId", "");
           }
           if (watchResponseTypeId != 1 && watchResponseTypeId != 2) {
-            setValue("assignedUserId", "");
+            form.setValue("assignedUserId", "");
           }
         },
       },
@@ -1264,7 +1243,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         },
         onChange: async (value) => {
           await getResponsibles(value);
-          setValue("assignedUserId", "");
+          form.setValue("assignedUserId", "");
         },
       },
       {
@@ -1279,7 +1258,8 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
         hidden: () => {
           return (
             (watchResponseTypeId != 4 && watchResponseTypeId != 5) ||
-            (currentWorkEntity?.workEntityTypeId == 2 || currentWorkEntity?.workEntityTypeId == 7)
+            currentWorkEntity?.workEntityTypeId == 2 ||
+            currentWorkEntity?.workEntityTypeId == 7
           );
         },
         rules: {
@@ -1380,8 +1360,9 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
                 label="Enviar"
                 rounded
                 className="!px-4 !py-2 !text-base !font-sans"
-                type="submit"
-                disabled={loading || !isValid}
+                onClick={() => onSave()}
+                loading={loading}
+                disabled={loading || !form.formState.isValid}
               />
             </div>
           );
@@ -1398,7 +1379,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
             <Controller
               key={column.key}
               name={column.key}
-              control={control}
+              control={form.control}
               rules={column.rules}
               render={({ field, fieldState }) => (
                 <>
@@ -1517,8 +1498,8 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
                 <label className="text-base w-full">{column?.name}</label>
                 <a
                   className="font-medium text-red-600 mt-3 ml-1"
-                  href={"https://storage.cloud.google.com/" + splitUrl(file?.name).namepath}
-                  target="_blank"
+                  href={file?.filePath}
+                  onClick={() => pdfShowFile(file?.filePath, splitUrl(file?.name).fileName)}
                 >
                   {splitUrl(file?.name).fileName}
                 </a>
@@ -1558,7 +1539,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
                     onClick={() => setVisibleDialog(true)}
                     text
                     icon={
-                      <i className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center">
+                      <i className="custom-target-icon pi p-text-secondary p-overlay-badge flex justify-center">
                         <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path
                             d="M7.99984 5.83334V11.1667"
@@ -1657,51 +1638,54 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
 
   const iconActions = (data: InfoTable) => {
     return (
-      <>
-        <div className="flex justify-center items-center">
-          <div className="mr-4">
-            <Link to={""} onClick={() => handleFileView(data.action)}>
-              <Tooltip target=".custom-target-icon" style={{ borderRadius: "1px" }} />
-              <i
-                className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center"
-                data-pr-tooltip="Ver adjunto"
-                data-pr-position="right"
-              >
-                {showIcon}
-              </i>
-            </Link>
-          </div>
-          <div className="ml-4">
-            <Link to={""} onClick={() => selectFileToDelete(data)}>
-              <Tooltip target=".custom-target-icon" style={{ borderRadius: "1px" }} />
-              <i
-                className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center"
-                data-pr-tooltip="Eliminar"
-                data-pr-position="right"
-              >
-                {trashIcon}
-              </i>
-            </Link>
-          </div>
+      <div className="flex justify-center items-center">
+        <div className="mr-4">
+          <Link to={""} onClick={() => handleFileView(data.action)}>
+            <Tooltip target=".custom-target-icon" style={{ borderRadius: "1px" }} />
+            <i
+              className="custom-target-icon pi  p-text-secondary p-overlay-badge flex justify-center"
+              data-pr-tooltip="Ver adjunto"
+              data-pr-position="right"
+            >
+              {showIcon}
+            </i>
+          </Link>
         </div>
-      </>
+        <div className="ml-4">
+          <Link to={""} onClick={() => selectFileToDelete(data)}>
+            <Tooltip target=".custom-target-icon" style={{ borderRadius: "1px" }} />
+            <i
+              className="custom-target-icon pi  p-text-secondary p-overlay-badge flex justify-center"
+              data-pr-tooltip="Eliminar"
+              data-pr-position="right"
+            >
+              {trashIcon}
+            </i>
+          </Link>
+        </div>
+      </div>
     );
   };
 
-  const isPersonInvalid = () => {
-    console.log((departments.length && !watchDepartmentId) || (municipalities.length && !watchMunicipalityId));
+  const personRequiredFields = [
+    "person.firstName",
+    "person.firstSurname",
+    "person.businessName",
+    "person.email",
+    "person.firstContactNumber",
+    "person.birthdate",
+    "person.address",
+    "person.countryId",
+    "person.departmentId",
+    "person.municipalityId",
+  ];
 
+  const isPersonInvalid = () => {
+    let invalidFields = personRequiredFields.filter((field) => {
+      return form.getFieldState(field)?.invalid;
+    });
     return (
-      getFieldState("person.firstName")?.invalid ||
-      getFieldState("person.firstSurname")?.invalid ||
-      getFieldState("person.businessName")?.invalid ||
-      getFieldState("person.email")?.invalid ||
-      getFieldState("person.firstContactNumber")?.invalid ||
-      getFieldState("person.birthdate")?.invalid ||
-      getFieldState("person.address")?.invalid ||
-      getFieldState("person.countryId")?.invalid ||
-      getFieldState("person.departmentId")?.invalid ||
-      getFieldState("person.municipalityId")?.invalid ||
+      !!invalidFields.length ||
       (departments.length && !watchDepartmentId) ||
       (municipalities.length && !watchMunicipalityId)
     );
@@ -1812,7 +1796,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
                       onClick={() => setVisibleDialog(true)}
                       text
                       icon={
-                        <i className="custom-target-icon pi pi-envelope p-text-secondary p-overlay-badge flex justify-center">
+                        <i className="custom-target-icon pi  p-text-secondary p-overlay-badge flex justify-center">
                           <svg
                             width="16"
                             height="17"
@@ -1940,68 +1924,87 @@ function FormManagePqrsdfPage({ isEdit = false }: Props): React.JSX.Element {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSave)}
-      onChange={checkIsFilled}
-      className="p-4 md:p-6 max-w-[1200px] mx-auto mt-6"
-      ref={parentForm}
-    >
-      <ConfirmDialog id="messages"></ConfirmDialog>
-      <div className="p-card rounded-2xl md:rounded-4xl shadow-none border border-[#D9D9D9]">
-        <div className="p-card-body !py-6 !px-6 md:!px-11">
-          <div className="p-card-title">
-            <span className="text-2xl md:text-3xl font-medium">Gestionar PQRDSF</span>
-          </div>
-          <div className="p-card-content !pb-0 !pt-0 mt-4 md:mt-7">
-            <div className="px-4">
-              <div className="border-b border-[#DEE2E6] w-full flex text-[19px] font-medium text-center">
-                <span className="h-12 max-w-[184px] w-full border-b border-primary leading-6 px-1 text-primary">
-                  Gestionar solicitudes
-                </span>
-                <Link
-                  to={"/atencion-ciudadana/gestionar-pqrsdf?tab=2"}
-                  className="h-12 max-w-[184px] w-full text-[#6C757D] leading-[23px] px-1"
-                >
-                  Respuestas a la solicitud
-                </Link>
+    <>
+      {" "}
+      <form
+        onSubmit={form.handleSubmit(() => {})}
+        onChange={checkIsFilled}
+        className="p-4 md:p-6 max-w-[1200px] mx-auto mt-6"
+        ref={parentForm}
+      >
+        <ConfirmDialog id="messages"></ConfirmDialog>
+        <div className="p-card rounded-2xl md:rounded-4xl shadow-none border border-[#D9D9D9]">
+          <div className="p-card-body !py-6 !px-6 md:!px-11">
+            <div className="p-card-title">
+              <span className="text-2xl md:text-3xl font-medium">Gestionar PQRDSF</span>
+            </div>
+            <div className="p-card-content !pb-0 !pt-0 mt-4 md:mt-7">
+              <div className="px-4">
+                <div className="border-b border-[#DEE2E6] w-full flex text-[19px] font-medium text-center">
+                  <span className="h-12 max-w-[184px] w-full border-b border-primary leading-6 px-1 text-primary">
+                    Gestionar solicitudes
+                  </span>
+                  <Link
+                    to={"/atencion-ciudadana/gestionar-pqrsdf?tab=2"}
+                    className="h-12 max-w-[184px] w-full text-[#6C757D] leading-[23px] px-1"
+                  >
+                    Respuestas a la solicitud
+                  </Link>
+                </div>
               </div>
-            </div>
-            <div className="grid grid-cols-6 xl:gap-x-12 md:gap-x-4.5 gap-x-3.5 gap-y-6 w-full mt-5 pt-1.5 md:mt-20">
-              {columnsId().map((column, index) => {
-                return columnsTemplate(column);
-              })}
-            </div>
-            <div className="w-full mt-4 md:mt-8 md:pt-0.5 citizen-attention">
-              <Accordion activeIndex={null}>
-                {accordionTabs().map((tab, index) => {
-                  return (
-                    <AccordionTab header={tab.header} key={tab.key}>
-                      <div className={tab.wrapperClass}>
-                        {tab?.columns
-                          ? tab.columns.map((column, index) => {
-                              return columnsTemplate(column);
-                            })
-                          : tab?.template()}
-                      </div>
-                      {tab?.secondWrapper && (
-                        <div className={tab.wrapperClass + " md:mt-4 mt-6"}>
+              <div className="grid grid-cols-6 xl:gap-x-12 md:gap-x-4.5 gap-x-3.5 gap-y-6 w-full mt-5 pt-1.5 md:mt-20">
+                {columnsId().map((column, index) => {
+                  return columnsTemplate(column);
+                })}
+              </div>
+              <div className="w-full mt-4 md:mt-8 md:pt-0.5 citizen-attention">
+                <Accordion activeIndex={null}>
+                  {accordionTabs().map((tab, index) => {
+                    return (
+                      <AccordionTab header={tab.header} key={tab.key}>
+                        <div className={tab.wrapperClass}>
                           {tab?.columns
-                            ? tab.secondColumns.map((column, index) => {
+                            ? tab.columns.map((column, index) => {
                                 return columnsTemplate(column);
                               })
                             : tab?.template()}
                         </div>
-                      )}
-                    </AccordionTab>
-                  );
-                })}
-              </Accordion>
+                        {tab?.secondWrapper && (
+                          <div className={tab.wrapperClass + " md:mt-4 mt-6"}>
+                            {tab?.columns
+                              ? tab.secondColumns.map((column, index) => {
+                                  return columnsTemplate(column);
+                                })
+                              : tab?.template()}
+                          </div>
+                        )}
+                      </AccordionTab>
+                    );
+                  })}
+                </Accordion>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </form>
+      </form>
+      {showConfirmation && (
+        <MessageComponent
+          headerMsg="No adjuntó ningún archivo"
+          msg="¿Desea continuar de todas formas?"
+          twoBtn={true}
+          nameBtn1="Aceptar"
+          nameBtn2="Cancelar"
+          onClickBt1={() => {
+            setShowConfirmation(false);
+            onSave(true);
+          }}
+          onClickBt2={() => {
+            setShowConfirmation(false);
+          }}
+        />
+      )}
+    </>
   );
 }
 
-export default FormManagePqrsdfPage;
+export default React.memo(FormManagePqrsdfPage);

@@ -1,10 +1,9 @@
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { Suspense, useEffect, useRef, useState } from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { fetchData } from "../../apis/fetchData";
-
 import { Calendar } from "primereact/calendar";
 import { Nullable } from "primereact/ts-helpers";
 import { classNames } from "primereact/utils";
@@ -31,7 +30,7 @@ const ApiDatalegalEntity = fetchData("/get-legal-entity");
 const ApiDataResponseMedium = fetchData("/get-response-medium");
 const ApiDataListaParametros = fetchData("/get-listaParametros");
 
-interface Props {
+interface IProps {
   isPerson?: boolean;
   channel?: object;
   resetChanel?: () => void;
@@ -43,58 +42,31 @@ interface IChannel {
   isValid?: boolean;
 }
 
-export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: Props) => {
-  const channels = channel as IChannel;
-
+const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }: IProps) => {
+  // Servicios
   const location = useLocation();
-  const isPortal = location.pathname.includes("portal");
   const navigate = useNavigate();
-  const optionSolicitudes = ApiDatatypoSolicitudes.read();
-  const optionTypeDocument = ApiDatatypoDocument.read();
-  const optionLegalEntity = ApiDatalegalEntity.read();
-  const optionResponseMedium = ApiDataResponseMedium.read();
-  const linkPoliticaCondiciones = ApiDataListaParametros.read();
-  const { LPA_VALOR } = linkPoliticaCondiciones[0];
-
+  const { identification } = useParams();
   const pqrsdfService = usePqrsdfService();
   const citizenInformationService = useCitizenAttentionService();
-
+  const service = useCitizenAttentionService();
   const {
     control,
-    formState: { errors, isValid, dirtyFields },
+    formState: { errors, isValid },
     handleSubmit,
-    getFieldState,
     setValue,
     reset,
     resetField,
     getValues,
     watch,
-    register,
   } = useForm({ mode: "all" });
 
-  const watchCountry = watch("pais");
-  const watchDeparment = watch("departamento");
-
-  const showFieldPersons = useRef("");
-  const showDependecia = useRef("");
-  const showClasificacion = useRef("");
-  const showMupio = useRef(null);
-  const radicado = useRef(null);
-  const birthdateData = useRef(null);
-
+  // States
   const [personData, setPersonData] = useState<IPerson | null>();
   const [programs, setPrograms] = useState<IProgram[]>([]);
   const [requestSubjectTypes, setRequestSubjectTypes] = useState<IRequestSubjectType[]>([]);
-  const [valueTypeSolicitud, setValueTypeSolicitud] = useState(null);
   const [valueDocument, setValueDocument] = useState(null);
-  const [valueTypeEntidad, setValueTypeEntidad] = useState(null);
-  const [valuePais, setValuePais] = useState(null);
-  const [valueDepartamento, setValueDepartamento] = useState(null);
-  const [valueMunicipio, setValueMunicipio] = useState(null);
   const [valueMedioRespuesta, setValueMedioRespuesta] = useState(null);
-  const [valueAsunto, setValueAsunto] = useState(null);
-  const [statuscheckBox, setstatuscheckBox] = useState(null);
-  const [program, setprogram] = useState(null);
   const [visible, setVisible] = useState<boolean>(false);
   const [file, setfile] = useState<File>(null);
   const [visibleMsg, setVisibleMsg] = useState(null);
@@ -114,247 +86,28 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
   const [secondContactNumber, setSecondContactNumber] = useState("");
   const [address, setAddress] = useState("");
   const [btnDisable, setBtnDisable] = useState("");
-  const [statusSummit, SetstatusSummit] = useState<boolean>(true);
-
-  const seleTipoDocument = (document: {
-    LGE_CODIGO: number;
-    LGE_ELEMENTO_CODIGO: string;
-    LGE_ELEMENTO_DESCRIPCION: string;
-  }) => {
-    setValueDocument(document);
-
-    showFieldPersons.current = document == null ? "" : document.LGE_ELEMENTO_DESCRIPCION;
-
-    switch (showFieldPersons.current) {
-      case "Cedula de Ciudadania":
-        resetField("RazonSocial");
-        setValueTypeEntidad(null);
-        break;
-      case "Cedula de Extranjeria":
-        resetField("RazonSocial");
-        setValueTypeEntidad(null);
-        break;
-      case "Tarjeta de Identidad":
-        resetField("RazonSocial");
-        setValueTypeEntidad(null);
-        break;
-      case "NIT":
-        resetField("primerNombre");
-        resetField("segundoNombre");
-        resetField("primerApellido");
-        resetField("segundoApellido");
-        resetField("fechaNacimento");
-        break;
-      case "Anónimo":
-        resetField("tipoEntidad");
-        resetField("noDocumento");
-        resetField("primerNombre");
-        resetField("segundoNombre");
-        resetField("primerApellido");
-        resetField("segundoApellido");
-        resetField("fechaNacimento");
-        setValueTypeEntidad(null);
-        break;
-
-      default:
-        break;
-    }
-
-    return document;
-  };
-
-  useEffect(() => {
-    const fecthPrograms = async () => {
-      try {
-        const response = await citizenInformationService.getPrograms();
-        if (response.operation.code === EResponseCodes.OK) {
-          setPrograms(response.data);
-        }
-      } catch (error) {
-        console.error("Error al obtener la lista:", error);
-      } finally {
-        // setLoading(false);
-      }
-    };
-    fecthPrograms();
-
-    const fecthCountries = async () => {
-      try {
-        const response = await citizenInformationService.getCountries();
-        if (response.operation.code === EResponseCodes.OK) {
-          setCountries(response.data);
-        }
-      } catch (error) {
-        console.error("Error al obtener la lista:", error);
-      } finally {
-        // setLoading(false);
-      }
-    };
-    fecthCountries();
-  }, []);
-
-  const { identification } = useParams();
-
-  useEffect(() => {
-    const getUser = async (identification: string) => {
-      try {
-        const response = await pqrsdfService.getPersonByDocument(parseInt(identification));
-        if (response.operation.code === EResponseCodes.OK) {
-          setPersonData(response.data);
-        }
-      } catch (error) {
-        console.error("Error al obtener la lista:", error);
-      } finally {
-        // setLoading(false);
-      }
-    };
-    if (identification) {
-      getUser(identification);
-    }
-  }, [identification]);
-
-  useEffect(() => {
-    if (channels.isValid && isValid) {
-      SetstatusSummit(false);
-    } else {
-      SetstatusSummit(true);
-    }
-  }, [channels.isValid]);
-
-  useEffect(() => {
-    if (channels.isValid && isValid) {
-      SetstatusSummit(false);
-    } else {
-      SetstatusSummit(true);
-    }
-  }, [isValid]);
-
-  const selectCountry = async (countryId, childReset = true) => {
-    const country = countries.filter((country) => country.id == countryId)[0];
-    if (childReset) {
-      setValue("departamento", "");
-    }
-    let departments = await getDepartments(country);
-
-    return { parent: country, childs: departments };
-  };
-
-  const selectDepartment = async (departmentId, preData = [], childReset = true) => {
-    const department = (preData.length ? preData : departments).filter(
-      (department) => department.id == departmentId
-    )[0];
-    if (childReset) {
-      setValue("municipio", "");
-    }
-    let municipalities = await getMunicipalities(department);
-
-    return { parent: department, childs: municipalities };
-  };
-
-  const selectMunicipality = (municipio: { LGE_CODIGO: number; LGE_ELEMENTO_DESCRIPCION: string }) => {
-    setValueMunicipio(municipio);
-
-    return municipio;
-  };
-
-  const getDepartments = async (country?: IGenericData) => {
-    let departments: IGenericData[] = [];
-    if (country) {
-      // setLoading(true);
-      try {
-        const response = await service.getDepartments(country.itemCode);
-        if (response.operation.code === EResponseCodes.OK) {
-          departments = response.data;
-          setDepartments(response.data);
-        } else {
-          setDepartments([]);
-        }
-      } catch (error) {
-        console.error("Error al obtener la lista:", error);
-      } finally {
-        // setLoading(false);
-      }
-    }
-    return departments;
-  };
-
-  const service = useCitizenAttentionService();
-
-  const getMunicipalities = async (department?: IGenericData) => {
-    let municipalities: IGenericData[] = [];
-    if (department) {
-      // setLoading(true);
-      try {
-        const response = await service.getMunicipalities(parseInt(department.itemCode));
-        if (response.operation.code === EResponseCodes.OK) {
-          municipalities = response.data;
-          setMunicipalities(response.data);
-        } else {
-          setMunicipalities([]);
-        }
-      } catch (error) {
-        console.error("Error al obtener la lista:", error);
-      } finally {
-        // setLoading(false);
-      }
-    }
-    return municipalities;
-  };
-
-  const selectProgram = (programId) => {
-    const program = programs.filter((program) => program.prg_codigo == programId)[0];
-    const optionsRequestSubjectTypes = program?.affairs ? program.affairs : [];
-    setClasification(program?.clpClasificacionPrograma?.[0]?.clp_descripcion);
-    setDependence(program?.depDependencia?.dep_descripcion);
-    setRequestSubjectTypes(optionsRequestSubjectTypes);
-    setValue("asuntoSolicitud", "");
-  };
-
-  const selectResponseMedium = (respuesta: { MRE_CODIGO: number; MRE_DESCRIPCION: string }) => {
-    setValueMedioRespuesta(respuesta);
-
-    return respuesta;
-  };
-
-  const selectRequestSubject = (respuesta: { ASO_CODIGO: number; ASO_ASUNTO: string }) => {
-    setValueAsunto(respuesta);
-
-    return respuesta;
-  };
-
+  const [loading, setLoading] = useState<boolean>(false);
   const [fileaa, setFileaa] = useState(null);
 
-  const handleFileView = () => {
-    if (fileaa) {
-      const reader = new FileReader();
+  // Variables
+  const optionSolicitudes = ApiDatatypoSolicitudes.read();
+  const optionTypeDocument = ApiDatatypoDocument.read();
+  const optionLegalEntity = ApiDatalegalEntity.read();
+  const optionResponseMedium = ApiDataResponseMedium.read();
+  const linkPoliticaCondiciones = ApiDataListaParametros.read();
+  const { LPA_VALOR } = linkPoliticaCondiciones[0];
+  const isPortal = location.pathname.includes("portal");
 
-      // Lee el contenido del archivo como un URL de datos
-      reader.onloadend = () => {
-        const fileDataUrl = reader.result;
+  const channels = channel as IChannel;
+  const watchCountry = watch("pais");
+  const watchDeparment = watch("departamento");
+  const showFieldPersons = useRef("");
+  const showDependecia = useRef("");
+  const showClasificacion = useRef("");
+  const radicado = useRef(null);
+  const birthdateData = useRef(null);
 
-        // Abre una nueva ventana con el contenido del archivo
-        const newWindow = window.open();
-        newWindow.document.write(`<iframe width="100%" height="100%" src="${fileDataUrl}"></iframe>`);
-      };
-
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const getFile = (file: File) => {
-    setfile(file);
-    setFileaa(file);
-    return file;
-  };
-
-  const checkBox = (dato: { status: boolean | null }) => {
-    setstatuscheckBox(dato);
-
-    const estado = dato ? true : null;
-
-    return estado;
-  };
-
+  // Effects
   useEffect(() => {
     if (identification && personData) {
       setBtnDisable("input-desabled");
@@ -389,9 +142,6 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
         setValue("noContacto2", user?.secondContactNumber, { shouldDirty: true });
         setAddress(user?.address);
         setValue("direccion", user?.address, { shouldDirty: true });
-
-        setValueTypeEntidad(user?.entityType?.tej_codigo);
-
         const country = await selectCountry(user?.countryId, false);
         setTimeout(() => {
           setValue("pais", user?.countryId);
@@ -411,6 +161,198 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
     }
   }, [personData]);
 
+  useEffect(() => {
+    const fecthPrograms = async () => {
+      try {
+        const response = await citizenInformationService.getPrograms();
+        if (response.operation.code === EResponseCodes.OK) {
+          setPrograms(response.data);
+        }
+      } catch (error) {
+        console.error("Error al obtener la lista:", error);
+      }
+    };
+    fecthPrograms();
+
+    const fecthCountries = async () => {
+      try {
+        const response = await citizenInformationService.getCountries();
+        if (response.operation.code === EResponseCodes.OK) {
+          setCountries(response.data);
+        }
+      } catch (error) {
+        console.error("Error al obtener la lista:", error);
+      }
+    };
+    fecthCountries();
+  }, []);
+
+  useEffect(() => {
+    const getUser = async (identification: string) => {
+      try {
+        const response = await pqrsdfService.getPersonByDocument(parseInt(identification));
+        if (response.operation.code === EResponseCodes.OK) {
+          setPersonData(response.data);
+        }
+      } catch (error) {
+        console.error("Error al obtener la lista:", error);
+      }
+    };
+    if (identification) {
+      getUser(identification);
+    }
+  }, [identification]);
+
+  // Metodos
+
+  const seleTipoDocument = (document: {
+    LGE_CODIGO: number;
+    LGE_ELEMENTO_CODIGO: string;
+    LGE_ELEMENTO_DESCRIPCION: string;
+  }) => {
+    setValueDocument(document);
+
+    showFieldPersons.current = document == null ? "" : document.LGE_ELEMENTO_DESCRIPCION;
+
+    switch (showFieldPersons.current) {
+      case "Cedula de Ciudadania":
+        resetField("RazonSocial");
+        break;
+      case "Cedula de Extranjeria":
+        resetField("RazonSocial");
+
+        break;
+      case "Tarjeta de Identidad":
+        resetField("RazonSocial");
+
+        break;
+      case "NIT":
+        resetField("primerNombre");
+        resetField("segundoNombre");
+        resetField("primerApellido");
+        resetField("segundoApellido");
+        resetField("fechaNacimento");
+        break;
+      case "Anónimo":
+        resetField("tipoEntidad");
+        resetField("noDocumento");
+        resetField("primerNombre");
+        resetField("segundoNombre");
+        resetField("primerApellido");
+        resetField("segundoApellido");
+        resetField("fechaNacimento");
+        break;
+
+      default:
+        break;
+    }
+
+    return document;
+  };
+
+  const selectCountry = async (countryId, childReset = true) => {
+    const country = countries.filter((country) => country.id == countryId)[0];
+    if (childReset) {
+      setValue("departamento", "");
+    }
+    let departments = await getDepartments(country);
+
+    return { parent: country, childs: departments };
+  };
+
+  const selectDepartment = async (departmentId, preData = [], childReset = true) => {
+    const department = (preData.length ? preData : departments).filter(
+      (department) => department.id == departmentId
+    )[0];
+    if (childReset) {
+      setValue("municipio", "");
+    }
+    let municipalities = await getMunicipalities(department);
+
+    return { parent: department, childs: municipalities };
+  };
+
+  const getDepartments = async (country?: IGenericData) => {
+    let departments: IGenericData[] = [];
+    if (country) {
+      try {
+        const response = await service.getDepartments(country.itemCode);
+        if (response.operation.code === EResponseCodes.OK) {
+          departments = response.data;
+          setDepartments(response.data);
+        } else {
+          setDepartments([]);
+        }
+      } catch (error) {
+        console.error("Error al obtener la lista:", error);
+      } finally {
+      }
+    }
+    return departments;
+  };
+
+  const getMunicipalities = async (department?: IGenericData) => {
+    let municipalities: IGenericData[] = [];
+    if (department) {
+      try {
+        const response = await service.getMunicipalities(parseInt(department.itemCode));
+        if (response.operation.code === EResponseCodes.OK) {
+          municipalities = response.data;
+          setMunicipalities(response.data);
+        } else {
+          setMunicipalities([]);
+        }
+      } catch (error) {
+        console.error("Error al obtener la lista:", error);
+      }
+    }
+    return municipalities;
+  };
+
+  const selectProgram = (programId) => {
+    const program = programs.filter((program) => program.prg_codigo == programId)[0];
+    const optionsRequestSubjectTypes = program?.affairs ? program.affairs : [];
+    setClasification(program?.clpClasificacionPrograma?.[0]?.clp_descripcion);
+    setDependence(program?.depDependencia?.dep_descripcion);
+    setRequestSubjectTypes(optionsRequestSubjectTypes);
+    setValue("asuntoSolicitud", "");
+  };
+
+  const selectResponseMedium = (respuesta: { MRE_CODIGO: number; MRE_DESCRIPCION: string }) => {
+    setValueMedioRespuesta(respuesta);
+
+    return respuesta;
+  };
+
+  const handleFileView = () => {
+    if (fileaa) {
+      const reader = new FileReader();
+
+      // Lee el contenido del archivo como un URL de datos
+      reader.onloadend = () => {
+        const fileDataUrl = reader.result;
+
+        // Abre una nueva ventana con el contenido del archivo
+        const newWindow = window.open();
+        newWindow.document.write(`<iframe width="100%" height="100%" src="${fileDataUrl}"></iframe>`);
+      };
+
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const getFile = (file: File) => {
+    setfile(file);
+    setFileaa(file);
+    return file;
+  };
+
+  const checkBox = (dato: { status: boolean | null }) => {
+    const estado = dato ? true : null;
+
+    return estado;
+  };
+
   const handleDateChange = (date: any) => {
     setValue("fechaNacimento", date);
     const birthdate = `${date?.getFullYear()}-${date?.getMonth() + 1}-${date?.getDate()}`;
@@ -419,6 +361,8 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
   };
 
   const onSubmit = async (data: FormPqrsdf) => {
+    setLoading(true);
+
     const pqrsdf: IPqrsdf = {
       requestTypeId: data.tipoDeSolicitud["TSO_CODIGO"],
       responseMediumId: data.medioRespuesta["MRE_CODIGO"],
@@ -452,23 +396,18 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
         isActive: true,
       },
     };
-    SetstatusSummit(true);
-    const respFile = await pqrsdfService.upLoadFile(file);
-    const resp = await pqrsdfService.createPqrsdf(pqrsdf, file);
 
+    // const respFile = await pqrsdfService.upLoadFile(file);
+    const resp = await pqrsdfService.createPqrsdf(pqrsdf, file);
+    setLoading(false);
     if (resp.operation["code"] == "OK") {
       radicado.current = resp.data.filingNumber;
       setVisibleMsg(true);
-      setValueTypeSolicitud(null);
-      setValueTypeEntidad(null);
       setValueMedioRespuesta(null);
-      setValueAsunto(null);
-      setstatuscheckBox(null);
-      setprogram(null);
       setfile(null);
       showDependecia.current = "";
       showClasificacion.current = "";
-      SetstatusSummit(false);
+
       setBirthDate(null);
       resetChanel();
       if (isPerson) {
@@ -482,9 +421,6 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
         resetField("archivo");
       } else {
         setValueDocument(null);
-        setValuePais(null);
-        setValueDepartamento(null);
-        setValueMunicipio(null);
         reset();
       }
     }
@@ -519,7 +455,7 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
             style={{ backgroundColor: "533893" }}
             onClick={() => {
               setVisibleMsg(false),
-                navigate(isPortal ? "/portal/ingreso" : "/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf");
+                navigate(isPortal ? "/portal/layout" : "/atencion-ciudadana/atencion-ciudadania-radicar-pqrsdf");
             }}
             label="Cerrar"
             rounded
@@ -537,21 +473,19 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
             control={control}
             rules={{ required: "El campo es obligatorio." }}
             render={({ field, fieldState }) => (
-              <>
-                <Suspense fallback={<div>Cargando...</div>}>
-                  <DropDownComponent
-                    id={field.value}
-                    value={field.value}
-                    optionLabel="TSO_DESCRIPTION"
-                    className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                    onChange={field.onChange}
-                    focusInputRef={field.ref}
-                    options={optionSolicitudes.data}
-                    placeholder="Seleccionar"
-                    width="100%"
-                  />
-                </Suspense>
-              </>
+              <Suspense fallback={<div>Cargando...</div>}>
+                <DropDownComponent
+                  id={field.value}
+                  value={field.value}
+                  optionLabel="TSO_DESCRIPTION"
+                  className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
+                  onChange={field.onChange}
+                  focusInputRef={field.ref}
+                  options={optionSolicitudes.data}
+                  placeholder="Seleccionar"
+                  width="100%"
+                />
+              </Suspense>
             )}
           />
           {getFormErrorMessage("tipoDeSolicitud")}
@@ -570,27 +504,25 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
               control={control}
               rules={{ required: "El campo es obligatorio." }}
               render={({ field, fieldState }) => (
-                <>
-                  <Suspense fallback={<div>Cargando...</div>}>
-                    <DropDownComponent
-                      id={field.name}
-                      value={valueDocument}
-                      disabled={isPerson}
-                      optionLabel={"LGE_ELEMENTO_DESCRIPCION"}
-                      className={classNames({ "p-invalid": fieldState.error }, `${btnDisable} !h-10`)}
-                      onChange={(e) =>
-                        field.onChange(() => {
-                          seleTipoDocument(e.value);
-                          setValue("tipo", e.value);
-                        })
-                      }
-                      focusInputRef={field.ref}
-                      options={optionTypeDocument.data}
-                      placeholder="Seleccionar"
-                      width="100%"
-                    />
-                  </Suspense>
-                </>
+                <Suspense fallback={<div>Cargando...</div>}>
+                  <DropDownComponent
+                    id={field.name}
+                    value={valueDocument}
+                    disabled={isPerson}
+                    optionLabel={"LGE_ELEMENTO_DESCRIPCION"}
+                    className={classNames({ "p-invalid": fieldState.error }, `${btnDisable} !h-10`)}
+                    onChange={(e) =>
+                      field.onChange(() => {
+                        seleTipoDocument(e.value);
+                        setValue("tipo", e.value);
+                      })
+                    }
+                    focusInputRef={field.ref}
+                    options={optionTypeDocument.data}
+                    placeholder="Seleccionar"
+                    width="100%"
+                  />
+                </Suspense>
               )}
             />
             {getFormErrorMessage("tipo")}
@@ -599,42 +531,40 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
           <span style={{ width: "2%" }}></span>
 
           {showFieldPersons.current != "Anónimo" ? (
-            <>
-              <div className="row-1 width-50">
-                <label className="font-label">
-                  No. documento<span className="required">*</span>
-                </label>
-                <Controller
-                  name="noDocumento"
-                  control={control}
-                  defaultValue={valueIdentification}
-                  rules={{
-                    required: "El campo es obligatorio.",
-                    maxLength: { value: 15, message: "Solo se permiten 15 caracteres" },
-                  }}
-                  render={({ field, fieldState }) => (
-                    <>
-                      <InputTextComponent
-                        id={field.name}
-                        value={field.value}
-                        disabled={isPerson}
-                        className={classNames({ "p-invalid": fieldState.error }, `${btnDisable} !h-10`)}
-                        onChange={(e) =>
-                          field.onChange(() => {
-                            setValueIdentification(e.target.value);
-                            setValue("noDocumento", e.target.value);
-                          })
-                        }
-                        placeholder=""
-                        width="100%"
-                      />
-                      {getFormErrorMessage("noDocumento")}
-                      {/*noDocumento.length > 15?(<p className=''>Longitud 15 caracteres</p>):(<></>)*/}
-                    </>
-                  )}
-                />
-              </div>
-            </>
+            <div className="row-1 width-50">
+              <label className="font-label">
+                No. documento<span className="required">*</span>
+              </label>
+              <Controller
+                name="noDocumento"
+                control={control}
+                defaultValue={valueIdentification}
+                rules={{
+                  required: "El campo es obligatorio.",
+                  maxLength: { value: 15, message: "Solo se permiten 15 caracteres" },
+                }}
+                render={({ field, fieldState }) => (
+                  <>
+                    <InputTextComponent
+                      id={field.name}
+                      value={field.value}
+                      disabled={isPerson}
+                      className={classNames({ "p-invalid": fieldState.error }, `${btnDisable} !h-10`)}
+                      onChange={(e) =>
+                        field.onChange(() => {
+                          setValueIdentification(e.target.value);
+                          setValue("noDocumento", e.target.value);
+                        })
+                      }
+                      placeholder=""
+                      width="100%"
+                    />
+                    {getFormErrorMessage("noDocumento")}
+                    {/*noDocumento.length > 15?(<p className=''>Longitud 15 caracteres</p>):(<></>)*/}
+                  </>
+                )}
+              />
+            </div>
           ) : (
             <></>
           )}
@@ -650,30 +580,24 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
             <Controller
               name="tipoEntidad"
               control={control}
-              defaultValue={valueTypeEntidad}
               rules={{ required: "El campo es obligatorio." }}
               render={({ field, fieldState }) => (
-                <>
-                  <Suspense fallback={<div>Cargando...</div>}>
-                    <DropDownComponent
-                      id={field.name}
-                      value={field.value}
-                      className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                      optionValue="TEJ_CODIGO"
-                      onChange={(e) =>
-                        field.onChange(() => {
-                          setValueTypeEntidad(e.value);
-                          setValue("tipoEntidad", e.value);
-                        })
-                      }
-                      focusInputRef={field.ref}
-                      optionLabel="TEJ_NOMBRE"
-                      options={optionLegalEntity.data}
-                      placeholder="Seleccionar"
-                      width="100%"
-                    />
-                  </Suspense>
-                </>
+                <Suspense fallback={<div>Cargando...</div>}>
+                  <DropDownComponent
+                    id={field.name}
+                    value={field.value}
+                    className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
+                    optionValue="TEJ_CODIGO"
+                    onChange={(e) => {
+                      field.onChange(e.value);
+                    }}
+                    focusInputRef={field.ref}
+                    optionLabel="TEJ_NOMBRE"
+                    options={optionLegalEntity.data}
+                    placeholder="Seleccionar"
+                    width="100%"
+                  />
+                </Suspense>
               )}
             />
             {getFormErrorMessage("tipoEntidad")}
@@ -701,20 +625,18 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
                 maxLength: { value: 200, message: "Solo se permiten 200 caracteres" },
               }}
               render={({ field, fieldState }) => (
-                <>
-                  <InputTextComponent
-                    id={field.name}
-                    value={field.value}
-                    className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                    onChange={(e) =>
-                      field.onChange(() => {
-                        setValue("RazonSocial", e.target.value);
-                      })
-                    }
-                    placeholder=""
-                    width="100%"
-                  />
-                </>
+                <InputTextComponent
+                  id={field.name}
+                  value={field.value}
+                  className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
+                  onChange={(e) =>
+                    field.onChange(() => {
+                      setValue("RazonSocial", e.target.value);
+                    })
+                  }
+                  placeholder=""
+                  width="100%"
+                />
               )}
             />
             {getFormErrorMessage("RazonSocial")}
@@ -740,21 +662,19 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
                       maxLength: { value: 50, message: "Solo se permiten 50 caracteres" },
                     }}
                     render={({ field, fieldState }) => (
-                      <>
-                        <InputTextComponent
-                          id={field.name}
-                          value={field.value}
-                          className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                          onChange={(e) =>
-                            field.onChange(() => {
-                              setName(e.target.value);
-                              setValue("primerNombre", e.target.value);
-                            })
-                          }
-                          placeholder=""
-                          width="100%"
-                        />
-                      </>
+                      <InputTextComponent
+                        id={field.name}
+                        value={field.value}
+                        className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
+                        onChange={(e) =>
+                          field.onChange(() => {
+                            setName(e.target.value);
+                            setValue("primerNombre", e.target.value);
+                          })
+                        }
+                        placeholder=""
+                        width="100%"
+                      />
                     )}
                   />
                   {getFormErrorMessage("primerNombre")}
@@ -809,21 +729,19 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
                       maxLength: { value: 50, message: "Solo se permiten 50 caracteres" },
                     }}
                     render={({ field, fieldState }) => (
-                      <>
-                        <InputTextComponent
-                          id={field.name}
-                          value={field.value}
-                          className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                          onChange={(e) =>
-                            field.onChange(() => {
-                              setLastName(e.target.value);
-                              setValue("primerApellido", e.target.value);
-                            })
-                          }
-                          placeholder=""
-                          width="100%"
-                        />
-                      </>
+                      <InputTextComponent
+                        id={field.name}
+                        value={field.value}
+                        className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
+                        onChange={(e) =>
+                          field.onChange(() => {
+                            setLastName(e.target.value);
+                            setValue("primerApellido", e.target.value);
+                          })
+                        }
+                        placeholder=""
+                        width="100%"
+                      />
                     )}
                   />
                   {getFormErrorMessage("primerApellido")}
@@ -841,21 +759,19 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
                       maxLength: { value: 50, message: "Solo se permiten  50 caracteres" },
                     }}
                     render={({ field, fieldState }) => (
-                      <>
-                        <InputTextComponent
-                          id={field.name}
-                          value={field.value}
-                          className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                          onChange={(e) =>
-                            field.onChange(() => {
-                              setSecondSurname(e.target.value);
-                              setValue("segundoApellido", e.target.value);
-                            })
-                          }
-                          placeholder=""
-                          width="100%"
-                        />
-                      </>
+                      <InputTextComponent
+                        id={field.name}
+                        value={field.value}
+                        className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
+                        onChange={(e) =>
+                          field.onChange(() => {
+                            setSecondSurname(e.target.value);
+                            setValue("segundoApellido", e.target.value);
+                          })
+                        }
+                        placeholder=""
+                        width="100%"
+                      />
                     )}
                   />
                   {getFormErrorMessage("segundoApellido")}
@@ -884,35 +800,27 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
                     control={control}
                     rules={{ required: "El campo es obligatorio." }}
                     render={({ field, fieldState }) => (
-                      <>
-                        <span className="p-input-icon-right">
-                          <Calendar
-                            id={field.name}
-                            value={birthDate}
-                            className={classNames({ "p-invalid ": fieldState.error }, "!h-10 ")}
-                            onChange={(e) => field.onChange(handleDateChange(e.value))}
-                            dateFormat="dd/mm/yy"
-                            maxDate={new Date()}
-                            style={{ width: "100%" }}
-                            placeholder="DD / MM / AAA"
+                      <span className="p-input-icon-right">
+                        <Calendar
+                          id={field.name}
+                          value={birthDate}
+                          className={classNames({ "p-invalid ": fieldState.error }, "!h-10 ")}
+                          onChange={(e) => field.onChange(handleDateChange(e.value))}
+                          dateFormat="dd/mm/yy"
+                          maxDate={new Date()}
+                          style={{ width: "100%" }}
+                          placeholder="DD / MM / AAA"
+                        />
+                        <svg width="19" height="19" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M10.6667 1.3335V4.00016M5.33333 1.3335V4.00016M2 6.00016H14M12.6667 2.66683H3.33333C2.59667 2.66683 2 3.2635 2 4.00016V12.6668C2 13.4035 2.59667 14.0002 3.33333 14.0002H12.6667C13.4033 14.0002 14 13.4035 14 12.6668V4.00016C14 3.2635 13.4033 2.66683 12.6667 2.66683ZM4.67533 8.48616C4.58333 8.48616 4.50867 8.56083 4.50933 8.65283C4.50933 8.74483 4.584 8.8195 4.676 8.8195C4.768 8.8195 4.84267 8.74483 4.84267 8.65283C4.84267 8.56083 4.768 8.48616 4.67533 8.48616ZM8.00867 8.48616C7.91667 8.48616 7.842 8.56083 7.84267 8.65283C7.84267 8.74483 7.91733 8.8195 8.00933 8.8195C8.10133 8.8195 8.176 8.74483 8.176 8.65283C8.176 8.56083 8.10133 8.48616 8.00867 8.48616ZM11.342 8.48616C11.25 8.48616 11.1753 8.56083 11.176 8.65283C11.176 8.74483 11.2507 8.8195 11.3427 8.8195C11.4347 8.8195 11.5093 8.74483 11.5093 8.65283C11.5093 8.56083 11.4347 8.48616 11.342 8.48616ZM4.67533 11.1528C4.58333 11.1528 4.50867 11.2275 4.50933 11.3195C4.50933 11.4115 4.584 11.4862 4.676 11.4862C4.768 11.4862 4.84267 11.4115 4.84267 11.3195C4.84267 11.2275 4.768 11.1528 4.67533 11.1528ZM8.00867 11.1528C7.91667 11.1528 7.842 11.2275 7.84267 11.3195C7.84267 11.4115 7.91733 11.4862 8.00933 11.4862C8.10133 11.4862 8.176 11.4115 8.176 11.3195C8.176 11.2275 8.10133 11.1528 8.00867 11.1528Z"
+                            stroke="#533893"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
                           />
-                          <svg
-                            width="19"
-                            height="19"
-                            viewBox="0 0 16 16"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M10.6667 1.3335V4.00016M5.33333 1.3335V4.00016M2 6.00016H14M12.6667 2.66683H3.33333C2.59667 2.66683 2 3.2635 2 4.00016V12.6668C2 13.4035 2.59667 14.0002 3.33333 14.0002H12.6667C13.4033 14.0002 14 13.4035 14 12.6668V4.00016C14 3.2635 13.4033 2.66683 12.6667 2.66683ZM4.67533 8.48616C4.58333 8.48616 4.50867 8.56083 4.50933 8.65283C4.50933 8.74483 4.584 8.8195 4.676 8.8195C4.768 8.8195 4.84267 8.74483 4.84267 8.65283C4.84267 8.56083 4.768 8.48616 4.67533 8.48616ZM8.00867 8.48616C7.91667 8.48616 7.842 8.56083 7.84267 8.65283C7.84267 8.74483 7.91733 8.8195 8.00933 8.8195C8.10133 8.8195 8.176 8.74483 8.176 8.65283C8.176 8.56083 8.10133 8.48616 8.00867 8.48616ZM11.342 8.48616C11.25 8.48616 11.1753 8.56083 11.176 8.65283C11.176 8.74483 11.2507 8.8195 11.3427 8.8195C11.4347 8.8195 11.5093 8.74483 11.5093 8.65283C11.5093 8.56083 11.4347 8.48616 11.342 8.48616ZM4.67533 11.1528C4.58333 11.1528 4.50867 11.2275 4.50933 11.3195C4.50933 11.4115 4.584 11.4862 4.676 11.4862C4.768 11.4862 4.84267 11.4115 4.84267 11.3195C4.84267 11.2275 4.768 11.1528 4.67533 11.1528ZM8.00867 11.1528C7.91667 11.1528 7.842 11.2275 7.84267 11.3195C7.84267 11.4115 7.91733 11.4862 8.00933 11.4862C8.10133 11.4862 8.176 11.4115 8.176 11.3195C8.176 11.2275 8.10133 11.1528 8.00867 11.1528Z"
-                              stroke="#533893"
-                              stroke-width="1.5"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                            />
-                          </svg>
-                        </span>
-                      </>
+                        </svg>
+                      </span>
                     )}
                   />
                   {getFormErrorMessage("fechaNacimento")}
@@ -933,22 +841,20 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
                       maxLength: { value: 10, message: "Solo se permiten 10 caracteres" },
                     }}
                     render={({ field, fieldState }) => (
-                      <>
-                        <InputTextComponent
-                          id={field.name}
-                          value={field.value}
-                          className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                          onChange={(e) =>
-                            field.onChange(() => {
-                              setFirstContactNumber(e.target.value);
-                              setValue("noContacto1", e.target.value);
-                            })
-                          }
-                          placeholder=""
-                          width="100%"
-                          keyfilter="int"
-                        />
-                      </>
+                      <InputTextComponent
+                        id={field.name}
+                        value={field.value}
+                        className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
+                        onChange={(e) =>
+                          field.onChange(() => {
+                            setFirstContactNumber(e.target.value);
+                            setValue("noContacto1", e.target.value);
+                          })
+                        }
+                        placeholder=""
+                        width="100%"
+                        keyfilter="int"
+                      />
                     )}
                   />
                   {getFormErrorMessage("noContacto1")}
@@ -1016,22 +922,20 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
                 }}
                 defaultValue={email}
                 render={({ field, fieldState }) => (
-                  <>
-                    <InputTextComponent
-                      id={field.name}
-                      value={field.value}
-                      className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                      onChange={(e) =>
-                        field.onChange(() => {
-                          setEmail(e.target.value);
-                          setValue("correoElectronico", e.target.value);
-                        })
-                      }
-                      placeholder=""
-                      keyfilter="email"
-                      width="100%"
-                    />
-                  </>
+                  <InputTextComponent
+                    id={field.name}
+                    value={field.value}
+                    className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
+                    onChange={(e) =>
+                      field.onChange(() => {
+                        setEmail(e.target.value);
+                        setValue("correoElectronico", e.target.value);
+                      })
+                    }
+                    placeholder=""
+                    keyfilter="email"
+                    width="100%"
+                  />
                 )}
               />
               {getFormErrorMessage("correoElectronico")}
@@ -1052,21 +956,19 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
                   maxLength: { value: 300, message: "Solo se permiten 300 caracteres" },
                 }}
                 render={({ field, fieldState }) => (
-                  <>
-                    <InputTextComponent
-                      id={field.name}
-                      value={field.value}
-                      className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                      onChange={(e) =>
-                        field.onChange(() => {
-                          setAddress(e.target.value);
-                          setValue("direccion", e.target.value);
-                        })
-                      }
-                      placeholder=""
-                      width="100%"
-                    />
-                  </>
+                  <InputTextComponent
+                    id={field.name}
+                    value={field.value}
+                    className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
+                    onChange={(e) =>
+                      field.onChange(() => {
+                        setAddress(e.target.value);
+                        setValue("direccion", e.target.value);
+                      })
+                    }
+                    placeholder=""
+                    width="100%"
+                  />
                 )}
               />
               {getFormErrorMessage("direccion")}
@@ -1087,23 +989,21 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
             control={control}
             rules={{ required: "El campo es obligatorio." }}
             render={({ field, fieldState }) => (
-              <>
-                <DropDownComponent
-                  id={field.name}
-                  value={field.value}
-                  className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                  onChange={(e) => {
-                    field.onChange(e.value);
-                    selectCountry(e.value);
-                  }}
-                  focusInputRef={field.ref}
-                  optionValue="id"
-                  optionLabel="itemDescription"
-                  options={countries}
-                  placeholder="Selecionar"
-                  width="100%"
-                />
-              </>
+              <DropDownComponent
+                id={field.name}
+                value={field.value}
+                className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
+                onChange={(e) => {
+                  field.onChange(e.value);
+                  selectCountry(e.value);
+                }}
+                focusInputRef={field.ref}
+                optionValue="id"
+                optionLabel="itemDescription"
+                options={countries}
+                placeholder="Selecionar"
+                width="100%"
+              />
             )}
           />
           {getFormErrorMessage("pais")}
@@ -1112,38 +1012,36 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
         <span className="split"></span>
 
         {watchCountry == 4 ? (
-          <>
-            <div className="row-1 width-25">
-              <label className="font-label">
-                Departamento<span className="required">*</span>
-              </label>
-              <Controller
-                name="departamento"
-                control={control}
-                rules={{ required: "El campo es obligatorio." }}
-                render={({ field, fieldState }) => (
-                  <>
-                    <DropDownComponent
-                      id={field.name}
-                      value={field.value}
-                      className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                      onChange={(e) => {
-                        field.onChange(e.value);
-                        selectDepartment(e.value);
-                      }}
-                      focusInputRef={field.ref}
-                      optionValue="id"
-                      optionLabel="itemDescription"
-                      options={departments}
-                      placeholder="Selecionar"
-                      width="100%"
-                    />
-                  </>
-                )}
-              />
-              {getFormErrorMessage("departamento")}
-            </div>
-          </>
+          <div className="row-1 width-25">
+            <label className="font-label">
+              Departamento<span className="required">*</span>
+            </label>
+            <Controller
+              name="departamento"
+              control={control}
+              rules={{ required: "El campo es obligatorio." }}
+              render={({ field, fieldState }) => (
+                <>
+                  <DropDownComponent
+                    id={field.name}
+                    value={field.value}
+                    className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
+                    onChange={(e) => {
+                      field.onChange(e.value);
+                      selectDepartment(e.value);
+                    }}
+                    focusInputRef={field.ref}
+                    optionValue="id"
+                    optionLabel="itemDescription"
+                    options={departments}
+                    placeholder="Selecionar"
+                    width="100%"
+                  />
+                </>
+              )}
+            />
+            {getFormErrorMessage("departamento")}
+          </div>
         ) : (
           <></>
         )}
@@ -1160,20 +1058,18 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
               control={control}
               rules={{ required: "Campo requerido." }}
               render={({ field, fieldState }) => (
-                <>
-                  <DropDownComponent
-                    id={field.name}
-                    value={field.value}
-                    className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                    onChange={(e) => field.onChange(e.value)}
-                    focusInputRef={field.ref}
-                    optionValue="id"
-                    optionLabel="itemDescription"
-                    options={municipalities}
-                    placeholder="Selecionar"
-                    width="100%"
-                  />
-                </>
+                <DropDownComponent
+                  id={field.name}
+                  value={field.value}
+                  className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
+                  onChange={(e) => field.onChange(e.value)}
+                  focusInputRef={field.ref}
+                  optionValue="id"
+                  optionLabel="itemDescription"
+                  options={municipalities}
+                  placeholder="Selecionar"
+                  width="100%"
+                />
               )}
             />
             {getFormErrorMessage("municipio")}
@@ -1191,24 +1087,22 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
             control={control}
             rules={{ required: "El campo es obligatorio." }}
             render={({ field, fieldState }) => (
-              <>
-                <DropDownComponent
-                  id={field.name}
-                  value={valueMedioRespuesta}
-                  className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                  onChange={(e) =>
-                    field.onChange(() => {
-                      selectResponseMedium(e.value);
-                      setValue("medioRespuesta", e.value);
-                    })
-                  }
-                  focusInputRef={field.ref}
-                  optionLabel="MRE_DESCRIPCION"
-                  options={optionResponseMedium.data}
-                  placeholder="Seleccionar"
-                  width="100%"
-                />
-              </>
+              <DropDownComponent
+                id={field.name}
+                value={valueMedioRespuesta}
+                className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
+                onChange={(e) =>
+                  field.onChange(() => {
+                    selectResponseMedium(e.value);
+                    setValue("medioRespuesta", e.value);
+                  })
+                }
+                focusInputRef={field.ref}
+                optionLabel="MRE_DESCRIPCION"
+                options={optionResponseMedium.data}
+                placeholder="Seleccionar"
+                width="100%"
+              />
             )}
           />
           {getFormErrorMessage("medioRespuesta")}
@@ -1225,25 +1119,23 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
             control={control}
             rules={{ required: "El campo es obligatorio." }}
             render={({ field, fieldState }) => (
-              <>
-                <Suspense fallback={<div>Cargando...</div>}>
-                  <DropDownComponent
-                    id={field.name}
-                    value={field.value}
-                    className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                    onChange={(e) => {
-                      field.onChange(e.value);
-                      selectProgram(e.value);
-                    }}
-                    focusInputRef={field.ref}
-                    optionLabel="prg_descripcion"
-                    optionValue="prg_codigo"
-                    options={programs}
-                    placeholder="Seleccionar"
-                    width="100%"
-                  />
-                </Suspense>
-              </>
+              <Suspense fallback={<div>Cargando...</div>}>
+                <DropDownComponent
+                  id={field.name}
+                  value={field.value}
+                  className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
+                  onChange={(e) => {
+                    field.onChange(e.value);
+                    selectProgram(e.value);
+                  }}
+                  focusInputRef={field.ref}
+                  optionLabel="prg_descripcion"
+                  optionValue="prg_codigo"
+                  options={programs}
+                  placeholder="Seleccionar"
+                  width="100%"
+                />
+              </Suspense>
             )}
           />
           {getFormErrorMessage("programaSolicitud")}
@@ -1260,23 +1152,21 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
             control={control}
             rules={{ required: "El campo es obligatorio." }}
             render={({ field, fieldState }) => (
-              <>
-                <Suspense fallback={<div>Cargando...</div>}>
-                  <DropDownComponent
-                    id={field.name}
-                    value={field.value}
-                    className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                    onChange={(e) => field.onChange(e.value)}
-                    focusInputRef={field.ref}
-                    optionLabel="aso_asunto"
-                    optionValue="aso_codigo"
-                    options={requestSubjectTypes}
-                    disabled={!requestSubjectTypes.length}
-                    placeholder="Seleccionar"
-                    width="100%"
-                  />
-                </Suspense>
-              </>
+              <Suspense fallback={<div>Cargando...</div>}>
+                <DropDownComponent
+                  id={field.name}
+                  value={field.value}
+                  className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
+                  onChange={(e) => field.onChange(e.value)}
+                  focusInputRef={field.ref}
+                  optionLabel="aso_asunto"
+                  optionValue="aso_codigo"
+                  options={requestSubjectTypes}
+                  disabled={!requestSubjectTypes.length}
+                  placeholder="Seleccionar"
+                  width="100%"
+                />
+              </Suspense>
             )}
           />
           {getFormErrorMessage("asuntoSolicitud")}
@@ -1321,14 +1211,12 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
             maxLength: { value: 5000, message: "Solo se permiten 5000 caracteres" },
           }}
           render={({ field, fieldState }) => (
-            <>
-              <CnputTextareaComponent
-                id={field.name}
-                value={field.value}
-                className={classNames({ "p-invalid": fieldState.error })}
-                onChange={(e) => field.onChange(e.target.value)}
-              />
-            </>
+            <CnputTextareaComponent
+              id={field.name}
+              value={field.value}
+              className={classNames({ "p-invalid": fieldState.error })}
+              onChange={(e) => field.onChange(e.target.value)}
+            />
           )}
         />
         <div className="alert-textarea">
@@ -1407,14 +1295,12 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
           <Controller
             name="archivo"
             control={control}
-            render={({ field, fieldState }) => (
-              <>
-                <UploadComponent
-                  id={field.name}
-                  dataArchivo={(e: File) => field.onChange(getFile(e))}
-                  showModal={(e: boolean) => field.onChange(setVisible(e))}
-                />
-              </>
+            render={({ field }) => (
+              <UploadComponent
+                id={field.name}
+                dataArchivo={(e: File) => field.onChange(getFile(e))}
+                showModal={(e: boolean) => field.onChange(setVisible(e))}
+              />
             )}
           />
           <Button
@@ -1457,9 +1343,18 @@ export const CitizenInformation = ({ isPerson = false, channel, resetChanel }: P
         />
       </div>
 
-      <div>
-        <Button disabled={statusSummit} rounded label="Enviar solicitud" className="!px-10 !text-sm btn-sumit" />
+      <div className="w-full text-right">
+        <Button
+          label="Enviar solicitud"
+          rounded
+          className="!px-4 !py-2 !text-base !font-sans"
+          type="submit"
+          loading={loading}
+          disabled={!isValid || !channels.isValid}
+        />
       </div>
     </form>
   );
 };
+
+export default React.memo(CitizenInformationComponent);
