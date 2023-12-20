@@ -1732,15 +1732,18 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
             },
             template: () => (
               <div className="mt-auto">
-                <Button
-                  key={"updatedPerson"}
-                  label="Actualizar"
-                  rounded
-                  className="!px-4 !py-2 !text-base !font-sans"
-                  type="button"
-                  onClick={updatePerson}
-                  disabled={loading || !isUpdatePerson || isPersonInvalid()}
-                />
+                {authorization?.allowedActions &&
+                  authorization?.allowedActions?.findIndex((i) => i == "PQRSDF_EDITAR") >= 0 && (
+                    <Button
+                      key={"updatedPerson"}
+                      label="Actualizar"
+                      rounded
+                      className="!px-4 !py-2 !text-base !font-sans"
+                      type="button"
+                      onClick={updatePerson}
+                      disabled={loading || !isUpdatePerson || isPersonInvalid()}
+                    />
+                  )}
               </div>
             ),
           },
