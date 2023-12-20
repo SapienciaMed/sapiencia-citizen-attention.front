@@ -51,7 +51,7 @@ interface IProps {
 interface InfoTable {
   user: string;
   visiblePetitioner?: boolean;
-  action?: Blob;
+  action?: Blob | IFile;
   id?: number;
 }
 
@@ -504,6 +504,18 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
     form.setValue("programDependence", pqrsdf?.program?.depDependencia?.dep_descripcion);
     form.setValue("description", pqrsdf?.description);
     form.setValue("file", pqrsdf?.file ? [pqrsdf?.file] : []);
+    if (pqrsdf?.supportFiles?.length) {
+      setTableData(
+        pqrsdf.supportFiles.map((supportFile, index) => {
+          return {
+            user: authorization.user.names + " " + authorization.user.lastNames,
+            visiblePetitioner: false,
+            action: supportFile,
+            id: index + 1,
+          };
+        })
+      );
+    }
     setInitDataLoaded(true);
   };
 
@@ -808,9 +820,12 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
         optionLabel: "motive",
         optionValue: "id",
         options: motives,
-        disabled: !initDataLoaded || loading || (pqrsdfData?.responsible?.workEntityTypeId != 3 && pqrsdfData?.responsible?.workEntityTypeId != 2),
+        disabled:
+          !initDataLoaded ||
+          loading ||
+          (pqrsdfData?.responsible?.workEntityTypeId != 3 && pqrsdfData?.responsible?.workEntityTypeId != 2),
         hidden: () => {
-          return !motives?.length
+          return !motives?.length;
         },
         rules: {
           validate: {
@@ -1640,16 +1655,30 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
     return (
       <div className="flex justify-center items-center">
         <div className="mr-4">
-          <Link to={""} onClick={() => handleFileView(data.action)}>
-            <Tooltip target=".custom-target-icon" style={{ borderRadius: "1px" }} />
-            <i
-              className="custom-target-icon pi  p-text-secondary p-overlay-badge flex justify-center"
-              data-pr-tooltip="Ver adjunto"
-              data-pr-position="right"
-            >
-              {showIcon}
-            </i>
-          </Link>
+          {typeof data.action != "string" && (
+            <Link to={""} onClick={() => handleFileView(data.action as Blob)}>
+              <Tooltip target=".custom-target-icon" style={{ borderRadius: "1px" }} />
+              <i
+                className="custom-target-icon pi  p-text-secondary p-overlay-badge flex justify-center"
+                data-pr-tooltip="Ver adjunto"
+                data-pr-position="right"
+              >
+                {showIcon}
+              </i>
+            </Link>
+          )}
+          {typeof data.action == "string" && (
+            <a href={data.action} onClick={() => pdfShowFile(data.action, splitUrl(data.action?.name).fileName)}>
+              <Tooltip target=".custom-target-icon" style={{ borderRadius: "1px" }} />
+              <i
+                className="custom-target-icon pi  p-text-secondary p-overlay-badge flex justify-center"
+                data-pr-tooltip="Ver adjunto"
+                data-pr-position="right"
+              >
+                {showIcon}
+              </i>
+            </a>
+          )}
         </div>
         <div className="ml-4">
           <Link to={""} onClick={() => selectFileToDelete(data)}>
@@ -1729,15 +1758,18 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
             },
             template: () => (
               <div className="mt-auto">
-                <Button
-                  key={"updatedPerson"}
-                  label="Actualizar"
-                  rounded
-                  className="!px-4 !py-2 !text-base !font-sans"
-                  type="button"
-                  onClick={updatePerson}
-                  disabled={loading || !isUpdatePerson || isPersonInvalid()}
-                />
+                {authorization?.allowedActions &&
+                  authorization?.allowedActions?.findIndex((i) => i == "PQRSDF_EDITAR") >= 0 && (
+                    <Button
+                      key={"updatedPerson"}
+                      label="Actualizar"
+                      rounded
+                      className="!px-4 !py-2 !text-base !font-sans"
+                      type="button"
+                      onClick={updatePerson}
+                      disabled={loading || !isUpdatePerson || isPersonInvalid()}
+                    />
+                  )}
               </div>
             ),
           },
