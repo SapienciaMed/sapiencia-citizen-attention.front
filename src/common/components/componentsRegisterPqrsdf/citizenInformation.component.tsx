@@ -384,8 +384,8 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
         birthdate: birthdateData.current,
         firstContactNumber: getValues("noContacto1"),
         secondContactNumber: getValues("noContacto2"),
-        email: data["correoElectronico"],
-        address: data["direccion"],
+        email: getValues("correoElectronico"),
+        address: getValues("direccion"),
         countryId: getValues("pais"),
         departmentId: getValues("departamento") ? getValues("departamento") : null,
         municipalityId: getValues("municipio") ? getValues("municipio") : null,
@@ -909,12 +909,10 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                     id={field.name}
                     value={field.value}
                     className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                    onChange={(e) =>
-                      field.onChange(() => {
-                        setEmail(e.target.value);
-                        setValue("correoElectronico", e.target.value);
-                      })
-                    }
+                    onChange={(e) => {
+                      field.onChange(e.target.value);
+                      setEmail(e.target.value);
+                    }}
                     placeholder=""
                     keyfilter="email"
                     width="100%"
