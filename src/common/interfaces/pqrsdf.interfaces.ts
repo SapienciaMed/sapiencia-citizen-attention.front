@@ -40,6 +40,7 @@ export interface IPqrsdf {
   status?: IPqrsdfStatus;
   response?: IPqrsdfResponse;
   file?: IFile;
+  supportFiles?: IFile[];
   closedAt?: DateTime;
   createdAt?: DateTime;
   updatedAt?: DateTime;
