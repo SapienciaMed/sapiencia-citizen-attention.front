@@ -808,12 +808,9 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
         optionLabel: "motive",
         optionValue: "id",
         options: motives,
-        disabled: !initDataLoaded || loading,
+        disabled: !initDataLoaded || loading || (pqrsdfData?.responsible?.workEntityTypeId != 3 && pqrsdfData?.responsible?.workEntityTypeId != 2),
         hidden: () => {
-          return (
-            !motives?.length ||
-            (pqrsdfData?.responsible?.workEntityTypeId != 3 && pqrsdfData?.responsible?.workEntityTypeId != 2)
-          );
+          return !motives?.length
         },
         rules: {
           validate: {
