@@ -382,8 +382,8 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
         secondSurname: data["segundoApellido"],
         businessName: getValues("RazonSocial") ? getValues("RazonSocial") : null,
         birthdate: birthdateData.current,
-        firstContactNumber: data["noContacto1"],
-        secondContactNumber: data["noContacto2"],
+        firstContactNumber: getValues("noContacto1"),
+        secondContactNumber: getValues("noContacto2"),
         email: data["correoElectronico"],
         address: data["direccion"],
         countryId: getValues("pais"),
@@ -755,7 +755,7 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                         onChange={(e) => {
                           field.onChange(e.target.value);
                           setSecondSurname(e.target.value);
-                        }}                        
+                        }}
                         placeholder=""
                         width="100%"
                       />
@@ -836,7 +836,6 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                           field.onChange(e.target.value);
                           setFirstContactNumber(e.target.value);
                         }}
-                        
                         placeholder=""
                         width="100%"
                         keyfilter="int"
@@ -867,7 +866,6 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                             field.onChange(e.target.value);
                             setSecondContactNumber(e.target.value);
                           }}
-                       
                           placeholder=""
                           width="100%"
                           keyfilter="int"
@@ -948,7 +946,7 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                     onChange={(e) => {
                       field.onChange(e.target.value);
                       setAddress(e.target.value);
-                    }}                    
+                    }}
                     placeholder=""
                     width="100%"
                   />
