@@ -511,12 +511,10 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                     disabled={isPerson}
                     optionLabel={"LGE_ELEMENTO_DESCRIPCION"}
                     className={classNames({ "p-invalid": fieldState.error }, `${btnDisable} !h-10`)}
-                    onChange={(e) =>
-                      field.onChange(() => {
-                        seleTipoDocument(e.value);
-                        setValue("tipo", e.value);
-                      })
-                    }
+                    onChange={(e) => {
+                      field.onChange(e.value);
+                      seleTipoDocument(e.value);
+                    }}
                     focusInputRef={field.ref}
                     options={optionTypeDocument.data}
                     placeholder="Seleccionar"
@@ -550,12 +548,10 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                       value={field.value}
                       disabled={isPerson}
                       className={classNames({ "p-invalid": fieldState.error }, `${btnDisable} !h-10`)}
-                      onChange={(e) =>
-                        field.onChange(() => {
-                          setValueIdentification(e.target.value);
-                          setValue("noDocumento", e.target.value);
-                        })
-                      }
+                      onChange={(e) => {
+                        field.onChange(e.target.value);
+                        setValueIdentification(e.target.value);
+                      }}
                       placeholder=""
                       width="100%"
                     />
@@ -629,11 +625,10 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                   id={field.name}
                   value={field.value}
                   className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                  onChange={(e) =>
-                    field.onChange(() => {
-                      setValue("RazonSocial", e.target.value);
-                    })
-                  }
+                  onChange={(e) => {
+                    field.onChange(e.target.value);
+                    setValue("RazonSocial", e.target.value);
+                  }}
                   placeholder=""
                   width="100%"
                 />
@@ -666,12 +661,10 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                         id={field.name}
                         value={field.value}
                         className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                        onChange={(e) =>
-                          field.onChange(() => {
-                            setName(e.target.value);
-                            setValue("primerNombre", e.target.value);
-                          })
-                        }
+                        onChange={(e) => {
+                          field.onChange(e.target.value);
+                          setName(e.target.value);
+                        }}
                         placeholder=""
                         width="100%"
                       />
@@ -699,12 +692,10 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                           id={field.name}
                           value={field.value}
                           className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                          onChange={(e) =>
-                            field.onChange(() => {
-                              setSecondName(e.target.value);
-                              setValue("segundoNombre", e.target.value);
-                            })
-                          }
+                          onChange={(e) => {
+                            field.onChange(e.target.value);
+                            setSecondName(e.target.value);
+                          }}
                           placeholder=""
                           width="100%"
                         />
@@ -733,12 +724,10 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                         id={field.name}
                         value={field.value}
                         className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                        onChange={(e) =>
-                          field.onChange(() => {
-                            setLastName(e.target.value);
-                            setValue("primerApellido", e.target.value);
-                          })
-                        }
+                        onChange={(e) => {
+                          field.onChange(e.target.value);
+                          setLastName(e.target.value);
+                        }}
                         placeholder=""
                         width="100%"
                       />
@@ -763,12 +752,10 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                         id={field.name}
                         value={field.value}
                         className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                        onChange={(e) =>
-                          field.onChange(() => {
-                            setSecondSurname(e.target.value);
-                            setValue("segundoApellido", e.target.value);
-                          })
-                        }
+                        onChange={(e) => {
+                          field.onChange(e.target.value);
+                          setSecondSurname(e.target.value);
+                        }}                        
                         placeholder=""
                         width="100%"
                       />
@@ -845,12 +832,11 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                         id={field.name}
                         value={field.value}
                         className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                        onChange={(e) =>
-                          field.onChange(() => {
-                            setFirstContactNumber(e.target.value);
-                            setValue("noContacto1", e.target.value);
-                          })
-                        }
+                        onChange={(e) => {
+                          field.onChange(e.target.value);
+                          setFirstContactNumber(e.target.value);
+                        }}
+                        
                         placeholder=""
                         width="100%"
                         keyfilter="int"
@@ -877,12 +863,11 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                           id={field.name}
                           value={field.value}
                           className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                          onChange={(e) =>
-                            field.onChange(() => {
-                              setSecondContactNumber(e.target.value);
-                              setValue("noContacto2", e.target.value);
-                            })
-                          }
+                          onChange={(e) => {
+                            field.onChange(e.target.value);
+                            setSecondContactNumber(e.target.value);
+                          }}
+                       
                           placeholder=""
                           width="100%"
                           keyfilter="int"
@@ -960,12 +945,10 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                     id={field.name}
                     value={field.value}
                     className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                    onChange={(e) =>
-                      field.onChange(() => {
-                        setAddress(e.target.value);
-                        setValue("direccion", e.target.value);
-                      })
-                    }
+                    onChange={(e) => {
+                      field.onChange(e.target.value);
+                      setAddress(e.target.value);
+                    }}                    
                     placeholder=""
                     width="100%"
                   />

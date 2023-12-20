@@ -104,7 +104,7 @@ const Register_pqrsdf = ({ isPerson = false, isPersonInternl = false }: Props) =
                   <Controller
                     name="channels"
                     control={control}
-                    rules={{ required: "Campo obligatorio." }}
+                    rules={{ required: "El campo es obligatorio." }}
                     render={({ field, fieldState }) => (
                       <Dropdown
                         id={field.name}
@@ -137,7 +137,7 @@ const Register_pqrsdf = ({ isPerson = false, isPersonInternl = false }: Props) =
                       <Controller
                         name="attention"
                         control={control}
-                        rules={{ required: "Campo obligatorio." }}
+                        rules={{ required: "El campo es obligatorio." }}
                         render={({ field, fieldState }) => (
                           <Dropdown
                             id={field.name}
