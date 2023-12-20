@@ -329,7 +329,6 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
       </div>
     );
   };
-  
 
   const onSave = async (skipFile?: boolean) => {
     if (!skipFile && !fileResponsePqrsdf && [1, 3, 4, 6].includes(Number(form.getValues("responseTypeId")))) {
@@ -347,6 +346,10 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
         payload.extensionDate = DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss");
         payload.closedAt = form.getValues("isPetitioner") ? DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss") : null;
       }
+      delete payload.file.filePath;
+      payload?.supportFiles?.forEach((element, index) => {
+        delete payload?.supportFiles[index].filePath;
+      });
       payload.filingNumber = pqrsdfData.filingNumber;
       payload.person = getPersonData();
       payload.response = {
