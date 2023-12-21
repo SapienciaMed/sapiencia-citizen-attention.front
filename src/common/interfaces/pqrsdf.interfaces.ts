@@ -1,17 +1,16 @@
 import { DateTime } from "luxon";
-import { IPerson } from "./person.interfaces";
-import { IResponseMedium } from "./responseMedium.interfaces";
-import { IRequestSubject } from "./requestSubject.interfaces";
+import { IDependence } from "./dependence.interfaces";
 import { IFile } from "./file.interfaces";
-import { IRequestType } from "./requestType.interfaces";
-import { IWorkEntity } from "./workEntity.interfaces";
+import { IFactor } from "./mastersTables.interface";
 import { IMotive } from "./motive.interfaces";
+import { IPerson } from "./person.interfaces";
 import { IProgram } from "./program.interfaces";
 import { IRequestSubjectType } from "./requestSubjectType.interfaces";
-import { IUser } from "./user.interfaces";
-import { IFactor } from "./mastersTables.interface";
+import { IRequestType } from "./requestType.interfaces";
+import { IResponseMedium } from "./responseMedium.interfaces";
 import { IResponseType } from "./responseType.interfaces";
-import { IDependence } from "./dependence.interfaces";
+import { IUser } from "./user.interfaces";
+import { IWorkEntity } from "./workEntity.interfaces";
 
 export interface IPqrsdf {
   id?: number;
@@ -217,4 +216,11 @@ export interface IPqrsdfResponse {
   respondingDependence?: IDependence;
   createdAt?: DateTime;
   updatedAt?: DateTime;
+}
+
+export interface IResponseFilters {
+  responseType?: IResponseType;
+  pqrsdfId?: number;
+  perPage?: number;
+  page?: number;
 }

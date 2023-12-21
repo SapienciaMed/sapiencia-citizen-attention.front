@@ -300,7 +300,7 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
               currentFetch.setData(response.data);
             }
           } else if (response.operation.code === EResponseCodes.OK) {
-            if (currentFetch.method == "getSeviceChannels") {
+            if (currentFetch.method=='getSeviceChannels') {
               response.data.pop();
             }
             currentFetch.setData(response.data);
@@ -645,6 +645,7 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
           return false;
         },
         rules: {
+          required: "El campo es obligatorio.",
           pattern: { value: emailPattern, message: "La dirección de correo electrónico es inválida." },
           maxLength: { value: 200, message: "Solo se permiten 200 caracteres." },
         },
@@ -684,6 +685,9 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
         options: stratums,
         hidden: () => {
           return false;
+        },
+        rules: {
+          required: "El campo es obligatorio.",
         },
       },
     ];
