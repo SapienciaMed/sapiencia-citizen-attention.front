@@ -774,8 +774,8 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
       </div>
 
       <div className="div-container">
-        {showFieldPersons.current != "NIT" ? (
-          <>
+        {/* {showFieldPersons.current != "NIT" ? (
+          <> */}
             {showFieldPersons.current != "Anónimo" ? (
               <>
                 <div className="row-1 width-25">
@@ -879,10 +879,10 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
             ) : (
               <></>
             )}
-          </>
+          {/* </>
         ) : (
           <></>
-        )}
+        )} */}
       </div>
 
       <div className="div-container">
