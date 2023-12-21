@@ -222,6 +222,12 @@ const ManagePqrsdf = () => {
     setPage(event.page + 1);
   };
 
+  useEffect(() => {
+    if (showTable) {
+      getResponses();
+    }
+  }, [perPage, page]);
+
   const columns = () => {
     return [
       {
@@ -280,6 +286,9 @@ const ManagePqrsdf = () => {
         name: "Factor",
         key: "factor",
         field: "factor.name",
+        body: (rowData: IPqrsdfResponse) => {
+          return rowData?.factor?.name ?? "N/A";
+        },
         showForm: false,
       },
       {
