@@ -23,6 +23,11 @@ export interface IPagingData<T> {
   meta: IDataPaging;
 }
 
+export interface IPagination{
+  perPage?: number;
+  page?: number;
+}
+
 export class ApiResponse<T> {
   data: T;
   operation: IOperation;

@@ -8,6 +8,10 @@ import { IWorkEntity } from "./workEntity.interfaces";
 import { IMotive } from "./motive.interfaces";
 import { IProgram } from "./program.interfaces";
 import { IRequestSubjectType } from "./requestSubjectType.interfaces";
+import { IUser } from "./user.interfaces";
+import { IFactor } from "./mastersTables.interface";
+import { IResponseType } from "./responseType.interfaces";
+import { IDependence } from "./dependence.interfaces";
 
 export interface IPqrsdf {
   id?: number;
@@ -195,13 +199,22 @@ export interface IPqrsdfResponse {
   pqrsdfId?: number;
   responseTypeId?: number;
   workEntityTypeId?: number;
+  workEntityId?: number;
   factorId?: number;
   fileId?: number;
+  file?: IFile;
+  factor?: IFactor;
+  responseType?: IResponseType;
+  pqrsdf?: IPqrsdf;
   assignedUserId?: number;
+  assignedUser?: IUser;
   assignedDependenceId?: number;
-  respondingUserId?: number;
+  respondingUserId: number;
+  respondingUser?: IUser;
   respondingDependenceId?: number;
   observation?: string;
+  assignedDependence?: IDependence;
+  respondingDependence?: IDependence;
   createdAt?: DateTime;
   updatedAt?: DateTime;
 }
