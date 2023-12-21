@@ -43,6 +43,7 @@ import { showIcon } from "./icons/show";
 import { trashIcon } from "./icons/trash";
 import { pdfShowFile } from "../utils/file-functions";
 import { MessageComponent } from "./componentsEditWorkEntities/message.component";
+import PqrsdfResponsesTable from "./pqrsdf-responses-table";
 
 interface IProps {
   isEdit?: boolean;
@@ -81,6 +82,7 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
 
   // States
   const [loading, setLoading] = useState<boolean>(false);
+  const [showTable, setShowTable] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
   const [initDataLoaded, setInitDataLoaded] = useState(false);
   const [isUpdatePerson, setIsUpdatePerson] = useState(false);
@@ -1973,47 +1975,69 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
             <div className="p-card-content !pb-0 !pt-0 mt-4 md:mt-7">
               <div className="px-4">
                 <div className="border-b border-[#DEE2E6] w-full flex text-[19px] font-medium text-center">
-                  <span className="h-12 max-w-[184px] w-full border-b border-primary leading-6 px-1 text-primary">
+                  <span
+                    className={classNames(
+                      { "text-[#6C757D] leading-[23px] cursor-pointer": showTable },
+                      { "border-b border-primary leading-6 text-primary": !showTable },
+                      "h-12 max-w-[184px] w-full leading-[23px] px-1"
+                    )}
+                    onClick={() => {
+                      setShowTable(false);
+                    }}
+                  >
                     Gestionar solicitudes
                   </span>
-                  <Link
-                    to={"/atencion-ciudadana/gestionar-pqrsdf?tab=2"}
-                    className="h-12 max-w-[184px] w-full text-[#6C757D] leading-[23px] px-1"
+                  <span
+                    className={classNames(
+                      { "text-[#6C757D] leading-[23px] cursor-pointer": !showTable },
+                      { "border-b border-primary leading-6 text-primary": showTable },
+                      "h-12 max-w-[184px] w-full leading-[23px] px-1"
+                    )}
+                    onClick={() => {
+                      setShowTable(true);
+                    }}
                   >
                     Respuestas a la solicitud
-                  </Link>
+                  </span>
                 </div>
               </div>
-              <div className="grid grid-cols-6 xl:gap-x-12 md:gap-x-4.5 gap-x-3.5 gap-y-6 w-full mt-5 pt-1.5 md:mt-20">
-                {columnsId().map((column, index) => {
-                  return columnsTemplate(column);
-                })}
-              </div>
-              <div className="w-full mt-4 md:mt-8 md:pt-0.5 citizen-attention">
-                <Accordion activeIndex={null}>
-                  {accordionTabs().map((tab, index) => {
-                    return (
-                      <AccordionTab header={tab.header} key={tab.key}>
-                        <div className={tab.wrapperClass}>
-                          {tab?.columns
-                            ? tab.columns.map((column, index) => {
-                                return columnsTemplate(column);
-                              })
-                            : tab?.template()}
-                        </div>
-                        {tab?.secondWrapper && (
-                          <div className={tab.wrapperClass + " md:mt-4 mt-6"}>
-                            {tab?.columns
-                              ? tab.secondColumns.map((column, index) => {
-                                  return columnsTemplate(column);
-                                })
-                              : tab?.template()}
-                          </div>
-                        )}
-                      </AccordionTab>
-                    );
-                  })}
-                </Accordion>
+              <div className="w-full mt-5 pt-1.5 md:mt-20">
+                {showTable && <PqrsdfResponsesTable pqrsdfId={pqrsdfData.id}></PqrsdfResponsesTable>}
+                {!showTable && (
+                  <>
+                    <div className="grid grid-cols-6 xl:gap-x-12 md:gap-x-4.5 gap-x-3.5 gap-y-6">
+                      {columnsId().map((column, index) => {
+                        return columnsTemplate(column);
+                      })}
+                    </div>
+                    <div className="w-full mt-4 md:mt-8 md:pt-0.5 citizen-attention">
+                      <Accordion activeIndex={null}>
+                        {accordionTabs().map((tab, index) => {
+                          return (
+                            <AccordionTab header={tab.header} key={tab.key}>
+                              <div className={tab.wrapperClass}>
+                                {tab?.columns
+                                  ? tab.columns.map((column, index) => {
+                                      return columnsTemplate(column);
+                                    })
+                                  : tab?.template()}
+                              </div>
+                              {tab?.secondWrapper && (
+                                <div className={tab.wrapperClass + " md:mt-4 mt-6"}>
+                                  {tab?.columns
+                                    ? tab.secondColumns.map((column, index) => {
+                                        return columnsTemplate(column);
+                                      })
+                                    : tab?.template()}
+                                </div>
+                              )}
+                            </AccordionTab>
+                          );
+                        })}
+                      </Accordion>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
