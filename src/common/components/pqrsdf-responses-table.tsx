@@ -37,9 +37,7 @@ function PqrsdfResponsesTable({ pqrsdfId }: { pqrsdfId: number }): React.JSX.Ele
   }, []);
 
   useEffect(() => {
-    if (showTable) {
-      getResponses();
-    }
+    getResponses();
   }, [perPage, page]);
 
   const columns = () => {
