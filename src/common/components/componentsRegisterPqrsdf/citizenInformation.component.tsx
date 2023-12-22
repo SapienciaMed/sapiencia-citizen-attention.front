@@ -699,6 +699,7 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                           }}
                           placeholder=""
                           width="100%"
+                          disabled={field.value ? true : false}
                         />
                         {getFormErrorMessage(field.name)}
                       </>
@@ -760,6 +761,7 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                         }}
                         placeholder=""
                         width="100%"
+                        disabled={field.value ? true : false}
                       />
                     )}
                   />
