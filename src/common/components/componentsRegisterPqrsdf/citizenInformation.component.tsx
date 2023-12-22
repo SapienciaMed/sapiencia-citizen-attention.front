@@ -667,6 +667,7 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                         }}
                         placeholder=""
                         width="100%"
+                        disabled={field.value ? true : false}
                       />
                     )}
                   />
@@ -730,6 +731,7 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                         }}
                         placeholder=""
                         width="100%"
+                        disabled={field.value ? true : false}
                       />
                     )}
                   />
@@ -797,6 +799,7 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                           maxDate={new Date()}
                           style={{ width: "100%" }}
                           placeholder="DD / MM / AAA"
+                          disabled={field.value ? true : false}
                         />
                         <svg width="19" height="19" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path
@@ -890,13 +893,12 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
           <>
             <div className="row-1 width-50">
               <label className="font-label">
-                Correo electrónico<span className="required">*</span>
+                Correo electrónico
               </label>
               <Controller
                 name="correoElectronico"
                 control={control}
                 rules={{
-                  required: "El campo es obligatorio.",
                   maxLength: { value: 100, message: "Solo se permiten 100 caracteres" },
                   pattern: {
                     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
