@@ -1513,13 +1513,12 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
             column?.files?.map((file: IFile) => (
               <div className="w-full flex flex-wrap" key={column?.key}>
                 <label className="text-base w-full">{column?.name}</label>
-                <a
-                  className="font-medium text-red-600 mt-3 ml-1"
-                  href={file?.filePath}
+                <span
+                  className="font-medium text-red-600 mt-3 ml-1 cursor-pointer"
                   onClick={() => pdfShowFile(file?.filePath, splitUrl(file?.name).fileName)}
                 >
                   {splitUrl(file?.name).fileName}
-                </a>
+                </span>
               </div>
             ))}
           {column?.type == "file" && (
@@ -1670,7 +1669,7 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
             </Link>
           )}
           {typeof data.action == "string" && (
-            <a href={data.action} onClick={() => pdfShowFile(data.action, splitUrl(data.action?.name).fileName)}>
+            <span className="cursor-pointer" onClick={() => pdfShowFile(data.action, splitUrl(data.action?.name).fileName)}>
               <Tooltip target=".custom-target-icon" style={{ borderRadius: "1px" }} />
               <i
                 className="custom-target-icon pi  p-text-secondary p-overlay-badge flex justify-center"
@@ -1679,7 +1678,7 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
               >
                 {showIcon}
               </i>
-            </a>
+            </span>
           )}
         </div>
         <div className="ml-4">
