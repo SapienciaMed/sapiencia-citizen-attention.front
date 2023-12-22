@@ -300,7 +300,7 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
               currentFetch.setData(response.data);
             }
           } else if (response.operation.code === EResponseCodes.OK) {
-            if (currentFetch.method=='getSeviceChannels') {
+            if (currentFetch.method == "getSeviceChannels") {
               response.data.pop();
             }
             currentFetch.setData(response.data);
@@ -491,6 +491,9 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
         rules: {
           required: "El campo es obligatorio.",
         },
+        hidden: () => {
+          return false;
+        },
         onChange: (value) => {
           const channel = serviceChannels.filter((channel) => channel.cna_codigo == value)[0];
           setDetailServiceChannels(channel?.details ? channel.details : []);
@@ -506,6 +509,9 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
         optionValue: "cad_codigo",
         options: detailServiceChannels,
         disabled: !detailServiceChannels?.length,
+        hidden: () => {
+          return !detailServiceChannels?.length;
+        },
         rules: {
           required: "El campo es obligatorio.",
         },
@@ -809,30 +815,37 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
                       rules={column.rules}
                       render={({ field, fieldState }) => (
                         <div className={classNames("flex flex-col gap-y-1.5 w-full", column?.formClass)}>
-                          <label htmlFor={field.name} className="text-base">
-                            {column?.name} {column?.rules?.required && <span className="text-red-600">*</span>}
-                          </label>
-                          {column?.type == "select" && (
-                            <Dropdown
-                              id={field.name}
-                              value={field.value}
-                              className={classNames({ "p-invalid": fieldState.error }, "w-full !font-sans select-sm")}
-                              optionLabel={column?.optionLabel}
-                              options={[
-                                { [column?.optionLabel]: "Seleccionar", [column?.optionValue]: "" },
-                                ...column?.options,
-                              ]}
-                              optionValue={column?.optionValue}
-                              disabled={column?.disabled}
-                              onChange={(e) => {
-                                field.onChange(e.value);
-                                if (column?.onChange) {
-                                  column.onChange(e.value);
-                                }
-                                checkIsFilled();
-                              }}
-                              placeholder="Seleccionar"
-                            />
+                          {!column?.hidden() && (
+                            <>
+                              <label htmlFor={field.name} className="text-base">
+                                {column?.name} {column?.rules?.required && <span className="text-red-600">*</span>}
+                              </label>
+                              {column?.type == "select" && (
+                                <Dropdown
+                                  id={field.name}
+                                  value={field.value}
+                                  className={classNames(
+                                    { "p-invalid": fieldState.error },
+                                    "w-full !font-sans select-sm"
+                                  )}
+                                  optionLabel={column?.optionLabel}
+                                  options={[
+                                    { [column?.optionLabel]: "Seleccionar", [column?.optionValue]: "" },
+                                    ...column?.options,
+                                  ]}
+                                  optionValue={column?.optionValue}
+                                  disabled={column?.disabled}
+                                  onChange={(e) => {
+                                    field.onChange(e.value);
+                                    if (column?.onChange) {
+                                      column.onChange(e.value);
+                                    }
+                                    checkIsFilled();
+                                  }}
+                                  placeholder="Seleccionar"
+                                />
+                              )}
+                            </>
                           )}
                           {getFormErrorMessage(field.name)}
                         </div>

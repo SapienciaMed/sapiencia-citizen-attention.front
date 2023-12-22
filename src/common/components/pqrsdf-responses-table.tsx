@@ -13,6 +13,7 @@ import { DataTable } from "primereact/datatable";
 import { classNames } from "primereact/utils";
 import { Column } from "primereact/column";
 import { pdfShowFile } from "../utils/file-functions";
+import { showIcon } from "./icons/show";
 function PqrsdfResponsesTable({ pqrsdfId }: { pqrsdfId: number }): React.JSX.Element {
   const [loading, setLoading] = useState(false);
   const [showTable, setShowTable] = useState(false);
@@ -136,32 +137,14 @@ function PqrsdfResponsesTable({ pqrsdfId }: { pqrsdfId: number }): React.JSX.Ele
             rowData?.fileId && (
               <span className="flex">
                 <Tooltip className="" target=".tooltip-see-attached-dt" />
-                <a
-                  href={rowData?.file?.filePath}
+                <span
                   onClick={() => pdfShowFile(rowData?.file?.filePath, splitUrl(rowData?.file?.name).fileName)}
-                  className="hover:text-primary inline-flex sm:mr-auto sm:ml-auto ml:auto items-center justify-center tooltip-see-attached-dt "
+                  className="hover:text-primary inline-flex sm:mr-auto sm:ml-auto ml:auto items-center justify-center tooltip-see-attached-dt cursor-pointer "
                   data-pr-tooltip="Ver adjunto"
                   data-pr-position="right"
                 >
-                  <svg width="16" height="15" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M1.293 10.7776L11.619 1.43897C12.009 1.08626 12.642 1.08626 13.032 1.43897L14.708 2.9547C15.098 3.30741 15.098 3.87988 14.708 4.23259L4.381 13.5703C4.194 13.7403 3.94 13.8353 3.675 13.8353H1V11.4161C1 11.1764 1.105 10.9467 1.293 10.7776Z"
-                      stroke="#0CA529"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M9.75 3.12744L12.84 5.92197"
-                      stroke="#0CA529"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </a>
+                  {showIcon}
+                </span>
               </span>
             )
           );
