@@ -49,7 +49,7 @@ function CalendarPage(): React.JSX.Element {
     name: "Calendario",
     url: "atencion-ciudadana/calendario",
   });
-  
+
   const save = async () => {
     setLoading(true);
     try {
@@ -919,7 +919,11 @@ function CalendarPage(): React.JSX.Element {
                                 headerClassName="text-base font-medium"
                                 key="description"
                                 field="description"
-                                header="Descripción"
+                                header={
+                                  <span>
+                                    Descripción <span className="text-red-600">*</span>
+                                  </span>
+                                }
                                 body={(rowData) => (
                                   <div className="relative">
                                     <span className="relative z-10 p-2 h-10 max-w-[148px] w-[148px]">
@@ -982,7 +986,11 @@ function CalendarPage(): React.JSX.Element {
                 rounded
                 className="!px-8 !py-2 !text-base"
                 onClick={save}
-                disabled={days.filter((day) => day.dayTypeId == null).length > 0 || days.length <= 0 || loading}
+                disabled={
+                  days.filter((day) => day.dayTypeId == null || !day.description).length > 0 ||
+                  days.length <= 0 ||
+                  loading
+                }
               />
             </div>
           </div>
