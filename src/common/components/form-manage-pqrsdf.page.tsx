@@ -346,8 +346,11 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
       payload.id = parseInt(id);
       if (watchResponseTypeId == 3) {
         payload.extensionDate = DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss");
-        payload.closedAt = form.getValues("isPetitioner") ? DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss") : null;
       }
+      payload.closedAt =
+        form.getValues("isPetitioner") || watchResponseTypeId == 4 || watchResponseTypeId == 5
+          ? DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss")
+          : null;
       delete payload.file.filePath;
       payload?.supportFiles?.forEach((element, index) => {
         delete payload?.supportFiles[index].filePath;
@@ -1216,7 +1219,7 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
           required: "El campo es obligatorio.",
         },
         onChange: async () => {
-          if (watchResponseTypeId != 4) {
+          if (watchResponseTypeId != 4 && watchResponseTypeId != 5) {
             form.setValue("isPetitioner", "");
           }
           if (watchResponseTypeId == 4 || watchResponseTypeId == 5) {
@@ -1270,7 +1273,7 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
         optionLabel: "label",
         optionValue: "id",
         options: [{ id: 1, label: "Peticionario" }],
-        disabled: !initDataLoaded || watchResponseTypeId != 4 || loading,
+        disabled: !initDataLoaded || (watchResponseTypeId != 4 && watchResponseTypeId != 5) || loading,
         hidden: () => {
           return (
             (watchResponseTypeId != 4 && watchResponseTypeId != 5) ||
@@ -1282,7 +1285,7 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
           validate: {
             required: (value) => {
               if (
-                watchResponseTypeId == 4 &&
+                (watchResponseTypeId == 4 || watchResponseTypeId == 5) &&
                 currentWorkEntity?.workEntityTypeId != 2 &&
                 currentWorkEntity?.workEntityTypeId != 7 &&
                 !value
