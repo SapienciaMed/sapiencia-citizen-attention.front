@@ -25,6 +25,7 @@ interface Ipqrsdf {
   program?: string;
   asunto?: string;
   fechaRadicado?: string;
+
   estado?: string;
   fechaProrroga?: string;
   dias?: string;
@@ -146,9 +147,9 @@ export const TableManagePqrsdfComponent = (props: Props) => {
                 {authorization?.allowedActions &&
                   authorization?.allowedActions?.findIndex((i) => i == "GESTIONAR_PQRSDF") >= 0 && (
                     <Link to={"" + pqrsdf.pqrsdfId}>
-                      <Tooltip target=".custom-target-icon" style={{ borderRadius: "1px" }} />
+                      <Tooltip target=".custom-target-icon-manage" style={{ borderRadius: "1px" }} />
                       <i
-                        className="custom-target-icon pi  p-text-secondary p-overlay-badge flex justify-center"
+                        className="custom-target-icon-manage pi  p-text-secondary p-overlay-badge flex justify-center"
                         data-pr-tooltip="Gestionar"
                         data-pr-position="right"
                       >
@@ -167,9 +168,9 @@ export const TableManagePqrsdfComponent = (props: Props) => {
             <>
               <div className="mr-4">
                 <Link to={""}>
-                  <Tooltip target=".custom-target-icon" style={{ borderRadius: "1px" }} />
+                  <Tooltip target=".custom-target-icon-detail" style={{ borderRadius: "1px" }} />
                   <i
-                    className="custom-target-icon pi  p-text-secondary p-overlay-badge flex justify-center"
+                    className="custom-target-icon-detail pi  p-text-secondary p-overlay-badge flex justify-center"
                     data-pr-tooltip="Ver detalle"
                     data-pr-position="right"
                   >
@@ -343,7 +344,7 @@ export const TableManagePqrsdfComponent = (props: Props) => {
       <div className="flex flex-row items-center justify-between mb-8 header-movil">
         <div className="col-1 col-100 seeker">
           <span className="p-input-icon-left">
-            <i className="custom-target-icon pi  p-text-secondary p-overlay-badge flex justify-center">
+            <i className="pi  p-text-secondary p-overlay-badge flex justify-center">
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
                   d="M7.77024 15.3C6.28094 15.3 4.8251 14.8584 3.58679 14.031C2.34849 13.2036 1.38335 12.0275 0.813425 10.6516C0.243497 9.27568 0.0943779 7.76165 0.384925 6.30097C0.675471 4.84029 1.39263 3.49858 2.44572 2.44549C3.49881 1.3924 4.84053 0.675235 6.30121 0.384688C7.76188 0.0941414 9.27592 0.24326 10.6518 0.813188C12.0278 1.38312 13.2038 2.34826 14.0312 3.58656C14.8586 4.82486 15.3002 6.28071 15.3002 7.77C15.3002 8.75885 15.1055 9.73803 14.727 10.6516C14.3486 11.5652 13.794 12.3953 13.0948 13.0945C12.3955 13.7937 11.5654 14.3484 10.6518 14.7268C9.73826 15.1052 8.75909 15.3 7.77024 15.3ZM7.77024 1.75C6.58355 1.75 5.42351 2.1019 4.43682 2.76118C3.45012 3.42047 2.68109 4.35754 2.22696 5.4539C1.77283 6.55026 1.65401 7.75666 1.88553 8.92054C2.11704 10.0844 2.68848 11.1535 3.5276 11.9926C4.36671 12.8318 5.43581 13.4032 6.5997 13.6347C7.76358 13.8662 8.96998 13.7474 10.0663 13.2933C11.1627 12.8392 12.0998 12.0701 12.7591 11.0834C13.4183 10.0967 13.7702 8.93669 13.7702 7.75C13.7702 6.1587 13.1381 4.63258 12.0129 3.50736C10.8877 2.38214 9.36154 1.75 7.77024 1.75Z"

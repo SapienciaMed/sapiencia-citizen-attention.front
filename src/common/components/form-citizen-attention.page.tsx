@@ -1,4 +1,5 @@
 import { Button } from "primereact/button";
+import { DateTime } from "luxon";
 import { ConfirmDialog, ConfirmDialogOptions, confirmDialog } from "primereact/confirmdialog";
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
@@ -318,7 +319,10 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
     const fetchAttentions = async () => {
       setLoading(true);
       try {
-        const response = await citizenAttentionService.getCitizenAttentionByFilters({ perPage: 9999999999 });
+        const response = await citizenAttentionService.getCitizenAttentionByFilters({
+          perPage: 9999999999,
+          createdAt: DateTime.now(),
+        });
         if (response.operation.code === EResponseCodes.OK) {
           setTotalAttentions(response.data.array.length);
         }

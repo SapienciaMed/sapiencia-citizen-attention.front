@@ -56,6 +56,7 @@ export interface ICitizenAttentionFilters {
   corregimientoId?: number;
   userTypeId?: number;
   observation?: string;
+  createdAt?: DateTime;
   page?: number;
   perPage?: number;
 }
