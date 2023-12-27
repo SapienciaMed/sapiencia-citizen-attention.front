@@ -517,7 +517,12 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
           return !detailServiceChannels?.length;
         },
         rules: {
-          required: "El campo es obligatorio.",
+          validate: {
+            required: (value) => {
+              if (detailServiceChannels?.length && !value) return "El campo es obligatorio.";
+              return true;
+            },
+          },
         },
       },
     ];

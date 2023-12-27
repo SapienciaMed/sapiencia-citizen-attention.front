@@ -279,7 +279,7 @@ function PqrsdfResponsesTable({ pqrsdfId }: { pqrsdfId: number }): React.JSX.Ele
       <div className="relative p-card rounded-2xl md:rounded-4xl mt-6 shadow-none border border-[#D9D9D9]">
         <div className="p-card-body !py-6 !px-6 md:!px-11">
           <div className="p-card-title flex justify-between flex-wrap sm:flex-nowrap space-y-7 sm:space-y-0 items-center">
-            <span className="text-xl md:text-2xl">Resultados de búsqueda</span>
+            <span className="text-xl md:text-2xl">Respuestas</span>
             <div className="flex text-sm flex-wrap sm:flex-nowrap items-center sm:justify-end gap-x-5 w-full">
               <div className="flex items-center min-w-[150px] order-2 sm:order-1 mt-4 sm:mt-0 w-full sm:w-auto">
                 Total de resultados <span className="ml-auto sm:ml-2 text-primary">{pqrsdfResponses.meta.total}</span>
@@ -311,8 +311,8 @@ function PqrsdfResponsesTable({ pqrsdfId }: { pqrsdfId: number }): React.JSX.Ele
               </div>
             </div>
           </div>
-          <div className="p-card-content !pb-0 !pt-0 md:!pt-10 citizen-attention-paginator">
-            <div className="overflow-hidden mx-auto max-w-[calc(100vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] hidden md:block borderless reverse-striped">
+          <div className="p-card-content !pb-0 !pt-0 md:!pt-10 citizen-attention-paginator relative">
+            <div className="overflow-hidden mx-auto max-w-[calc(100vw-10.1rem)] md:max-w-[calc(100vw-16.1rem)] lg:max-w-[calc(100vw-33.7rem)] block borderless reverse-striped">
               <DataTable
                 value={pqrsdfResponses?.array ?? []}
                 loading={loading}

@@ -1996,14 +1996,16 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
                       "h-12 max-w-[184px] w-full leading-[23px] px-1"
                     )}
                     onClick={() => {
-                      setShowTable(true);
+                      if (pqrsdfData?.id && !showTable) {
+                        setShowTable(true);
+                      }
                     }}
                   >
                     Respuestas a la solicitud
                   </span>
                 </div>
               </div>
-              <div className="w-full mt-5 pt-1.5 md:mt-20">
+              <div className="w-full mt-5 pt-1.5 md:mt-10">
                 {showTable && <PqrsdfResponsesTable pqrsdfId={pqrsdfData.id}></PqrsdfResponsesTable>}
                 {!showTable && (
                   <>
