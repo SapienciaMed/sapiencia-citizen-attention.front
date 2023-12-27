@@ -753,7 +753,6 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
           if (property.key == "municipalityId") {
             validateField = !municipalities.length ? false : validateField;
           }
-          console.log(property.key, validateField);
 
           return validateField;
         });
@@ -1656,7 +1655,7 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
     return (
       <div className="flex justify-center items-center">
         <div className="mr-4">
-          {typeof data.action != "string" && (
+          {!data?.action?.hasOwnProperty("filePath") && (
             <Link to={""} onClick={() => handleFileView(data.action as Blob)}>
               <Tooltip target=".custom-target-icon" style={{ borderRadius: "1px" }} />
               <i
@@ -1668,11 +1667,11 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
               </i>
             </Link>
           )}
-          {typeof data.action == "string" && (
-            <span className="cursor-pointer" onClick={() => pdfShowFile(data.action, splitUrl(data.action?.name).fileName)}>
+          {data?.action?.hasOwnProperty("filePath") && (
+            <span onClick={() => pdfShowFile((data?.action as IFile).filePath, splitUrl(data.action?.name).fileName)}>
               <Tooltip target=".custom-target-icon" style={{ borderRadius: "1px" }} />
               <i
-                className="custom-target-icon pi  p-text-secondary p-overlay-badge flex justify-center"
+                className="custom-target-icon pi cursor-pointer p-text-secondary p-overlay-badge flex justify-center"
                 data-pr-tooltip="Ver adjunto"
                 data-pr-position="right"
               >
@@ -1805,17 +1804,21 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
                       <UploadManagetComponent
                         getNameFile={(e) => {}}
                         filesSupportDocument={(e) => {
-                          setSupportFiles(e);
+                          setSupportFiles([...e, ...supportFiles]);
                           let count = 0;
-                          const documents = e.map((file) => {
-                            count = count + 1;
-                            return {
-                              user: authorization.user.names + " " + authorization.user.lastNames,
-                              visiblePetitioner: false,
-                              action: file,
-                              id: count,
-                            };
-                          });
+                          const documents = [
+                            ...e.map((file: File) => {
+                              count = count + 1;
+                              return {
+                                user: authorization.user.names + " " + authorization.user.lastNames,
+                                visiblePetitioner: false,
+                                action: file,
+                                id: file?.lastModified,
+                              };
+                            }),
+                            ...tableData,
+                          ];
+
                           setTableData(documents);
                         }}
                         statusDialog={(e) => {
