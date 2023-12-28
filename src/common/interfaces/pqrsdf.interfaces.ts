@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 import { IDependence } from "./dependence.interfaces";
-import { IFile } from "./file.interfaces";
+import { IFile, ISupportFiles } from "./file.interfaces";
 import { IFactor } from "./mastersTables.interface";
 import { IMotive } from "./motive.interfaces";
 import { IPerson } from "./person.interfaces";
@@ -44,7 +44,7 @@ export interface IPqrsdf {
   status?: IPqrsdfStatus;
   response?: IPqrsdfResponse;
   file?: IFile;
-  supportFiles?: IFile[];
+  supportFiles?: ISupportFiles[];
   closedAt?: DateTime;
   createdAt?: DateTime;
   updatedAt?: DateTime;

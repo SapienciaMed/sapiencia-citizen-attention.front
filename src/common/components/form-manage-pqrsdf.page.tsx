@@ -23,7 +23,6 @@ import { useCitizenAttentionService } from "../hooks/CitizenAttentionService.hoo
 import { usePqrsdfService } from "../hooks/PqrsdfService.hook";
 import { useWorkEntityService } from "../hooks/WorkEntityService.hook";
 import useCheckMobileScreen from "../hooks/isMobile.hook";
-import { IDependence } from "../interfaces/dependence.interfaces";
 import { IFile } from "../interfaces/file.interfaces";
 import { IGenericData } from "../interfaces/genericData.interfaces";
 import { ILegalEntityType } from "../interfaces/legalEntityType.interfaces";
@@ -37,12 +36,12 @@ import { IRequestType } from "../interfaces/requestType.interfaces";
 import { IResponseMedium } from "../interfaces/responseMedium.interfaces";
 import { IUserManageEntity, IWorkEntity } from "../interfaces/workEntity.interfaces";
 import { IWorkEntityType } from "../interfaces/workEntityType.interface";
+import { pdfShowFile } from "../utils/file-functions";
 import { emailPattern, splitUrl, toLocaleDate } from "../utils/helpers";
+import { MessageComponent } from "./componentsEditWorkEntities/message.component";
 import { UploadManagetComponent } from "./genericComponent/uploadManagetComponent";
 import { showIcon } from "./icons/show";
 import { trashIcon } from "./icons/trash";
-import { pdfShowFile } from "../utils/file-functions";
-import { MessageComponent } from "./componentsEditWorkEntities/message.component";
 import PqrsdfResponsesTable from "./pqrsdf-responses-table";
 
 interface IProps {
@@ -56,7 +55,7 @@ interface InfoTable {
   id?: number;
 }
 
-function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
+function FormManagePqrsdfPage({ isEdit = false }: Readonly<IProps>): React.JSX.Element {
   // Servicios
   const parentForm = useRef(null);
   const { authorization } = useContext(AppContext);
@@ -105,7 +104,6 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
   const [legalEntityTypes, setLegalEntityTypes] = useState<ILegalEntityType[]>([]);
   const [requestSubjectTypes, setRequestSubjectTypes] = useState<IRequestSubjectType[]>([]);
   const [motives, setMotives] = useState<IMotive[]>([]);
-  const [dependencies, setDependencies] = useState<IDependence[]>([]);
   const [programs, setPrograms] = useState<IProgram[]>([]);
   const [isMobile, setIsMobile] = useState(false);
   const [isFilled, setIsFilled] = useState(false);
@@ -128,7 +126,6 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
       { method: "getFactors", isAux: false, setData: setFactors },
       { method: "getPrograms", isAux: false, setData: setPrograms },
       { method: "getCountries", isAux: false, setData: setCountries },
-      { method: "getDependencies", isAux: false, setData: setDependencies },
       { method: "getRequestTypes", isAux: false, setData: setRequestTypes },
       { method: "getResponseTypes", isAux: false, setData: setResponseTypes },
       { method: "getResponseMediums", isAux: false, setData: setResponseMediums },
@@ -520,10 +517,10 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
       setTableData(
         pqrsdf.supportFiles.map((supportFile, index) => {
           return {
-            user: authorization.user.names + " " + authorization.user.lastNames,
-            visiblePetitioner: false,
-            action: supportFile,
-            id: index + 1,
+            user: supportFile.file.user.names + " " + supportFile.file.user.lastNames,
+            visiblePetitioner: !!supportFile.visiblePetitioner,
+            action: supportFile.file,
+            id: supportFile.id,
           };
         })
       );
@@ -1634,11 +1631,13 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
   };
 
   const switchPetitioner = (data: InfoTable) => {
+    console.log(data);
+    
     return (
       <div className="flex justify-center items-center" key={data.id} id={data.id + "_switch"}>
         <div>NO</div>
         <div className="flex  ml-4 mr-4">
-          <InputSwitch checked={data.visiblePetitioner} onChange={(e) => updatePetitionesVisibility(data.id)} />
+          <InputSwitch checked={!!data.visiblePetitioner} onChange={(e) => updatePetitionesVisibility(data.id)} />
         </div>
         <div>SI</div>
       </div>
@@ -1831,15 +1830,15 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
                         getNameFile={(e) => {}}
                         filesSupportDocument={(e) => {
                           setSupportFiles([...e, ...supportFiles]);
-                          let count = 0;
+                          let count = tableData.length;
                           const documents = [
                             ...e.map((file: File) => {
-                              count = tableData.length + 1;
+                              count += 1;
                               return {
                                 user: authorization.user.names + " " + authorization.user.lastNames,
                                 visiblePetitioner: false,
                                 action: file,
-                                id: count,
+                                id: count + 9999999,
                               };
                             }),
                             ...tableData,
