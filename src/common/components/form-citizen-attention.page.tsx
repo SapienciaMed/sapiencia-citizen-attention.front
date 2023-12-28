@@ -174,12 +174,14 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
     setLoading(true);
 
     try {
-      let values = getValues();
-      delete values.serviceChannelId;
+      let values = getValues();      
       delete values.valueGroupId;
       let payload = values as ICitizenAttention;
       if (isEdit) {
         payload.id = parseInt(id);
+      }
+      if (!detailServiceChannels?.length) {
+        delete payload.detailServiceChannelId
       }
       const response = await (isEdit
         ? citizenAttentionService.updateCitizenAttention(payload)

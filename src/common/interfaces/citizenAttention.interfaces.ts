@@ -16,7 +16,8 @@ export interface ICitizenAttention {
   secondContactNumber?: string;
   email?: string;
   stratumId: number;
-  detailServiceChannelId: number;
+  serviceChannelId?: number;
+  detailServiceChannelId?: number;
   attentionRequestTypeId: number;
   dependencyId: number;
   programId: number;
