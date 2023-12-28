@@ -352,9 +352,16 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
           ? DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss")
           : null;
       delete payload.file.filePath;
-      payload?.supportFiles?.forEach((element, index) => {
-        delete payload?.supportFiles[index].filePath;
+      const updatedSupportFiles = tableData.map((supportFile) => {
+        return {
+          name: supportFile.action.name,
+          isActive: supportFile.action.hasOwnProperty("filePath") ? (supportFile.action as IFile).isActive : true,
+          userId: authorization.user.id,
+          visiblePetitioner: supportFile.visiblePetitioner,
+          id: supportFile.action.hasOwnProperty("filePath") ? supportFile.id : null,
+        } as IFile;
       });
+      payload.supportFiles = updatedSupportFiles;
       payload.filingNumber = pqrsdfData.filingNumber;
       payload.person = getPersonData();
       payload.response = {
