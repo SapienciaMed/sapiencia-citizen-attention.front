@@ -520,7 +520,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Readonly<IProps>): React.JSX.E
             user: supportFile.file.user.names + " " + supportFile.file.user.lastNames,
             visiblePetitioner: !!supportFile.visiblePetitioner,
             action: supportFile.file,
-            id: supportFile.id,
+            id: supportFile.fileId,
           };
         })
       );
