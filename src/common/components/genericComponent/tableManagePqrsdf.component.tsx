@@ -390,7 +390,7 @@ export const TableManagePqrsdfComponent = (props: Props) => {
         </div>
       </div>
 
-      <div className="overflow-hidden max-w-[calc(111vw-4.6rem)] sm:max-w-[calc(100vw-10.1rem)] lg:max-w-[calc(100vw-27.75rem)] citizen-attention-paginator block md:block borderless reverse-striped">
+      <div className="overflow-hidden max-w-[calc(111vw-4.6rem)] sm:max-w-[calc(100vw-11.1rem)] lg:max-w-[calc(100vw-27.75rem)] citizen-attention-paginator block md:block borderless reverse-striped">
         <DataTable
           value={dataPqrsdf}
           paginator
@@ -453,6 +453,14 @@ export const TableManagePqrsdfComponent = (props: Props) => {
             field={statusReq ? "fechaProrroga" : "fechaCierre"}
             header={<p style={{ width: "124px" }}>Fecha {tittle}</p>}
           ></Column>
+          {!statusReq && (
+            <Column
+              style={{ textAlign: "center" }}
+              className="!font-sans"
+              field="radicadoCierre"
+              header="Radicado cierre"
+            ></Column>
+          )}
           <Column style={{ textAlign: "center" }} className="!font-sans" field="dias" header="Días"></Column>
           <Column
             field="accion"

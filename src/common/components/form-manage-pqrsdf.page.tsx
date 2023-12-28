@@ -1615,23 +1615,31 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
     );
   };
 
-  const switchPetitioner = (data) => {
-    const [checked, setChecked] = useState(false);
+  const updatePetitionesVisibility = (id: number) => {
+    let _data: InfoTable[] = [...tableData].map((val) => {
+      if (val.id == id) {
+        val.visiblePetitioner = !val.visiblePetitioner;
+      }
+      return val;
+    });
+
+    setTableData(_data);
+  };
+
+  const switchPetitioner = (data: InfoTable) => {
     return (
-      <>
-        <div className="flex justify-center items-center">
-          <div>NO</div>
-          <div className="flex  ml-4 mr-4">
-            <InputSwitch checked={checked} onChange={(e) => setChecked(e.value)} />
-          </div>
-          <div>SI</div>
+      <div className="flex justify-center items-center" key={data.id} id={data.id + "_switch"}>
+        <div>NO</div>
+        <div className="flex  ml-4 mr-4">
+          <InputSwitch checked={data.visiblePetitioner} onChange={(e) => updatePetitionesVisibility(data.id)} />
         </div>
-      </>
+        <div>SI</div>
+      </div>
     );
   };
 
   const selectFileToDelete = (element: InfoTable) => {
-    let _data = tableData.filter((val) => val.id !== element.id);
+    let _data = [...tableData].filter((val) => val.id !== element.id);
     setTableData(_data);
   };
 
@@ -1660,9 +1668,12 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
         <div className="mr-4">
           {!data?.action?.hasOwnProperty("filePath") && (
             <Link to={""} onClick={() => handleFileView(data.action as Blob)}>
-              <Tooltip target=".custom-target-icon" style={{ borderRadius: "1px" }} />
+              <Tooltip target={".custom-target-icon-" + data.id} style={{ borderRadius: "1px" }} />
               <i
-                className="custom-target-icon pi  p-text-secondary p-overlay-badge flex justify-center"
+                className={classNames(
+                  "custom-target-icon-" + data.id,
+                  "p-text-secondary p-overlay-badge flex justify-center"
+                )}
                 data-pr-tooltip="Ver adjunto"
                 data-pr-position="right"
               >
@@ -1672,9 +1683,12 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
           )}
           {data?.action?.hasOwnProperty("filePath") && (
             <span onClick={() => pdfShowFile((data?.action as IFile).filePath, splitUrl(data.action?.name).fileName)}>
-              <Tooltip target=".custom-target-icon" style={{ borderRadius: "1px" }} />
+              <Tooltip target={".custom-target-icon-" + data.id} style={{ borderRadius: "1px" }} />
               <i
-                className="custom-target-icon pi cursor-pointer p-text-secondary p-overlay-badge flex justify-center"
+                className={classNames(
+                  "custom-target-icon-" + data.id,
+                  "p-text-secondary p-overlay-badge flex justify-center"
+                )}
                 data-pr-tooltip="Ver adjunto"
                 data-pr-position="right"
               >
@@ -1683,18 +1697,20 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
             </span>
           )}
         </div>
-        <div className="ml-4">
-          <Link to={""} onClick={() => selectFileToDelete(data)}>
-            <Tooltip target=".custom-target-icon" style={{ borderRadius: "1px" }} />
-            <i
-              className="custom-target-icon pi  p-text-secondary p-overlay-badge flex justify-center"
-              data-pr-tooltip="Eliminar"
-              data-pr-position="right"
-            >
-              {trashIcon}
-            </i>
-          </Link>
-        </div>
+        {!data?.action?.hasOwnProperty("filePath") && (
+          <div className="ml-4">
+            <Link to={""} onClick={() => selectFileToDelete(data)}>
+              <Tooltip target=".custom-target-icon" style={{ borderRadius: "1px" }} />
+              <i
+                className="custom-target-icon pi  p-text-secondary p-overlay-badge flex justify-center"
+                data-pr-tooltip="Eliminar"
+                data-pr-position="right"
+              >
+                {trashIcon}
+              </i>
+            </Link>
+          </div>
+        )}
       </div>
     );
   };
@@ -1811,12 +1827,12 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
                           let count = 0;
                           const documents = [
                             ...e.map((file: File) => {
-                              count = count + 1;
+                              count = tableData.length + 1;
                               return {
                                 user: authorization.user.names + " " + authorization.user.lastNames,
                                 visiblePetitioner: false,
                                 action: file,
-                                id: file?.lastModified,
+                                id: count,
                               };
                             }),
                             ...tableData,

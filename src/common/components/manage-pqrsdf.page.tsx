@@ -131,6 +131,7 @@ const ManagePqrsdf = () => {
         asunto: pqr?.requestSubject?.aso_asunto ?? "",
         fechaRadicado: moment(pqr?.createdAt).format("DD-MM-YYYY"),
         estado: pqr?.status?.lep_estado,
+        radicadoCierre: pqr?.exitFilingNumber ?? "",
         fechaProrroga: pqr?.extensionDate ? moment(pqr?.extensionDate).format("DD-MM-YYYY") : "",
         fechaCierre: pqr?.closedAt ? moment(pqr?.closedAt).format("DD-MM-YYYY") : "",
         dias:

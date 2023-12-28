@@ -8262,6 +8262,10 @@ video {
   max-width:300px
 }
 
+.max-w-\[calc\(100vw-10\.1rem\)\]{
+  max-width:calc(100vw - 10.1rem)
+}
+
 .max-w-\[calc\(100vw-4\.6rem\)\]{
   max-width:calc(100vw - 4.6rem)
 }
@@ -8272,10 +8276,6 @@ video {
 
 .max-w-full{
   max-width:100%
-}
-
-.max-w-\[calc\(100vw-10\.1rem\)\]{
-  max-width:calc(100vw - 10.1rem)
 }
 
 .-translate-y-1\/2{
@@ -9518,8 +9518,8 @@ select::placeholder{
     max-width:calc(100vw - 10.1rem)
   }
 
-  .sm\:max-w-\[calc\(100vw-16\.1rem\)\]{
-    max-width:calc(100vw - 16.1rem)
+  .sm\:max-w-\[calc\(100vw-11\.1rem\)\]{
+    max-width:calc(100vw - 11.1rem)
   }
 
   .sm\:grid-cols-12{
@@ -9658,12 +9658,12 @@ select::placeholder{
     max-width:calc(100vw - 10.1rem)
   }
 
-  .md\:max-w-\[calc\(100vw-25\.1rem\)\]{
-    max-width:calc(100vw - 25.1rem)
-  }
-
   .md\:max-w-\[calc\(100vw-16\.1rem\)\]{
     max-width:calc(100vw - 16.1rem)
+  }
+
+  .md\:max-w-\[calc\(100vw-25\.1rem\)\]{
+    max-width:calc(100vw - 25.1rem)
   }
 
   .md\:grid-cols-12{
