@@ -25,9 +25,9 @@ interface Ipqrsdf {
   program?: string;
   asunto?: string;
   fechaRadicado?: string;
-
   estado?: string;
   fechaProrroga?: string;
+  fechaCierre?: string;
   dias?: string;
   pqrsdfId?: string;
   sbrEstado?: number;
@@ -450,7 +450,7 @@ export const TableManagePqrsdfComponent = (props: Props) => {
           <Column
             style={{ textAlign: "center" }}
             className="!font-sans"
-            field="fechaProrroga"
+            field={statusReq ? "fechaProrroga" : "fechaCierre"}
             header={<p style={{ width: "124px" }}>Fecha {tittle}</p>}
           ></Column>
           <Column style={{ textAlign: "center" }} className="!font-sans" field="dias" header="Días"></Column>

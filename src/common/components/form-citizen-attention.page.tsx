@@ -180,7 +180,7 @@ function FormCitizenAttentionsPage({ isEdit = false }: Props): React.JSX.Element
       if (isEdit) {
         payload.id = parseInt(id);
       }
-      if (!detailServiceChannels?.length) {
+      if (!detailServiceChannels?.length) { 
         delete payload.detailServiceChannelId
       }
       const response = await (isEdit
