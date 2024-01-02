@@ -279,7 +279,6 @@ function FormManagePqrsdfPage({ isEdit = false }: Readonly<IProps>): React.JSX.E
           options,
           "Aceptar",
           () => {
-            resetForm();
             navigate("/atencion-ciudadana/gestionar-pqrsdf");
           },
           () => {
@@ -1633,7 +1632,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Readonly<IProps>): React.JSX.E
 
   const switchPetitioner = (data: InfoTable) => {
     console.log(data);
-    
+
     return (
       <div className="flex justify-center items-center" key={data.id} id={data.id + "_switch"}>
         <div>NO</div>
