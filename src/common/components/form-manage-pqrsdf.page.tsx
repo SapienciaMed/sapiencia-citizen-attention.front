@@ -349,6 +349,7 @@ function FormManagePqrsdfPage({ isEdit = false }: Readonly<IProps>): React.JSX.E
           ? DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss")
           : null;
       delete payload.file.filePath;
+      delete payload.file[0].filePath;
       const updatedSupportFiles = tableData.map((supportFile) => {
         return {
           name: supportFile.action.name,
