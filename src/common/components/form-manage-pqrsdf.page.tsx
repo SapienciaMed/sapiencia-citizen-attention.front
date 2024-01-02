@@ -208,7 +208,10 @@ function FormManagePqrsdfPage({ isEdit = false }: Readonly<IProps>): React.JSX.E
   useEffect(() => {
     if ([2, 3, 4, 6, 7].includes(currentWorkEntity?.workEntityTypeId)) {
       let auxResponseTypes = [...responseTypes];
-      const newResponseTypes = auxResponseTypes.filter((responseType) => responseType.id != 4 && responseType.id != 5);
+      let newResponseTypes = auxResponseTypes.filter((responseType) => responseType.id != 5);
+      if (currentWorkEntity?.workEntityTypeId == 2 || currentWorkEntity?.workEntityTypeId == 7) {
+        newResponseTypes = newResponseTypes.filter((responseType) => responseType.id != 4);
+      }
       setResponseTypes(newResponseTypes);
     }
   }, [currentWorkEntity]);
