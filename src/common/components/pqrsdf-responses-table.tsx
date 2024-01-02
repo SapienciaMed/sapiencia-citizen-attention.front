@@ -65,7 +65,9 @@ function PqrsdfResponsesTable({ pqrsdfId }: { pqrsdfId: number }): React.JSX.Ele
         name: "Usuario que responde",
         key: "respondingUser",
         body: (rowData: IPqrsdfResponse) => {
-          return rowData?.respondingUser?.names + " " + rowData?.respondingUser?.lastNames;
+          return rowData?.respondingUser
+            ? rowData?.respondingUser?.names + " " + rowData?.respondingUser?.lastNames
+            : "";
         },
         showForm: false,
       },
@@ -79,7 +81,7 @@ function PqrsdfResponsesTable({ pqrsdfId }: { pqrsdfId: number }): React.JSX.Ele
         name: "Usuario asignado",
         key: "assignedUser",
         body: (rowData: IPqrsdfResponse) => {
-          return rowData?.assignedUser?.names + " " + rowData?.assignedUser?.lastNames;
+          return rowData?.assignedUser ? rowData?.assignedUser?.names + " " + rowData?.assignedUser?.lastNames : "";
         },
         showForm: false,
       },
