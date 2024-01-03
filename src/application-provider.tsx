@@ -2,6 +2,7 @@ import React, { Fragment, useContext, useEffect } from "react";
 import useAuthService from "./features/portal-auth/hooks/auth-service.hook";
 import { AppContext } from "./common/contexts/app.context";
 import { EResponseCodes } from "./common/constants/api.enum";
+import { useNavigate } from "react-router-dom";
 
 interface IPropsAppProvider {
   children: React.JSX.Element;
@@ -10,6 +11,7 @@ interface IPropsAppProvider {
 function ApplicationProvider({ children }: IPropsAppProvider): React.JSX.Element {
   const { getAuthorization, getPortalAuthorization } = useAuthService();
   const { setAuthorization, setPortalUser } = useContext(AppContext);
+  const navigate = useNavigate();
   useEffect(() => {
     const initProvider = () => {
       const token = localStorage.getItem("token");
@@ -23,6 +25,7 @@ function ApplicationProvider({ children }: IPropsAppProvider): React.JSX.Element
                 setPortalUser(res.data.user);
               } else {
                 localStorage.removeItem("token");
+                navigate("/aurora/ingreso")
               }
             });
           }
