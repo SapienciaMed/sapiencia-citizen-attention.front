@@ -667,7 +667,7 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                         }}
                         placeholder=""
                         width="100%"
-                        disabled={field.value ? true : false}
+                        disabled={field.value && identification ? true : false}
                       />
                     )}
                   />
@@ -699,7 +699,7 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                           }}
                           placeholder=""
                           width="100%"
-                          disabled={getValues("primerNombre") ? true : false}
+                          disabled={getValues("primerNombre") && identification ? true : false}
                         />
                         {getFormErrorMessage(field.name)}
                       </>
@@ -732,7 +732,7 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                         }}
                         placeholder=""
                         width="100%"
-                        disabled={field.value ? true : false}
+                        disabled={field.value && identification ? true : false}
                       />
                     )}
                   />
@@ -761,7 +761,7 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                         }}
                         placeholder=""
                         width="100%"
-                        disabled={getValues("primerApellido") ? true : false}
+                        disabled={getValues("primerApellido") && identification ? true : false}
                       />
                     )}
                   />
@@ -801,7 +801,7 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                       maxDate={new Date()}
                       style={{ width: "100%" }}
                       placeholder="DD / MM / AAA"
-                      disabled={field.value ? true : false}
+                      disabled={field.value && identification ? true : false}
                     />
                     <svg width="19" height="19" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
