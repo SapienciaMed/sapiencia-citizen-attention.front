@@ -1,13 +1,16 @@
 import { DateTime } from "luxon";
-import { IPerson } from "./person.interfaces";
-import { IResponseMedium } from "./responseMedium.interfaces";
-import { IRequestSubject } from "./requestSubject.interfaces";
-import { IFile } from "./file.interfaces";
-import { IRequestType } from "./requestType.interfaces";
-import { IWorkEntity } from "./workEntity.interfaces";
+import { IDependence } from "./dependence.interfaces";
+import { IFile, ISupportFiles } from "./file.interfaces";
+import { IFactor } from "./mastersTables.interface";
 import { IMotive } from "./motive.interfaces";
+import { IPerson } from "./person.interfaces";
 import { IProgram } from "./program.interfaces";
 import { IRequestSubjectType } from "./requestSubjectType.interfaces";
+import { IRequestType } from "./requestType.interfaces";
+import { IResponseMedium } from "./responseMedium.interfaces";
+import { IResponseType } from "./responseType.interfaces";
+import { IUser } from "./user.interfaces";
+import { IWorkEntity } from "./workEntity.interfaces";
 
 export interface IPqrsdf {
   id?: number;
@@ -22,6 +25,7 @@ export interface IPqrsdf {
   reopenRequestId?: number;
   statusId?: number;
   filingNumber?: number;
+  exitFilingNumber?: number;
   idCanalesAttencion?: number;
   clasification: string;
   dependency: string;
@@ -40,6 +44,7 @@ export interface IPqrsdf {
   status?: IPqrsdfStatus;
   response?: IPqrsdfResponse;
   file?: IFile;
+  supportFiles?: ISupportFiles[];
   closedAt?: DateTime;
   createdAt?: DateTime;
   updatedAt?: DateTime;
@@ -194,13 +199,29 @@ export interface IPqrsdfResponse {
   pqrsdfId?: number;
   responseTypeId?: number;
   workEntityTypeId?: number;
+  workEntityId?: number;
   factorId?: number;
   fileId?: number;
+  file?: IFile;
+  factor?: IFactor;
+  responseType?: IResponseType;
+  pqrsdf?: IPqrsdf;
   assignedUserId?: number;
+  assignedUser?: IUser;
   assignedDependenceId?: number;
-  respondingUserId?: number;
+  respondingUserId: number;
+  respondingUser?: IUser;
   respondingDependenceId?: number;
   observation?: string;
+  assignedDependence?: IDependence;
+  respondingDependence?: IDependence;
   createdAt?: DateTime;
   updatedAt?: DateTime;
+}
+
+export interface IResponseFilters {
+  responseType?: IResponseType;
+  pqrsdfId?: number;
+  perPage?: number;
+  page?: number;
 }

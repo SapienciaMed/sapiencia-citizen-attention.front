@@ -1,7 +1,13 @@
 import { EResponseCodes } from "../constants/api.enum";
 import { IPerson, IPersonFilters } from "../interfaces/person.interfaces";
-import { IPqrsdf, IpqrsdfByRequest, IrequestPqrsdf, IReopenRequest } from "../interfaces/pqrsdf.interfaces";
-import { ApiResponse, IPagingData } from "../utils/api-response";
+import {
+  IPqrsdf,
+  IpqrsdfByRequest,
+  IrequestPqrsdf,
+  IReopenRequest,
+  IPqrsdfResponse,
+} from "../interfaces/pqrsdf.interfaces";
+import { ApiResponse, IPagination, IPagingData } from "../utils/api-response";
 import useCrudService from "./crud-service.hook";
 import formDataService from "./form-data.hook";
 
@@ -126,8 +132,19 @@ export function usePqrsdfService() {
     try {
       const endpoint: string = `/response`;
       return await service.post(`${listUrl}${endpoint}`, formData);
-    } catch (error) {      
+    } catch (error) {
       return new ApiResponse({} as IPqrsdf, EResponseCodes.FAIL, "Error no controlado");
+    }
+  }
+
+  async function getPqrsdfResponnses(
+    pagination: IPagination
+  ): Promise<ApiResponse<IPagingData<IPqrsdfResponse | null>>> {
+    try {
+      const endpoint: string = `/get-responses`;
+      return await post(`${listUrl}${endpoint}`, pagination);
+    } catch (error) {
+      return new ApiResponse({} as IPagingData<IPqrsdfResponse | null>, EResponseCodes.FAIL, "Error no controlado");
     }
   }
 
@@ -140,6 +157,7 @@ export function usePqrsdfService() {
     pqrsdfResponse,
     getPqrsdfByRequest,
     getPeopleByFilters,
+    getPqrsdfResponnses,
     createRequestReopen,
     getPersonByDocument,
     getPqrsdfByIdentificationAndFilingNumber,

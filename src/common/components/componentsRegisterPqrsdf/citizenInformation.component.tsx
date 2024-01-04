@@ -382,10 +382,10 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
         secondSurname: data["segundoApellido"],
         businessName: getValues("RazonSocial") ? getValues("RazonSocial") : null,
         birthdate: birthdateData.current,
-        firstContactNumber: data["noContacto1"],
-        secondContactNumber: data["noContacto2"],
-        email: data["correoElectronico"],
-        address: data["direccion"],
+        firstContactNumber: getValues("noContacto1"),
+        secondContactNumber: getValues("noContacto2"),
+        email: getValues("correoElectronico"),
+        address: getValues("direccion"),
         countryId: getValues("pais"),
         departmentId: getValues("departamento") ? getValues("departamento") : null,
         municipalityId: getValues("municipio") ? getValues("municipio") : null,
@@ -511,12 +511,10 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                     disabled={isPerson}
                     optionLabel={"LGE_ELEMENTO_DESCRIPCION"}
                     className={classNames({ "p-invalid": fieldState.error }, `${btnDisable} !h-10`)}
-                    onChange={(e) =>
-                      field.onChange(() => {
-                        seleTipoDocument(e.value);
-                        setValue("tipo", e.value);
-                      })
-                    }
+                    onChange={(e) => {
+                      field.onChange(e.value);
+                      seleTipoDocument(e.value);
+                    }}
                     focusInputRef={field.ref}
                     options={optionTypeDocument.data}
                     placeholder="Seleccionar"
@@ -550,12 +548,10 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                       value={field.value}
                       disabled={isPerson}
                       className={classNames({ "p-invalid": fieldState.error }, `${btnDisable} !h-10`)}
-                      onChange={(e) =>
-                        field.onChange(() => {
-                          setValueIdentification(e.target.value);
-                          setValue("noDocumento", e.target.value);
-                        })
-                      }
+                      onChange={(e) => {
+                        field.onChange(e.target.value);
+                        setValueIdentification(e.target.value);
+                      }}
                       placeholder=""
                       width="100%"
                     />
@@ -629,11 +625,10 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                   id={field.name}
                   value={field.value}
                   className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                  onChange={(e) =>
-                    field.onChange(() => {
-                      setValue("RazonSocial", e.target.value);
-                    })
-                  }
+                  onChange={(e) => {
+                    field.onChange(e.target.value);
+                    setValue("RazonSocial", e.target.value);
+                  }}
                   placeholder=""
                   width="100%"
                 />
@@ -666,14 +661,13 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                         id={field.name}
                         value={field.value}
                         className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                        onChange={(e) =>
-                          field.onChange(() => {
-                            setName(e.target.value);
-                            setValue("primerNombre", e.target.value);
-                          })
-                        }
+                        onChange={(e) => {
+                          field.onChange(e.target.value);
+                          setName(e.target.value);
+                        }}
                         placeholder=""
                         width="100%"
+                        disabled={field.value && identification ? true : false}
                       />
                     )}
                   />
@@ -699,14 +693,13 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                           id={field.name}
                           value={field.value}
                           className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                          onChange={(e) =>
-                            field.onChange(() => {
-                              setSecondName(e.target.value);
-                              setValue("segundoNombre", e.target.value);
-                            })
-                          }
+                          onChange={(e) => {
+                            field.onChange(e.target.value);
+                            setSecondName(e.target.value);
+                          }}
                           placeholder=""
                           width="100%"
+                          disabled={getValues("primerNombre") && identification ? true : false}
                         />
                         {getFormErrorMessage(field.name)}
                       </>
@@ -733,14 +726,13 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                         id={field.name}
                         value={field.value}
                         className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                        onChange={(e) =>
-                          field.onChange(() => {
-                            setLastName(e.target.value);
-                            setValue("primerApellido", e.target.value);
-                          })
-                        }
+                        onChange={(e) => {
+                          field.onChange(e.target.value);
+                          setLastName(e.target.value);
+                        }}
                         placeholder=""
                         width="100%"
+                        disabled={field.value && identification ? true : false}
                       />
                     )}
                   />
@@ -763,14 +755,13 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                         id={field.name}
                         value={field.value}
                         className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                        onChange={(e) =>
-                          field.onChange(() => {
-                            setSecondSurname(e.target.value);
-                            setValue("segundoApellido", e.target.value);
-                          })
-                        }
+                        onChange={(e) => {
+                          field.onChange(e.target.value);
+                          setSecondSurname(e.target.value);
+                        }}
                         placeholder=""
                         width="100%"
+                        disabled={getValues("primerApellido") && identification ? true : false}
                       />
                     )}
                   />
@@ -787,133 +778,127 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
       </div>
 
       <div className="div-container">
-        {showFieldPersons.current != "NIT" ? (
+        {/* {showFieldPersons.current != "NIT" ? (
+          <> */}
+        {showFieldPersons.current != "Anónimo" ? (
           <>
-            {showFieldPersons.current != "Anónimo" ? (
-              <>
-                <div className="row-1 width-25">
-                  <label className="font-label">
-                    Fecha de nacimiento<span className="required">*</span>
-                  </label>
-                  <Controller
-                    name="fechaNacimento"
-                    control={control}
-                    rules={{ required: "El campo es obligatorio." }}
-                    render={({ field, fieldState }) => (
-                      <span className="p-input-icon-right">
-                        <Calendar
-                          id={field.name}
-                          value={birthDate}
-                          className={classNames({ "p-invalid ": fieldState.error }, "!h-10 ")}
-                          onChange={(e) => field.onChange(handleDateChange(e.value))}
-                          dateFormat="dd/mm/yy"
-                          maxDate={new Date()}
-                          style={{ width: "100%" }}
-                          placeholder="DD / MM / AAA"
-                        />
-                        <svg width="19" height="19" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path
-                            d="M10.6667 1.3335V4.00016M5.33333 1.3335V4.00016M2 6.00016H14M12.6667 2.66683H3.33333C2.59667 2.66683 2 3.2635 2 4.00016V12.6668C2 13.4035 2.59667 14.0002 3.33333 14.0002H12.6667C13.4033 14.0002 14 13.4035 14 12.6668V4.00016C14 3.2635 13.4033 2.66683 12.6667 2.66683ZM4.67533 8.48616C4.58333 8.48616 4.50867 8.56083 4.50933 8.65283C4.50933 8.74483 4.584 8.8195 4.676 8.8195C4.768 8.8195 4.84267 8.74483 4.84267 8.65283C4.84267 8.56083 4.768 8.48616 4.67533 8.48616ZM8.00867 8.48616C7.91667 8.48616 7.842 8.56083 7.84267 8.65283C7.84267 8.74483 7.91733 8.8195 8.00933 8.8195C8.10133 8.8195 8.176 8.74483 8.176 8.65283C8.176 8.56083 8.10133 8.48616 8.00867 8.48616ZM11.342 8.48616C11.25 8.48616 11.1753 8.56083 11.176 8.65283C11.176 8.74483 11.2507 8.8195 11.3427 8.8195C11.4347 8.8195 11.5093 8.74483 11.5093 8.65283C11.5093 8.56083 11.4347 8.48616 11.342 8.48616ZM4.67533 11.1528C4.58333 11.1528 4.50867 11.2275 4.50933 11.3195C4.50933 11.4115 4.584 11.4862 4.676 11.4862C4.768 11.4862 4.84267 11.4115 4.84267 11.3195C4.84267 11.2275 4.768 11.1528 4.67533 11.1528ZM8.00867 11.1528C7.91667 11.1528 7.842 11.2275 7.84267 11.3195C7.84267 11.4115 7.91733 11.4862 8.00933 11.4862C8.10133 11.4862 8.176 11.4115 8.176 11.3195C8.176 11.2275 8.10133 11.1528 8.00867 11.1528Z"
-                            stroke="#533893"
-                            stroke-width="1.5"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          />
-                        </svg>
-                      </span>
-                    )}
-                  />
-                  {getFormErrorMessage("fechaNacimento")}
-                </div>
-
-                <span className="split"></span>
-
-                <div className="row-1 width-25">
-                  <label className="font-label">
-                    No. De contacto 1<span className="required">*</span>
-                  </label>
-                  <Controller
-                    name="noContacto1"
-                    defaultValue={firstContactNumber}
-                    control={control}
-                    rules={{
-                      required: "El campo es obligatorio.",
-                      maxLength: { value: 10, message: "Solo se permiten 10 caracteres" },
-                    }}
-                    render={({ field, fieldState }) => (
-                      <InputTextComponent
-                        id={field.name}
-                        value={field.value}
-                        className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                        onChange={(e) =>
-                          field.onChange(() => {
-                            setFirstContactNumber(e.target.value);
-                            setValue("noContacto1", e.target.value);
-                          })
-                        }
-                        placeholder=""
-                        width="100%"
-                        keyfilter="int"
+            <div className="row-1 width-25">
+              <label className="font-label">
+                Fecha de nacimiento<span className="required">*</span>
+              </label>
+              <Controller
+                name="fechaNacimento"
+                control={control}
+                rules={{ required: "El campo es obligatorio." }}
+                render={({ field, fieldState }) => (
+                  <span className="p-input-icon-right">
+                    <Calendar
+                      id={field.name}
+                      value={birthDate}
+                      className={classNames({ "p-invalid ": fieldState.error }, "!h-10 ")}
+                      onChange={(e) => field.onChange(handleDateChange(e.value))}
+                      dateFormat="dd/mm/yy"
+                      maxDate={new Date()}
+                      style={{ width: "100%" }}
+                      placeholder="DD / MM / AAA"
+                      disabled={field.value && identification ? true : false}
+                    />
+                    <svg width="19" height="19" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M10.6667 1.3335V4.00016M5.33333 1.3335V4.00016M2 6.00016H14M12.6667 2.66683H3.33333C2.59667 2.66683 2 3.2635 2 4.00016V12.6668C2 13.4035 2.59667 14.0002 3.33333 14.0002H12.6667C13.4033 14.0002 14 13.4035 14 12.6668V4.00016C14 3.2635 13.4033 2.66683 12.6667 2.66683ZM4.67533 8.48616C4.58333 8.48616 4.50867 8.56083 4.50933 8.65283C4.50933 8.74483 4.584 8.8195 4.676 8.8195C4.768 8.8195 4.84267 8.74483 4.84267 8.65283C4.84267 8.56083 4.768 8.48616 4.67533 8.48616ZM8.00867 8.48616C7.91667 8.48616 7.842 8.56083 7.84267 8.65283C7.84267 8.74483 7.91733 8.8195 8.00933 8.8195C8.10133 8.8195 8.176 8.74483 8.176 8.65283C8.176 8.56083 8.10133 8.48616 8.00867 8.48616ZM11.342 8.48616C11.25 8.48616 11.1753 8.56083 11.176 8.65283C11.176 8.74483 11.2507 8.8195 11.3427 8.8195C11.4347 8.8195 11.5093 8.74483 11.5093 8.65283C11.5093 8.56083 11.4347 8.48616 11.342 8.48616ZM4.67533 11.1528C4.58333 11.1528 4.50867 11.2275 4.50933 11.3195C4.50933 11.4115 4.584 11.4862 4.676 11.4862C4.768 11.4862 4.84267 11.4115 4.84267 11.3195C4.84267 11.2275 4.768 11.1528 4.67533 11.1528ZM8.00867 11.1528C7.91667 11.1528 7.842 11.2275 7.84267 11.3195C7.84267 11.4115 7.91733 11.4862 8.00933 11.4862C8.10133 11.4862 8.176 11.4115 8.176 11.3195C8.176 11.2275 8.10133 11.1528 8.00867 11.1528Z"
+                        stroke="#533893"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
                       />
-                    )}
-                  />
-                  {getFormErrorMessage("noContacto1")}
-                </div>
+                    </svg>
+                  </span>
+                )}
+              />
+              {getFormErrorMessage("fechaNacimento")}
+            </div>
 
-                <span className="split"></span>
+            <span className="split"></span>
 
-                <div className="row-1 width-25">
-                  <label className="font-label">No. De contacto 2</label>
-                  <Controller
-                    name="noContacto2"
-                    control={control}
-                    defaultValue={secondContactNumber}
-                    rules={{
-                      maxLength: { value: 10, message: "Solo se permiten 10 caracteres" },
+            <div className="row-1 width-25">
+              <label className="font-label">
+                No. De contacto 1<span className="required">*</span>
+              </label>
+              <Controller
+                name="noContacto1"
+                defaultValue={firstContactNumber}
+                control={control}
+                rules={{
+                  required: "El campo es obligatorio.",
+                  maxLength: { value: 10, message: "Solo se permiten 10 caracteres" },
+                }}
+                render={({ field, fieldState }) => (
+                  <InputTextComponent
+                    id={field.name}
+                    value={field.value}
+                    className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
+                    onChange={(e) => {
+                      field.onChange(e.target.value);
+                      setFirstContactNumber(e.target.value);
                     }}
-                    render={({ field, fieldState }) => (
-                      <>
-                        <InputTextComponent
-                          id={field.name}
-                          value={field.value}
-                          className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                          onChange={(e) =>
-                            field.onChange(() => {
-                              setSecondContactNumber(e.target.value);
-                              setValue("noContacto2", e.target.value);
-                            })
-                          }
-                          placeholder=""
-                          width="100%"
-                          keyfilter="int"
-                        />
-                        {getFormErrorMessage(field.name)}
-                      </>
-                    )}
+                    placeholder=""
+                    width="100%"
+                    keyfilter="int"
                   />
-                </div>
-              </>
-            ) : (
-              <></>
-            )}
+                )}
+              />
+              {getFormErrorMessage("noContacto1")}
+            </div>
+
+            <span className="split"></span>
+
+            <div className="row-1 width-25">
+              <label className="font-label">No. De contacto 2</label>
+              <Controller
+                name="noContacto2"
+                control={control}
+                defaultValue={secondContactNumber}
+                rules={{
+                  maxLength: { value: 10, message: "Solo se permiten 10 caracteres" },
+                }}
+                render={({ field, fieldState }) => (
+                  <>
+                    <InputTextComponent
+                      id={field.name}
+                      value={field.value}
+                      className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
+                      onChange={(e) => {
+                        field.onChange(e.target.value);
+                        setSecondContactNumber(e.target.value);
+                      }}
+                      placeholder=""
+                      width="100%"
+                      keyfilter="int"
+                    />
+                    {getFormErrorMessage(field.name)}
+                  </>
+                )}
+              />
+            </div>
           </>
         ) : (
           <></>
         )}
+        {/* </>
+        ) : (
+          <></>
+        )} */}
       </div>
 
       <div className="div-container">
         {showFieldPersons.current != "Anónimo" ? (
           <>
             <div className="row-1 width-50">
-              <label className="font-label">
-                Correo electrónico<span className="required">*</span>
-              </label>
+              <label className="font-label">Correo electrónico</label>
               <Controller
                 name="correoElectronico"
                 control={control}
                 rules={{
-                  required: "El campo es obligatorio.",
                   maxLength: { value: 100, message: "Solo se permiten 100 caracteres" },
                   pattern: {
                     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
@@ -926,12 +911,10 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                     id={field.name}
                     value={field.value}
                     className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                    onChange={(e) =>
-                      field.onChange(() => {
-                        setEmail(e.target.value);
-                        setValue("correoElectronico", e.target.value);
-                      })
-                    }
+                    onChange={(e) => {
+                      field.onChange(e.target.value);
+                      setEmail(e.target.value);
+                    }}
                     placeholder=""
                     keyfilter="email"
                     width="100%"
@@ -960,12 +943,10 @@ const CitizenInformationComponent = ({ isPerson = false, channel, resetChanel }:
                     id={field.name}
                     value={field.value}
                     className={classNames({ "p-invalid": fieldState.error }, "!h-10")}
-                    onChange={(e) =>
-                      field.onChange(() => {
-                        setAddress(e.target.value);
-                        setValue("direccion", e.target.value);
-                      })
-                    }
+                    onChange={(e) => {
+                      field.onChange(e.target.value);
+                      setAddress(e.target.value);
+                    }}
                     placeholder=""
                     width="100%"
                   />

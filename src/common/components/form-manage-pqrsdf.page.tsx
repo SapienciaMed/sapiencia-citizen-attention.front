@@ -23,7 +23,6 @@ import { useCitizenAttentionService } from "../hooks/CitizenAttentionService.hoo
 import { usePqrsdfService } from "../hooks/PqrsdfService.hook";
 import { useWorkEntityService } from "../hooks/WorkEntityService.hook";
 import useCheckMobileScreen from "../hooks/isMobile.hook";
-import { IDependence } from "../interfaces/dependence.interfaces";
 import { IFile } from "../interfaces/file.interfaces";
 import { IGenericData } from "../interfaces/genericData.interfaces";
 import { ILegalEntityType } from "../interfaces/legalEntityType.interfaces";
@@ -37,12 +36,13 @@ import { IRequestType } from "../interfaces/requestType.interfaces";
 import { IResponseMedium } from "../interfaces/responseMedium.interfaces";
 import { IUserManageEntity, IWorkEntity } from "../interfaces/workEntity.interfaces";
 import { IWorkEntityType } from "../interfaces/workEntityType.interface";
+import { pdfShowFile } from "../utils/file-functions";
 import { emailPattern, splitUrl, toLocaleDate } from "../utils/helpers";
+import { MessageComponent } from "./componentsEditWorkEntities/message.component";
 import { UploadManagetComponent } from "./genericComponent/uploadManagetComponent";
 import { showIcon } from "./icons/show";
 import { trashIcon } from "./icons/trash";
-import { pdfShowFile } from "../utils/file-functions";
-import { MessageComponent } from "./componentsEditWorkEntities/message.component";
+import PqrsdfResponsesTable from "./pqrsdf-responses-table";
 
 interface IProps {
   isEdit?: boolean;
@@ -51,11 +51,11 @@ interface IProps {
 interface InfoTable {
   user: string;
   visiblePetitioner?: boolean;
-  action?: Blob;
+  action?: Blob | IFile;
   id?: number;
 }
 
-function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
+function FormManagePqrsdfPage({ isEdit = false }: Readonly<IProps>): React.JSX.Element {
   // Servicios
   const parentForm = useRef(null);
   const { authorization } = useContext(AppContext);
@@ -81,6 +81,7 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
 
   // States
   const [loading, setLoading] = useState<boolean>(false);
+  const [showTable, setShowTable] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
   const [initDataLoaded, setInitDataLoaded] = useState(false);
   const [isUpdatePerson, setIsUpdatePerson] = useState(false);
@@ -103,7 +104,6 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
   const [legalEntityTypes, setLegalEntityTypes] = useState<ILegalEntityType[]>([]);
   const [requestSubjectTypes, setRequestSubjectTypes] = useState<IRequestSubjectType[]>([]);
   const [motives, setMotives] = useState<IMotive[]>([]);
-  const [dependencies, setDependencies] = useState<IDependence[]>([]);
   const [programs, setPrograms] = useState<IProgram[]>([]);
   const [isMobile, setIsMobile] = useState(false);
   const [isFilled, setIsFilled] = useState(false);
@@ -126,7 +126,6 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
       { method: "getFactors", isAux: false, setData: setFactors },
       { method: "getPrograms", isAux: false, setData: setPrograms },
       { method: "getCountries", isAux: false, setData: setCountries },
-      { method: "getDependencies", isAux: false, setData: setDependencies },
       { method: "getRequestTypes", isAux: false, setData: setRequestTypes },
       { method: "getResponseTypes", isAux: false, setData: setResponseTypes },
       { method: "getResponseMediums", isAux: false, setData: setResponseMediums },
@@ -207,9 +206,12 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
   }, []);
 
   useEffect(() => {
-    if (currentWorkEntity?.workEntityTypeId == 2 || currentWorkEntity?.workEntityTypeId == 7) {
+    if ([2, 3, 4, 6, 7].includes(currentWorkEntity?.workEntityTypeId)) {
       let auxResponseTypes = [...responseTypes];
-      const newResponseTypes = auxResponseTypes.filter((responseType) => responseType.id != 4 && responseType.id != 5);
+      let newResponseTypes = auxResponseTypes.filter((responseType) => responseType.id != 5);
+      if (currentWorkEntity?.workEntityTypeId == 2 || currentWorkEntity?.workEntityTypeId == 7) {
+        newResponseTypes = newResponseTypes.filter((responseType) => responseType.id != 4);
+      }
       setResponseTypes(newResponseTypes);
     }
   }, [currentWorkEntity]);
@@ -280,7 +282,6 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
           options,
           "Aceptar",
           () => {
-            resetForm();
             navigate("/atencion-ciudadana/gestionar-pqrsdf");
           },
           () => {
@@ -329,7 +330,6 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
       </div>
     );
   };
-  
 
   const onSave = async (skipFile?: boolean) => {
     if (!skipFile && !fileResponsePqrsdf && [1, 3, 4, 6].includes(Number(form.getValues("responseTypeId")))) {
@@ -345,8 +345,23 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
       payload.id = parseInt(id);
       if (watchResponseTypeId == 3) {
         payload.extensionDate = DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss");
-        payload.closedAt = form.getValues("isPetitioner") ? DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss") : null;
       }
+      payload.closedAt =
+        form.getValues("isPetitioner") || watchResponseTypeId == 4 || watchResponseTypeId == 5
+          ? DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss")
+          : null;
+      delete payload.file.filePath;
+      delete payload.file[0].filePath;
+      const updatedSupportFiles = tableData.map((supportFile) => {
+        return {
+          name: supportFile.action.name,
+          isActive: supportFile.action.hasOwnProperty("filePath") ? (supportFile.action as IFile).isActive : true,
+          userId: authorization.user.id,
+          visiblePetitioner: supportFile.visiblePetitioner,
+          id: supportFile.action.hasOwnProperty("filePath") ? supportFile.id : null,
+        } as IFile;
+      });
+      payload.supportFiles = updatedSupportFiles;
       payload.filingNumber = pqrsdfData.filingNumber;
       payload.person = getPersonData();
       payload.response = {
@@ -501,6 +516,18 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
     form.setValue("programDependence", pqrsdf?.program?.depDependencia?.dep_descripcion);
     form.setValue("description", pqrsdf?.description);
     form.setValue("file", pqrsdf?.file ? [pqrsdf?.file] : []);
+    if (pqrsdf?.supportFiles?.length) {
+      setTableData(
+        pqrsdf.supportFiles.map((supportFile, index) => {
+          return {
+            user: supportFile.file.user.names + " " + supportFile.file.user.lastNames,
+            visiblePetitioner: !!supportFile.visiblePetitioner,
+            action: supportFile.file,
+            id: supportFile.fileId,
+          };
+        })
+      );
+    }
     setInitDataLoaded(true);
   };
 
@@ -736,7 +763,6 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
           if (property.key == "municipalityId") {
             validateField = !municipalities.length ? false : validateField;
           }
-          console.log(property.key, validateField);
 
           return validateField;
         });
@@ -805,12 +831,12 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
         optionLabel: "motive",
         optionValue: "id",
         options: motives,
-        disabled: !initDataLoaded || loading,
+        disabled:
+          !initDataLoaded ||
+          loading ||
+          (pqrsdfData?.responsible?.workEntityTypeId != 3 && pqrsdfData?.responsible?.workEntityTypeId != 2),
         hidden: () => {
-          return (
-            !motives?.length ||
-            (pqrsdfData?.responsible?.workEntityTypeId != 3 && pqrsdfData?.responsible?.workEntityTypeId != 2)
-          );
+          return !motives?.length;
         },
         rules: {
           validate: {
@@ -1200,7 +1226,7 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
           required: "El campo es obligatorio.",
         },
         onChange: async () => {
-          if (watchResponseTypeId != 4) {
+          if (watchResponseTypeId != 4 && watchResponseTypeId != 5) {
             form.setValue("isPetitioner", "");
           }
           if (watchResponseTypeId == 4 || watchResponseTypeId == 5) {
@@ -1257,7 +1283,7 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
         disabled: !initDataLoaded || watchResponseTypeId != 4 || loading,
         hidden: () => {
           return (
-            (watchResponseTypeId != 4 && watchResponseTypeId != 5) ||
+            watchResponseTypeId != 4 ||
             currentWorkEntity?.workEntityTypeId == 2 ||
             currentWorkEntity?.workEntityTypeId == 7
           );
@@ -1496,13 +1522,12 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
             column?.files?.map((file: IFile) => (
               <div className="w-full flex flex-wrap" key={column?.key}>
                 <label className="text-base w-full">{column?.name}</label>
-                <a
-                  className="font-medium text-red-600 mt-3 ml-1"
-                  href={file?.filePath}
+                <span
+                  className="font-medium text-red-600 mt-3 ml-1 cursor-pointer"
                   onClick={() => pdfShowFile(file?.filePath, splitUrl(file?.name).fileName)}
                 >
                   {splitUrl(file?.name).fileName}
-                </a>
+                </span>
               </div>
             ))}
           {column?.type == "file" && (
@@ -1597,23 +1622,33 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
     );
   };
 
-  const switchPetitioner = (data) => {
-    const [checked, setChecked] = useState(false);
+  const updatePetitionesVisibility = (id: number) => {
+    let _data: InfoTable[] = [...tableData].map((val) => {
+      if (val.id == id) {
+        val.visiblePetitioner = !val.visiblePetitioner;
+      }
+      return val;
+    });
+
+    setTableData(_data);
+  };
+
+  const switchPetitioner = (data: InfoTable) => {
+    console.log(data);
+
     return (
-      <>
-        <div className="flex justify-center items-center">
-          <div>NO</div>
-          <div className="flex  ml-4 mr-4">
-            <InputSwitch checked={checked} onChange={(e) => setChecked(e.value)} />
-          </div>
-          <div>SI</div>
+      <div className="flex justify-center items-center" key={data.id} id={data.id + "_switch"}>
+        <div>NO</div>
+        <div className="flex  ml-4 mr-4">
+          <InputSwitch checked={!!data.visiblePetitioner} onChange={(e) => updatePetitionesVisibility(data.id)} />
         </div>
-      </>
+        <div>SI</div>
+      </div>
     );
   };
 
   const selectFileToDelete = (element: InfoTable) => {
-    let _data = tableData.filter((val) => val.id !== element.id);
+    let _data = [...tableData].filter((val) => val.id !== element.id);
     setTableData(_data);
   };
 
@@ -1640,29 +1675,51 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
     return (
       <div className="flex justify-center items-center">
         <div className="mr-4">
-          <Link to={""} onClick={() => handleFileView(data.action)}>
-            <Tooltip target=".custom-target-icon" style={{ borderRadius: "1px" }} />
-            <i
-              className="custom-target-icon pi  p-text-secondary p-overlay-badge flex justify-center"
-              data-pr-tooltip="Ver adjunto"
-              data-pr-position="right"
-            >
-              {showIcon}
-            </i>
-          </Link>
+          {!data?.action?.hasOwnProperty("filePath") && (
+            <Link to={""} onClick={() => handleFileView(data.action as Blob)}>
+              <Tooltip target={".custom-target-icon-" + data.id} style={{ borderRadius: "1px" }} />
+              <i
+                className={classNames(
+                  "custom-target-icon-" + data.id,
+                  "p-text-secondary p-overlay-badge flex justify-center"
+                )}
+                data-pr-tooltip="Ver adjunto"
+                data-pr-position="right"
+              >
+                {showIcon}
+              </i>
+            </Link>
+          )}
+          {data?.action?.hasOwnProperty("filePath") && (
+            <span onClick={() => pdfShowFile((data?.action as IFile).filePath, splitUrl(data.action?.name).fileName)}>
+              <Tooltip target={".custom-target-icon-" + data.id} style={{ borderRadius: "1px" }} />
+              <i
+                className={classNames(
+                  "custom-target-icon-" + data.id,
+                  "p-text-secondary p-overlay-badge flex justify-center"
+                )}
+                data-pr-tooltip="Ver adjunto"
+                data-pr-position="right"
+              >
+                {showIcon}
+              </i>
+            </span>
+          )}
         </div>
-        <div className="ml-4">
-          <Link to={""} onClick={() => selectFileToDelete(data)}>
-            <Tooltip target=".custom-target-icon" style={{ borderRadius: "1px" }} />
-            <i
-              className="custom-target-icon pi  p-text-secondary p-overlay-badge flex justify-center"
-              data-pr-tooltip="Eliminar"
-              data-pr-position="right"
-            >
-              {trashIcon}
-            </i>
-          </Link>
-        </div>
+        {!data?.action?.hasOwnProperty("filePath") && (
+          <div className="ml-4">
+            <Link to={""} onClick={() => selectFileToDelete(data)}>
+              <Tooltip target=".custom-target-icon" style={{ borderRadius: "1px" }} />
+              <i
+                className="custom-target-icon pi  p-text-secondary p-overlay-badge flex justify-center"
+                data-pr-tooltip="Eliminar"
+                data-pr-position="right"
+              >
+                {trashIcon}
+              </i>
+            </Link>
+          </div>
+        )}
       </div>
     );
   };
@@ -1729,15 +1786,18 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
             },
             template: () => (
               <div className="mt-auto">
-                <Button
-                  key={"updatedPerson"}
-                  label="Actualizar"
-                  rounded
-                  className="!px-4 !py-2 !text-base !font-sans"
-                  type="button"
-                  onClick={updatePerson}
-                  disabled={loading || !isUpdatePerson || isPersonInvalid()}
-                />
+                {authorization?.allowedActions &&
+                  authorization?.allowedActions?.findIndex((i) => i == "PQRSDF_EDITAR") >= 0 && (
+                    <Button
+                      key={"updatedPerson"}
+                      label="Actualizar"
+                      rounded
+                      className="!px-4 !py-2 !text-base !font-sans"
+                      type="button"
+                      onClick={updatePerson}
+                      disabled={loading || !isUpdatePerson || isPersonInvalid()}
+                    />
+                  )}
               </div>
             ),
           },
@@ -1772,17 +1832,21 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
                       <UploadManagetComponent
                         getNameFile={(e) => {}}
                         filesSupportDocument={(e) => {
-                          setSupportFiles(e);
-                          let count = 0;
-                          const documents = e.map((file) => {
-                            count = count + 1;
-                            return {
-                              user: authorization.user.names + " " + authorization.user.lastNames,
-                              visiblePetitioner: false,
-                              action: file,
-                              id: count,
-                            };
-                          });
+                          setSupportFiles([...e, ...supportFiles]);
+                          let count = tableData.length;
+                          const documents = [
+                            ...e.map((file: File) => {
+                              count += 1;
+                              return {
+                                user: authorization.user.names + " " + authorization.user.lastNames,
+                                visiblePetitioner: false,
+                                action: file,
+                                id: count + 9999999,
+                              };
+                            }),
+                            ...tableData,
+                          ];
+
                           setTableData(documents);
                         }}
                         statusDialog={(e) => {
@@ -1941,47 +2005,71 @@ function FormManagePqrsdfPage({ isEdit = false }: IProps): React.JSX.Element {
             <div className="p-card-content !pb-0 !pt-0 mt-4 md:mt-7">
               <div className="px-4">
                 <div className="border-b border-[#DEE2E6] w-full flex text-[19px] font-medium text-center">
-                  <span className="h-12 max-w-[184px] w-full border-b border-primary leading-6 px-1 text-primary">
+                  <span
+                    className={classNames(
+                      { "text-[#6C757D] leading-[23px] cursor-pointer": showTable },
+                      { "border-b border-primary leading-6 text-primary": !showTable },
+                      "h-12 max-w-[184px] w-full leading-[23px] px-1"
+                    )}
+                    onClick={() => {
+                      setShowTable(false);
+                    }}
+                  >
                     Gestionar solicitudes
                   </span>
-                  <Link
-                    to={"/atencion-ciudadana/gestionar-pqrsdf?tab=2"}
-                    className="h-12 max-w-[184px] w-full text-[#6C757D] leading-[23px] px-1"
+                  <span
+                    className={classNames(
+                      { "text-[#6C757D] leading-[23px] cursor-pointer": !showTable },
+                      { "border-b border-primary leading-6 text-primary": showTable },
+                      "h-12 max-w-[184px] w-full leading-[23px] px-1"
+                    )}
+                    onClick={() => {
+                      if (pqrsdfData?.id && !showTable) {
+                        setShowTable(true);
+                      }
+                    }}
                   >
                     Respuestas a la solicitud
-                  </Link>
+                  </span>
                 </div>
               </div>
-              <div className="grid grid-cols-6 xl:gap-x-12 md:gap-x-4.5 gap-x-3.5 gap-y-6 w-full mt-5 pt-1.5 md:mt-20">
-                {columnsId().map((column, index) => {
-                  return columnsTemplate(column);
-                })}
-              </div>
-              <div className="w-full mt-4 md:mt-8 md:pt-0.5 citizen-attention">
-                <Accordion activeIndex={null}>
-                  {accordionTabs().map((tab, index) => {
-                    return (
-                      <AccordionTab header={tab.header} key={tab.key}>
-                        <div className={tab.wrapperClass}>
-                          {tab?.columns
-                            ? tab.columns.map((column, index) => {
-                                return columnsTemplate(column);
-                              })
-                            : tab?.template()}
-                        </div>
-                        {tab?.secondWrapper && (
-                          <div className={tab.wrapperClass + " md:mt-4 mt-6"}>
-                            {tab?.columns
-                              ? tab.secondColumns.map((column, index) => {
-                                  return columnsTemplate(column);
-                                })
-                              : tab?.template()}
-                          </div>
-                        )}
-                      </AccordionTab>
-                    );
-                  })}
-                </Accordion>
+              <div className="w-full mt-5 pt-1.5 md:mt-10">
+                {showTable && <PqrsdfResponsesTable pqrsdfId={pqrsdfData.id}></PqrsdfResponsesTable>}
+                {!showTable && (
+                  <>
+                    <div className="grid grid-cols-6 xl:gap-x-12 md:gap-x-4.5 gap-x-3.5 gap-y-6">
+                      {columnsId().map((column, index) => {
+                        return columnsTemplate(column);
+                      })}
+                    </div>
+                    <div className="w-full mt-4 md:mt-8 md:pt-0.5 citizen-attention">
+                      <Accordion activeIndex={null}>
+                        {accordionTabs().map((tab, index) => {
+                          return (
+                            <AccordionTab header={tab.header} key={tab.key}>
+                              <div className={tab.wrapperClass}>
+                                {tab?.columns
+                                  ? tab.columns.map((column, index) => {
+                                      return columnsTemplate(column);
+                                    })
+                                  : tab?.template()}
+                              </div>
+                              {tab?.secondWrapper && (
+                                <div className={tab.wrapperClass + " md:mt-4 mt-6"}>
+                                  {tab?.columns
+                                    ? tab.secondColumns.map((column, index) => {
+                                        return columnsTemplate(column);
+                                      })
+                                    : tab?.template()}
+                                </div>
+                              )}
+                            </AccordionTab>
+                          );
+                        })}
+                      </Accordion>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>

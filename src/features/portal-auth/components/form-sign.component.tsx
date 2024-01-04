@@ -92,6 +92,7 @@ const FormSignInComponent = (): React.JSX.Element => {
             setPortalUser(res.data.user);
           } else {
             localStorage.removeItem("token");
+            navigate("/portal/ingreso")
           }
         });
         navigate(`/portal/layout`);
