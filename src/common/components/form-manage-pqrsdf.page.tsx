@@ -2034,7 +2034,9 @@ function FormManagePqrsdfPage({ isEdit = false }: Readonly<IProps>): React.JSX.E
                 </div>
               </div>
               <div className="w-full mt-5 pt-1.5 md:mt-10">
-                {showTable && <PqrsdfResponsesTable pqrsdfId={pqrsdfData.id}></PqrsdfResponsesTable>}
+                {showTable && (
+                  <PqrsdfResponsesTable pqrsdf={pqrsdfData} pqrsdfId={pqrsdfData.id}></PqrsdfResponsesTable>
+                )}
                 {!showTable && (
                   <>
                     <div className="grid grid-cols-6 xl:gap-x-12 md:gap-x-4.5 gap-x-3.5 gap-y-6">

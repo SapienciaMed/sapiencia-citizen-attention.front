@@ -3,7 +3,7 @@ import { Paginator, PaginatorPageChangeEvent } from "primereact/paginator";
 import { Tooltip } from "primereact/tooltip";
 import React, { useEffect, useState } from "react";
 import { usePqrsdfService } from "../hooks/PqrsdfService.hook";
-import { IPqrsdfResponse, IResponseFilters } from "../interfaces/pqrsdf.interfaces";
+import { IPqrsdf, IPqrsdfResponse, IResponseFilters } from "../interfaces/pqrsdf.interfaces";
 import { IPagingData } from "../utils/api-response";
 import { splitUrl, toLocaleDate } from "../utils/helpers";
 import { EResponseCodes } from "../constants/api.enum";
@@ -14,7 +14,21 @@ import { classNames } from "primereact/utils";
 import { Column } from "primereact/column";
 import { pdfShowFile } from "../utils/file-functions";
 import { showIcon } from "./icons/show";
-function PqrsdfResponsesTable({ pqrsdfId }: { pqrsdfId: number }): React.JSX.Element {
+import { IDaysParametrization } from "../interfaces/daysParametrization.interfaces";
+import moment from "moment";
+import { useDaysParametrizationService } from "../hooks/daysParametrizationService.hook";
+
+interface Detail {
+  detailDate?: string;
+  dayTypeId?: number;
+}
+
+interface IProps {
+  pqrsdfId: number;
+  pqrsdf: IPqrsdf;
+}
+
+function PqrsdfResponsesTable({ pqrsdfId, pqrsdf }: IProps): React.JSX.Element {
   const [loading, setLoading] = useState(false);
   const [showTable, setShowTable] = useState(false);
   const [pqrsdfResponses, setPqrsdfResponses] = useState<IPagingData<IPqrsdfResponse>>({
@@ -26,7 +40,9 @@ function PqrsdfResponsesTable({ pqrsdfId }: { pqrsdfId: number }): React.JSX.Ele
   const [perPage, setPerPage] = useState(10);
   const [page, setPage] = useState(1);
   const [first, setFirst] = useState<number>(0);
+  const [workingDays, setWorkingDays] = useState([]);
   const pqrsdfService = usePqrsdfService();
+  const daysServices = useDaysParametrizationService();
   const onPageChange = (event: PaginatorPageChangeEvent): void => {
     setPerPage(event.rows);
     setFirst(event.first);
@@ -35,11 +51,93 @@ function PqrsdfResponsesTable({ pqrsdfId }: { pqrsdfId: number }): React.JSX.Ele
 
   useEffect(() => {
     getResponses();
+    daysParametrization();
   }, []);
 
   useEffect(() => {
     getResponses();
   }, [perPage, page]);
+
+  function countDaysCalendar(fechaInicial: moment.MomentInput) {
+    const fechaInicialMoment = moment(fechaInicial, "YYYY-MM-DD");
+
+    const fechaActualMoment = moment();
+
+    const diasTranscurridos = fechaActualMoment.diff(fechaInicialMoment, "days");
+
+    return diasTranscurridos;
+  }
+
+  function compareDatesInRange(datesArray, startDate) {
+    // Convierte las fechas en objetos Moment
+    const momentStartDate = moment(startDate);
+    const momentEndDate = moment();
+
+    // Filtra las fechas en el rango especificado
+    const datesInRange = datesArray.filter((date) => {
+      const momentDate = moment(date);
+      return momentDate.isBetween(momentStartDate, momentEndDate, null, "[]");
+    });
+
+    return datesInRange;
+  }
+
+  const countDays = (initialDate: moment.MomentInput, holidays: string[]) => {
+    let weekends = [];
+    const diasFestivos = holidays;
+    const Dateformt = moment(initialDate).format("YYYY-MM-DD");
+    const fechaInicial = moment(Dateformt);
+    const fechaActual = moment();
+    let diasTranscurridos = 0;
+
+    while (fechaInicial.isBefore(fechaActual)) {
+      // Verifica si el día de la semana no es sábado (6) ni domingo (0)
+      if (
+        fechaInicial.day() !== 6 &&
+        fechaInicial.day() !== 0 &&
+        !diasFestivos.some((festivo) => moment(festivo).isSame(fechaInicial, "day"))
+      ) {
+        diasTranscurridos++;
+      }
+
+      fechaInicial.add(1, "days");
+    }
+
+    weekends = compareDatesInRange(holidays, initialDate);
+
+    weekends.forEach((dates) => {
+      const Dateformt = moment(dates).format("YYYY-MM-DD");
+      let days = moment(Dateformt);
+
+      if (days.day() == 6 || days.day() == 0) {
+        diasTranscurridos++;
+      }
+    });
+
+    return diasTranscurridos - 1;
+  };
+
+  const daysParametrization = async () => {
+    const { data } = await daysServices.getDaysParametrizations();
+
+    const workingDays = [];
+
+    const daysParametrization = data.map((values: IDaysParametrization) => {
+      return {
+        daysParametrization: values["daysParametrizationDetails"],
+      };
+    });
+
+    daysParametrization.forEach((values) => {
+      values.daysParametrization.forEach((value: Detail) => {
+        if (value) {
+          workingDays.push(value.detailDate);
+        }
+      });
+    });
+
+    setWorkingDays(workingDays);
+  };
 
   const columns = () => {
     return [
@@ -121,13 +219,12 @@ function PqrsdfResponsesTable({ pqrsdfId }: { pqrsdfId: number }): React.JSX.Ele
             return response.pqrsdfId == rowData.pqrsdfId && response.id < rowData.pqrsdfId;
           });
           let responseDate = lastResponses.length
-            ? toLocaleDate(lastResponses[lastResponses.length - 1].createdAt)
-            : toLocaleDate(rowData.createdAt);
-          let differenceTime = currentDate.getTime() - responseDate.getTime();
+            ? lastResponses[lastResponses.length - 1].createdAt
+            : rowData.createdAt;
 
-          //calculate days difference by dividing total seconds in a day
-          let days = Math.round(differenceTime / (1000 * 3600 * 24));
-          return days;
+          return pqrsdf?.requestSubject?.requestObject?.obs_tipo_dias === "Calendario"
+            ? countDaysCalendar(responseDate)
+            : countDays(responseDate, workingDays);
         },
         showForm: false,
       },
